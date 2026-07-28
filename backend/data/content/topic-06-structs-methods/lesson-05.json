@@ -1,0 +1,79 @@
+{
+  "id": "05",
+  "title_id": "Struct Tags & JSON",
+  "title_en": "Struct Tags & JSON",
+  "estimatedMinutes": 12,
+  "content_id": "# Struct Tags & JSON di Go\n\nStruct tags adalah metadata string yang ditempel pada field struct. Paling umum digunakan bersama package `encoding/json` untuk mengontrol serialisasi dan deserialisasi JSON.\n\n## Syntax Struct Tags\n\nStruct tag ditulis sebagai raw string literal (backtick) setelah tipe field:\n\n```go\ntype User struct {\n    ID       int    `json:\"id\"`\n    Username string `json:\"username\"`\n    Email    string `json:\"email\"`\n    Password string `json:\"-\"`        // skip field ini\n    Age      int    `json:\"age,omitempty\"` // skip jika zero value\n}\n```\n\n## json.Marshal — Struct ke JSON\n\n```go\nimport \"encoding/json\"\n\ntype Product struct {\n    ID    int     `json:\"id\"`\n    Name  string  `json:\"name\"`\n    Price float64 `json:\"price\"`\n    Stock int     `json:\"stock,omitempty\"`\n}\n\np := Product{ID: 1, Name: \"Laptop\", Price: 15000000, Stock: 5}\n\n// Marshal ke []byte\ndata, err := json.Marshal(p)\nif err != nil {\n    log.Fatal(err)\n}\nfmt.Println(string(data))\n// {\"id\":1,\"name\":\"Laptop\",\"price\":15000000,\"stock\":5}\n\n// MarshalIndent untuk format yang lebih rapi\npretty, _ := json.MarshalIndent(p, \"\", \"  \")\nfmt.Println(string(pretty))\n// {\n//   \"id\": 1,\n//   \"name\": \"Laptop\",\n//   \"price\": 15000000,\n//   \"stock\": 5\n// }\n```\n\n## json.Unmarshal — JSON ke Struct\n\n```go\njsonData := `{\"id\":2,\"name\":\"Mouse\",\"price\":250000}`\n\nvar product Product\nerr := json.Unmarshal([]byte(jsonData), &product)\nif err != nil {\n    log.Fatal(err)\n}\nfmt.Println(product.Name)  // Mouse\nfmt.Println(product.Price) // 250000\n```\n\n## Tag Options\n\n### `omitempty` — Skip Jika Zero Value\n\n```go\ntype Response struct {\n    Code    int    `json:\"code\"`\n    Message string `json:\"message\"`\n    Error   string `json:\"error,omitempty\"` // skip jika \"\"\n    Data    any    `json:\"data,omitempty\"`  // skip jika nil\n}\n\n// Tanpa error\nresp := Response{Code: 200, Message: \"OK\"}\ndata, _ := json.Marshal(resp)\nfmt.Println(string(data))\n// {\"code\":200,\"message\":\"OK\"}\n\n// Dengan error\nresp2 := Response{Code: 400, Message: \"Bad Request\", Error: \"invalid input\"}\ndata2, _ := json.Marshal(resp2)\nfmt.Println(string(data2))\n// {\"code\":400,\"message\":\"Bad Request\",\"error\":\"invalid input\"}\n```\n\n### `json:\"-\"` — Skip Field\n\n```go\ntype User struct {\n    ID       int    `json:\"id\"`\n    Username string `json:\"username\"`\n    Password string `json:\"-\"`      // tidak pernah di-serialize\n    Token    string `json:\"-,\"`     // field bernama \"-\" (jarang dipakai)\n}\n\nu := User{ID: 1, Username: \"alice\", Password: \"secret123\"}\ndata, _ := json.Marshal(u)\nfmt.Println(string(data))\n// {\"id\":1,\"username\":\"alice\"} — password tidak muncul!\n```\n\n## Nested JSON\n\n```go\ntype Address struct {\n    Street string `json:\"street\"`\n    City   string `json:\"city\"`\n    Zip    string `json:\"zip\"`\n}\n\ntype Person struct {\n    Name    string  `json:\"name\"`\n    Age     int     `json:\"age\"`\n    Address Address `json:\"address\"`\n    Tags    []string `json:\"tags,omitempty\"`\n}\n\nperson := Person{\n    Name: \"Alice\",\n    Age:  30,\n    Address: Address{\n        Street: \"Jl. Merdeka 1\",\n        City:   \"Jakarta\",\n        Zip:    \"10110\",\n    },\n    Tags: []string{\"admin\", \"user\"},\n}\n\ndata, _ := json.MarshalIndent(person, \"\", \"  \")\nfmt.Println(string(data))\n```\n\n## Contoh Nyata: API Response Struct\n\n```go\ntype APIResponse struct {\n    Success bool        `json:\"success\"`\n    Code    int         `json:\"code\"`\n    Message string      `json:\"message\"`\n    Data    interface{} `json:\"data,omitempty\"`\n    Error   *APIError   `json:\"error,omitempty\"`\n}\n\ntype APIError struct {\n    Code    string `json:\"code\"`\n    Message string `json:\"message\"`\n}\n\ntype UserDTO struct {\n    ID        int    `json:\"id\"`\n    Username  string `json:\"username\"`\n    Email     string `json:\"email\"`\n    CreatedAt string `json:\"created_at\"`\n}\n\nfunc successResponse(data interface{}) APIResponse {\n    return APIResponse{\n        Success: true,\n        Code:    200,\n        Message: \"OK\",\n        Data:    data,\n    }\n}\n\nfunc errorResponse(code, msg string) APIResponse {\n    return APIResponse{\n        Success: false,\n        Code:    400,\n        Message: \"Error\",\n        Error:   &APIError{Code: code, Message: msg},\n    }\n}\n\nuser := UserDTO{1, \"alice\", \"alice@example.com\", \"2024-01-01\"}\nresp := successResponse(user)\ndata, _ := json.MarshalIndent(resp, \"\", \"  \")\nfmt.Println(string(data))\n```\n\n## Decode JSON ke Map\n\n```go\n// Jika tidak tahu struktur JSON sebelumnya\nvar result map[string]interface{}\njsonStr := `{\"name\":\"Alice\",\"age\":30,\"active\":true}`\njson.Unmarshal([]byte(jsonStr), &result)\nfmt.Println(result[\"name\"]) // Alice\n```",
+  "content_en": "# Struct Tags & JSON in Go\n\nStruct tags are metadata strings attached to struct fields. Most commonly used with the `encoding/json` package to control JSON serialization and deserialization.\n\n## Struct Tag Syntax\n\nStruct tags are written as raw string literals (backticks) after the field type:\n\n```go\ntype User struct {\n    ID       int    `json:\"id\"`\n    Username string `json:\"username\"`\n    Password string `json:\"-\"`            // skip this field\n    Age      int    `json:\"age,omitempty\"` // skip if zero\n}\n```\n\n## json.Marshal — Struct to JSON\n\n```go\np := Product{ID: 1, Name: \"Laptop\", Price: 15000000}\ndata, err := json.Marshal(p)\nfmt.Println(string(data))\n// {\"id\":1,\"name\":\"Laptop\",\"price\":15000000}\n\npretty, _ := json.MarshalIndent(p, \"\", \"  \")\nfmt.Println(string(pretty))\n```\n\n## json.Unmarshal — JSON to Struct\n\n```go\njsonData := `{\"id\":2,\"name\":\"Mouse\",\"price\":250000}`\nvar product Product\nerr := json.Unmarshal([]byte(jsonData), &product)\nfmt.Println(product.Name)  // Mouse\n```\n\n## omitempty and json:\"-\"\n\n```go\ntype Response struct {\n    Code    int    `json:\"code\"`\n    Message string `json:\"message\"`\n    Error   string `json:\"error,omitempty\"` // skipped if empty\n}\n// {\"code\":200,\"message\":\"OK\"} — no error field\n```\n\n## API Response Pattern\n\n```go\ntype APIResponse struct {\n    Success bool        `json:\"success\"`\n    Code    int         `json:\"code\"`\n    Data    interface{} `json:\"data,omitempty\"`\n    Error   *APIError   `json:\"error,omitempty\"`\n}\n```",
+  "starterCode": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"log\"\n)\n\ntype Address struct {\n\tStreet string `json:\"street\"`\n\tCity   string `json:\"city\"`\n\tZip    string `json:\"zip\"`\n}\n\ntype User struct {\n\tID       int     `json:\"id\"`\n\tUsername string  `json:\"username\"`\n\tEmail    string  `json:\"email\"`\n\tPassword string  `json:\"-\"`\n\tAge      int     `json:\"age,omitempty\"`\n\tAddress  Address `json:\"address\"`\n\tTags     []string `json:\"tags,omitempty\"`\n}\n\ntype APIResponse struct {\n\tSuccess bool        `json:\"success\"`\n\tCode    int         `json:\"code\"`\n\tMessage string      `json:\"message\"`\n\tData    interface{} `json:\"data,omitempty\"`\n}\n\nfunc main() {\n\t// Marshal: struct -> JSON\n\tuser := User{\n\t\tID:       1,\n\t\tUsername: \"alice\",\n\t\tEmail:    \"alice@example.com\",\n\t\tPassword: \"secret123\",\n\t\tAge:      30,\n\t\tAddress: Address{\n\t\t\tStreet: \"Jl. Sudirman 1\",\n\t\t\tCity:   \"Jakarta\",\n\t\t\tZip:    \"10220\",\n\t\t},\n\t\tTags: []string{\"admin\"},\n\t}\n\n\tdata, err := json.MarshalIndent(user, \"\", \"  \")\n\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\tfmt.Println(\"Marshal output:\")\n\tfmt.Println(string(data))\n\n\t// Unmarshal: JSON -> struct\n\tjsonStr := `{\"id\":2,\"username\":\"bob\",\"email\":\"bob@example.com\",\"address\":{\"street\":\"Jl. Gatot 5\",\"city\":\"Bandung\",\"zip\":\"40000\"}}`\n\tvar user2 User\n\tif err := json.Unmarshal([]byte(jsonStr), &user2); err != nil {\n\t\tlog.Fatal(err)\n\t}\n\tfmt.Printf(\"\\nUnmarshal: %s lives in %s\\n\", user2.Username, user2.Address.City)\n\n\t// API response\n\tresp := APIResponse{\n\t\tSuccess: true,\n\t\tCode:    200,\n\t\tMessage: \"User fetched\",\n\t\tData:    user,\n\t}\n\trespData, _ := json.MarshalIndent(resp, \"\", \"  \")\n\tfmt.Println(\"\\nAPI Response:\")\n\tfmt.Println(string(respData))\n}",
+  "quiz": [
+    {
+      "question_id": "Apa fungsi dari tag `json:\"-\"` pada field struct?",
+      "question_en": "What does the `json:\"-\"` tag on a struct field do?",
+      "options_id": [
+        "Mengubah nama field menjadi \"-\" dalam JSON",
+        "Membuat field tidak ikut di-serialize/deserialize ke/dari JSON",
+        "Menandai field sebagai required",
+        "Mengosongkan nilai field"
+      ],
+      "options_en": [
+        "Renames the field to \"-\" in JSON",
+        "Excludes the field from JSON serialization/deserialization",
+        "Marks the field as required",
+        "Clears the field value"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang dilakukan tag `json:\"name,omitempty\"` jika field `name` memiliki nilai `\"\"`?",
+      "question_en": "What does the tag `json:\"name,omitempty\"` do if the `name` field has value `\"\"`?",
+      "options_id": [
+        "Field tetap muncul di JSON dengan nilai \"\"",
+        "Field tidak muncul di JSON output",
+        "Program panic",
+        "Field diganti dengan nilai default"
+      ],
+      "options_en": [
+        "The field still appears in JSON with value \"\"",
+        "The field is omitted from the JSON output",
+        "The program panics",
+        "The field is replaced with a default value"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Fungsi mana yang digunakan untuk mengubah struct menjadi JSON byte slice?",
+      "question_en": "Which function is used to convert a struct to a JSON byte slice?",
+      "options_id": [
+        "json.Encode()",
+        "json.Marshal()",
+        "json.Serialize()",
+        "json.Convert()"
+      ],
+      "options_en": [
+        "json.Encode()",
+        "json.Marshal()",
+        "json.Serialize()",
+        "json.Convert()"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang harus dikirim ke `json.Unmarshal` sebagai argumen kedua?",
+      "question_en": "What must be passed to `json.Unmarshal` as the second argument?",
+      "options_id": [
+        "Nilai struct secara langsung",
+        "Pointer ke struct (`&myStruct`)",
+        "Tipe struct",
+        "Nama field sebagai string"
+      ],
+      "options_en": [
+        "The struct value directly",
+        "A pointer to the struct (`&myStruct`)",
+        "The struct type",
+        "Field names as strings"
+      ],
+      "correct": 1
+    }
+  ]
+}

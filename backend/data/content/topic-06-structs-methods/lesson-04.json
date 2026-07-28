@@ -1,0 +1,62 @@
+{
+  "id": "04",
+  "title_id": "Constructor Pattern",
+  "title_en": "Constructor Pattern",
+  "estimatedMinutes": 8,
+  "content_id": "# Constructor Pattern di Go\n\nGo tidak memiliki konstruktor bawaan seperti Java atau C++. Sebagai gantinya, Go menggunakan **factory functions** (fungsi pembuat) dengan konvensi penamaan `New<TypeName>`. Pola ini memberikan kontrol penuh atas inisialisasi objek.\n\n## Mengapa Go Tidak Punya Constructor?\n\nGo sengaja tidak memiliki constructor karena:\n- Menjaga bahasa tetap sederhana\n- Zero value harus berguna kapan saja memungkinkan\n- Factory function lebih fleksibel dan eksplisit\n\n## Factory Function Dasar\n\n```go\ntype Person struct {\n    name  string // lowercase = private\n    age   int\n    email string\n}\n\n// NewPerson adalah constructor pattern\nfunc NewPerson(name string, age int, email string) (*Person, error) {\n    if name == \"\" {\n        return nil, errors.New(\"name tidak boleh kosong\")\n    }\n    if age < 0 || age > 150 {\n        return nil, fmt.Errorf(\"umur tidak valid: %d\", age)\n    }\n    if !strings.Contains(email, \"@\") {\n        return nil, errors.New(\"format email tidak valid\")\n    }\n    return &Person{\n        name:  name,\n        age:   age,\n        email: email,\n    }, nil\n}\n\n// Getter methods untuk field private\nfunc (p *Person) Name() string  { return p.name }\nfunc (p *Person) Age() int      { return p.age }\nfunc (p *Person) Email() string { return p.email }\n\n// Usage\np, err := NewPerson(\"Alice\", 30, \"alice@example.com\")\nif err != nil {\n    log.Fatal(err)\n}\nfmt.Println(p.Name()) // Alice\n```\n\n## Validasi dalam Constructor\n\n```go\ntype Server struct {\n    host    string\n    port    int\n    timeout time.Duration\n}\n\nfunc NewServer(host string, port int) (*Server, error) {\n    if host == \"\" {\n        host = \"localhost\"\n    }\n    if port < 1 || port > 65535 {\n        return nil, fmt.Errorf(\"port %d di luar range yang valid\", port)\n    }\n    return &Server{\n        host:    host,\n        port:    port,\n        timeout: 30 * time.Second, // default value\n    }, nil\n}\n```\n\n## Options Struct Pattern\n\nUntuk banyak parameter opsional, gunakan options struct:\n\n```go\ntype DatabaseOptions struct {\n    Host     string\n    Port     int\n    User     string\n    Password string\n    DBName   string\n    MaxConns int\n    Timeout  time.Duration\n}\n\n// Default values\nfunc DefaultDatabaseOptions() DatabaseOptions {\n    return DatabaseOptions{\n        Host:     \"localhost\",\n        Port:     5432,\n        MaxConns: 10,\n        Timeout:  30 * time.Second,\n    }\n}\n\ntype Database struct {\n    opts DatabaseOptions\n}\n\nfunc NewDatabase(opts DatabaseOptions) (*Database, error) {\n    if opts.DBName == \"\" {\n        return nil, errors.New(\"nama database diperlukan\")\n    }\n    return &Database{opts: opts}, nil\n}\n\n// Usage\nopts := DefaultDatabaseOptions()\nopts.DBName = \"myapp\"\nopts.User = \"admin\"\ndb, err := NewDatabase(opts)\n```\n\n## Zero-Value Friendly Design\n\nDesain terbaik di Go adalah ketika zero value langsung bisa digunakan:\n\n```go\n// sync.Mutex adalah contoh zero-value friendly\nvar mu sync.Mutex\nmu.Lock()\nmu.Unlock()\n\n// bytes.Buffer — zero value langsung bisa dipakai\nvar buf bytes.Buffer\nbuf.WriteString(\"Hello\")\nfmt.Println(buf.String())\n\n// Desain kustom zero-value friendly\ntype Stack struct {\n    items []int // nil slice = empty stack — OK!\n}\n\nfunc (s *Stack) Push(v int) {\n    s.items = append(s.items, v)\n}\n\nfunc (s *Stack) Pop() (int, bool) {\n    if len(s.items) == 0 {\n        return 0, false\n    }\n    n := len(s.items) - 1\n    v := s.items[n]\n    s.items = s.items[:n]\n    return v, true\n}\n\n// Zero value langsung bisa dipakai!\nvar s Stack\ns.Push(1)\ns.Push(2)\nv, ok := s.Pop()\nfmt.Println(v, ok) // 2 true\n```\n\n## Simple Constructor (Tanpa Error)\n\n```go\ntype Point struct{ X, Y float64 }\n\nfunc NewPoint(x, y float64) Point {\n    return Point{X: x, Y: y}\n}\n\nfunc NewOrigin() Point {\n    return Point{} // zero value = origin\n}\n```\n\n## Tips Constructor Pattern\n\n1. Nama convention: `NewTypeName()` atau `MakeTypeName()`\n2. Kembalikan pointer `*T` untuk struct besar atau perlu mutation\n3. Kembalikan error jika ada validasi\n4. Berikan default yang masuk akal\n5. Ekspor factory function, sembunyikan field jika perlu",
+  "content_en": "# Constructor Pattern in Go\n\nGo has no built-in constructors like Java or C++. Instead, Go uses **factory functions** with the naming convention `New<TypeName>`. This pattern provides full control over object initialization.\n\n## Why Go Has No Constructors?\n\nGo intentionally omits constructors:\n- Keeps the language simple\n- Zero values should be useful whenever possible\n- Factory functions are more flexible and explicit\n\n## Basic Factory Function\n\n```go\ntype Person struct {\n    name  string\n    age   int\n    email string\n}\n\nfunc NewPerson(name string, age int, email string) (*Person, error) {\n    if name == \"\" {\n        return nil, errors.New(\"name cannot be empty\")\n    }\n    if age < 0 || age > 150 {\n        return nil, fmt.Errorf(\"invalid age: %d\", age)\n    }\n    return &Person{name: name, age: age, email: email}, nil\n}\n\np, err := NewPerson(\"Alice\", 30, \"alice@example.com\")\nif err != nil { log.Fatal(err) }\n```\n\n## Options Struct Pattern\n\n```go\ntype ServerOptions struct {\n    Host     string\n    Port     int\n    MaxConns int\n    Timeout  time.Duration\n}\n\nfunc DefaultServerOptions() ServerOptions {\n    return ServerOptions{\n        Host: \"localhost\", Port: 8080,\n        MaxConns: 100, Timeout: 30 * time.Second,\n    }\n}\n```\n\n## Zero-Value Friendly Design\n\n```go\ntype Stack struct { items []int }\n\nfunc (s *Stack) Push(v int) { s.items = append(s.items, v) }\nfunc (s *Stack) Pop() (int, bool) {\n    if len(s.items) == 0 { return 0, false }\n    n := len(s.items) - 1\n    v := s.items[n]\n    s.items = s.items[:n]\n    return v, true\n}\n\nvar s Stack // zero value works immediately!\ns.Push(42)\n```",
+  "starterCode": "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\ntype User struct {\n\tid       int\n\tusername string\n\temail    string\n\tactive   bool\n}\n\nvar nextID = 1\n\nfunc NewUser(username, email string) (*User, error) {\n\tif username == \"\" {\n\t\treturn nil, errors.New(\"username cannot be empty\")\n\t}\n\tif len(username) < 3 {\n\t\treturn nil, fmt.Errorf(\"username too short: minimum 3 chars, got %d\", len(username))\n\t}\n\tif email == \"\" {\n\t\treturn nil, errors.New(\"email cannot be empty\")\n\t}\n\tu := &User{\n\t\tid:       nextID,\n\t\tusername: username,\n\t\temail:    email,\n\t\tactive:   true,\n\t}\n\tnextID++\n\treturn u, nil\n}\n\nfunc (u *User) ID() int         { return u.id }\nfunc (u *User) Username() string { return u.username }\nfunc (u *User) Email() string   { return u.email }\nfunc (u *User) IsActive() bool  { return u.active }\nfunc (u *User) Deactivate()     { u.active = false }\n\nfunc (u User) String() string {\n\tstatus := \"active\"\n\tif !u.active {\n\t\tstatus = \"inactive\"\n\t}\n\treturn fmt.Sprintf(\"User{id:%d, username:%s, status:%s}\", u.id, u.username, status)\n}\n\n// Zero-value friendly stack\ntype Stack struct {\n\titems []int\n}\n\nfunc (s *Stack) Push(v int)        { s.items = append(s.items, v) }\nfunc (s *Stack) Len() int          { return len(s.items) }\nfunc (s *Stack) Pop() (int, bool) {\n\tif len(s.items) == 0 {\n\t\treturn 0, false\n\t}\n\tn := len(s.items) - 1\n\tv := s.items[n]\n\ts.items = s.items[:n]\n\treturn v, true\n}\n\nfunc main() {\n\t// Valid user\n\tu1, err := NewUser(\"alice\", \"alice@example.com\")\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t} else {\n\t\tfmt.Println(u1)\n\t}\n\n\t// Invalid user\n\t_, err = NewUser(\"\", \"bob@example.com\")\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t}\n\n\t_, err = NewUser(\"ab\", \"ab@example.com\")\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t}\n\n\t// Zero-value friendly stack\n\tvar s Stack\n\ts.Push(10)\n\ts.Push(20)\n\ts.Push(30)\n\tfmt.Printf(\"Stack len: %d\\n\", s.Len())\n\tfor s.Len() > 0 {\n\t\tv, _ := s.Pop()\n\t\tfmt.Printf(\"Pop: %d\\n\", v)\n\t}\n}",
+  "quiz": [
+    {
+      "question_id": "Apa konvensi penamaan untuk factory function di Go?",
+      "question_en": "What is the naming convention for factory functions in Go?",
+      "options_id": [
+        "create<TypeName>()",
+        "New<TypeName>()",
+        "make<TypeName>()",
+        "init<TypeName>()"
+      ],
+      "options_en": [
+        "create<TypeName>()",
+        "New<TypeName>()()",
+        "make<TypeName>()",
+        "init<TypeName>()"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa keuntungan dari zero-value friendly design?",
+      "question_en": "What is the advantage of zero-value friendly design?",
+      "options_id": [
+        "Performa yang lebih baik",
+        "Tipe bisa langsung digunakan tanpa inisialisasi eksplisit",
+        "Mengurangi penggunaan memori",
+        "Memungkinkan inheritance"
+      ],
+      "options_en": [
+        "Better performance",
+        "The type can be used immediately without explicit initialization",
+        "Reduced memory usage",
+        "Enables inheritance"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Kapan sebaiknya factory function mengembalikan pointer (`*T`) daripada nilai (`T`)?",
+      "question_en": "When should a factory function return a pointer (`*T`) instead of a value (`T`)?",
+      "options_id": [
+        "Selalu kembalikan pointer",
+        "Ketika struct besar atau caller perlu mengubah struct yang sama",
+        "Hanya ketika ada error",
+        "Hanya untuk interface"
+      ],
+      "options_en": [
+        "Always return a pointer",
+        "When the struct is large or the caller needs to mutate the same struct",
+        "Only when there is an error",
+        "Only for interfaces"
+      ],
+      "correct": 1
+    }
+  ]
+}

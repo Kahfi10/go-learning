@@ -1,0 +1,62 @@
+{
+  "id": "03",
+  "title_id": "range",
+  "title_en": "range",
+  "estimatedMinutes": 10,
+  "content_id": "# range\n\n`range` adalah kata kunci khusus Go untuk mengiterasi berbagai struktur data. Ini jauh lebih aman dan idiomatik daripada menggunakan indeks manual.\n\n## range atas Slice\n\n```go\nnums := []int{10, 20, 30, 40, 50}\n\n// index dan value\nfor i, v := range nums {\n    fmt.Printf(\"nums[%d] = %d\\n\", i, v)\n}\n\n// Hanya index\nfor i := range nums {\n    fmt.Println(\"index:\", i)\n}\n\n// Hanya value (abaikan index)\nfor _, v := range nums {\n    fmt.Println(\"value:\", v)\n}\n```\n\n## range atas Map\n\n```go\nscores := map[string]int{\n    \"Alice\": 95,\n    \"Bob\":   82,\n    \"Carol\": 88,\n}\n\nfor key, value := range scores {\n    fmt.Printf(\"%s: %d\\n\", key, value)\n}\n// Urutan key di map tidak dijamin!\n\n// Hanya key\nfor name := range scores {\n    fmt.Println(name)\n}\n```\n\n## range atas String\n\nSaat iterasi string, range menghasilkan **rune** (bukan byte), sehingga mendukung Unicode:\n\n```go\nfor i, r := range \"Héllo\" {\n    fmt.Printf(\"index %d: %c (U+%04X)\\n\", i, r, r)\n}\n// index 0: H (U+0048)\n// index 1: é (U+00E9)  <- 2 byte, index loncat ke 3\n// index 3: l (U+006C)\n// index 4: l (U+006C)\n// index 5: o (U+006F)\n```\n\n**Catatan:** index adalah posisi byte, bukan posisi karakter!\n\n## range atas Array\n\n```go\ncolors := [3]string{\"merah\", \"hijau\", \"biru\"}\n\nfor i, color := range colors {\n    fmt.Printf(\"%d: %s\\n\", i, color)\n}\n```\n\n## range atas Channel\n\n```go\nch := make(chan int, 3)\nch <- 1\nch <- 2\nch <- 3\nclose(ch)\n\nfor v := range ch {\n    fmt.Println(v)  // 1, 2, 3\n}\n// Loop berhenti otomatis saat channel ditutup\n```\n\n## Semua Bentuk range\n\n```go\n// Slice: index dan value\nfor i, v := range slice { }\n\n// Slice: hanya index\nfor i := range slice { }\n\n// Slice: hanya value\nfor _, v := range slice { }\n\n// Map: key dan value\nfor k, v := range m { }\n\n// Map: hanya key\nfor k := range m { }\n\n// String: index byte dan rune\nfor i, r := range str { }\n\n// Channel\nfor v := range ch { }\n```\n\n## Contoh: Menghitung Frekuensi Karakter\n\n```go\nfunc charFrequency(s string) map[rune]int {\n    freq := map[rune]int{}\n    for _, r := range s {\n        freq[r]++\n    }\n    return freq\n}\n\nfunc main() {\n    freq := charFrequency(\"hello\")\n    for r, count := range freq {\n        fmt.Printf(\"%c: %d\\n\", r, count)\n    }\n    // h: 1, e: 1, l: 2, o: 1\n}\n```",
+  "content_en": "# range\n\n`range` is a special Go keyword for iterating over various data structures. It is much safer and more idiomatic than using manual indices.\n\n## range over Slice\n\n```go\nnums := []int{10, 20, 30, 40, 50}\n\n// index and value\nfor i, v := range nums {\n    fmt.Printf(\"nums[%d] = %d\\n\", i, v)\n}\n\n// Index only\nfor i := range nums {\n    fmt.Println(\"index:\", i)\n}\n\n// Value only (ignore index)\nfor _, v := range nums {\n    fmt.Println(\"value:\", v)\n}\n```\n\n## range over Map\n\n```go\nscores := map[string]int{\n    \"Alice\": 95,\n    \"Bob\":   82,\n    \"Carol\": 88,\n}\n\nfor key, value := range scores {\n    fmt.Printf(\"%s: %d\\n\", key, value)\n}\n// Map key order is NOT guaranteed!\n\n// Keys only\nfor name := range scores {\n    fmt.Println(name)\n}\n```\n\n## range over String\n\nWhen iterating a string, range produces **runes** (not bytes), so it supports Unicode:\n\n```go\nfor i, r := range \"Héllo\" {\n    fmt.Printf(\"index %d: %c (U+%04X)\\n\", i, r, r)\n}\n// index 0: H (U+0048)\n// index 1: é (U+00E9)  <- 2 bytes, index jumps to 3\n// index 3: l (U+006C)\n// index 4: l (U+006C)\n// index 5: o (U+006F)\n```\n\n**Note:** The index is the byte position, not the character position!\n\n## range over Array\n\n```go\ncolors := [3]string{\"red\", \"green\", \"blue\"}\n\nfor i, color := range colors {\n    fmt.Printf(\"%d: %s\\n\", i, color)\n}\n```\n\n## range over Channel\n\n```go\nch := make(chan int, 3)\nch <- 1\nch <- 2\nch <- 3\nclose(ch)\n\nfor v := range ch {\n    fmt.Println(v)  // 1, 2, 3\n}\n// Loop stops automatically when channel is closed\n```\n\n## All range Forms\n\n```go\n// Slice: index and value\nfor i, v := range slice { }\n\n// Slice: index only\nfor i := range slice { }\n\n// Slice: value only\nfor _, v := range slice { }\n\n// Map: key and value\nfor k, v := range m { }\n\n// Map: key only\nfor k := range m { }\n\n// String: byte index and rune\nfor i, r := range str { }\n\n// Channel\nfor v := range ch { }\n```\n\n## Example: Character Frequency Counter\n\n```go\nfunc charFrequency(s string) map[rune]int {\n    freq := map[rune]int{}\n    for _, r := range s {\n        freq[r]++\n    }\n    return freq\n}\n\nfunc main() {\n    freq := charFrequency(\"hello\")\n    for r, count := range freq {\n        fmt.Printf(\"%c: %d\\n\", r, count)\n    }\n    // h: 1, e: 1, l: 2, o: 1\n}\n```",
+  "starterCode": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\t// range atas slice\n\tfruits := []string{\"apel\", \"mangga\", \"pisang\", \"jeruk\"}\n\tfmt.Println(\"Daftar buah:\")\n\tfor i, f := range fruits {\n\t\tfmt.Printf(\"  %d. %s\\n\", i+1, f)\n\t}\n\n\t// range atas map\n\tpopulation := map[string]int{\n\t\t\"Jakarta\": 10000000,\n\t\t\"Surabaya\": 3000000,\n\t\t\"Bandung\":  2500000,\n\t}\n\tfmt.Println(\"\\nPopulasi kota:\")\n\tfor city, pop := range population {\n\t\tfmt.Printf(\"  %s: %d juta\\n\", city, pop/1000000)\n\t}\n\n\t// range atas string (Unicode-aware)\n\ts := \"Go!\"\n\tfmt.Println(\"\\nKarakter dalam string:\")\n\tfor i, r := range s {\n\t\tfmt.Printf(\"  index %d: '%c'\\n\", i, r)\n\t}\n\n\t// Hitung sum dengan range\n\tnums := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}\n\tsum := 0\n\tfor _, n := range nums {\n\t\tsum += n\n\t}\n\tfmt.Println(\"\\nSum 1..10:\", sum)\n}",
+  "quiz": [
+    {
+      "question_id": "Saat menggunakan `for i, v := range slice`, apa yang diwakili oleh `i` dan `v`?",
+      "question_en": "When using `for i, v := range slice`, what do `i` and `v` represent?",
+      "options_id": [
+        "i = nilai, v = index",
+        "i = index, v = nilai elemen",
+        "i = iterator, v = versi",
+        "i = input, v = variabel"
+      ],
+      "options_en": [
+        "i = value, v = index",
+        "i = index, v = element value",
+        "i = iterator, v = version",
+        "i = input, v = variable"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Saat `range` digunakan pada string di Go, apa yang diiterasi?",
+      "question_en": "When `range` is used on a string in Go, what does it iterate over?",
+      "options_id": [
+        "Byte individual",
+        "Kata-kata dalam string",
+        "Rune (karakter Unicode)",
+        "Baris-baris teks"
+      ],
+      "options_en": [
+        "Individual bytes",
+        "Words in the string",
+        "Runes (Unicode characters)",
+        "Lines of text"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apakah urutan key yang dikembalikan oleh `range` atas map di Go dijamin?",
+      "question_en": "Is the order of keys returned by `range` over a map in Go guaranteed?",
+      "options_id": [
+        "Ya, selalu terurut secara alfabetis",
+        "Ya, sesuai urutan penyisipan",
+        "Tidak, urutan tidak dijamin",
+        "Ya, sesuai nilai hash dari key"
+      ],
+      "options_en": [
+        "Yes, always sorted alphabetically",
+        "Yes, in insertion order",
+        "No, order is not guaranteed",
+        "Yes, according to the hash value of the key"
+      ],
+      "correct": 2
+    }
+  ]
+}

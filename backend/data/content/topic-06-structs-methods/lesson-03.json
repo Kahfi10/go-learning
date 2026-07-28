@@ -1,0 +1,62 @@
+{
+  "id": "03",
+  "title_id": "Struct Embedding",
+  "title_en": "Struct Embedding",
+  "estimatedMinutes": 10,
+  "content_id": "# Struct Embedding di Go\n\nEmbedding adalah mekanisme Go untuk **komposisi** — cara menyertakan tipe lain ke dalam struct tanpa nama field eksplisit. Method dari tipe yang di-embed akan **dipromosikan** ke tipe luar, sehingga bisa dipanggil langsung.\n\n## Anonymous Fields (Embedding)\n\n```go\ntype Animal struct {\n    Name string\n}\n\nfunc (a Animal) Breathe() string {\n    return a.Name + \" sedang bernapas\"\n}\n\nfunc (a Animal) Eat(food string) string {\n    return a.Name + \" makan \" + food\n}\n\ntype Dog struct {\n    Animal        // embedding — bukan field bernama\n    Breed  string\n}\n\nfunc (d Dog) Bark() string {\n    return d.Name + \" berkata: Woof!\"\n}\n\ndog := Dog{\n    Animal: Animal{Name: \"Rex\"},\n    Breed:  \"Golden Retriever\",\n}\n\n// Promoted methods — dipanggil langsung\nfmt.Println(dog.Breathe()) // Rex sedang bernapas\nfmt.Println(dog.Eat(\"daging\")) // Rex makan daging\nfmt.Println(dog.Bark())    // Rex berkata: Woof!\n\n// Akses field yang di-promote\nfmt.Println(dog.Name)         // Rex\nfmt.Println(dog.Animal.Name)  // Rex (juga valid)\n```\n\n## Method Shadowing (Override)\n\nJika tipe luar mendefinisikan method dengan nama yang sama, method luar akan **meng-shadow** method yang di-embed:\n\n```go\ntype Cat struct {\n    Animal\n    Indoor bool\n}\n\n// Cat meng-override method Eat dari Animal\nfunc (c Cat) Eat(food string) string {\n    return c.Name + \" secara perlahan memakan \" + food\n}\n\ncat := Cat{Animal: Animal{Name: \"Whiskers\"}, Indoor: true}\nfmt.Println(cat.Eat(\"ikan\"))         // Whiskers secara perlahan memakan ikan\nfmt.Println(cat.Animal.Eat(\"ikan\"))  // Whiskers makan ikan — akses langsung ke Animal\n```\n\n## Multiple Embedding\n\n```go\ntype Flyer struct{}\ntype Swimmer struct{}\n\nfunc (f Flyer) Fly() string   { return \"sedang terbang\" }\nfunc (s Swimmer) Swim() string { return \"sedang berenang\" }\n\ntype Duck struct {\n    Animal\n    Flyer    // multiple embedding\n    Swimmer\n}\n\nduck := Duck{\n    Animal: Animal{Name: \"Donald\"},\n}\nfmt.Println(duck.Name)  // Donald\nfmt.Println(duck.Fly())  // sedang terbang\nfmt.Println(duck.Swim()) // sedang berenang\nfmt.Println(duck.Breathe()) // Donald sedang bernapas\n```\n\n## Embedding vs Inheritance\n\nEmbedding di Go **bukan inheritance**. Perbedaan utama:\n\n| Aspek | Inheritance (Java) | Embedding (Go) |\n|-------|-------------------|----------------|\n| Polimorfisme | Ya, via subtype | Tidak otomatis |\n| \"Is-a\" | Ya | Tidak (\"Has-a\") |\n| Method promotion | Otomatis | Ya |\n| Override | Ya | Ya (shadowing) |\n| Interface | Dapat dipakai sebagai parent | Masing-masing perlu implement |\n\n```go\n// Dog bukan Animal dalam artian polimorfisme\n// func process(a Animal) {} — Dog tidak bisa dikirim ke sini!\n\n// Tapi dengan interface:\ntype Eater interface { Eat(string) string }\nfunc processEater(e Eater) { fmt.Println(e.Eat(\"food\")) }\n\nprocessEater(dog) // OK — Dog memiliki method Eat (dari Animal)\nprocessEater(cat) // OK — Cat juga memiliki Eat\n```\n\n## Embedding Pointer\n\n```go\ntype Engine struct {\n    HP int\n}\n\nfunc (e *Engine) Start() { fmt.Println(\"Engine started\") }\n\ntype Car struct {\n    *Engine  // embed pointer — berbagi Engine yang sama\n    Model string\n}\n\nengine := &Engine{HP: 200}\ncar := Car{Engine: engine, Model: \"Sedan\"}\ncar.Start() // promoted method dari *Engine\nfmt.Println(car.HP) // 200\n```\n\n## Praktik: Logger yang Bisa Di-embed\n\n```go\ntype Logger struct {\n    prefix string\n}\n\nfunc (l Logger) Log(msg string) {\n    fmt.Printf(\"[%s] %s\\n\", l.prefix, msg)\n}\n\ntype Service struct {\n    Logger\n    Name string\n}\n\nsvc := Service{\n    Logger: Logger{prefix: \"SERVICE\"},\n    Name:   \"PaymentService\",\n}\nsvc.Log(\"Processing payment\") // [SERVICE] Processing payment\n```",
+  "content_en": "# Struct Embedding in Go\n\nEmbedding is Go's mechanism for **composition** — including another type in a struct without an explicit field name. Methods from the embedded type are **promoted** to the outer type and can be called directly.\n\n## Anonymous Fields (Embedding)\n\n```go\ntype Animal struct { Name string }\nfunc (a Animal) Breathe() string { return a.Name + \" is breathing\" }\n\ntype Dog struct {\n    Animal        // embedding — no field name\n    Breed string\n}\nfunc (d Dog) Bark() string { return d.Name + \": Woof!\" }\n\ndog := Dog{Animal: Animal{Name: \"Rex\"}, Breed: \"Labrador\"}\nfmt.Println(dog.Breathe()) // promoted method\nfmt.Println(dog.Name)      // promoted field\n```\n\n## Method Shadowing\n\nIf the outer type defines a method with the same name, it **shadows** the embedded method:\n\n```go\ntype Cat struct { Animal; Indoor bool }\n\nfunc (c Cat) Eat(food string) string {\n    return c.Name + \" delicately eats \" + food\n}\n\ncat := Cat{Animal: Animal{Name: \"Whiskers\"}}\nfmt.Println(cat.Eat(\"fish\"))        // Cat's method\nfmt.Println(cat.Animal.Eat(\"fish\")) // Animal's method directly\n```\n\n## Embedding vs Inheritance\n\nEmbedding is **not inheritance**. Dog is not a subtype of Animal — it cannot be passed where an Animal is expected. Use interfaces for polymorphism:\n\n```go\ntype Eater interface { Eat(string) string }\nfunc feed(e Eater) { fmt.Println(e.Eat(\"kibble\")) }\nfeed(dog) // OK — Dog has Eat from Animal\nfeed(cat) // OK — Cat has its own Eat\n```",
+  "starterCode": "package main\n\nimport \"fmt\"\n\ntype Animal struct {\n\tName string\n}\n\nfunc (a Animal) Breathe() string {\n\treturn a.Name + \" is breathing\"\n}\n\nfunc (a Animal) Eat(food string) string {\n\treturn a.Name + \" eats \" + food\n}\n\ntype Dog struct {\n\tAnimal\n\tBreed string\n}\n\nfunc (d Dog) Bark() string {\n\treturn d.Name + \" says: Woof!\"\n}\n\ntype Cat struct {\n\tAnimal\n\tIndoor bool\n}\n\n// Cat overrides Eat\nfunc (c Cat) Eat(food string) string {\n\treturn c.Name + \" delicately eats \" + food\n}\n\ntype Eater interface {\n\tEat(string) string\n}\n\nfunc feed(e Eater, food string) {\n\tfmt.Println(e.Eat(food))\n}\n\nfunc main() {\n\tdog := Dog{\n\t\tAnimal: Animal{Name: \"Rex\"},\n\t\tBreed:  \"Golden Retriever\",\n\t}\n\n\tcat := Cat{\n\t\tAnimal: Animal{Name: \"Whiskers\"},\n\t\tIndoor: true,\n\t}\n\n\t// Promoted methods\n\tfmt.Println(dog.Breathe())\n\tfmt.Println(dog.Bark())\n\tfmt.Println(dog.Name, \"is a\", dog.Breed)\n\n\t// Shadowed method\n\tfmt.Println(cat.Eat(\"fish\"))\n\tfmt.Println(cat.Animal.Eat(\"fish\")) // direct access\n\n\t// Interface polymorphism\n\tfmt.Println(\"--- Feeding time ---\")\n\tfeed(dog, \"bone\")\n\tfeed(cat, \"tuna\")\n}",
+  "quiz": [
+    {
+      "question_id": "Apa yang dimaksud dengan 'promoted method' dalam struct embedding?",
+      "question_en": "What does 'promoted method' mean in struct embedding?",
+      "options_id": [
+        "Method yang tidak bisa diakses dari luar package",
+        "Method dari tipe yang di-embed yang bisa dipanggil langsung dari tipe luar",
+        "Method yang berjalan lebih cepat",
+        "Method yang hanya ada di tipe luar"
+      ],
+      "options_en": [
+        "A method that cannot be accessed from outside the package",
+        "A method from the embedded type that can be called directly on the outer type",
+        "A method that runs faster",
+        "A method that only exists on the outer type"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apakah embedding di Go sama dengan inheritance di Java/C#?",
+      "question_en": "Is embedding in Go the same as inheritance in Java/C#?",
+      "options_id": [
+        "Ya, keduanya persis sama",
+        "Tidak, embedding adalah komposisi. Dog yang embed Animal bukan subtype dari Animal",
+        "Ya, tapi hanya untuk struct",
+        "Tidak, embedding lebih lambat"
+      ],
+      "options_en": [
+        "Yes, they are exactly the same",
+        "No, embedding is composition. A Dog that embeds Animal is not a subtype of Animal",
+        "Yes, but only for structs",
+        "No, embedding is slower"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika `Dog` meng-embed `Animal` dan keduanya memiliki method `Eat()`, method mana yang dipanggil dengan `dog.Eat()`?",
+      "question_en": "If `Dog` embeds `Animal` and both have an `Eat()` method, which method is called with `dog.Eat()`?",
+      "options_id": [
+        "Method dari Animal",
+        "Method dari Dog — method luar meng-shadow method embedded",
+        "Error kompilasi karena ada konflik",
+        "Keduanya dipanggil secara berurutan"
+      ],
+      "options_en": [
+        "Animal's method",
+        "Dog's method — the outer method shadows the embedded method",
+        "Compilation error due to conflict",
+        "Both are called in sequence"
+      ],
+      "correct": 1
+    }
+  ]
+}

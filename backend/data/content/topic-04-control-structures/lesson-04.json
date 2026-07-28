@@ -1,0 +1,79 @@
+{
+  "id": "04",
+  "title_id": "switch",
+  "title_en": "switch",
+  "estimatedMinutes": 10,
+  "content_id": "# switch\n\n## Expression Switch\n\nSwitch di Go lebih bersih dan aman daripada di C/Java. **Tidak ada fallthrough otomatis** — setiap case berhenti setelah dieksekusi (tanpa perlu `break`):\n\n```go\nhari := \"Senin\"\n\nswitch hari {\ncase \"Sabtu\", \"Minggu\":\n    fmt.Println(\"Akhir pekan!\")\ncase \"Senin\":\n    fmt.Println(\"Awal pekan, semangat!\")\ncase \"Jumat\":\n    fmt.Println(\"Hampir akhir pekan!\")\ndefault:\n    fmt.Println(\"Hari biasa\")\n}\n// Output: Awal pekan, semangat!\n```\n\n## Multiple Values dalam Satu Case\n\n```go\nbulan := 4\n\nswitch bulan {\ncase 3, 4, 5:\n    fmt.Println(\"Musim Semi\")\ncase 6, 7, 8:\n    fmt.Println(\"Musim Panas\")\ncase 9, 10, 11:\n    fmt.Println(\"Musim Gugur\")\ncase 12, 1, 2:\n    fmt.Println(\"Musim Dingin\")\n}\n// Output: Musim Semi\n```\n\n## Switch Tanpa Ekspresi (Seperti if-else)\n\n```go\nsuhu := 38.5\n\nswitch {\ncase suhu >= 40:\n    fmt.Println(\"Demam tinggi!\")\ncase suhu >= 38:\n    fmt.Println(\"Demam\")\ncase suhu >= 37:\n    fmt.Println(\"Sedikit panas\")\ndefault:\n    fmt.Println(\"Normal\")\n}\n// Output: Demam\n```\n\n## Keyword `fallthrough`\n\nGunakan `fallthrough` untuk meneruskan eksekusi ke case berikutnya (eksplisit):\n\n```go\nx := 1\n\nswitch x {\ncase 1:\n    fmt.Println(\"satu\")\n    fallthrough  // terus ke case 2\ncase 2:\n    fmt.Println(\"dua\")\n    fallthrough  // terus ke case 3\ncase 3:\n    fmt.Println(\"tiga\")\ncase 4:\n    fmt.Println(\"empat\")  // tidak dieksekusi\n}\n// Output:\n// satu\n// dua\n// tiga\n```\n\n**Perhatian:** `fallthrough` tidak memeriksa kondisi case berikutnya!\n\n## Type Switch\n\nType switch digunakan untuk memeriksa tipe dinamis dari interface:\n\n```go\nfunc describe(i interface{}) string {\n    switch v := i.(type) {\n    case int:\n        return fmt.Sprintf(\"int: %d\", v)\n    case string:\n        return fmt.Sprintf(\"string: %q\", v)\n    case bool:\n        return fmt.Sprintf(\"bool: %t\", v)\n    case []int:\n        return fmt.Sprintf(\"[]int len=%d\", len(v))\n    default:\n        return fmt.Sprintf(\"unknown type: %T\", v)\n    }\n}\n\nfmt.Println(describe(42))             // int: 42\nfmt.Println(describe(\"hello\"))        // string: \"hello\"\nfmt.Println(describe(true))           // bool: true\nfmt.Println(describe([]int{1, 2, 3})) // []int len=3\nfmt.Println(describe(3.14))           // unknown type: float64\n```\n\n## Switch vs if-else Chain\n\n| Aspek | switch | if-else chain |\n|---|---|---|\n| Keterbacaan | Lebih bersih untuk banyak kasus | Verbosity lebih |\n| Fallthrough | Eksplisit dengan `fallthrough` | Tidak ada |\n| Type checking | Type switch | Type assertion berulang |\n| Performa | Bisa lebih cepat (jump table) | Linear check |",
+  "content_en": "# switch\n\n## Expression Switch\n\nSwitch in Go is cleaner and safer than in C/Java. **There is no automatic fallthrough** — each case stops after execution (no `break` needed):\n\n```go\nday := \"Monday\"\n\nswitch day {\ncase \"Saturday\", \"Sunday\":\n    fmt.Println(\"Weekend!\")\ncase \"Monday\":\n    fmt.Println(\"Start of the week, stay motivated!\")\ncase \"Friday\":\n    fmt.Println(\"Almost the weekend!\")\ndefault:\n    fmt.Println(\"Regular day\")\n}\n// Output: Start of the week, stay motivated!\n```\n\n## Multiple Values in One Case\n\n```go\nmonth := 4\n\nswitch month {\ncase 3, 4, 5:\n    fmt.Println(\"Spring\")\ncase 6, 7, 8:\n    fmt.Println(\"Summer\")\ncase 9, 10, 11:\n    fmt.Println(\"Autumn\")\ncase 12, 1, 2:\n    fmt.Println(\"Winter\")\n}\n// Output: Spring\n```\n\n## Switch Without Expression (Like if-else)\n\n```go\ntemp := 38.5\n\nswitch {\ncase temp >= 40:\n    fmt.Println(\"High fever!\")\ncase temp >= 38:\n    fmt.Println(\"Fever\")\ncase temp >= 37:\n    fmt.Println(\"Slightly warm\")\ndefault:\n    fmt.Println(\"Normal\")\n}\n// Output: Fever\n```\n\n## The `fallthrough` Keyword\n\nUse `fallthrough` to explicitly continue execution to the next case:\n\n```go\nx := 1\n\nswitch x {\ncase 1:\n    fmt.Println(\"one\")\n    fallthrough  // continue to case 2\ncase 2:\n    fmt.Println(\"two\")\n    fallthrough  // continue to case 3\ncase 3:\n    fmt.Println(\"three\")\ncase 4:\n    fmt.Println(\"four\")  // not executed\n}\n// Output:\n// one\n// two\n// three\n```\n\n**Warning:** `fallthrough` does NOT check the next case's condition!\n\n## Type Switch\n\nA type switch is used to check the dynamic type of an interface value:\n\n```go\nfunc describe(i interface{}) string {\n    switch v := i.(type) {\n    case int:\n        return fmt.Sprintf(\"int: %d\", v)\n    case string:\n        return fmt.Sprintf(\"string: %q\", v)\n    case bool:\n        return fmt.Sprintf(\"bool: %t\", v)\n    case []int:\n        return fmt.Sprintf(\"[]int len=%d\", len(v))\n    default:\n        return fmt.Sprintf(\"unknown type: %T\", v)\n    }\n}\n\nfmt.Println(describe(42))             // int: 42\nfmt.Println(describe(\"hello\"))        // string: \"hello\"\nfmt.Println(describe(true))           // bool: true\nfmt.Println(describe([]int{1, 2, 3})) // []int len=3\nfmt.Println(describe(3.14))           // unknown type: float64\n```\n\n## switch vs if-else Chain\n\n| Aspect | switch | if-else chain |\n|---|---|---|\n| Readability | Cleaner for many cases | More verbose |\n| Fallthrough | Explicit with `fallthrough` | None |\n| Type checking | Type switch | Repeated type assertions |\n| Performance | Can be faster (jump table) | Linear check |",
+  "starterCode": "package main\n\nimport \"fmt\"\n\nfunc dayType(day string) string {\n\tswitch day {\n\tcase \"Saturday\", \"Sunday\":\n\t\treturn \"Weekend\"\n\tcase \"Monday\", \"Tuesday\", \"Wednesday\", \"Thursday\", \"Friday\":\n\t\treturn \"Weekday\"\n\tdefault:\n\t\treturn \"Unknown\"\n\t}\n}\n\nfunc describe(i interface{}) string {\n\tswitch v := i.(type) {\n\tcase int:\n\t\treturn fmt.Sprintf(\"int(%d)\", v)\n\tcase float64:\n\t\treturn fmt.Sprintf(\"float64(%.2f)\", v)\n\tcase string:\n\t\treturn fmt.Sprintf(\"string(%q)\", v)\n\tcase bool:\n\t\treturn fmt.Sprintf(\"bool(%t)\", v)\n\tdefault:\n\t\treturn fmt.Sprintf(\"unknown(%T)\", v)\n\t}\n}\n\nfunc main() {\n\tdays := []string{\"Monday\", \"Saturday\", \"Wednesday\", \"Sunday\"}\n\tfor _, d := range days {\n\t\tfmt.Printf(\"%s -> %s\\n\", d, dayType(d))\n\t}\n\n\tfmt.Println()\n\tvalues := []interface{}{42, 3.14, \"Go\", true, []int{1, 2}}\n\tfor _, v := range values {\n\t\tfmt.Println(describe(v))\n\t}\n}",
+  "quiz": [
+    {
+      "question_id": "Apakah Go memerlukan keyword `break` di setiap case dalam switch statement?",
+      "question_en": "Does Go require the `break` keyword at the end of each switch case?",
+      "options_id": [
+        "Ya, selalu diperlukan seperti di C",
+        "Tidak, Go tidak melakukan fallthrough otomatis",
+        "Hanya diperlukan untuk case terakhir",
+        "Opsional, tergantung preferensi programmer"
+      ],
+      "options_en": [
+        "Yes, always required like in C",
+        "No, Go does not perform automatic fallthrough",
+        "Only required for the last case",
+        "Optional, depends on programmer preference"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa kegunaan 'type switch' (`switch v := i.(type)`) di Go?",
+      "question_en": "What is the purpose of a 'type switch' (`switch v := i.(type)`) in Go?",
+      "options_id": [
+        "Mengubah tipe data variabel secara dinamis",
+        "Memeriksa tipe dinamis dari nilai interface",
+        "Membuat variabel baru dengan tipe yang berbeda",
+        "Membandingkan dua tipe data"
+      ],
+      "options_en": [
+        "Dynamically change the data type of a variable",
+        "Check the dynamic type of an interface value",
+        "Create a new variable with a different type",
+        "Compare two data types"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa efek dari keyword `fallthrough` di dalam switch Go?",
+      "question_en": "What is the effect of the `fallthrough` keyword inside a Go switch?",
+      "options_id": [
+        "Menghentikan eksekusi switch",
+        "Mengulangi case saat ini",
+        "Meneruskan eksekusi ke case berikutnya tanpa memeriksa kondisinya",
+        "Melompat ke case default"
+      ],
+      "options_en": [
+        "Stops switch execution",
+        "Repeats the current case",
+        "Continues execution to the next case without checking its condition",
+        "Jumps to the default case"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Bagaimana cara menulis switch di Go yang bekerja seperti if-else (tanpa ekspresi)?",
+      "question_en": "How do you write a switch in Go that works like if-else (without an expression)?",
+      "options_id": [
+        "switch true { case cond1: ... }",
+        "switch { case cond1: ... }",
+        "switch any { case cond1: ... }",
+        "switch nil { case cond1: ... }"
+      ],
+      "options_en": [
+        "switch true { case cond1: ... }",
+        "switch { case cond1: ... }",
+        "switch any { case cond1: ... }",
+        "switch nil { case cond1: ... }"
+      ],
+      "correct": 1
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "id": "06",
+  "title_id": "Sorting",
+  "title_en": "Sorting",
+  "estimatedMinutes": 10,
+  "content_id": "# Sorting di Go\n\nPackage `sort` dari standard library Go menyediakan berbagai fungsi untuk mengurutkan slice dan koleksi data. Go menggunakan algoritma **pdqsort** (pattern-defeating quicksort) yang sangat efisien.\n\n## Sorting Tipe Primitif\n\n```go\nimport \"sort\"\n\n// sort.Ints — mengurutkan []int secara ascending\nnums := []int{5, 2, 8, 1, 9, 3}\nsort.Ints(nums)\nfmt.Println(nums) // [1 2 3 5 8 9]\n\n// sort.Strings — mengurutkan []string secara lexicographic\nwords := []string{\"pisang\", \"apel\", \"mangga\", \"jeruk\"}\nsort.Strings(words)\nfmt.Println(words) // [apel jeruk mangga pisang]\n\n// sort.Float64s\nprices := []float64{3.14, 1.41, 2.71, 1.73}\nsort.Float64s(prices)\nfmt.Println(prices) // [1.41 1.73 2.71 3.14]\n```\n\n## sort.Slice — Custom Comparator\n\nUntuk mengurutkan dengan kriteria kustom, gunakan `sort.Slice` dengan fungsi `less`:\n\n```go\ntype Person struct {\n    Name string\n    Age  int\n}\n\npeople := []Person{\n    {\"Charlie\", 30},\n    {\"Alice\", 25},\n    {\"Bob\", 35},\n    {\"Dave\", 25},\n}\n\n// Urutkan berdasarkan umur\nsort.Slice(people, func(i, j int) bool {\n    return people[i].Age < people[j].Age\n})\nfmt.Println(people)\n// [{Alice 25} {Dave 25} {Charlie 30} {Bob 35}]\n\n// Urutkan berdasarkan nama\nsort.Slice(people, func(i, j int) bool {\n    return people[i].Name < people[j].Name\n})\nfmt.Println(people)\n// [{Alice 25} {Bob 35} {Charlie 30} {Dave 25}]\n\n// Urutkan multi-kriteria: umur asc, nama asc jika umur sama\nsort.Slice(people, func(i, j int) bool {\n    if people[i].Age != people[j].Age {\n        return people[i].Age < people[j].Age\n    }\n    return people[i].Name < people[j].Name\n})\n```\n\n## sort.SliceStable — Mempertahankan Urutan Relatif\n\n`sort.SliceStable` menjamin elemen dengan nilai yang sama mempertahankan urutan aslinya (stable sort):\n\n```go\ndata := []struct{ Name string; Score int }{\n    {\"Alice\", 90},\n    {\"Bob\", 85},\n    {\"Carol\", 90},\n    {\"Dave\", 85},\n}\n\n// Stable sort berdasarkan score\nsort.SliceStable(data, func(i, j int) bool {\n    return data[i].Score > data[j].Score // descending\n})\n// [{Alice 90} {Carol 90} {Bob 85} {Dave 85}]\n// Alice sebelum Carol (keduanya 90) — urutan asli terjaga\n```\n\n## sort.Search — Binary Search\n\n`sort.Search` melakukan binary search pada slice yang sudah terurut:\n\n```go\nnums := []int{1, 3, 5, 7, 9, 11, 13}\n\n// Cari indeks di mana nilai >= 7\ni := sort.Search(len(nums), func(i int) bool {\n    return nums[i] >= 7\n})\nfmt.Println(i)       // 3\nfmt.Println(nums[i]) // 7\n\n// Jika tidak ditemukan, i = len(nums)\ntarget := 6\nj := sort.Search(len(nums), func(i int) bool {\n    return nums[i] >= target\n})\nif j < len(nums) && nums[j] == target {\n    fmt.Println(\"Ditemukan di indeks:\", j)\n} else {\n    fmt.Println(\"Tidak ditemukan\")\n}\n```\n\n## Reverse Sort\n\n```go\n// Cara 1: sort.Reverse dengan sort.IntSlice\nnums := []int{3, 1, 4, 1, 5, 9, 2, 6}\nsort.Sort(sort.Reverse(sort.IntSlice(nums)))\nfmt.Println(nums) // [9 6 5 4 3 2 1 1]\n\n// Cara 2: sort.Slice dengan kondisi terbalik (lebih mudah)\ndata := []int{3, 1, 4, 1, 5}\nsort.Slice(data, func(i, j int) bool {\n    return data[i] > data[j] // > bukan < untuk descending\n})\nfmt.Println(data) // [5 4 3 1 1]\n```\n\n## Mengecek Apakah Slice Sudah Terurut\n\n```go\na := []int{1, 2, 3, 4, 5}\nb := []int{5, 3, 1, 2, 4}\n\nfmt.Println(sort.IntsAreSorted(a)) // true\nfmt.Println(sort.IntsAreSorted(b)) // false\nfmt.Println(sort.StringsAreSorted([]string{\"a\", \"b\", \"c\"})) // true\n```\n\n## Ringkasan Fungsi Sort\n\n| Fungsi | Kegunaan |\n|--------|----------|\n| `sort.Ints(s)` | Sort `[]int` ascending |\n| `sort.Strings(s)` | Sort `[]string` ascending |\n| `sort.Float64s(s)` | Sort `[]float64` ascending |\n| `sort.Slice(s, less)` | Sort kustom, tidak stable |\n| `sort.SliceStable(s, less)` | Sort kustom, stable |\n| `sort.Search(n, f)` | Binary search |\n| `sort.Reverse(...)` | Membalik arah sort |",
+  "content_en": "# Sorting in Go\n\nGo's `sort` standard library package provides a range of functions for sorting slices and collections. Go uses **pdqsort** (pattern-defeating quicksort), a highly efficient algorithm.\n\n## Sorting Primitive Types\n\n```go\nimport \"sort\"\n\n// sort.Ints — sorts []int ascending\nnums := []int{5, 2, 8, 1, 9, 3}\nsort.Ints(nums)\nfmt.Println(nums) // [1 2 3 5 8 9]\n\n// sort.Strings — sorts []string lexicographically\nwords := []string{\"banana\", \"apple\", \"mango\"}\nsort.Strings(words)\nfmt.Println(words) // [apple banana mango]\n\n// sort.Float64s\nprices := []float64{3.14, 1.41, 2.71}\nsort.Float64s(prices)\nfmt.Println(prices) // [1.41 2.71 3.14]\n```\n\n## sort.Slice — Custom Comparator\n\n```go\ntype Person struct { Name string; Age int }\npeople := []Person{{\"Charlie\", 30}, {\"Alice\", 25}, {\"Bob\", 35}}\n\nsort.Slice(people, func(i, j int) bool {\n    return people[i].Age < people[j].Age\n})\n// [{Alice 25} {Charlie 30} {Bob 35}]\n```\n\n## sort.SliceStable — Preserves Relative Order\n\n```go\nsort.SliceStable(data, func(i, j int) bool {\n    return data[i].Score > data[j].Score\n})\n// Equal-score elements maintain their original relative order\n```\n\n## sort.Search — Binary Search\n\n```go\nnums := []int{1, 3, 5, 7, 9, 11}\ni := sort.Search(len(nums), func(i int) bool {\n    return nums[i] >= 7\n})\nfmt.Println(nums[i]) // 7\n```\n\n## Reverse Sort\n\n```go\n// Using sort.Slice with reversed condition\ndata := []int{3, 1, 4, 1, 5}\nsort.Slice(data, func(i, j int) bool {\n    return data[i] > data[j] // > for descending\n})\nfmt.Println(data) // [5 4 3 1 1]\n```",
+  "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype Student struct {\n\tName  string\n\tScore int\n\tGrade string\n}\n\nfunc main() {\n\t// Sort primitive types\n\tnums := []int{64, 25, 12, 22, 11}\n\tsort.Ints(nums)\n\tfmt.Println(\"Sorted ints:\", nums)\n\n\twords := []string{\"banana\", \"apple\", \"cherry\", \"date\"}\n\tsort.Strings(words)\n\tfmt.Println(\"Sorted strings:\", words)\n\n\t// Custom sort with sort.Slice\n\tstudents := []Student{\n\t\t{\"Charlie\", 85, \"B\"},\n\t\t{\"Alice\", 92, \"A\"},\n\t\t{\"Bob\", 85, \"B\"},\n\t\t{\"Dave\", 78, \"C\"},\n\t}\n\n\t// Sort by score descending, then name ascending\n\tsort.SliceStable(students, func(i, j int) bool {\n\t\tif students[i].Score != students[j].Score {\n\t\t\treturn students[i].Score > students[j].Score\n\t\t}\n\t\treturn students[i].Name < students[j].Name\n\t})\n\n\tfmt.Println(\"\\nSorted students:\")\n\tfor _, s := range students {\n\t\tfmt.Printf(\"  %s: %d (%s)\\n\", s.Name, s.Score, s.Grade)\n\t}\n\n\t// Binary search\n\tsortedNums := []int{1, 3, 5, 7, 9, 11, 13, 15}\n\ttarget := 7\n\tidx := sort.Search(len(sortedNums), func(i int) bool {\n\t\treturn sortedNums[i] >= target\n\t})\n\tif idx < len(sortedNums) && sortedNums[idx] == target {\n\t\tfmt.Printf(\"\\nFound %d at index %d\\n\", target, idx)\n\t}\n\n\t// Check if sorted\n\tfmt.Println(\"Is sorted:\", sort.IntsAreSorted(sortedNums))\n}",
+  "quiz": [
+    {
+      "question_id": "Apa perbedaan antara `sort.Slice` dan `sort.SliceStable`?",
+      "question_en": "What is the difference between `sort.Slice` and `sort.SliceStable`?",
+      "options_id": [
+        "sort.SliceStable lebih lambat tetapi mempertahankan urutan relatif elemen yang sama",
+        "sort.Slice hanya untuk int, sort.SliceStable untuk semua tipe",
+        "Tidak ada perbedaan",
+        "sort.SliceStable tidak bisa menggunakan custom comparator"
+      ],
+      "options_en": [
+        "sort.SliceStable is slower but preserves the relative order of equal elements",
+        "sort.Slice is only for int, sort.SliceStable for all types",
+        "There is no difference",
+        "sort.SliceStable cannot use a custom comparator"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Untuk mengurutkan `[]int` secara descending (besar ke kecil) dengan `sort.Slice`, kondisi `less` yang benar adalah?",
+      "question_en": "To sort `[]int` descending (large to small) with `sort.Slice`, what is the correct `less` condition?",
+      "options_id": [
+        "return s[i] < s[j]",
+        "return s[i] > s[j]",
+        "return s[i] == s[j]",
+        "return s[i] != s[j]"
+      ],
+      "options_en": [
+        "return s[i] < s[j]",
+        "return s[i] > s[j]",
+        "return s[i] == s[j]",
+        "return s[i] != s[j]"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa syarat penggunaan `sort.Search` agar hasilnya benar?",
+      "question_en": "What is the requirement for `sort.Search` to work correctly?",
+      "options_id": [
+        "Slice harus berisi bilangan bulat",
+        "Slice harus sudah terurut dan fungsi f(i) harus monoton (false...false...true...true)",
+        "Slice tidak boleh memiliki duplikat",
+        "Slice harus memiliki panjang genap"
+      ],
+      "options_en": [
+        "The slice must contain integers",
+        "The slice must be sorted and f(i) must be monotone (false...false...true...true)",
+        "The slice must not have duplicates",
+        "The slice must have even length"
+      ],
+      "correct": 1
+    }
+  ]
+}

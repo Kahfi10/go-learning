@@ -1,0 +1,79 @@
+{
+  "id": "05",
+  "title_id": "defer, panic, recover",
+  "title_en": "defer, panic, recover",
+  "estimatedMinutes": 12,
+  "content_id": "# defer, panic, recover\n\n## `defer` — Tunda Eksekusi\n\n`defer` menunda eksekusi sebuah fungsi hingga **fungsi yang memuatnya selesai**. Ini sangat berguna untuk cleanup seperti menutup file, database connection, dsb.\n\n```go\nfunc main() {\n    defer fmt.Println(\"Selesai!\")  // dipanggil terakhir\n    fmt.Println(\"Mulai\")\n    fmt.Println(\"Proses\")\n}\n// Output:\n// Mulai\n// Proses\n// Selesai!\n```\n\n## LIFO (Last In, First Out)\n\nJika ada banyak `defer`, mereka dieksekusi **dalam urutan terbalik** (LIFO):\n\n```go\nfunc main() {\n    defer fmt.Println(\"defer 1 (pertama didaftarkan)\")\n    defer fmt.Println(\"defer 2\")\n    defer fmt.Println(\"defer 3 (terakhir didaftarkan)\")\n    fmt.Println(\"Fungsi utama\")\n}\n// Output:\n// Fungsi utama\n// defer 3 (terakhir didaftarkan)\n// defer 2\n// defer 1 (pertama didaftarkan)\n```\n\n## defer untuk Resource Cleanup\n\n```go\nimport \"os\"\n\nfunc readFile(name string) error {\n    f, err := os.Open(name)\n    if err != nil {\n        return err\n    }\n    defer f.Close()  // dijamin dipanggil saat fungsi selesai\n\n    // baca file...\n    return nil\n}\n```\n\n## defer dalam Loop — Hati-hati!\n\n```go\n// BURUK: defer tidak dieksekusi sampai fungsi selesai, bukan per iterasi\nfor _, name := range files {\n    f, _ := os.Open(name)\n    defer f.Close()  // semua defer tertumpuk!\n}\n\n// BAIK: bungkus dalam fungsi anonim\nfor _, name := range files {\n    func() {\n        f, _ := os.Open(name)\n        defer f.Close()  // dipanggil saat fungsi anonim selesai\n        // proses file\n    }()\n}\n```\n\n## `panic` — Error Tidak Dapat Dipulihkan\n\n`panic` menghentikan alur eksekusi normal. Ia sebaiknya digunakan hanya untuk kondisi yang **benar-benar tidak bisa dipulihkan**:\n\n```go\nfunc mustPositive(n int) int {\n    if n <= 0 {\n        panic(fmt.Sprintf(\"nilai harus positif, dapat: %d\", n))\n    }\n    return n\n}\n\nfunc main() {\n    fmt.Println(mustPositive(5))   // 5\n    fmt.Println(mustPositive(-1))  // panic! program berhenti\n}\n```\n\nPanic menyebabkan:\n1. Semua `defer` dalam call stack dieksekusi\n2. Program berhenti dengan pesan error dan stack trace\n\n## `recover` — Pulihkan dari Panic\n\n`recover()` menghentikan panic dan mengembalikan nilai yang di-panic-kan. **Harus dipanggil di dalam fungsi deferred**:\n\n```go\nfunc safeDiv(a, b int) (result int, err error) {\n    defer func() {\n        if r := recover(); r != nil {\n            err = fmt.Errorf(\"pulih dari panic: %v\", r)\n        }\n    }()\n\n    if b == 0 {\n        panic(\"pembagi tidak boleh nol\")\n    }\n    return a / b, nil\n}\n\nfunc main() {\n    result, err := safeDiv(10, 2)\n    fmt.Printf(\"10/2 = %d, err: %v\\n\", result, err) // 10/2 = 5, err: <nil>\n\n    result, err = safeDiv(10, 0)\n    fmt.Printf(\"10/0 = %d, err: %v\\n\", result, err) // 10/0 = 0, err: pulih dari panic: ...\n}\n```\n\n## Pola Umum: Graceful Recovery\n\n```go\nfunc handleRequest(req string) {\n    defer func() {\n        if r := recover(); r != nil {\n            fmt.Printf(\"Request %q gagal: %v\\n\", req, r)\n            // log error, jangan crash server!\n        }\n    }()\n\n    // proses yang mungkin panic\n    process(req)\n}\n```\n\n## Kapan Menggunakan Masing-Masing\n\n| Fitur | Kapan Digunakan |\n|---|---|\n| `defer` | Resource cleanup, logging, unlock mutex |\n| `panic` | Kondisi tidak bisa dipulihkan (bug programming, bukan user error) |\n| `recover` | Mencegah crash di boundary (server handler, goroutine) |",
+  "content_en": "# defer, panic, recover\n\n## `defer` — Delay Execution\n\n`defer` delays the execution of a function until the **surrounding function completes**. It is very useful for cleanup like closing files, database connections, etc.\n\n```go\nfunc main() {\n    defer fmt.Println(\"Done!\")  // called last\n    fmt.Println(\"Start\")\n    fmt.Println(\"Process\")\n}\n// Output:\n// Start\n// Process\n// Done!\n```\n\n## LIFO (Last In, First Out)\n\nWith multiple `defer` calls, they execute in **reverse order** (LIFO):\n\n```go\nfunc main() {\n    defer fmt.Println(\"defer 1 (registered first)\")\n    defer fmt.Println(\"defer 2\")\n    defer fmt.Println(\"defer 3 (registered last)\")\n    fmt.Println(\"Main function\")\n}\n// Output:\n// Main function\n// defer 3 (registered last)\n// defer 2\n// defer 1 (registered first)\n```\n\n## defer for Resource Cleanup\n\n```go\nimport \"os\"\n\nfunc readFile(name string) error {\n    f, err := os.Open(name)\n    if err != nil {\n        return err\n    }\n    defer f.Close()  // guaranteed to be called when function exits\n\n    // read file...\n    return nil\n}\n```\n\n## defer in Loops — Be Careful!\n\n```go\n// BAD: defer doesn't execute until the function ends, not per iteration\nfor _, name := range files {\n    f, _ := os.Open(name)\n    defer f.Close()  // all defers stack up!\n}\n\n// GOOD: wrap in an anonymous function\nfor _, name := range files {\n    func() {\n        f, _ := os.Open(name)\n        defer f.Close()  // called when anonymous function ends\n        // process file\n    }()\n}\n```\n\n## `panic` — Unrecoverable Error\n\n`panic` stops normal execution flow. It should only be used for conditions that are **truly unrecoverable**:\n\n```go\nfunc mustPositive(n int) int {\n    if n <= 0 {\n        panic(fmt.Sprintf(\"value must be positive, got: %d\", n))\n    }\n    return n\n}\n\nfunc main() {\n    fmt.Println(mustPositive(5))   // 5\n    fmt.Println(mustPositive(-1))  // panic! program stops\n}\n```\n\nPanic causes:\n1. All `defer` calls in the call stack execute\n2. Program stops with an error message and stack trace\n\n## `recover` — Recover from Panic\n\n`recover()` stops a panic and returns the panicked value. **Must be called inside a deferred function**:\n\n```go\nfunc safeDiv(a, b int) (result int, err error) {\n    defer func() {\n        if r := recover(); r != nil {\n            err = fmt.Errorf(\"recovered from panic: %v\", r)\n        }\n    }()\n\n    if b == 0 {\n        panic(\"divisor cannot be zero\")\n    }\n    return a / b, nil\n}\n\nfunc main() {\n    result, err := safeDiv(10, 2)\n    fmt.Printf(\"10/2 = %d, err: %v\\n\", result, err) // 10/2 = 5, err: <nil>\n\n    result, err = safeDiv(10, 0)\n    fmt.Printf(\"10/0 = %d, err: %v\\n\", result, err) // 10/0 = 0, err: recovered...\n}\n```\n\n## Common Pattern: Graceful Recovery\n\n```go\nfunc handleRequest(req string) {\n    defer func() {\n        if r := recover(); r != nil {\n            fmt.Printf(\"Request %q failed: %v\\n\", req, r)\n            // log the error, don't crash the server!\n        }\n    }()\n\n    // code that might panic\n    process(req)\n}\n```\n\n## When to Use Each\n\n| Feature | When to Use |\n|---|---|\n| `defer` | Resource cleanup, logging, unlocking mutexes |\n| `panic` | Unrecoverable conditions (programming bugs, not user errors) |\n| `recover` | Preventing crashes at boundaries (server handlers, goroutines) |",
+  "starterCode": "package main\n\nimport \"fmt\"\n\n// safeDiv menggunakan recover untuk mencegah crash\nfunc safeDiv(a, b int) (result int, err error) {\n\tdefer func() {\n\t\tif r := recover(); r != nil {\n\t\t\terr = fmt.Errorf(\"pulih dari panic: %v\", r)\n\t\t}\n\t}()\n\tif b == 0 {\n\t\tpanic(\"tidak bisa dibagi dengan nol\")\n\t}\n\treturn a / b, nil\n}\n\nfunc demoDefer() {\n\tfmt.Println(\"demoDefer: mulai\")\n\tdefer fmt.Println(\"demoDefer: defer 1\")\n\tdefer fmt.Println(\"demoDefer: defer 2\")\n\tdefer fmt.Println(\"demoDefer: defer 3\")\n\tfmt.Println(\"demoDefer: selesai\")\n}\n\nfunc main() {\n\t// Demo LIFO defer\n\tdemoDefer()\n\tfmt.Println()\n\n\t// Demo safeDiv\n\tresult, err := safeDiv(10, 3)\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t} else {\n\t\tfmt.Printf(\"10 / 3 = %d\\n\", result)\n\t}\n\n\tresult, err = safeDiv(10, 0)\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t} else {\n\t\tfmt.Printf(\"10 / 0 = %d\\n\", result)\n\t}\n}",
+  "quiz": [
+    {
+      "question_id": "Dalam urutan apa beberapa pernyataan `defer` dieksekusi di Go?",
+      "question_en": "In what order are multiple `defer` statements executed in Go?",
+      "options_id": [
+        "Urutan pendaftaran (FIFO - pertama masuk, pertama keluar)",
+        "Urutan terbalik (LIFO - terakhir masuk, pertama keluar)",
+        "Urutan acak",
+        "Secara bersamaan (paralel)"
+      ],
+      "options_en": [
+        "Registration order (FIFO - first in, first out)",
+        "Reverse order (LIFO - last in, first out)",
+        "Random order",
+        "Simultaneously (in parallel)"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Kapan sebaiknya `panic` digunakan dalam program Go?",
+      "question_en": "When should `panic` be used in a Go program?",
+      "options_id": [
+        "Untuk semua kasus error handling sebagai pengganti return error",
+        "Hanya untuk kondisi yang benar-benar tidak bisa dipulihkan (bug pemrograman)",
+        "Saat input pengguna tidak valid",
+        "Sebagai pengganti dari exception handling"
+      ],
+      "options_en": [
+        "For all error handling as a replacement for return errors",
+        "Only for truly unrecoverable conditions (programming bugs)",
+        "When user input is invalid",
+        "As a replacement for exception handling"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Di mana `recover()` harus dipanggil agar bisa menghentikan panic di Go?",
+      "question_en": "Where must `recover()` be called to stop a panic in Go?",
+      "options_id": [
+        "Di fungsi manapun dalam call stack",
+        "Di dalam fungsi `main()`",
+        "Di dalam fungsi yang di-defer",
+        "Di dalam blok `catch`"
+      ],
+      "options_en": [
+        "In any function in the call stack",
+        "Inside the `main()` function",
+        "Inside a deferred function",
+        "Inside a `catch` block"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Penggunaan `defer` yang paling umum dan idiomatik di Go adalah?",
+      "question_en": "The most common and idiomatic use of `defer` in Go is?",
+      "options_id": [
+        "Menunda eksekusi fungsi selama 1 detik",
+        "Resource cleanup (menutup file, koneksi, unlock mutex) setelah selesai digunakan",
+        "Menjalankan kode secara paralel",
+        "Menyimpan nilai variabel untuk digunakan nanti"
+      ],
+      "options_en": [
+        "Delaying function execution for 1 second",
+        "Resource cleanup (closing files, connections, unlocking mutexes) after use",
+        "Running code in parallel",
+        "Saving variable values for later use"
+      ],
+      "correct": 1
+    }
+  ]
+}

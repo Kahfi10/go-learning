@@ -1,0 +1,62 @@
+{
+  "id": "04",
+  "title_id": "2D Slices",
+  "title_en": "2D Slices",
+  "estimatedMinutes": 10,
+  "content_id": "# 2D Slices di Go\n\nSlice dua dimensi (2D) di Go adalah **slice of slices** — setiap elemen dari slice luar adalah sebuah slice. Ini sangat berguna untuk mewakili grid, matriks, papan permainan, dan struktur data berlapis.\n\n## Membuat Matrix 2D\n\n```go\n// Matrix 3x4 dengan make\nrows := 3\ncols := 4\nmatrix := make([][]int, rows)\nfor i := range matrix {\n    matrix[i] = make([]int, cols)\n}\n\n// Isi nilai\nfor i := 0; i < rows; i++ {\n    for j := 0; j < cols; j++ {\n        matrix[i][j] = i*cols + j + 1\n    }\n}\n\n// Print matrix\nfor _, row := range matrix {\n    fmt.Println(row)\n}\n// [1 2 3 4]\n// [5 6 7 8]\n// [9 10 11 12]\n```\n\n## Matrix Literal\n\n```go\n// Inisialisasi langsung\ngrid := [][]int{\n    {1, 0, 0},\n    {0, 1, 0},\n    {0, 0, 1},\n}\nfmt.Println(grid[1][1]) // 1 (diagonal tengah)\n```\n\n## Iterasi 2D Slice\n\n```go\ndata := [][]string{\n    {\"A\", \"B\", \"C\"},\n    {\"D\", \"E\", \"F\"},\n    {\"G\", \"H\", \"I\"},\n}\n\nfor i, row := range data {\n    for j, val := range row {\n        fmt.Printf(\"[%d][%d]=%s \", i, j, val)\n    }\n    fmt.Println()\n}\n```\n\n## Ukuran Dinamis (Jagged Array)\n\nBerbeda dengan bahasa lain, baris pada 2D slice di Go bisa memiliki **panjang yang berbeda**:\n\n```go\n// Jagged slice\njagged := [][]int{\n    {1},\n    {2, 3},\n    {4, 5, 6},\n    {7, 8, 9, 10},\n}\n\nfor _, row := range jagged {\n    fmt.Println(row)\n}\n```\n\n## Contoh: Papan Tic-Tac-Toe\n\nBerikut implementasi papan Tic-Tac-Toe menggunakan 2D slice:\n\n```go\npackage main\n\nimport \"fmt\"\n\nconst (\n    Empty = \".\"\n    X     = \"X\"\n    O     = \"O\"\n)\n\ntype Board [3][3]string\n\nfunc newBoard() Board {\n    return Board{\n        {Empty, Empty, Empty},\n        {Empty, Empty, Empty},\n        {Empty, Empty, Empty},\n    }\n}\n\nfunc printBoard(b Board) {\n    fmt.Println(\"  0 1 2\")\n    for i, row := range b {\n        fmt.Printf(\"%d \", i)\n        for _, cell := range row {\n            fmt.Printf(\"%s \", cell)\n        }\n        fmt.Println()\n    }\n}\n\nfunc checkWinner(b Board) string {\n    // Cek baris\n    for _, row := range b {\n        if row[0] != Empty && row[0] == row[1] && row[1] == row[2] {\n            return row[0]\n        }\n    }\n    // Cek kolom\n    for col := 0; col < 3; col++ {\n        if b[0][col] != Empty && b[0][col] == b[1][col] && b[1][col] == b[2][col] {\n            return b[0][col]\n        }\n    }\n    // Cek diagonal\n    if b[0][0] != Empty && b[0][0] == b[1][1] && b[1][1] == b[2][2] {\n        return b[0][0]\n    }\n    if b[0][2] != Empty && b[0][2] == b[1][1] && b[1][1] == b[2][0] {\n        return b[0][2]\n    }\n    return \"\"\n}\n\nfunc main() {\n    board := newBoard()\n    board[0][0] = X\n    board[1][1] = X\n    board[2][2] = X\n    board[0][2] = O\n    board[1][0] = O\n\n    printBoard(board)\n\n    winner := checkWinner(board)\n    if winner != \"\" {\n        fmt.Println(\"Pemenang:\", winner)\n    } else {\n        fmt.Println(\"Belum ada pemenang\")\n    }\n}\n```\n\n## Use Case Nyata\n\n| Use Case | Contoh |\n|---|---|\n| Grid permainan | Tic-tac-toe, Sudoku, Minesweeper |\n| Matriks matematika | Perkalian matriks, transformasi |\n| Tabel data | CSV parsing, spreadsheet |\n| Image processing | Pixel grid (grayscale) |\n| Pathfinding | Grid peta untuk A* algorithm |\n\n## Alokasi Memory yang Efisien\n\nUntuk performa terbaik, alokasikan seluruh memori sekaligus:\n\n```go\n// Kurang efisien: banyak alokasi terpisah\nmatrix := make([][]int, rows)\nfor i := range matrix {\n    matrix[i] = make([]int, cols) // alokasi terpisah tiap baris\n}\n\n// Lebih efisien: satu alokasi besar\nbuf := make([]int, rows*cols)\nmatrix2 := make([][]int, rows)\nfor i := range matrix2 {\n    matrix2[i] = buf[i*cols : (i+1)*cols]\n}\n```",
+  "content_en": "# 2D Slices in Go\n\nTwo-dimensional (2D) slices in Go are **slices of slices** — each element of the outer slice is itself a slice. This is very useful for representing grids, matrices, game boards, and layered data structures.\n\n## Creating a 2D Matrix\n\n```go\n// 3x4 matrix with make\nrows := 3\ncols := 4\nmatrix := make([][]int, rows)\nfor i := range matrix {\n    matrix[i] = make([]int, cols)\n}\n\n// Fill values\nfor i := 0; i < rows; i++ {\n    for j := 0; j < cols; j++ {\n        matrix[i][j] = i*cols + j + 1\n    }\n}\n```\n\n## Matrix Literal\n\n```go\ngrid := [][]int{\n    {1, 0, 0},\n    {0, 1, 0},\n    {0, 0, 1},\n}\nfmt.Println(grid[1][1]) // 1\n```\n\n## Dynamic Sizing (Jagged Arrays)\n\nUnlike other languages, rows in a Go 2D slice can have **different lengths**:\n\n```go\njagged := [][]int{\n    {1},\n    {2, 3},\n    {4, 5, 6},\n}\nfor _, row := range jagged {\n    fmt.Println(row)\n}\n```\n\n## Example: Tic-Tac-Toe Board\n\n```go\nconst (Empty = \".\"; X = \"X\"; O = \"O\")\ntype Board [3][3]string\n\nfunc checkWinner(b Board) string {\n    for _, row := range b {\n        if row[0] != Empty && row[0] == row[1] && row[1] == row[2] {\n            return row[0]\n        }\n    }\n    // Check columns and diagonals...\n    return \"\"\n}\n```\n\n## Memory-Efficient Allocation\n\n```go\n// Single allocation for better cache performance\nbuf := make([]int, rows*cols)\nmatrix := make([][]int, rows)\nfor i := range matrix {\n    matrix[i] = buf[i*cols : (i+1)*cols]\n}\n```",
+  "starterCode": "package main\n\nimport \"fmt\"\n\nconst (\n\tEmpty = \".\"\n\tX     = \"X\"\n\tO     = \"O\"\n)\n\nfunc printBoard(board [][]string) {\n\tfmt.Println(\"  0 1 2\")\n\tfor i, row := range board {\n\t\tfmt.Printf(\"%d \", i)\n\t\tfor _, cell := range row {\n\t\t\tfmt.Printf(\"%s \", cell)\n\t\t}\n\t\tfmt.Println()\n\t}\n}\n\nfunc checkWinner(board [][]string) string {\n\tfor _, row := range board {\n\t\tif row[0] != Empty && row[0] == row[1] && row[1] == row[2] {\n\t\t\treturn row[0]\n\t\t}\n\t}\n\tfor col := 0; col < 3; col++ {\n\t\tif board[0][col] != Empty && board[0][col] == board[1][col] && board[1][col] == board[2][col] {\n\t\t\treturn board[0][col]\n\t\t}\n\t}\n\tif board[0][0] != Empty && board[0][0] == board[1][1] && board[1][1] == board[2][2] {\n\t\treturn board[0][0]\n\t}\n\treturn \"\"\n}\n\nfunc main() {\n\t// Create 3x3 board\n\tboard := [][]string{\n\t\t{Empty, Empty, Empty},\n\t\t{Empty, Empty, Empty},\n\t\t{Empty, Empty, Empty},\n\t}\n\n\t// Simulate moves\n\tboard[0][0] = X\n\tboard[1][1] = X\n\tboard[2][2] = X\n\tboard[0][2] = O\n\tboard[1][0] = O\n\n\tprintBoard(board)\n\n\twinner := checkWinner(board)\n\tif winner != \"\" {\n\t\tfmt.Println(\"Winner:\", winner)\n\t} else {\n\t\tfmt.Println(\"No winner yet\")\n\t}\n\n\t// Dynamic 2D slice\n\tmatrix := make([][]int, 4)\n\tfor i := range matrix {\n\t\tmatrix[i] = make([]int, i+1) // jagged\n\t\tfor j := range matrix[i] {\n\t\t\tmatrix[i][j] = (i + 1) * (j + 1)\n\t\t}\n\t}\n\tfmt.Println(\"\\nJagged matrix:\")\n\tfor _, row := range matrix {\n\t\tfmt.Println(row)\n\t}\n}",
+  "quiz": [
+    {
+      "question_id": "Apa tipe dari 2D slice di Go?",
+      "question_en": "What is the type of a 2D slice in Go?",
+      "options_id": [
+        "[][]T — slice of slices",
+        "[[]]T — array of slice",
+        "[2][]T — array berisi slice",
+        "Tidak ada tipe khusus untuk 2D slice"
+      ],
+      "options_en": [
+        "[][]T — slice of slices",
+        "[[]]T — array of slice",
+        "[2][]T — fixed array containing slices",
+        "There is no special type for 2D slices"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Bisakah baris-baris pada 2D slice di Go memiliki panjang yang berbeda?",
+      "question_en": "Can rows in a Go 2D slice have different lengths?",
+      "options_id": [
+        "Tidak, semua baris harus memiliki panjang yang sama",
+        "Ya, karena 2D slice adalah slice of slices yang independen",
+        "Hanya jika menggunakan make dengan parameter khusus",
+        "Hanya untuk tipe string"
+      ],
+      "options_en": [
+        "No, all rows must have the same length",
+        "Yes, because each row is an independent slice",
+        "Only when using make with a special parameter",
+        "Only for string types"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa alokasi satu buffer besar lebih efisien daripada alokasi per-baris untuk matrix?",
+      "question_en": "Why is a single large buffer allocation more efficient than per-row allocation for a matrix?",
+      "options_id": [
+        "Karena menggunakan lebih sedikit CPU",
+        "Karena data bersebelahan dalam memori, meningkatkan cache hit",
+        "Karena tidak bisa melakukan allocasi per-baris",
+        "Karena ukuran slice menjadi lebih kecil"
+      ],
+      "options_en": [
+        "Because it uses less CPU",
+        "Because data is contiguous in memory, improving cache hit rate",
+        "Because per-row allocation is not possible",
+        "Because the slice size becomes smaller"
+      ],
+      "correct": 1
+    }
+  ]
+}

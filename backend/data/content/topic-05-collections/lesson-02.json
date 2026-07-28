@@ -1,0 +1,79 @@
+{
+  "id": "02",
+  "title_id": "Slices Dasar",
+  "title_en": "Basic Slices",
+  "estimatedMinutes": 12,
+  "content_id": "# Slices Dasar di Go\n\nSlice adalah struktur data yang **paling sering digunakan** di Go. Berbeda dengan array, slice memiliki ukuran dinamis yang bisa bertumbuh atau menyusut. Secara internal, slice adalah **descriptor** yang menunjuk ke sebuah array dengan tiga komponen: pointer, length, dan capacity.\n\n## Slice Literal\n\n```go\n// Slice literal — mirip array tapi tanpa ukuran\ns := []int{1, 2, 3, 4, 5}\nfmt.Println(s)      // [1 2 3 4 5]\nfmt.Println(len(s)) // 5\nfmt.Println(cap(s)) // 5\n```\n\n## Membuat Slice dengan `make`\n\nFungsi `make([]T, length, capacity)` membuat slice dengan alokasi memori yang dikendalikan:\n\n```go\n// make(tipe, panjang, kapasitas)\ns1 := make([]int, 5)     // len=5, cap=5\ns2 := make([]int, 3, 10) // len=3, cap=10\n\nfmt.Println(s1) // [0 0 0 0 0]\nfmt.Println(len(s2), cap(s2)) // 3 10\n```\n\n## `append` — Menambah Elemen\n\nFungsi `append` menambahkan elemen ke slice. Jika kapasitas habis, Go membuat array baru yang lebih besar:\n\n```go\nvar s []int // nil slice\ns = append(s, 1)\ns = append(s, 2, 3)     // append multiple elements\ns = append(s, []int{4, 5, 6}...) // spread slice\nfmt.Println(s) // [1 2 3 4 5 6]\n```\n\n## `len` vs `cap`\n\n- **`len(s)`** — jumlah elemen yang **saat ini ada** dalam slice\n- **`cap(s)`** — jumlah elemen yang bisa ditampung **tanpa realokasi**\n\n```go\ns := make([]int, 3, 6)\nfmt.Println(len(s)) // 3\nfmt.Println(cap(s)) // 6\n\ns = append(s, 1)\nfmt.Println(len(s)) // 4\nfmt.Println(cap(s)) // 6 — belum realokasi\n```\n\n## Perilaku Pertumbuhan Slice\n\nKetika kapasitas habis, Go mengalokasikan array baru dengan kapasitas **kira-kira dua kali lipat** (Go 1.18+: lebih kompleks untuk slice besar):\n\n```go\nvar s []int\nfor i := 0; i < 10; i++ {\n    s = append(s, i)\n    fmt.Printf(\"len=%d cap=%d\\n\", len(s), cap(s))\n}\n// Output:\n// len=1 cap=1\n// len=2 cap=2\n// len=3 cap=4\n// len=4 cap=4\n// len=5 cap=8\n// ...\n```\n\n## Nil Slice vs Empty Slice\n\nIni perbedaan penting yang sering membingungkan:\n\n```go\nvar nilSlice []int      // nil slice: pointer=nil, len=0, cap=0\nemptySlice := []int{} // empty slice: pointer non-nil, len=0, cap=0\nmakeSlice := make([]int, 0) // empty slice\n\nfmt.Println(nilSlice == nil)   // true\nfmt.Println(emptySlice == nil) // false\nfmt.Println(len(nilSlice))     // 0\nfmt.Println(len(emptySlice))   // 0\n\n// append berfungsi pada nil slice\nnilSlice = append(nilSlice, 1)\nfmt.Println(nilSlice) // [1]\n```\n\n## Slice dari Array\n\nSlice bisa dibuat dari array yang sudah ada dengan **slicing expression**:\n\n```go\narr := [5]int{10, 20, 30, 40, 50}\n\ns := arr[1:4] // elemen indeks 1,2,3 (tidak termasuk 4)\nfmt.Println(s)      // [20 30 40]\nfmt.Println(len(s)) // 3\nfmt.Println(cap(s)) // 4 — dari indeks 1 sampai akhir array\n\n// Slice berbagi memori dengan array!\ns[0] = 99\nfmt.Println(arr) // [10 99 30 40 50] — array berubah!\n```\n\n## Indexing dan Iterasi\n\n```go\nfruits := []string{\"apel\", \"mangga\", \"pisang\"}\n\n// Akses elemen\nfmt.Println(fruits[0]) // apel\n\n// Iterasi dengan range\nfor i, fruit := range fruits {\n    fmt.Printf(\"%d: %s\\n\", i, fruit)\n}\n\n// Hanya nilai\nfor _, fruit := range fruits {\n    fmt.Println(fruit)\n}\n```",
+  "content_en": "# Basic Slices in Go\n\nSlices are the **most commonly used** data structure in Go. Unlike arrays, slices have a dynamic size that can grow or shrink. Internally, a slice is a **descriptor** pointing to an underlying array with three components: a pointer, a length, and a capacity.\n\n## Slice Literal\n\n```go\n// Slice literal — like an array but without a size\ns := []int{1, 2, 3, 4, 5}\nfmt.Println(s)      // [1 2 3 4 5]\nfmt.Println(len(s)) // 5\nfmt.Println(cap(s)) // 5\n```\n\n## Creating Slices with `make`\n\nThe `make([]T, length, capacity)` function creates a slice with controlled memory allocation:\n\n```go\n// make(type, length, capacity)\ns1 := make([]int, 5)     // len=5, cap=5\ns2 := make([]int, 3, 10) // len=3, cap=10\n\nfmt.Println(s1) // [0 0 0 0 0]\nfmt.Println(len(s2), cap(s2)) // 3 10\n```\n\n## `append` — Adding Elements\n\nThe `append` function adds elements to a slice. When capacity is exhausted, Go creates a new larger backing array:\n\n```go\nvar s []int // nil slice\ns = append(s, 1)\ns = append(s, 2, 3)     // append multiple elements\ns = append(s, []int{4, 5, 6}...) // spread slice\nfmt.Println(s) // [1 2 3 4 5 6]\n```\n\n## `len` vs `cap`\n\n- **`len(s)`** — number of elements **currently in** the slice\n- **`cap(s)`** — number of elements that can be stored **without reallocation**\n\n```go\ns := make([]int, 3, 6)\nfmt.Println(len(s)) // 3\nfmt.Println(cap(s)) // 6\n\ns = append(s, 1)\nfmt.Println(len(s)) // 4\nfmt.Println(cap(s)) // 6 — no reallocation yet\n```\n\n## Slice Growth Behavior\n\nWhen capacity is exhausted, Go allocates a new array with roughly **double the capacity** (Go 1.18+: more nuanced for large slices):\n\n```go\nvar s []int\nfor i := 0; i < 10; i++ {\n    s = append(s, i)\n    fmt.Printf(\"len=%d cap=%d\\n\", len(s), cap(s))\n}\n// len=1 cap=1\n// len=2 cap=2\n// len=3 cap=4\n// len=5 cap=8 ...\n```\n\n## Nil Slice vs Empty Slice\n\nThis is an important and often confusing distinction:\n\n```go\nvar nilSlice []int      // nil slice: ptr=nil, len=0, cap=0\nemptySlice := []int{} // empty slice: non-nil ptr, len=0, cap=0\n\nfmt.Println(nilSlice == nil)   // true\nfmt.Println(emptySlice == nil) // false\nfmt.Println(len(nilSlice))     // 0\n\n// append works on nil slice\nnilSlice = append(nilSlice, 1)\nfmt.Println(nilSlice) // [1]\n```\n\n## Slice from Array\n\nA slice can be created from an existing array using a **slicing expression**:\n\n```go\narr := [5]int{10, 20, 30, 40, 50}\n\ns := arr[1:4] // elements at index 1, 2, 3 (4 excluded)\nfmt.Println(s)      // [20 30 40]\nfmt.Println(len(s)) // 3\nfmt.Println(cap(s)) // 4 — from index 1 to end of array\n\n// Slice shares memory with the array!\ns[0] = 99\nfmt.Println(arr) // [10 99 30 40 50] — array changed!\n```",
+  "starterCode": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\t// Slice literal\n\ts := []int{1, 2, 3, 4, 5}\n\tfmt.Println(\"Slice:\", s)\n\tfmt.Println(\"len:\", len(s), \"cap:\", cap(s))\n\n\t// make\n\tm := make([]string, 3, 6)\n\tm[0] = \"Go\"\n\tm[1] = \"is\"\n\tm[2] = \"fun\"\n\tfmt.Println(\"Make slice:\", m, \"len:\", len(m), \"cap:\", cap(m))\n\n\t// append\n\tvar nums []int\n\tfor i := 1; i <= 5; i++ {\n\t\tnums = append(nums, i*10)\n\t\tfmt.Printf(\"append %d: len=%d cap=%d\\n\", i*10, len(nums), cap(nums))\n\t}\n\n\t// nil vs empty slice\n\tvar nilS []int\n\temptyS := []int{}\n\tfmt.Println(\"nil slice == nil:\", nilS == nil)\n\tfmt.Println(\"empty slice == nil:\", emptyS == nil)\n\n\t// slice from array\n\tarr := [5]int{10, 20, 30, 40, 50}\n\tsl := arr[1:4]\n\tfmt.Println(\"Slice from array:\", sl)\n\tsl[0] = 99\n\tfmt.Println(\"Array after modifying slice:\", arr)\n}",
+  "quiz": [
+    {
+      "question_id": "Apa perbedaan antara `len` dan `cap` pada slice?",
+      "question_en": "What is the difference between `len` and `cap` on a slice?",
+      "options_id": [
+        "len adalah ukuran maksimum, cap adalah ukuran saat ini",
+        "len adalah jumlah elemen saat ini, cap adalah kapasitas sebelum realokasi",
+        "Keduanya sama saja",
+        "cap selalu lebih kecil dari len"
+      ],
+      "options_en": [
+        "len is the maximum size, cap is the current size",
+        "len is the current element count, cap is capacity before reallocation",
+        "They are the same",
+        "cap is always smaller than len"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang terjadi ketika kamu melakukan `append` pada nil slice?",
+      "question_en": "What happens when you `append` to a nil slice?",
+      "options_id": [
+        "Program panic",
+        "Tidak ada yang terjadi",
+        "Slice baru dibuat dan elemen ditambahkan",
+        "Error kompilasi"
+      ],
+      "options_en": [
+        "Program panics",
+        "Nothing happens",
+        "A new slice is created and the element is added",
+        "Compilation error"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa output dari `make([]int, 3, 8)`?",
+      "question_en": "What does `make([]int, 3, 8)` produce?",
+      "options_id": [
+        "Slice dengan 8 elemen bernilai 3",
+        "Slice dengan len=8, cap=3",
+        "Slice dengan len=3, cap=8, semua elemen 0",
+        "Error kompilasi"
+      ],
+      "options_en": [
+        "A slice with 8 elements of value 3",
+        "A slice with len=8, cap=3",
+        "A slice with len=3, cap=8, all elements 0",
+        "Compilation error"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Jika slice dibuat dari array dengan `s := arr[1:4]`, lalu `s[0]` diubah, apa yang terjadi pada `arr`?",
+      "question_en": "If a slice is created from an array with `s := arr[1:4]`, then `s[0]` is modified, what happens to `arr`?",
+      "options_id": [
+        "arr tidak berubah karena slice adalah salinan",
+        "arr[1] ikut berubah karena slice berbagi memori dengan array",
+        "arr[0] ikut berubah",
+        "Program panic"
+      ],
+      "options_en": [
+        "arr is unchanged because slice is a copy",
+        "arr[1] changes because slice shares memory with the array",
+        "arr[0] changes",
+        "Program panics"
+      ],
+      "correct": 1
+    }
+  ]
+}

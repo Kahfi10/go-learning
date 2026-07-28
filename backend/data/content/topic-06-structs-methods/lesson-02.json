@@ -1,0 +1,79 @@
+{
+  "id": "02",
+  "title_id": "Methods",
+  "title_en": "Methods",
+  "estimatedMinutes": 10,
+  "content_id": "# Methods di Go\n\nMethod adalah fungsi yang terikat ke tipe tertentu. Go menggunakan **receiver** untuk menghubungkan fungsi dengan tipe, bukan menempatkan method di dalam class.\n\n## Value Receiver\n\nValue receiver menerima **salinan** dari nilai. Perubahan pada receiver tidak mempengaruhi nilai asli:\n\n```go\ntype Rectangle struct {\n    Width  float64\n    Height float64\n}\n\n// Value receiver: (r Rectangle)\nfunc (r Rectangle) Area() float64 {\n    return r.Width * r.Height\n}\n\nfunc (r Rectangle) Perimeter() float64 {\n    return 2 * (r.Width + r.Height)\n}\n\nfunc (r Rectangle) String() string {\n    return fmt.Sprintf(\"Rectangle(%.1f x %.1f)\", r.Width, r.Height)\n}\n\nrect := Rectangle{Width: 5, Height: 3}\nfmt.Println(rect.Area())      // 15\nfmt.Println(rect.Perimeter()) // 16\nfmt.Println(rect.String())    // Rectangle(5.0 x 3.0)\n```\n\n## Pointer Receiver\n\nPointer receiver menerima **pointer ke nilai**. Perubahan pada receiver **mempengaruhi nilai asli**:\n\n```go\ntype Counter struct {\n    count int\n}\n\n// Pointer receiver: (c *Counter) — bisa mengubah nilai\nfunc (c *Counter) Increment() {\n    c.count++\n}\n\nfunc (c *Counter) Add(n int) {\n    c.count += n\n}\n\nfunc (c *Counter) Reset() {\n    c.count = 0\n}\n\nfunc (c Counter) Value() int { // value receiver untuk read-only\n    return c.count\n}\n\nctr := Counter{}\nctr.Increment()\nctr.Increment()\nctr.Add(5)\nfmt.Println(ctr.Value()) // 7\nctr.Reset()\nfmt.Println(ctr.Value()) // 0\n```\n\n## Kapan Menggunakan Pointer Receiver?\n\nGunakan pointer receiver ketika:\n1. **Method perlu mengubah nilai** receiver\n2. **Struct berukuran besar** — menghindari copy yang mahal\n3. **Konsistensi** — jika ada satu pointer receiver, semua method sebaiknya pointer receiver\n\n```go\ntype Person struct {\n    Name string\n    Age  int\n}\n\n// Pointer receiver — mengubah nilai\nfunc (p *Person) Birthday() {\n    p.Age++\n}\n\n// Pointer receiver — struct cukup besar\nfunc (p *Person) String() string {\n    return fmt.Sprintf(\"%s (age %d)\", p.Name, p.Age)\n}\n\nbudi := Person{Name: \"Budi\", Age: 25}\nbudi.Birthday() // Go otomatis mengambil alamat: (&budi).Birthday()\nfmt.Println(budi.Age) // 26\nfmt.Println(budi.String())\n```\n\n## Method Set Rules\n\nMethod set menentukan method apa yang tersedia untuk tipe tertentu:\n\n| Tipe Receiver | Dapat dipanggil oleh |\n|---|---|\n| Value receiver `T` | Value `T` dan Pointer `*T` |\n| Pointer receiver `*T` | Pointer `*T` saja (juga value jika addressable) |\n\n```go\ntype Animal struct{ Name string }\n\nfunc (a Animal) Speak() string  { return a.Name + \" bersuara\" }\nfunc (a *Animal) Rename(s string) { a.Name = s }\n\ndog := Animal{\"Rex\"}\ndog.Speak()       // OK — value receiver\ndog.Rename(\"Max\") // OK — Go otomatis: (&dog).Rename(\"Max\")\n\n// Tidak bisa panggil pointer method pada non-addressable value:\n// Animal{\"Rex\"}.Rename(\"Max\") // ERROR\n```\n\n## Method pada Tipe Non-Struct\n\nMethod bisa didefinisikan pada tipe apapun yang didefinisikan dalam package yang sama:\n\n```go\ntype Celsius float64\ntype Fahrenheit float64\n\nfunc (c Celsius) ToFahrenheit() Fahrenheit {\n    return Fahrenheit(c*9/5 + 32)\n}\n\nfunc (f Fahrenheit) ToCelsius() Celsius {\n    return Celsius((f - 32) * 5 / 9)\n}\n\ntemp := Celsius(100)\nfmt.Println(temp.ToFahrenheit()) // 212\n```\n\n## Chaining Methods\n\n```go\ntype Builder struct {\n    parts []string\n}\n\nfunc (b *Builder) Add(s string) *Builder {\n    b.parts = append(b.parts, s)\n    return b // kembalikan pointer untuk chaining\n}\n\nfunc (b *Builder) Build() string {\n    return strings.Join(b.parts, \", \")\n}\n\nresult := (&Builder{}).Add(\"Go\").Add(\"is\").Add(\"awesome\").Build()\nfmt.Println(result) // Go, is, awesome\n```",
+  "content_en": "# Methods in Go\n\nA method is a function bound to a specific type. Go uses **receivers** to associate functions with types instead of placing methods inside classes.\n\n## Value Receiver\n\nA value receiver receives a **copy** of the value. Changes to the receiver do not affect the original:\n\n```go\ntype Rectangle struct { Width, Height float64 }\n\nfunc (r Rectangle) Area() float64 {\n    return r.Width * r.Height\n}\n\nfunc (r Rectangle) Perimeter() float64 {\n    return 2 * (r.Width + r.Height)\n}\n\nrect := Rectangle{5, 3}\nfmt.Println(rect.Area())      // 15\nfmt.Println(rect.Perimeter()) // 16\n```\n\n## Pointer Receiver\n\nA pointer receiver receives a **pointer to the value**. Changes to the receiver **affect the original**:\n\n```go\ntype Counter struct { count int }\n\nfunc (c *Counter) Increment() { c.count++ }\nfunc (c *Counter) Reset()     { c.count = 0 }\nfunc (c Counter) Value() int  { return c.count }\n\nctr := Counter{}\nctr.Increment()\nctr.Increment()\nfmt.Println(ctr.Value()) // 2\n```\n\n## When to Use Pointer Receivers?\n\n1. **Method needs to mutate** the receiver\n2. **Large struct** — avoid expensive copy\n3. **Consistency** — if any method uses pointer receiver, all should\n\n```go\nfunc (p *Person) Birthday() { p.Age++ }\n// Go auto-takes address: (&budi).Birthday()\n```\n\n## Methods on Non-Struct Types\n\n```go\ntype Celsius float64\nfunc (c Celsius) ToFahrenheit() float64 {\n    return float64(c*9/5 + 32)\n}\ntemp := Celsius(100)\nfmt.Println(temp.ToFahrenheit()) // 212\n```",
+  "starterCode": "package main\n\nimport \"fmt\"\n\ntype Rectangle struct {\n\tWidth  float64\n\tHeight float64\n}\n\nfunc (r Rectangle) Area() float64 {\n\treturn r.Width * r.Height\n}\n\nfunc (r Rectangle) Perimeter() float64 {\n\treturn 2 * (r.Width + r.Height)\n}\n\nfunc (r *Rectangle) Scale(factor float64) {\n\tr.Width *= factor\n\tr.Height *= factor\n}\n\ntype BankAccount struct {\n\tOwner   string\n\tBalance float64\n}\n\nfunc (b *BankAccount) Deposit(amount float64) {\n\tif amount > 0 {\n\t\tb.Balance += amount\n\t}\n}\n\nfunc (b *BankAccount) Withdraw(amount float64) bool {\n\tif amount > b.Balance {\n\t\treturn false\n\t}\n\tb.Balance -= amount\n\treturn true\n}\n\nfunc (b BankAccount) String() string {\n\treturn fmt.Sprintf(\"Account[%s]: Rp %.2f\", b.Owner, b.Balance)\n}\n\nfunc main() {\n\t// Rectangle methods\n\trect := Rectangle{Width: 6, Height: 4}\n\tfmt.Printf(\"Area: %.1f\\n\", rect.Area())\n\tfmt.Printf(\"Perimeter: %.1f\\n\", rect.Perimeter())\n\trect.Scale(2)\n\tfmt.Printf(\"After scale 2x: %.1f x %.1f\\n\", rect.Width, rect.Height)\n\n\t// BankAccount methods\n\taccount := BankAccount{Owner: \"Alice\", Balance: 1_000_000}\n\taccount.Deposit(500_000)\n\tsuccess := account.Withdraw(200_000)\n\tfmt.Println(account)\n\tfmt.Println(\"Withdrawal success:\", success)\n\n\tfailed := account.Withdraw(5_000_000)\n\tfmt.Println(\"Large withdrawal success:\", failed)\n}",
+  "quiz": [
+    {
+      "question_id": "Apa perbedaan antara value receiver dan pointer receiver?",
+      "question_en": "What is the difference between a value receiver and a pointer receiver?",
+      "options_id": [
+        "Value receiver bisa mengubah nilai asli, pointer receiver tidak",
+        "Pointer receiver bisa mengubah nilai asli, value receiver bekerja pada salinan",
+        "Tidak ada perbedaan fungsional",
+        "Value receiver lebih lambat dari pointer receiver"
+      ],
+      "options_en": [
+        "Value receiver can modify the original, pointer receiver cannot",
+        "Pointer receiver can modify the original, value receiver works on a copy",
+        "There is no functional difference",
+        "Value receiver is slower than pointer receiver"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika struct `Person` memiliki pointer receiver method `Birthday()`, dapatkah kamu memanggil `person.Birthday()` dimana `person` adalah value (bukan pointer)?",
+      "question_en": "If struct `Person` has a pointer receiver method `Birthday()`, can you call `person.Birthday()` where `person` is a value (not a pointer)?",
+      "options_id": [
+        "Tidak, harus menggunakan `(&person).Birthday()`",
+        "Ya, Go secara otomatis mengambil alamat jika variabel addressable",
+        "Tidak, akan error kompilasi",
+        "Ya, tapi nilai tidak akan berubah"
+      ],
+      "options_en": [
+        "No, you must use `(&person).Birthday()`",
+        "Yes, Go automatically takes the address if the variable is addressable",
+        "No, it will cause a compilation error",
+        "Yes, but the value won't change"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Dalam situasi mana sebaiknya menggunakan pointer receiver?",
+      "question_en": "In which situation should you use a pointer receiver?",
+      "options_id": [
+        "Selalu, agar kode lebih efisien",
+        "Hanya untuk tipe string",
+        "Ketika method perlu mengubah receiver atau struct berukuran besar",
+        "Hanya ketika interface mengharuskannya"
+      ],
+      "options_en": [
+        "Always, for maximum efficiency",
+        "Only for string types",
+        "When the method needs to mutate the receiver or the struct is large",
+        "Only when an interface requires it"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Bisakah method didefinisikan pada tipe `type Celsius float64`?",
+      "question_en": "Can a method be defined on type `type Celsius float64`?",
+      "options_id": [
+        "Tidak, method hanya bisa didefinisikan pada struct",
+        "Ya, method bisa didefinisikan pada tipe apapun yang didefinisikan dalam package yang sama",
+        "Hanya jika Celsius adalah interface",
+        "Tidak, karena float64 sudah memiliki method sendiri"
+      ],
+      "options_en": [
+        "No, methods can only be defined on structs",
+        "Yes, methods can be defined on any type defined in the same package",
+        "Only if Celsius is an interface",
+        "No, because float64 already has its own methods"
+      ],
+      "correct": 1
+    }
+  ]
+}

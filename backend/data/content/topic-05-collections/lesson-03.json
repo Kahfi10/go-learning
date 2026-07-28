@@ -1,0 +1,52 @@
+{
+  "id": "03",
+  "title_id": "Slice Tricks",
+  "title_en": "Slice Tricks",
+  "estimatedMinutes": 12,
+  "content_id": "# Slice Tricks di Go\n\nSlice di Go sangat fleksibel. Ada berbagai teknik penting yang perlu dikuasai untuk memanipulasi slice secara efisien — mulai dari menyalin, menghapus, menyisipkan elemen, hingga penggunaan three-index slicing.\n\n## `copy(dst, src)` — Menyalin Slice\n\nFungsi `copy` menyalin elemen dari `src` ke `dst` dan mengembalikan jumlah elemen yang disalin. Copy **tidak berbagi memori** antar slice.\n\n```go\nsrc := []int{1, 2, 3, 4, 5}\ndst := make([]int, len(src))\nn := copy(dst, src)\nfmt.Println(\"Copied:\", n)  // 5\nfmt.Println(\"dst:\", dst)   // [1 2 3 4 5]\n\n// Ubah dst — src tidak terpengaruh\ndst[0] = 99\nfmt.Println(\"src:\", src)   // [1 2 3 4 5]\nfmt.Println(\"dst:\", dst)   // [99 2 3 4 5]\n\n// Copy sebagian — sesuai min(len(dst), len(src))\nsmall := make([]int, 3)\ncopy(small, src)\nfmt.Println(\"small:\", small) // [1 2 3]\n```\n\n## Three-Index Slicing: `s[low:high:max]`\n\nSyntax tiga indeks membatasi kapasitas slice baru, mencegah slice anak memodifikasi elemen di luar batas yang diinginkan:\n\n```go\narr := []int{0, 1, 2, 3, 4, 5}\n\n// s[low:high:max] — max membatasi cap\ns := arr[1:4:5]\nfmt.Println(s)      // [1 2 3]\nfmt.Println(len(s)) // 3\nfmt.Println(cap(s)) // 4  (max-low = 5-1 = 4)\n\n// Tanpa batasan max, cap akan sampai akhir array\ns2 := arr[1:4]\nfmt.Println(cap(s2)) // 5  (len(arr)-low = 6-1 = 5)\n```\n\n## 2D Slice (Slice of Slices)\n\n```go\n// Membuat slice 2D\nrows := 3\ncols := 4\nmatrix := make([][]int, rows)\nfor i := range matrix {\n    matrix[i] = make([]int, cols)\n    for j := range matrix[i] {\n        matrix[i][j] = i*cols + j\n    }\n}\n\nfor _, row := range matrix {\n    fmt.Println(row)\n}\n// [0 1 2 3]\n// [4 5 6 7]\n// [8 9 10 11]\n```\n\n## Menghapus Elemen — Append Trick\n\nGo tidak memiliki fungsi built-in untuk menghapus elemen. Triknya menggunakan `append`:\n\n```go\ns := []int{1, 2, 3, 4, 5}\n\n// Hapus elemen di indeks i=2\ni := 2\ns = append(s[:i], s[i+1:]...)\nfmt.Println(s) // [1 2 4 5]\n\n// Hapus elemen pertama\ns2 := []int{10, 20, 30, 40}\ns2 = s2[1:]\nfmt.Println(s2) // [20 30 40]\n\n// Hapus elemen terakhir\ns3 := []int{10, 20, 30, 40}\ns3 = s3[:len(s3)-1]\nfmt.Println(s3) // [10 20 30]\n```\n\n**Perhatian:** append trick untuk menghapus elemen tengah **mengubah urutan** jika tidak ingin realokasi — alternatif order-preserving:\n\n```go\n// Delete di indeks i dengan mempertahankan urutan (O(n))\nfunc deleteAt(s []int, i int) []int {\n    return append(s[:i], s[i+1:]...)\n}\n```\n\n## Menyisipkan Elemen\n\n```go\ns := []int{1, 2, 4, 5}\n\n// Sisipkan nilai 3 di indeks 2\ni := 2\nval := 3\n\n// Metode 1: menggunakan append\ns = append(s[:i+1], s[i:]...) // buat ruang\ns[i] = val\nfmt.Println(s) // [1 2 3 4 5]\n\n// Metode 2: lebih bersih\nfunc insertAt(s []int, i, val int) []int {\n    s = append(s, 0)         // tambah ruang\n    copy(s[i+1:], s[i:])    // geser elemen ke kanan\n    s[i] = val               // isi nilai\n    return s\n}\n```\n\n## Membalik Slice (Reverse)\n\n```go\nfunc reverse(s []int) {\n    for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {\n        s[i], s[j] = s[j], s[i]\n    }\n}\n\nnums := []int{1, 2, 3, 4, 5}\nreverse(nums)\nfmt.Println(nums) // [5 4 3 2 1]\n```\n\n## Tips & Best Practices\n\n- Gunakan `copy` ketika kamu tidak ingin slice child mempengaruhi slice parent\n- Three-index slicing berguna untuk library functions yang mengembalikan slice dari buffer\n- Saat menghapus banyak elemen, pertimbangkan membuat slice baru daripada loop delete",
+  "content_en": "# Slice Tricks in Go\n\nGo slices are highly versatile. There are several important techniques to master for efficient slice manipulation — from copying, deleting, inserting elements, to using three-index slicing.\n\n## `copy(dst, src)` — Copying Slices\n\nThe `copy` function copies elements from `src` to `dst` and returns the number of elements copied. Copy does **not share memory** between slices.\n\n```go\nsrc := []int{1, 2, 3, 4, 5}\ndst := make([]int, len(src))\nn := copy(dst, src)\nfmt.Println(\"Copied:\", n)  // 5\nfmt.Println(\"dst:\", dst)   // [1 2 3 4 5]\n\n// Modify dst — src unaffected\ndst[0] = 99\nfmt.Println(\"src:\", src)   // [1 2 3 4 5]\nfmt.Println(\"dst:\", dst)   // [99 2 3 4 5]\n\n// Partial copy — min(len(dst), len(src))\nsmall := make([]int, 3)\ncopy(small, src)\nfmt.Println(\"small:\", small) // [1 2 3]\n```\n\n## Three-Index Slicing: `s[low:high:max]`\n\nThe three-index syntax limits the capacity of the new slice, preventing child slices from modifying elements beyond the intended bounds:\n\n```go\narr := []int{0, 1, 2, 3, 4, 5}\n\n// s[low:high:max] — max limits cap\ns := arr[1:4:5]\nfmt.Println(s)      // [1 2 3]\nfmt.Println(len(s)) // 3\nfmt.Println(cap(s)) // 4  (max-low = 5-1 = 4)\n\n// Without max, cap extends to end of array\ns2 := arr[1:4]\nfmt.Println(cap(s2)) // 5  (len(arr)-low = 6-1 = 5)\n```\n\n## Deleting an Element — Append Trick\n\nGo has no built-in delete function. The trick uses `append`:\n\n```go\ns := []int{1, 2, 3, 4, 5}\n\n// Delete element at index i=2\ni := 2\ns = append(s[:i], s[i+1:]...)\nfmt.Println(s) // [1 2 4 5]\n\n// Delete first element\ns2 := []int{10, 20, 30, 40}\ns2 = s2[1:]\nfmt.Println(s2) // [20 30 40]\n\n// Delete last element\ns3 := []int{10, 20, 30, 40}\ns3 = s3[:len(s3)-1]\nfmt.Println(s3) // [10 20 30]\n```\n\n## Inserting an Element\n\n```go\nfunc insertAt(s []int, i, val int) []int {\n    s = append(s, 0)       // grow slice by one\n    copy(s[i+1:], s[i:])  // shift elements right\n    s[i] = val             // place value\n    return s\n}\n\nnums := []int{1, 2, 4, 5}\nnums = insertAt(nums, 2, 3)\nfmt.Println(nums) // [1 2 3 4 5]\n```\n\n## Reversing a Slice\n\n```go\nfunc reverse(s []int) {\n    for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {\n        s[i], s[j] = s[j], s[i]\n    }\n}\n\nnums := []int{1, 2, 3, 4, 5}\nreverse(nums)\nfmt.Println(nums) // [5 4 3 2 1]\n```",
+  "starterCode": "package main\n\nimport \"fmt\"\n\nfunc deleteAt(s []int, i int) []int {\n\treturn append(s[:i], s[i+1:]...)\n}\n\nfunc insertAt(s []int, i, val int) []int {\n\ts = append(s, 0)\n\tcopy(s[i+1:], s[i:])\n\ts[i] = val\n\treturn s\n}\n\nfunc reverse(s []int) {\n\tfor i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {\n\t\ts[i], s[j] = s[j], s[i]\n\t}\n}\n\nfunc main() {\n\t// copy\n\tsrc := []int{1, 2, 3, 4, 5}\n\tdst := make([]int, len(src))\n\tcopy(dst, src)\n\tdst[0] = 99\n\tfmt.Println(\"src:\", src)\n\tfmt.Println(\"dst:\", dst)\n\n\t// three-index slicing\n\tarr := []int{0, 1, 2, 3, 4, 5}\n\ts := arr[1:4:5]\n\tfmt.Printf(\"s=%v len=%d cap=%d\\n\", s, len(s), cap(s))\n\n\t// delete element\n\tnums := []int{10, 20, 30, 40, 50}\n\tnums = deleteAt(nums, 2)\n\tfmt.Println(\"After delete:\", nums)\n\n\t// insert element\n\tnums2 := []int{1, 2, 4, 5}\n\tnums2 = insertAt(nums2, 2, 3)\n\tfmt.Println(\"After insert:\", nums2)\n\n\t// reverse\n\tr := []int{1, 2, 3, 4, 5}\n\treverse(r)\n\tfmt.Println(\"Reversed:\", r)\n}",
+  "quiz": [
+    {
+      "question_id": "Apa yang dilakukan `copy(dst, src)` ketika `len(dst) < len(src)`?",
+      "question_en": "What does `copy(dst, src)` do when `len(dst) < len(src)`?",
+      "options_id": [
+        "Error runtime",
+        "Menyalin elemen sebanyak len(dst)",
+        "Menyalin semua elemen src dan memperbesar dst",
+        "Tidak menyalin apapun"
+      ],
+      "options_en": [
+        "Runtime error",
+        "Copies len(dst) elements",
+        "Copies all src elements and grows dst",
+        "Copies nothing"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang dilakukan `s = append(s[:i], s[i+1:]...)`?",
+      "question_en": "What does `s = append(s[:i], s[i+1:]...)` do?",
+      "options_id": [
+        "Menyisipkan elemen di indeks i",
+        "Menghapus elemen di indeks i",
+        "Membalik slice dari i ke akhir",
+        "Menyalin slice dari i ke akhir"
+      ],
+      "options_en": [
+        "Inserts an element at index i",
+        "Deletes the element at index i",
+        "Reverses the slice from i to end",
+        "Copies the slice from i to end"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Dalam `s := arr[1:4:6]`, berapa nilai `cap(s)`?",
+      "question_en": "In `s := arr[1:4:6]`, what is the value of `cap(s)`?",
+      "options_id": ["3", "4", "5", "6"],
+      "options_en": ["3", "4", "5", "6"],
+      "correct": 2
+    }
+  ]
+}

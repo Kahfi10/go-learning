@@ -1,0 +1,11 @@
+{
+  "slug": "control-structures",
+  "number": 4,
+  "title_id": "Struktur Kontrol",
+  "title_en": "Control Structures",
+  "description_id": "Pelajari if/else, for loops, range, switch, defer, panic, dan recover di Go.",
+  "description_en": "Learn if/else, for loops, range, switch, defer, panic, and recover in Go.",
+  "level": "Beginner",
+  "color": "#FF3B30",
+  "estimatedMinutes": 50
+}

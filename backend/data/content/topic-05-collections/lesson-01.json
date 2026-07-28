@@ -1,0 +1,52 @@
+{
+  "id": "01",
+  "title_id": "Arrays",
+  "title_en": "Arrays",
+  "estimatedMinutes": 8,
+  "content_id": "# Arrays di Go\n\nArray adalah koleksi elemen dengan **tipe data yang sama** dan **ukuran tetap** yang ditentukan saat deklarasi. Di Go, ukuran array adalah bagian dari tipenya — `[3]int` dan `[5]int` adalah dua tipe yang **berbeda**.\n\n## Deklarasi Array\n\n```go\n// Deklarasi dengan ukuran eksplisit\nvar a [3]int\nfmt.Println(a) // [0 0 0] — zero value untuk int\n\n// Deklarasi dengan literal\nb := [3]int{1, 2, 3}\nfmt.Println(b) // [1 2 3]\n\n// Ukuran otomatis dengan ...\nc := [...]int{10, 20, 30, 40}\nfmt.Println(len(c)) // 4\n\n// Inisialisasi sebagian — sisanya zero value\nd := [5]int{0: 100, 4: 200}\nfmt.Println(d) // [100 0 0 0 200]\n```\n\n## Ukuran Tetap (Fixed Size)\n\nBerbeda dengan bahasa lain, ukuran array di Go tidak bisa diubah setelah deklarasi. Ini adalah perbedaan mendasar dengan **slice**.\n\n```go\nvar scores [5]float64\nscores[0] = 9.5\nscores[1] = 8.0\nscores[2] = 9.0\nfmt.Println(scores) // [9.5 8 9 0 0]\nfmt.Println(len(scores)) // 5\n```\n\n## Zero Value\n\nSemua elemen array di-inisialisasi dengan **zero value** dari tipenya secara otomatis:\n- `int` → `0`\n- `float64` → `0.0`\n- `string` → `\"\"`\n- `bool` → `false`\n\n```go\nvar names [3]string\nfmt.Println(names[0] == \"\") // true\n\nvar flags [3]bool\nfmt.Println(flags) // [false false false]\n```\n\n## Array Bisa Dibandingkan\n\nArray di Go dapat dibandingkan dengan operator `==` dan `!=`, selama tipe elemennya comparable. Dua array sama jika semua elemennya sama.\n\n```go\na := [3]int{1, 2, 3}\nb := [3]int{1, 2, 3}\nc := [3]int{1, 2, 4}\n\nfmt.Println(a == b) // true\nfmt.Println(a == c) // false\n// fmt.Println(a == [4]int{1,2,3,4}) // ERROR: tipe berbeda\n```\n\n## Array Multi-Dimensi\n\n```go\n// Matrix 3x3\nmatrix := [3][3]int{\n    {1, 2, 3},\n    {4, 5, 6},\n    {7, 8, 9},\n}\n\n// Akses elemen: baris, kolom\nfmt.Println(matrix[1][2]) // 6\n\n// Iterasi matrix\nfor i := 0; i < 3; i++ {\n    for j := 0; j < 3; j++ {\n        fmt.Printf(\"%d \", matrix[i][j])\n    }\n    fmt.Println()\n}\n```\n\n## Array Adalah Value Type\n\nKetika array di-assign atau dikirim ke fungsi, Go membuat **salinan penuh** dari array tersebut.\n\n```go\na := [3]int{1, 2, 3}\nb := a         // b adalah salinan dari a\nb[0] = 99\nfmt.Println(a) // [1 2 3] — a tidak berubah\nfmt.Println(b) // [99 2 3]\n```\n\n## Kapan Menggunakan Array?\n\nArray cocok digunakan ketika:\n1. **Ukuran sudah pasti** dan tidak akan berubah (misal: koordinat XYZ `[3]float64`)\n2. **Perbandingan langsung** diperlukan (array bisa dibandingkan, slice tidak)\n3. **Matriks berukuran tetap** seperti papan permainan catur `[8][8]int`\n4. **Performa kritikal** untuk data kecil (tidak ada overhead heap allocation)\n\nUntuk ukuran dinamis, gunakan **slice** yang akan dibahas di lesson berikutnya.",
+  "content_en": "# Arrays in Go\n\nAn array is a collection of elements with the **same data type** and a **fixed size** determined at declaration time. In Go, the array size is part of its type — `[3]int` and `[5]int` are **two different types**.\n\n## Array Declaration\n\n```go\n// Explicit size declaration\nvar a [3]int\nfmt.Println(a) // [0 0 0] — zero value for int\n\n// Literal declaration\nb := [3]int{1, 2, 3}\nfmt.Println(b) // [1 2 3]\n\n// Automatic size with ...\nc := [...]int{10, 20, 30, 40}\nfmt.Println(len(c)) // 4\n\n// Partial initialization — rest are zero values\nd := [5]int{0: 100, 4: 200}\nfmt.Println(d) // [100 0 0 0 200]\n```\n\n## Fixed Size\n\nUnlike other languages, array sizes in Go cannot be changed after declaration. This is a fundamental difference from **slices**.\n\n```go\nvar scores [5]float64\nscores[0] = 9.5\nscores[1] = 8.0\nscores[2] = 9.0\nfmt.Println(scores) // [9.5 8 9 0 0]\nfmt.Println(len(scores)) // 5\n```\n\n## Zero Values\n\nAll array elements are automatically initialized with their type's **zero value**:\n- `int` → `0`\n- `float64` → `0.0`\n- `string` → `\"\"`\n- `bool` → `false`\n\n```go\nvar names [3]string\nfmt.Println(names[0] == \"\") // true\n\nvar flags [3]bool\nfmt.Println(flags) // [false false false]\n```\n\n## Array Comparability\n\nArrays in Go can be compared with `==` and `!=` operators, as long as the element type is comparable. Two arrays are equal if all their elements are equal.\n\n```go\na := [3]int{1, 2, 3}\nb := [3]int{1, 2, 3}\nc := [3]int{1, 2, 4}\n\nfmt.Println(a == b) // true\nfmt.Println(a == c) // false\n// fmt.Println(a == [4]int{1,2,3,4}) // ERROR: different types\n```\n\n## Multi-Dimensional Arrays\n\n```go\n// 3x3 matrix\nmatrix := [3][3]int{\n    {1, 2, 3},\n    {4, 5, 6},\n    {7, 8, 9},\n}\n\n// Element access: row, col\nfmt.Println(matrix[1][2]) // 6\n\n// Iterate matrix\nfor i := 0; i < 3; i++ {\n    for j := 0; j < 3; j++ {\n        fmt.Printf(\"%d \", matrix[i][j])\n    }\n    fmt.Println()\n}\n```\n\n## Arrays Are Value Types\n\nWhen an array is assigned or passed to a function, Go creates a **full copy** of the array.\n\n```go\na := [3]int{1, 2, 3}\nb := a         // b is a copy of a\nb[0] = 99\nfmt.Println(a) // [1 2 3] — a unchanged\nfmt.Println(b) // [99 2 3]\n```\n\n## When to Use Arrays?\n\nArrays are best when:\n1. **Size is known and fixed** (e.g., XYZ coordinates `[3]float64`)\n2. **Direct comparison** is needed (arrays are comparable, slices are not)\n3. **Fixed-size matrices** like a chessboard `[8][8]int`\n4. **Performance-critical** small data (no heap allocation overhead)",
+  "starterCode": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\t// Declare and initialize arrays\n\tvar a [3]int\n\tfmt.Println(\"Zero array:\", a)\n\n\tb := [3]int{1, 2, 3}\n\tfmt.Println(\"Literal array:\", b)\n\n\tc := [...]string{\"Go\", \"Python\", \"Rust\"}\n\tfmt.Println(\"Auto-sized array:\", c, \"len:\", len(c))\n\n\t// Array comparison\n\tx := [3]int{1, 2, 3}\n\ty := [3]int{1, 2, 3}\n\tfmt.Println(\"Arrays equal:\", x == y)\n\n\t// Multi-dimensional array\n\tmatrix := [3][3]int{\n\t\t{1, 2, 3},\n\t\t{4, 5, 6},\n\t\t{7, 8, 9},\n\t}\n\tfmt.Println(\"Matrix:\")\n\tfor _, row := range matrix {\n\t\tfmt.Println(row)\n\t}\n\n\t// Array is value type\n\toriginal := [3]int{10, 20, 30}\n\tcopy := original\n\tcopy[0] = 99\n\tfmt.Println(\"Original:\", original)\n\tfmt.Println(\"Copy:\", copy)\n}",
+  "quiz": [
+    {
+      "question_id": "Apa yang terjadi jika kamu mendeklarasikan `var arr [4]int` tanpa inisialisasi?",
+      "question_en": "What happens if you declare `var arr [4]int` without initialization?",
+      "options_id": [
+        "Program akan error karena array harus diinisialisasi",
+        "Semua elemen bernilai 0 (zero value untuk int)",
+        "Semua elemen bernilai nil",
+        "Ukuran array menjadi 0"
+      ],
+      "options_en": [
+        "The program will error because arrays must be initialized",
+        "All elements are 0 (zero value for int)",
+        "All elements are nil",
+        "The array size becomes 0"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apakah `[3]int` dan `[4]int` adalah tipe yang sama di Go?",
+      "question_en": "Are `[3]int` and `[4]int` the same type in Go?",
+      "options_id": [
+        "Ya, keduanya hanya array of int",
+        "Tidak, ukuran array adalah bagian dari tipenya",
+        "Tergantung dari isi array",
+        "Ya, jika isinya sama"
+      ],
+      "options_en": [
+        "Yes, both are just arrays of int",
+        "No, array size is part of its type",
+        "It depends on the array contents",
+        "Yes, if the contents are the same"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa output dari kode berikut?\n```go\na := [3]int{1, 2, 3}\nb := a\nb[0] = 99\nfmt.Println(a[0])\n```",
+      "question_en": "What is the output of the following code?\n```go\na := [3]int{1, 2, 3}\nb := a\nb[0] = 99\nfmt.Println(a[0])\n```",
+      "options_id": ["99", "1", "0", "Error runtime"],
+      "options_en": ["99", "1", "0", "Runtime error"],
+      "correct": 1
+    }
+  ]
+}

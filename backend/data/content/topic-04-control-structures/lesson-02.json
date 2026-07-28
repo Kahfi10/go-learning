@@ -1,0 +1,79 @@
+{
+  "id": "02",
+  "title_id": "for Loop",
+  "title_en": "for Loop",
+  "estimatedMinutes": 12,
+  "content_id": "# for Loop\n\nGo hanya memiliki **satu** konstruksi loop: `for`. Namun `for` bisa digunakan dalam berbagai gaya.\n\n## 1. C-Style for (init; condition; post)\n\n```go\nfor i := 0; i < 5; i++ {\n    fmt.Println(i)\n}\n// Output: 0 1 2 3 4\n\n// Menghitung mundur\nfor i := 10; i > 0; i -= 2 {\n    fmt.Print(i, \" \")  // 10 8 6 4 2\n}\n```\n\n## 2. While-Style (hanya kondisi)\n\n```go\nn := 1\nfor n < 100 {\n    n *= 2\n}\nfmt.Println(n) // 128\n```\n\n## 3. Infinite Loop\n\n```go\nfor {\n    fmt.Println(\"Loop selamanya!\")\n    // Harus ada break atau return untuk keluar\n    break\n}\n```\n\n## `break` — Hentikan Loop\n\n```go\nfor i := 0; i < 10; i++ {\n    if i == 5 {\n        break  // keluar dari loop saat i == 5\n    }\n    fmt.Print(i, \" \")  // 0 1 2 3 4\n}\n```\n\n## `continue` — Lewati Iterasi\n\n```go\nfor i := 0; i < 10; i++ {\n    if i%2 != 0 {\n        continue  // lewati bilangan ganjil\n    }\n    fmt.Print(i, \" \")  // 0 2 4 6 8\n}\n```\n\n## `goto` — Lompat ke Label\n\n```go\n// goto jarang digunakan, umumnya dihindari\nfunc main() {\n    i := 0\nloop:\n    if i < 3 {\n        fmt.Println(i)\n        i++\n        goto loop\n    }\n}\n```\n\n## Labels untuk Nested Loops\n\nLabel sangat berguna untuk `break` dan `continue` pada loop bersarang:\n\n```go\nouter:\n    for i := 0; i < 3; i++ {\n        for j := 0; j < 3; j++ {\n            if j == 1 {\n                continue outer  // skip ke iterasi berikut dari loop luar\n            }\n            fmt.Printf(\"(%d,%d) \", i, j)\n        }\n    }\n// Output: (0,0) (1,0) (2,0)\n\nfunc findPair() {\nouter:\n    for i := 0; i < 5; i++ {\n        for j := 0; j < 5; j++ {\n            if i+j == 6 {\n                fmt.Printf(\"Pair: (%d, %d)\\n\", i, j)\n                break outer  // keluar dari semua loop!\n            }\n        }\n    }\n}\n```\n\n## Ringkasan Semua Bentuk\n\n```go\n// C-style\nfor init; condition; post { }\n\n// While-style\nfor condition { }\n\n// Infinite\nfor { }\n\n// Range (dibahas di lesson berikutnya)\nfor index, value := range collection { }\n```\n\n| Gaya | Kapan Digunakan |\n|---|---|\n| C-style | Saat perlu index atau step kustom |\n| While-style | Saat kondisi saja sudah cukup |\n| Infinite | Server loop, event loop |\n| Range | Iterasi collection (slice, map, string) |",
+  "content_en": "# for Loop\n\nGo has only **one** loop construct: `for`. However, `for` can be used in several styles.\n\n## 1. C-Style for (init; condition; post)\n\n```go\nfor i := 0; i < 5; i++ {\n    fmt.Println(i)\n}\n// Output: 0 1 2 3 4\n\n// Counting down\nfor i := 10; i > 0; i -= 2 {\n    fmt.Print(i, \" \")  // 10 8 6 4 2\n}\n```\n\n## 2. While-Style (condition only)\n\n```go\nn := 1\nfor n < 100 {\n    n *= 2\n}\nfmt.Println(n) // 128\n```\n\n## 3. Infinite Loop\n\n```go\nfor {\n    fmt.Println(\"Loop forever!\")\n    // Must have break or return to exit\n    break\n}\n```\n\n## `break` — Stop the Loop\n\n```go\nfor i := 0; i < 10; i++ {\n    if i == 5 {\n        break  // exit loop when i == 5\n    }\n    fmt.Print(i, \" \")  // 0 1 2 3 4\n}\n```\n\n## `continue` — Skip an Iteration\n\n```go\nfor i := 0; i < 10; i++ {\n    if i%2 != 0 {\n        continue  // skip odd numbers\n    }\n    fmt.Print(i, \" \")  // 0 2 4 6 8\n}\n```\n\n## `goto` — Jump to a Label\n\n```go\n// goto is rarely used and generally avoided\nfunc main() {\n    i := 0\nloop:\n    if i < 3 {\n        fmt.Println(i)\n        i++\n        goto loop\n    }\n}\n```\n\n## Labels for Nested Loops\n\nLabels are useful for `break` and `continue` on nested loops:\n\n```go\nouter:\n    for i := 0; i < 3; i++ {\n        for j := 0; j < 3; j++ {\n            if j == 1 {\n                continue outer  // skip to next iteration of outer loop\n            }\n            fmt.Printf(\"(%d,%d) \", i, j)\n        }\n    }\n// Output: (0,0) (1,0) (2,0)\n\nfunc findPair() {\nouter:\n    for i := 0; i < 5; i++ {\n        for j := 0; j < 5; j++ {\n            if i+j == 6 {\n                fmt.Printf(\"Pair: (%d, %d)\\n\", i, j)\n                break outer  // exit all loops!\n            }\n        }\n    }\n}\n```\n\n## Summary of All Forms\n\n```go\n// C-style\nfor init; condition; post { }\n\n// While-style\nfor condition { }\n\n// Infinite\nfor { }\n\n// Range (covered in next lesson)\nfor index, value := range collection { }\n```\n\n| Style | When to Use |\n|---|---|\n| C-style | When you need a custom index or step |\n| While-style | When a condition alone is sufficient |\n| Infinite | Server loop, event loop |\n| Range | Iterating collections (slice, map, string) |",
+  "starterCode": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\t// C-style: cetak tabel kuadrat\n\tfmt.Println(\"Tabel kuadrat:\")\n\tfor i := 1; i <= 5; i++ {\n\t\tfmt.Printf(\"%d^2 = %d\\n\", i, i*i)\n\t}\n\n\t// While-style: cari pangkat 2 pertama > 1000\n\tn := 1\n\tfor n <= 1000 {\n\t\tn *= 2\n\t}\n\tfmt.Println(\"\\nPangkat 2 pertama > 1000:\", n)\n\n\t// continue: cetak hanya bilangan habis dibagi 3\n\tfmt.Println(\"\\nBilangan habis dibagi 3 (1-20):\")\n\tfor i := 1; i <= 20; i++ {\n\t\tif i%3 != 0 {\n\t\t\tcontinue\n\t\t}\n\t\tfmt.Print(i, \" \")\n\t}\n\tfmt.Println()\n\n\t// Labels: cari pasangan pertama yang jumlahnya 7\n\tfmt.Println(\"\\nPasangan pertama yang berjumlah 7:\")\nouter:\n\tfor i := 1; i <= 5; i++ {\n\t\tfor j := 1; j <= 5; j++ {\n\t\t\tif i+j == 7 {\n\t\t\t\tfmt.Printf(\"(%d + %d = 7)\\n\", i, j)\n\t\t\t\tbreak outer\n\t\t\t}\n\t\t}\n\t}\n}",
+  "quiz": [
+    {
+      "question_id": "Berapa banyak jenis loop yang ada di Go?",
+      "question_en": "How many types of loops exist in Go?",
+      "options_id": [
+        "3 (for, while, do-while)",
+        "2 (for, foreach)",
+        "1 (hanya for, dengan berbagai gaya)",
+        "4 (for, while, loop, repeat)"
+      ],
+      "options_en": [
+        "3 (for, while, do-while)",
+        "2 (for, foreach)",
+        "1 (only for, in various styles)",
+        "4 (for, while, loop, repeat)"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa yang dilakukan pernyataan `continue` di dalam sebuah loop?",
+      "question_en": "What does the `continue` statement do inside a loop?",
+      "options_id": [
+        "Menghentikan seluruh loop",
+        "Mengulang loop dari awal (i=0)",
+        "Melewati sisa iterasi saat ini dan lanjut ke iterasi berikutnya",
+        "Melompat ke fungsi berikutnya"
+      ],
+      "options_en": [
+        "Stops the entire loop",
+        "Restarts the loop from the beginning (i=0)",
+        "Skips the rest of the current iteration and moves to the next",
+        "Jumps to the next function"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Bagaimana cara menulis loop 'while' di Go?",
+      "question_en": "How do you write a 'while' loop in Go?",
+      "options_id": [
+        "while kondisi { }",
+        "for kondisi { }",
+        "loop kondisi { }",
+        "repeat { } until kondisi"
+      ],
+      "options_en": [
+        "while condition { }",
+        "for condition { }",
+        "loop condition { }",
+        "repeat { } until condition"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa kegunaan label (seperti `outer:`) pada loop bersarang di Go?",
+      "question_en": "What is the purpose of labels (like `outer:`) on nested loops in Go?",
+      "options_id": [
+        "Memberikan nama pada loop untuk dokumentasi",
+        "Memungkinkan break atau continue menarget loop tertentu dalam loop bersarang",
+        "Meningkatkan kecepatan eksekusi loop",
+        "Menyimpan nilai iterasi terakhir"
+      ],
+      "options_en": [
+        "To give the loop a name for documentation",
+        "To allow break or continue to target a specific loop in nested loops",
+        "To increase loop execution speed",
+        "To save the last iteration value"
+      ],
+      "correct": 1
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "id": "01",
+  "title_id": "Struct Dasar",
+  "title_en": "Basic Structs",
+  "estimatedMinutes": 10,
+  "content_id": "# Struct Dasar di Go\n\nStruct adalah tipe data komposit yang mengelompokkan field-field dengan nama dan tipe berbeda. Struct adalah cara utama Go untuk mendefinisikan tipe data kustom dan memodelkan objek dunia nyata.\n\n## Definisi Struct\n\n```go\n// Definisi struct\ntype Person struct {\n    Name string\n    Age  int\n    Email string\n}\n\n// Struct dengan field berbeda tipe\ntype Product struct {\n    ID       int\n    Name     string\n    Price    float64\n    InStock  bool\n}\n```\n\n## Membuat Instance Struct\n\n```go\n// Cara 1: Struct literal dengan nama field\np := Person{\n    Name:  \"Alice\",\n    Age:   30,\n    Email: \"alice@example.com\",\n}\n\n// Cara 2: Struct literal tanpa nama (urutan harus tepat)\np2 := Person{\"Bob\", 25, \"bob@example.com\"}\n\n// Cara 3: Zero value lalu assign\nvar p3 Person\np3.Name = \"Charlie\"\np3.Age = 35\n```\n\n## Akses Field dengan Dot Operator\n\n```go\nfmt.Println(p.Name)   // Alice\nfmt.Println(p.Age)    // 30\n\np.Email = \"alice@newdomain.com\" // update field\nfmt.Println(p.Email)  // alice@newdomain.com\n```\n\n## Anonymous Struct\n\nStruct tanpa nama yang didefinisikan langsung pada variabel. Berguna untuk data sementara:\n\n```go\n// Anonymous struct\nconfig := struct {\n    Host string\n    Port int\n    Debug bool\n}{\n    Host:  \"localhost\",\n    Port:  8080,\n    Debug: true,\n}\nfmt.Println(config.Host, config.Port)\n\n// Slice of anonymous struct — berguna untuk test data\ntests := []struct{ input, expected string }{\n    {\"hello\", \"HELLO\"},\n    {\"world\", \"WORLD\"},\n}\n```\n\n## Nested Struct\n\n```go\ntype Address struct {\n    Street string\n    City   string\n    Zip    string\n}\n\ntype Person struct {\n    Name    string\n    Age     int\n    Address Address // nested struct\n}\n\nbudi := Person{\n    Name: \"Budi\",\n    Age:  28,\n    Address: Address{\n        Street: \"Jl. Sudirman No. 1\",\n        City:   \"Jakarta\",\n        Zip:    \"10220\",\n    },\n}\n\nfmt.Println(budi.Address.City) // Jakarta\nfmt.Println(budi.Address.Zip)  // 10220\n```\n\n## Perbandingan Struct\n\nStruct bisa dibandingkan dengan `==` jika **semua fieldnya comparable**:\n\n```go\ntype Point struct{ X, Y int }\n\na := Point{1, 2}\nb := Point{1, 2}\nc := Point{3, 4}\n\nfmt.Println(a == b) // true\nfmt.Println(a == c) // false\n\n// Struct dengan slice/map tidak bisa dibandingkan dengan ==\n// type Bad struct { Data []int } — tidak bisa == \n```\n\n## Contoh Nyata: Order System\n\n```go\ntype Customer struct {\n    ID    int\n    Name  string\n    Email string\n}\n\ntype Item struct {\n    ProductID int\n    Name      string\n    Price     float64\n    Qty       int\n}\n\ntype Order struct {\n    ID       int\n    Customer Customer\n    Items    []Item\n    Status   string\n}\n\norder := Order{\n    ID: 1001,\n    Customer: Customer{1, \"Alice\", \"alice@example.com\"},\n    Items: []Item{\n        {101, \"Laptop\", 15000000, 1},\n        {102, \"Mouse\", 250000, 2},\n    },\n    Status: \"pending\",\n}\n\ntotal := 0.0\nfor _, item := range order.Items {\n    total += item.Price * float64(item.Qty)\n}\nfmt.Printf(\"Order #%d untuk %s\\n\", order.ID, order.Customer.Name)\nfmt.Printf(\"Total: Rp %.0f\\n\", total)\n```\n\n## Zero Value Struct\n\nSemua field struct memiliki zero value secara default:\n\n```go\nvar p Person\nfmt.Println(p.Name)  // \"\" (string zero value)\nfmt.Println(p.Age)   // 0  (int zero value)\n```",
+  "content_en": "# Basic Structs in Go\n\nA struct is a composite data type that groups fields with different names and types. Structs are the primary way Go defines custom data types and models real-world objects.\n\n## Struct Definition\n\n```go\ntype Person struct {\n    Name  string\n    Age   int\n    Email string\n}\n\ntype Product struct {\n    ID      int\n    Name    string\n    Price   float64\n    InStock bool\n}\n```\n\n## Creating Struct Instances\n\n```go\n// Named field literal\np := Person{\n    Name:  \"Alice\",\n    Age:   30,\n    Email: \"alice@example.com\",\n}\n\n// Positional literal (order must match)\np2 := Person{\"Bob\", 25, \"bob@example.com\"}\n\n// Zero value then assign\nvar p3 Person\np3.Name = \"Charlie\"\np3.Age = 35\n```\n\n## Accessing Fields with Dot Operator\n\n```go\nfmt.Println(p.Name) // Alice\np.Email = \"alice@new.com\"\nfmt.Println(p.Email)\n```\n\n## Anonymous Struct\n\n```go\nconfig := struct {\n    Host  string\n    Port  int\n}{\n    Host: \"localhost\",\n    Port: 8080,\n}\n```\n\n## Nested Struct\n\n```go\ntype Address struct { Street, City, Zip string }\ntype Person struct {\n    Name    string\n    Address Address\n}\nfmt.Println(budi.Address.City)\n```\n\n## Struct Comparison\n\n```go\na := Point{1, 2}\nb := Point{1, 2}\nfmt.Println(a == b) // true\n// Structs with slice/map fields cannot use ==\n```",
+  "starterCode": "package main\n\nimport \"fmt\"\n\ntype Address struct {\n\tStreet string\n\tCity   string\n\tZip    string\n}\n\ntype Person struct {\n\tName    string\n\tAge     int\n\tAddress Address\n}\n\ntype Order struct {\n\tID       int\n\tCustomer string\n\tItems    []string\n\tTotal    float64\n\tStatus   string\n}\n\nfunc main() {\n\t// Create person with nested address\n\tbudi := Person{\n\t\tName: \"Budi Santoso\",\n\t\tAge:  28,\n\t\tAddress: Address{\n\t\t\tStreet: \"Jl. Merdeka No. 17\",\n\t\t\tCity:   \"Jakarta\",\n\t\t\tZip:    \"10110\",\n\t\t},\n\t}\n\n\tfmt.Printf(\"Name: %s\\n\", budi.Name)\n\tfmt.Printf(\"City: %s\\n\", budi.Address.City)\n\n\t// Anonymous struct\n\tconfig := struct {\n\t\tHost  string\n\t\tPort  int\n\t\tDebug bool\n\t}{\n\t\tHost:  \"localhost\",\n\t\tPort:  8080,\n\t\tDebug: true,\n\t}\n\tfmt.Printf(\"Server: %s:%d (debug=%v)\\n\", config.Host, config.Port, config.Debug)\n\n\t// Struct comparison\n\ttype Point struct{ X, Y int }\n\tp1 := Point{1, 2}\n\tp2 := Point{1, 2}\n\tp3 := Point{3, 4}\n\tfmt.Println(\"p1 == p2:\", p1 == p2)\n\tfmt.Println(\"p1 == p3:\", p1 == p3)\n\n\t// Order with items\n\torder := Order{\n\t\tID:       1001,\n\t\tCustomer: \"Alice\",\n\t\tItems:    []string{\"Laptop\", \"Mouse\", \"Keyboard\"},\n\t\tTotal:    15_500_000,\n\t\tStatus:   \"confirmed\",\n\t}\n\tfmt.Printf(\"Order #%d: %d items, Total: Rp %.0f\\n\",\n\t\torder.ID, len(order.Items), order.Total)\n}",
+  "quiz": [
+    {
+      "question_id": "Apa zero value untuk field `Name string` dalam sebuah struct yang dideklarasikan dengan `var p Person`?",
+      "question_en": "What is the zero value for a `Name string` field in a struct declared with `var p Person`?",
+      "options_id": ["nil", "\"\"  (string kosong)", "\"zero\"", "Undefined"],
+      "options_en": ["nil", "\"\" (empty string)", "\"zero\"", "Undefined"],
+      "correct": 1
+    },
+    {
+      "question_id": "Kapan dua struct bisa dibandingkan menggunakan `==`?",
+      "question_en": "When can two structs be compared using `==`?",
+      "options_id": [
+        "Selalu bisa dibandingkan",
+        "Hanya jika semua field-nya bertipe comparable (tidak ada slice/map/func)",
+        "Hanya jika struct memiliki metode Equal()",
+        "Tidak pernah bisa dibandingkan"
+      ],
+      "options_en": [
+        "Always comparable",
+        "Only if all fields are comparable types (no slice/map/func)",
+        "Only if the struct has an Equal() method",
+        "Never comparable"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa kegunaan utama anonymous struct di Go?",
+      "question_en": "What is the main use of anonymous structs in Go?",
+      "options_id": [
+        "Menggantikan semua struct yang diberi nama",
+        "Untuk data sementara atau test data tanpa perlu mendefinisikan tipe baru",
+        "Untuk optimasi performa",
+        "Untuk inheritance seperti di Java"
+      ],
+      "options_en": [
+        "To replace all named structs",
+        "For temporary or test data without defining a new named type",
+        "For performance optimization",
+        "For inheritance like in Java"
+      ],
+      "correct": 1
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "id": "01",
+  "title_id": "if / else",
+  "title_en": "if / else",
+  "estimatedMinutes": 8,
+  "content_id": "# if / else\n\n## Dasar `if`\n\nGo tidak memerlukan tanda kurung `()` di sekitar kondisi, tetapi **wajib** menggunakan kurung kurawal `{}`:\n\n```go\nsuhu := 35\n\nif suhu > 30 {\n    fmt.Println(\"Cuaca panas!\")\n}\n```\n\n## if - else\n\n```go\nnilai := 75\n\nif nilai >= 80 {\n    fmt.Println(\"Lulus dengan baik\")\n} else {\n    fmt.Println(\"Perlu belajar lebih giat\")\n}\n```\n\n## if - else if - else\n\n```go\nskor := 85\n\nif skor >= 90 {\n    fmt.Println(\"Grade A\")\n} else if skor >= 80 {\n    fmt.Println(\"Grade B\")\n} else if skor >= 70 {\n    fmt.Println(\"Grade C\")\n} else if skor >= 60 {\n    fmt.Println(\"Grade D\")\n} else {\n    fmt.Println(\"Grade F\")\n}\n// Output: Grade B\n```\n\n## Short Init Statement — Idiom Penting Go!\n\nGo memperbolehkan pernyataan inisialisasi singkat sebelum kondisi if. Variabel yang dideklarasikan **hanya berlaku dalam scope if-else**:\n\n```go\n// Pola umum: if err := ...; err != nil\nif err := doSomething(); err != nil {\n    fmt.Println(\"Error:\", err)\n    return\n}\n\n// Atau dengan nilai\nif n, err := strconv.Atoi(\"42\"); err == nil {\n    fmt.Println(\"Parsed:\", n)\n} else {\n    fmt.Println(\"Error:\", err)\n}\n// n tidak tersedia di sini!\n```\n\n## Perbandingan Gaya\n\n```go\n// Tanpa short init (lebih banyak baris)\nval, err := strconv.Atoi(\"123\")\nif err != nil {\n    fmt.Println(\"Error:\", err)\n}\nfmt.Println(val)\n\n// Dengan short init (lebih idiomatik, scope lebih sempit)\nif val, err := strconv.Atoi(\"123\"); err != nil {\n    fmt.Println(\"Error:\", err)\n} else {\n    fmt.Println(\"Value:\", val)\n}\n```\n\n## Contoh Nyata: Validasi Input\n\n```go\nfunc validateAge(age int) error {\n    if age < 0 {\n        return fmt.Errorf(\"umur tidak bisa negatif: %d\", age)\n    }\n    if age > 150 {\n        return fmt.Errorf(\"umur tidak masuk akal: %d\", age)\n    }\n    return nil\n}\n\nfunc main() {\n    if err := validateAge(-5); err != nil {\n        fmt.Println(\"Validasi gagal:\", err)\n    }\n\n    if err := validateAge(25); err != nil {\n        fmt.Println(\"Validasi gagal:\", err)\n    } else {\n        fmt.Println(\"Umur valid!\")\n    }\n}\n```\n\n## Tips: Hindari Nesting Berlebihan\n\n```go\n// Buruk: deeply nested\nfunc process(val int) {\n    if val > 0 {\n        if val < 100 {\n            if val%2 == 0 {\n                fmt.Println(\"Valid genap\")\n            }\n        }\n    }\n}\n\n// Baik: early return / guard clause\nfunc processClean(val int) {\n    if val <= 0 { return }\n    if val >= 100 { return }\n    if val%2 != 0 { return }\n    fmt.Println(\"Valid genap\")\n}\n```",
+  "content_en": "# if / else\n\n## Basic `if`\n\nGo does not require parentheses `()` around conditions, but **requires** curly braces `{}`:\n\n```go\ntemperature := 35\n\nif temperature > 30 {\n    fmt.Println(\"Hot weather!\")\n}\n```\n\n## if - else\n\n```go\nscore := 75\n\nif score >= 80 {\n    fmt.Println(\"Passed with distinction\")\n} else {\n    fmt.Println(\"Need to study more\")\n}\n```\n\n## if - else if - else\n\n```go\nscore := 85\n\nif score >= 90 {\n    fmt.Println(\"Grade A\")\n} else if score >= 80 {\n    fmt.Println(\"Grade B\")\n} else if score >= 70 {\n    fmt.Println(\"Grade C\")\n} else if score >= 60 {\n    fmt.Println(\"Grade D\")\n} else {\n    fmt.Println(\"Grade F\")\n}\n// Output: Grade B\n```\n\n## Short Init Statement — Important Go Idiom!\n\nGo allows a short initialization statement before the if condition. Variables declared this way **only exist within the if-else scope**:\n\n```go\n// Common pattern: if err := ...; err != nil\nif err := doSomething(); err != nil {\n    fmt.Println(\"Error:\", err)\n    return\n}\n\n// Or with a value\nif n, err := strconv.Atoi(\"42\"); err == nil {\n    fmt.Println(\"Parsed:\", n)\n} else {\n    fmt.Println(\"Error:\", err)\n}\n// n is not available here!\n```\n\n## Style Comparison\n\n```go\n// Without short init (more lines)\nval, err := strconv.Atoi(\"123\")\nif err != nil {\n    fmt.Println(\"Error:\", err)\n}\nfmt.Println(val)\n\n// With short init (more idiomatic, narrower scope)\nif val, err := strconv.Atoi(\"123\"); err != nil {\n    fmt.Println(\"Error:\", err)\n} else {\n    fmt.Println(\"Value:\", val)\n}\n```\n\n## Real-World Example: Input Validation\n\n```go\nfunc validateAge(age int) error {\n    if age < 0 {\n        return fmt.Errorf(\"age cannot be negative: %d\", age)\n    }\n    if age > 150 {\n        return fmt.Errorf(\"age is unreasonable: %d\", age)\n    }\n    return nil\n}\n\nfunc main() {\n    if err := validateAge(-5); err != nil {\n        fmt.Println(\"Validation failed:\", err)\n    }\n\n    if err := validateAge(25); err != nil {\n        fmt.Println(\"Validation failed:\", err)\n    } else {\n        fmt.Println(\"Age is valid!\")\n    }\n}\n```\n\n## Tip: Avoid Excessive Nesting\n\n```go\n// Bad: deeply nested\nfunc process(val int) {\n    if val > 0 {\n        if val < 100 {\n            if val%2 == 0 {\n                fmt.Println(\"Valid even number\")\n            }\n        }\n    }\n}\n\n// Good: early return / guard clause\nfunc processClean(val int) {\n    if val <= 0 { return }\n    if val >= 100 { return }\n    if val%2 != 0 { return }\n    fmt.Println(\"Valid even number\")\n}\n```",
+  "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n)\n\nfunc grade(score int) string {\n\tif score >= 90 {\n\t\treturn \"A\"\n\t} else if score >= 80 {\n\t\treturn \"B\"\n\t} else if score >= 70 {\n\t\treturn \"C\"\n\t} else if score >= 60 {\n\t\treturn \"D\"\n\t}\n\treturn \"F\"\n}\n\nfunc main() {\n\t// Dasar if-else\n\tscores := []int{95, 82, 71, 65, 45}\n\tfor _, s := range scores {\n\t\tfmt.Printf(\"Score %d -> Grade %s\\n\", s, grade(s))\n\t}\n\n\t// Short init statement\n\tif n, err := strconv.Atoi(\"42\"); err == nil {\n\t\tfmt.Printf(\"Berhasil parse: %d (double: %d)\\n\", n, n*2)\n\t} else {\n\t\tfmt.Println(\"Parse error:\", err)\n\t}\n\n\t// Coba parse string yang invalid\n\tif _, err := strconv.Atoi(\"abc\"); err != nil {\n\t\tfmt.Println(\"Expected error:\", err)\n\t}\n}",
+  "quiz": [
+    {
+      "question_id": "Apakah tanda kurung `()` di sekitar kondisi diperlukan dalam `if` statement Go?",
+      "question_en": "Are parentheses `()` around the condition required in a Go `if` statement?",
+      "options_id": [
+        "Ya, selalu diperlukan",
+        "Tidak, tidak diperlukan (dan tidak direkomendasikan)",
+        "Hanya diperlukan jika kondisinya kompleks",
+        "Opsional, bisa dengan atau tanpa"
+      ],
+      "options_en": [
+        "Yes, always required",
+        "No, not required (and not recommended)",
+        "Only required if the condition is complex",
+        "Optional, can use with or without"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Dalam `if n, err := f(); err != nil { ... }`, di mana variabel `n` dan `err` tersedia?",
+      "question_en": "In `if n, err := f(); err != nil { ... }`, where are the variables `n` and `err` available?",
+      "options_id": [
+        "Di seluruh package",
+        "Di seluruh fungsi yang mengandung if tersebut",
+        "Hanya di dalam blok if-else tersebut",
+        "Hanya di baris if itu saja"
+      ],
+      "options_en": [
+        "Throughout the entire package",
+        "Throughout the function containing the if",
+        "Only within that if-else block",
+        "Only on that if line"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Teknik 'early return' atau 'guard clause' dalam fungsi Go bertujuan untuk?",
+      "question_en": "The 'early return' or 'guard clause' technique in Go functions is intended to?",
+      "options_id": [
+        "Meningkatkan kecepatan eksekusi program",
+        "Mengurangi nesting berlebihan agar kode lebih mudah dibaca",
+        "Mencegah garbage collector bekerja",
+        "Menghemat penggunaan memori"
+      ],
+      "options_en": [
+        "Increase program execution speed",
+        "Reduce excessive nesting to make code more readable",
+        "Prevent the garbage collector from running",
+        "Save memory usage"
+      ],
+      "correct": 1
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "id": "05",
+  "title_id": "Maps",
+  "title_en": "Maps",
+  "estimatedMinutes": 12,
+  "content_id": "# Maps di Go\n\nMap adalah struktur data **key-value** yang mengimplementasikan hash table. Map sangat efisien untuk pencarian, penambahan, dan penghapusan data berdasarkan kunci.\n\n## Deklarasi Map\n\n```go\n// Menggunakan make\nm := make(map[string]int)\nm[\"alice\"] = 30\nm[\"bob\"] = 25\nfmt.Println(m) // map[alice:30 bob:25]\n\n// Map literal\nscores := map[string]int{\n    \"matematika\": 90,\n    \"fisika\":     85,\n    \"kimia\":      92,\n}\nfmt.Println(scores[\"matematika\"]) // 90\n```\n\n## CRUD Operations\n\n```go\ncity := map[string]string{\n    \"JKT\": \"Jakarta\",\n    \"SBY\": \"Surabaya\",\n}\n\n// Create / Update\ncity[\"BDG\"] = \"Bandung\"      // Create\ncity[\"JKT\"] = \"DKI Jakarta\" // Update\n\n// Read\nfmt.Println(city[\"BDG\"]) // Bandung\n\n// Delete\ndelete(city, \"SBY\")\nfmt.Println(len(city)) // 2\n```\n\n## Cek Keberadaan Key (Existence Check)\n\nKetika mengakses key yang tidak ada, Go mengembalikan **zero value** tanpa error. Gunakan comma-ok pattern untuk cek eksplisit:\n\n```go\nm := map[string]int{\"a\": 1, \"b\": 2}\n\n// Tanpa cek — mengembalikan 0 jika tidak ada\nval := m[\"x\"]\nfmt.Println(val) // 0 — tapi apakah 0 adalah nilai asli atau key tidak ada?\n\n// Dengan comma-ok pattern\nv, ok := m[\"a\"]\nfmt.Println(v, ok)  // 1 true\n\nv2, ok2 := m[\"x\"]\nfmt.Println(v2, ok2) // 0 false — key tidak ada\n\n// Penggunaan praktis\nif score, exists := m[\"b\"]; exists {\n    fmt.Println(\"Score:\", score)\n} else {\n    fmt.Println(\"Key tidak ditemukan\")\n}\n```\n\n## Iterasi Map dengan `range`\n\nUrutan iterasi map di Go adalah **tidak deterministik** (acak setiap kali dijalankan):\n\n```go\npopulation := map[string]int{\n    \"Jakarta\":  10_000_000,\n    \"Surabaya\": 3_000_000,\n    \"Bandung\":  2_500_000,\n}\n\nfor city, pop := range population {\n    fmt.Printf(\"%s: %d jiwa\\n\", city, pop)\n}\n// Urutan output bisa berbeda setiap kali!\n\n// Hanya key\nfor city := range population {\n    fmt.Println(city)\n}\n```\n\n## Nil Map — Hati-Hati!\n\nMenulis ke nil map akan menyebabkan **panic**:\n\n```go\nvar m map[string]int // nil map\n\n// READ: aman — mengembalikan zero value\nfmt.Println(m[\"key\"]) // 0\n\n// WRITE: PANIC!\n// m[\"key\"] = 1 // panic: assignment to entry in nil map\n\n// Selalu inisialisasi map sebelum menulis\nm = make(map[string]int)\nm[\"key\"] = 1 // OK\n```\n\n## Maps Adalah Reference Types\n\nSeperti slice, map adalah reference type — assignment tidak menyalin data:\n\n```go\noriginal := map[string]int{\"a\": 1}\ncopy := original // keduanya menunjuk ke map yang sama!\ncopy[\"a\"] = 99\nfmt.Println(original[\"a\"]) // 99 — original berubah!\n\n// Untuk salinan sejati, copy secara manual\nclone := make(map[string]int)\nfor k, v := range original {\n    clone[k] = v\n}\n```\n\n## Map dengan Value Complex\n\n```go\n// Map of slices\ngrades := map[string][]int{\n    \"Alice\": {90, 85, 92},\n    \"Bob\":   {75, 80, 70},\n}\ngrades[\"Alice\"] = append(grades[\"Alice\"], 88)\nfmt.Println(grades[\"Alice\"]) // [90 85 92 88]\n\n// Map of structs\ntype Point struct{ X, Y int }\npoints := map[string]Point{\n    \"origin\": {0, 0},\n    \"a\":      {1, 2},\n}\nfmt.Println(points[\"a\"]) // {1 2}\n\n// Nested map\nnested := map[string]map[string]int{\n    \"level1\": {\"a\": 1, \"b\": 2},\n    \"level2\": {\"c\": 3, \"d\": 4},\n}\nfmt.Println(nested[\"level1\"][\"a\"]) // 1\n```\n\n## Pola Umum: Counter dengan Map\n\n```go\nwords := []string{\"go\", \"java\", \"go\", \"python\", \"go\", \"java\"}\ncounter := make(map[string]int)\n\nfor _, word := range words {\n    counter[word]++ // auto-zero value jika key baru\n}\n\nfmt.Println(counter) // map[go:3 java:2 python:1]\n```",
+  "content_en": "# Maps in Go\n\nA map is a **key-value** data structure that implements a hash table. Maps are highly efficient for lookup, insertion, and deletion of data by key.\n\n## Map Declaration\n\n```go\n// Using make\nm := make(map[string]int)\nm[\"alice\"] = 30\nm[\"bob\"] = 25\nfmt.Println(m) // map[alice:30 bob:25]\n\n// Map literal\nscores := map[string]int{\n    \"math\":    90,\n    \"physics\": 85,\n    \"chem\":    92,\n}\nfmt.Println(scores[\"math\"]) // 90\n```\n\n## CRUD Operations\n\n```go\ncity := map[string]string{\"JKT\": \"Jakarta\"}\ncity[\"BDG\"] = \"Bandung\"     // Create\ncity[\"JKT\"] = \"DKI Jakarta\" // Update\nfmt.Println(city[\"BDG\"])    // Bandung\ndelete(city, \"JKT\")\nfmt.Println(len(city)) // 1\n```\n\n## Existence Check — Comma-Ok Pattern\n\nAccessing a missing key returns the **zero value** silently. Use the comma-ok pattern for explicit checks:\n\n```go\nm := map[string]int{\"a\": 1, \"b\": 2}\n\n// Without check — returns 0 if missing\nval := m[\"x\"] // 0 — but is 0 real or missing?\n\n// With comma-ok\nv, ok := m[\"a\"]\nfmt.Println(v, ok) // 1 true\n\nv2, ok2 := m[\"x\"]\nfmt.Println(v2, ok2) // 0 false\n```\n\n## Iterating with `range`\n\nMap iteration order in Go is **non-deterministic** (random each run):\n\n```go\nfor city, pop := range population {\n    fmt.Printf(\"%s: %d\\n\", city, pop)\n}\n```\n\n## Nil Map Panic\n\nWriting to a nil map causes a **panic**:\n\n```go\nvar m map[string]int // nil map\nfmt.Println(m[\"k\"]) // safe — returns 0\n// m[\"k\"] = 1      // PANIC!\nm = make(map[string]int)\nm[\"k\"] = 1 // OK\n```\n\n## Maps Are Reference Types\n\n```go\noriginal := map[string]int{\"a\": 1}\ncopy := original // same map!\ncopy[\"a\"] = 99\nfmt.Println(original[\"a\"]) // 99\n```\n\n## Common Pattern: Word Counter\n\n```go\nwords := []string{\"go\", \"java\", \"go\", \"python\", \"go\"}\ncounter := make(map[string]int)\nfor _, w := range words {\n    counter[w]++\n}\nfmt.Println(counter) // map[go:3 java:1 python:1]\n```",
+  "starterCode": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\t// Basic map operations\n\tstudent := map[string]int{\n\t\t\"Alice\": 90,\n\t\t\"Bob\":   85,\n\t\t\"Carol\": 92,\n\t}\n\n\t// Read\n\tfmt.Println(\"Alice's score:\", student[\"Alice\"])\n\n\t// Add & Update\n\tstudent[\"Dave\"] = 78\n\tstudent[\"Alice\"] = 95\n\n\t// Existence check\n\tif score, ok := student[\"Eve\"]; ok {\n\t\tfmt.Println(\"Eve:\", score)\n\t} else {\n\t\tfmt.Println(\"Eve not found\")\n\t}\n\n\t// Delete\n\tdelete(student, \"Bob\")\n\tfmt.Println(\"After delete, len:\", len(student))\n\n\t// Iterate\n\tfmt.Println(\"All students:\")\n\tfor name, score := range student {\n\t\tfmt.Printf(\"  %s: %d\\n\", name, score)\n\t}\n\n\t// Word counter pattern\n\twords := []string{\"go\", \"rust\", \"go\", \"python\", \"go\", \"rust\"}\n\tcounter := make(map[string]int)\n\tfor _, w := range words {\n\t\tcounter[w]++\n\t}\n\tfmt.Println(\"\\nWord counts:\", counter)\n\n\t// Map of slices\n\tgrades := map[string][]int{}\n\tgrades[\"Alice\"] = append(grades[\"Alice\"], 90, 85, 92)\n\tgrades[\"Bob\"] = append(grades[\"Bob\"], 75, 80)\n\tfmt.Println(\"\\nGrades:\", grades)\n}",
+  "quiz": [
+    {
+      "question_id": "Apa yang terjadi jika kamu membaca key yang tidak ada dari map `m[\"missing\"]`?",
+      "question_en": "What happens when you read a non-existent key from a map with `m[\"missing\"]`?",
+      "options_id": [
+        "Program panic",
+        "Mengembalikan nil",
+        "Mengembalikan zero value dari tipe value",
+        "Error kompilasi"
+      ],
+      "options_en": [
+        "Program panics",
+        "Returns nil",
+        "Returns the zero value of the value type",
+        "Compilation error"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa yang terjadi jika kamu menulis ke nil map?",
+      "question_en": "What happens if you write to a nil map?",
+      "options_id": [
+        "Map akan diinisialisasi secara otomatis",
+        "Program panic",
+        "Nilai diabaikan secara diam-diam",
+        "Error kompilasi"
+      ],
+      "options_en": [
+        "The map is automatically initialized",
+        "Program panics",
+        "The value is silently ignored",
+        "Compilation error"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Bagaimana cara yang benar untuk memeriksa apakah key ada di map?",
+      "question_en": "What is the correct way to check if a key exists in a map?",
+      "options_id": [
+        "if m[key] != nil { }",
+        "if m.contains(key) { }",
+        "v, ok := m[key]; if ok { }",
+        "if len(m[key]) > 0 { }"
+      ],
+      "options_en": [
+        "if m[key] != nil { }",
+        "if m.contains(key) { }",
+        "v, ok := m[key]; if ok { }",
+        "if len(m[key]) > 0 { }"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Jika `a := m` di mana m adalah map, lalu `a[\"x\"] = 1`, apa yang terjadi pada m?",
+      "question_en": "If `a := m` where m is a map, then `a[\"x\"] = 1`, what happens to m?",
+      "options_id": [
+        "m tidak berubah karena a adalah salinan",
+        "m juga memiliki key x dengan nilai 1 karena map adalah reference type",
+        "Program panic",
+        "m menjadi nil"
+      ],
+      "options_en": [
+        "m is unchanged because a is a copy",
+        "m also has key x with value 1 because maps are reference types",
+        "Program panics",
+        "m becomes nil"
+      ],
+      "correct": 1
+    }
+  ]
+}
