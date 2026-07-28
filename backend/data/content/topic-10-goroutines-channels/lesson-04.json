@@ -1,0 +1,32 @@
+{
+  "id": "04",
+  "title_id": "Select Statement",
+  "title_en": "Select Statement",
+  "estimatedMinutes": 10,
+  "content_id": "## Select Statement\n\n`select` memungkinkan goroutine untuk **menunggu beberapa operasi channel sekaligus**. Ini seperti `switch`, tapi setiap case adalah operasi channel.\n\n## Sintaks Dasar\n\n```go\nselect {\ncase msg1 := <-ch1:\n\tfmt.Println(\"Dari ch1:\", msg1)\ncase msg2 := <-ch2:\n\tfmt.Println(\"Dari ch2:\", msg2)\n}\n```\n\nJika **beberapa case siap bersamaan**, Go memilih salah satu secara **acak**.\n\n## Contoh Multi-Channel\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc main() {\n\tch1 := make(chan string)\n\tch2 := make(chan string)\n\n\tgo func() {\n\t\ttime.Sleep(1 * time.Second)\n\t\tch1 <- \"one\"\n\t}()\n\n\tgo func() {\n\t\ttime.Sleep(2 * time.Second)\n\t\tch2 <- \"two\"\n\t}()\n\n\tfor i := 0; i < 2; i++ {\n\t\tselect {\n\t\tcase msg := <-ch1:\n\t\t\tfmt.Println(\"Received from ch1:\", msg)\n\t\tcase msg := <-ch2:\n\t\t\tfmt.Println(\"Received from ch2:\", msg)\n\t\t}\n\t}\n}\n```\n\n## Default Case (Non-Blocking)\n\nCase `default` dijalankan jika **tidak ada channel yang siap**:\n\n```go\nselect {\ncase msg := <-ch:\n\tfmt.Println(\"received:\", msg)\ndefault:\n\tfmt.Println(\"no message ready\") // non-blocking\n}\n```\n\n## Timeout Pattern\n\nCombine `select` dengan `time.After` untuk timeout:\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc slowOperation(ch chan<- string) {\n\ttime.Sleep(3 * time.Second)\n\tch <- \"result\"\n}\n\nfunc main() {\n\tch := make(chan string)\n\tgo slowOperation(ch)\n\n\tselect {\n\tcase result := <-ch:\n\t\tfmt.Println(\"Got:\", result)\n\tcase <-time.After(2 * time.Second):\n\t\tfmt.Println(\"Timeout! Operation took too long.\")\n\t}\n}\n```\n\n## Done Channel Pattern\n\n```go\nfunc worker(done <-chan struct{}) {\n\tfor {\n\t\tselect {\n\t\tcase <-done:\n\t\t\tfmt.Println(\"worker stopping\")\n\t\t\treturn\n\t\tdefault:\n\t\t\t// do work\n\t\t}\n\t}\n}\n```",
+  "content_en": "## Select Statement\n\n`select` lets a goroutine **wait on multiple channel operations at once**. It's like a `switch`, but each case is a channel operation.\n\n## Basic Syntax\n\n```go\nselect {\ncase msg1 := <-ch1:\n\tfmt.Println(\"From ch1:\", msg1)\ncase msg2 := <-ch2:\n\tfmt.Println(\"From ch2:\", msg2)\n}\n```\n\nIf **multiple cases are ready simultaneously**, Go picks one **randomly**.\n\n## Multi-Channel Example\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc main() {\n\tch1 := make(chan string)\n\tch2 := make(chan string)\n\n\tgo func() {\n\t\ttime.Sleep(1 * time.Second)\n\t\tch1 <- \"one\"\n\t}()\n\n\tgo func() {\n\t\ttime.Sleep(2 * time.Second)\n\t\tch2 <- \"two\"\n\t}()\n\n\tfor i := 0; i < 2; i++ {\n\t\tselect {\n\t\tcase msg := <-ch1:\n\t\t\tfmt.Println(\"Received from ch1:\", msg)\n\t\tcase msg := <-ch2:\n\t\t\tfmt.Println(\"Received from ch2:\", msg)\n\t\t}\n\t}\n}\n```\n\n## Default Case (Non-Blocking)\n\nThe `default` case runs when **no channel is ready**:\n\n```go\nselect {\ncase msg := <-ch:\n\tfmt.Println(\"received:\", msg)\ndefault:\n\tfmt.Println(\"no message ready\") // non-blocking\n}\n```\n\n## Timeout Pattern\n\nCombine `select` with `time.After` for timeouts:\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc slowOperation(ch chan<- string) {\n\ttime.Sleep(3 * time.Second)\n\tch <- \"result\"\n}\n\nfunc main() {\n\tch := make(chan string)\n\tgo slowOperation(ch)\n\n\tselect {\n\tcase result := <-ch:\n\t\tfmt.Println(\"Got:\", result)\n\tcase <-time.After(2 * time.Second):\n\t\tfmt.Println(\"Timeout! Operation took too long.\")\n\t}\n}\n```\n\n## Done Channel Pattern\n\n```go\nfunc worker(done <-chan struct{}) {\n\tfor {\n\t\tselect {\n\t\tcase <-done:\n\t\t\tfmt.Println(\"worker stopping\")\n\t\t\treturn\n\t\tdefault:\n\t\t\t// do work\n\t\t}\n\t}\n}\n```",
+  "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc fetchFromAPI(ch chan<- string, delay time.Duration, result string) {\n\ttime.Sleep(delay)\n\tch <- result\n}\n\nfunc main() {\n\tch := make(chan string)\n\n\tgo fetchFromAPI(ch, 500*time.Millisecond, \"data from API\")\n\n\t// TODO: use select to receive from ch or timeout after 1 second\n\t// Print \"Got: <result>\" if successful, or \"Timed out\" if timeout\n\tselect {\n\tcase result := <-ch:\n\t\tfmt.Println(\"Got:\", result)\n\t}\n}",
+  "quiz": [
+    {
+      "question_id": "Apa yang terjadi ketika beberapa case dalam select siap bersamaan?",
+      "question_en": "What happens when multiple cases in a select are ready at the same time?",
+      "options_id": ["Go memilih satu secara acak", "Case pertama selalu dipilih", "Semua case dieksekusi", "Program panic"],
+      "options_en": ["Go picks one randomly", "The first case is always chosen", "All cases are executed", "The program panics"],
+      "correct": 0
+    },
+    {
+      "question_id": "Fungsi apa yang digunakan untuk membuat timeout pada select?",
+      "question_en": "Which function is used to create a timeout with select?",
+      "options_id": ["time.After(duration)", "time.Sleep(duration)", "time.Timeout(duration)", "time.NewTimer(duration).C"],
+      "options_en": ["time.After(duration)", "time.Sleep(duration)", "time.Timeout(duration)", "time.NewTimer(duration).C"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa kegunaan `default` case dalam select?",
+      "question_en": "What is the purpose of the `default` case in select?",
+      "options_id": ["Membuat select non-blocking — dijalankan jika tidak ada channel yang siap", "Sebagai fallback jika program crash", "Selalu dieksekusi terakhir", "Mengakhiri select loop"],
+      "options_en": ["Makes select non-blocking — runs if no channel is ready", "As a fallback if the program crashes", "Always executes last", "Ends the select loop"],
+      "correct": 0
+    }
+  ]
+}

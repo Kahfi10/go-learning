@@ -1,0 +1,32 @@
+{
+  "id": "02",
+  "title_id": "Unbuffered Channels",
+  "title_en": "Unbuffered Channels",
+  "estimatedMinutes": 10,
+  "content_id": "## Apa itu Channel?\n\nChannel adalah **pipa bertipe** yang menghubungkan goroutine. Goroutine bisa **mengirim** dan **menerima** nilai melalui channel. Ini adalah cara idiomatis Go untuk komunikasi antar goroutine.\n\n> **Filosofi Go:** *\"Do not communicate by sharing memory; instead, share memory by communicating.\"*\n\n## Membuat Unbuffered Channel\n\n```go\nch := make(chan int)    // channel untuk int\nch := make(chan string) // channel untuk string\n```\n\n## Operasi Send & Receive\n\n```go\nch <- 42      // KIRIM nilai 42 ke channel\nval := <-ch   // TERIMA nilai dari channel\n```\n\n## Blocking Behavior\n\nUnbuffered channel bersifat **synchronous**:\n- **Send** akan memblokir sampai ada goroutine yang menerima\n- **Receive** akan memblokir sampai ada goroutine yang mengirim\n\n```go\npackage main\n\nimport \"fmt\"\n\nfunc sum(a, b int, ch chan int) {\n\tresult := a + b\n\tch <- result // kirim hasil — blokir sampai main menerima\n}\n\nfunc main() {\n\tch := make(chan int)\n\n\tgo sum(3, 4, ch)  // jalankan di goroutine terpisah\n\tgo sum(10, 20, ch) // jalankan goroutine kedua\n\n\tx, y := <-ch, <-ch // terima dua nilai (urutan tidak tentu)\n\tfmt.Println(x, y, x+y)\n}\n```\n\n## Menutup Channel\n\nGunakan `close(ch)` untuk menutup channel. Receiver bisa mendeteksi channel yang sudah ditutup:\n\n```go\nfunc producer(ch chan<- int) {\n\tfor i := 0; i < 5; i++ {\n\t\tch <- i\n\t}\n\tclose(ch) // sinyal bahwa tidak ada nilai lagi\n}\n\nfunc main() {\n\tch := make(chan int)\n\tgo producer(ch)\n\n\tfor val := range ch { // loop sampai channel ditutup\n\t\tfmt.Println(val)\n\t}\n}\n```\n\n## Directional Channels\n\nGunakan directional channels untuk membatasi operasi:\n- `chan<- T` — hanya bisa mengirim\n- `<-chan T` — hanya bisa menerima",
+  "content_en": "## What is a Channel?\n\nA channel is a **typed pipe** that connects goroutines. Goroutines can **send** and **receive** values through channels. This is the idiomatic Go way to communicate between goroutines.\n\n> **Go Philosophy:** *\"Do not communicate by sharing memory; instead, share memory by communicating.\"*\n\n## Creating an Unbuffered Channel\n\n```go\nch := make(chan int)    // channel for int\nch := make(chan string) // channel for string\n```\n\n## Send & Receive Operations\n\n```go\nch <- 42      // SEND value 42 to channel\nval := <-ch   // RECEIVE value from channel\n```\n\n## Blocking Behavior\n\nUnbuffered channels are **synchronous**:\n- **Send** blocks until another goroutine receives\n- **Receive** blocks until another goroutine sends\n\n```go\npackage main\n\nimport \"fmt\"\n\nfunc sum(a, b int, ch chan int) {\n\tresult := a + b\n\tch <- result // send result — blocks until main receives\n}\n\nfunc main() {\n\tch := make(chan int)\n\n\tgo sum(3, 4, ch)   // run in a separate goroutine\n\tgo sum(10, 20, ch)  // run a second goroutine\n\n\tx, y := <-ch, <-ch // receive two values (order may vary)\n\tfmt.Println(x, y, x+y)\n}\n```\n\n## Closing a Channel\n\nUse `close(ch)` to close a channel. Receivers can detect a closed channel:\n\n```go\nfunc producer(ch chan<- int) {\n\tfor i := 0; i < 5; i++ {\n\t\tch <- i\n\t}\n\tclose(ch) // signal that no more values will come\n}\n\nfunc main() {\n\tch := make(chan int)\n\tgo producer(ch)\n\n\tfor val := range ch { // loop until channel is closed\n\t\tfmt.Println(val)\n\t}\n}\n```\n\n## Directional Channels\n\nUse directional channels to restrict operations:\n- `chan<- T` — send only\n- `<-chan T` — receive only",
+  "starterCode": "package main\n\nimport \"fmt\"\n\nfunc greet(name string, ch chan string) {\n\t// TODO: send a greeting message to the channel\n\tmsg := \"Hello, \" + name\n\t_ = msg\n}\n\nfunc main() {\n\t// TODO: create a string channel\n\tvar ch chan string\n\n\t// TODO: run greet as a goroutine\n\tgreet(\"Gopher\", ch)\n\n\t// TODO: receive the message from the channel and print it\n\tfmt.Println(\"done\")\n}",
+  "quiz": [
+    {
+      "question_id": "Apa yang terjadi ketika goroutine mencoba mengirim ke unbuffered channel yang belum ada receiver-nya?",
+      "question_en": "What happens when a goroutine tries to send to an unbuffered channel with no receiver?",
+      "options_id": ["Goroutine memblokir sampai ada receiver", "Nilai dibuang", "Program panic", "Nilai disimpan dalam antrian"],
+      "options_en": ["The goroutine blocks until there is a receiver", "The value is discarded", "The program panics", "The value is stored in a queue"],
+      "correct": 0
+    },
+    {
+      "question_id": "Bagaimana cara membuat channel untuk tipe int?",
+      "question_en": "How do you create a channel for the int type?",
+      "options_id": ["make(chan int)", "new(chan int)", "chan int{}", "channel.New(int)"],
+      "options_en": ["make(chan int)", "new(chan int)", "chan int{}", "channel.New(int)"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang terjadi saat melakukan `for val := range ch`?",
+      "question_en": "What happens with `for val := range ch`?",
+      "options_id": ["Loop terus menerima dari channel sampai channel ditutup", "Loop hanya berjalan sekali", "Loop berjalan selamanya tanpa berhenti", "Loop tidak bisa digunakan dengan channel"],
+      "options_en": ["Loop keeps receiving from channel until it is closed", "Loop only runs once", "Loop runs forever without stopping", "Loop cannot be used with channels"],
+      "correct": 0
+    }
+  ]
+}

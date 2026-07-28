@@ -1,0 +1,11 @@
+{
+  "slug": "file-io",
+  "number": 12,
+  "title_id": "File I/O & OS",
+  "title_en": "File I/O & OS",
+  "description_id": "Pelajari cara bekerja dengan file, streams, JSON, environment variables, dan direktori di Go.",
+  "description_en": "Learn how to work with files, streams, JSON, environment variables, and directories in Go.",
+  "level": "Intermediate",
+  "color": "#FFD60A",
+  "estimatedMinutes": 50
+}

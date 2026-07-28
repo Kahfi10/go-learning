@@ -1,0 +1,11 @@
+{
+  "slug": "goroutines-channels",
+  "number": 10,
+  "title_id": "Goroutines & Channels",
+  "title_en": "Goroutines & Channels",
+  "description_id": "Pelajari concurrency di Go: goroutines, channels, select, WaitGroup, dan Mutex.",
+  "description_en": "Learn Go concurrency: goroutines, channels, select, WaitGroup, and Mutex.",
+  "level": "Intermediate",
+  "color": "#0A84FF",
+  "estimatedMinutes": 60
+}

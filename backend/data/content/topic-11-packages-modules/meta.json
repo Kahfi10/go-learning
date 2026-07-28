@@ -1,0 +1,11 @@
+{
+  "slug": "packages-modules",
+  "number": 11,
+  "title_id": "Package & Modules",
+  "title_en": "Packages & Modules",
+  "description_id": "Pelajari cara membuat package, exported identifiers, import paths, dan dependency management.",
+  "description_en": "Learn how to create packages, exported identifiers, import paths, and dependency management.",
+  "level": "Intermediate",
+  "color": "#BF5AF2",
+  "estimatedMinutes": 40
+}

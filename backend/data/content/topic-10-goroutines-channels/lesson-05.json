@@ -1,0 +1,32 @@
+{
+  "id": "05",
+  "title_id": "sync.WaitGroup",
+  "title_en": "sync.WaitGroup",
+  "estimatedMinutes": 10,
+  "content_id": "## sync.WaitGroup\n\n`sync.WaitGroup` adalah cara idiomatis untuk **menunggu sekumpulan goroutine selesai**. Ini lebih baik dari `time.Sleep` karena deterministik.\n\n## Tiga Method Utama\n\n| Method | Fungsi |\n|---|---|\n| `wg.Add(n)` | Tambahkan `n` ke counter |\n| `wg.Done()` | Kurangi counter sebesar 1 |\n| `wg.Wait()` | Blokir sampai counter mencapai 0 |\n\n## Contoh Dasar\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n\t\"time\"\n)\n\nfunc worker(id int, wg *sync.WaitGroup) {\n\tdefer wg.Done() // pastikan Done selalu dipanggil\n\n\tfmt.Printf(\"Worker %d starting\\n\", id)\n\ttime.Sleep(time.Second)\n\tfmt.Printf(\"Worker %d done\\n\", id)\n}\n\nfunc main() {\n\tvar wg sync.WaitGroup\n\n\tfor i := 1; i <= 5; i++ {\n\t\twg.Add(1) // tambah sebelum go statement\n\t\tgo worker(i, &wg)\n\t}\n\n\twg.Wait() // tunggu semua worker selesai\n\tfmt.Println(\"All workers completed\")\n}\n```\n\n## Pola Fan-Out\n\nFan-out: satu task dibagi ke banyak goroutine:\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n)\n\nfunc processItem(item int, results chan<- int, wg *sync.WaitGroup) {\n\tdefer wg.Done()\n\tresults <- item * item // kuadrat\n}\n\nfunc main() {\n\titems := []int{1, 2, 3, 4, 5}\n\tresults := make(chan int, len(items))\n\tvar wg sync.WaitGroup\n\n\t// Fan-out: spawn goroutine untuk setiap item\n\tfor _, item := range items {\n\t\twg.Add(1)\n\t\tgo processItem(item, results, &wg)\n\t}\n\n\t// Tutup results channel setelah semua selesai\n\tgo func() {\n\t\twg.Wait()\n\t\tclose(results)\n\t}()\n\n\t// Collect results\n\tfor r := range results {\n\t\tfmt.Println(r)\n\t}\n}\n```\n\n## Aturan Penting\n\n1. **Selalu `Add` sebelum `go`** — jangan panggil `Add` di dalam goroutine yang baru dibuat\n2. **Gunakan `defer wg.Done()`** — memastikan Done dipanggil meski ada panic\n3. **Oper `*sync.WaitGroup`** — selalu oper pointer, bukan nilai",
+  "content_en": "## sync.WaitGroup\n\n`sync.WaitGroup` is the idiomatic way to **wait for a collection of goroutines to finish**. It's better than `time.Sleep` because it's deterministic.\n\n## Three Main Methods\n\n| Method | Purpose |\n|---|---|\n| `wg.Add(n)` | Add `n` to the counter |\n| `wg.Done()` | Decrement counter by 1 |\n| `wg.Wait()` | Block until counter reaches 0 |\n\n## Basic Example\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n\t\"time\"\n)\n\nfunc worker(id int, wg *sync.WaitGroup) {\n\tdefer wg.Done() // ensure Done is always called\n\n\tfmt.Printf(\"Worker %d starting\\n\", id)\n\ttime.Sleep(time.Second)\n\tfmt.Printf(\"Worker %d done\\n\", id)\n}\n\nfunc main() {\n\tvar wg sync.WaitGroup\n\n\tfor i := 1; i <= 5; i++ {\n\t\twg.Add(1) // increment before go statement\n\t\tgo worker(i, &wg)\n\t}\n\n\twg.Wait() // wait for all workers to finish\n\tfmt.Println(\"All workers completed\")\n}\n```\n\n## Fan-Out Pattern\n\nFan-out: distribute one task across many goroutines:\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n)\n\nfunc processItem(item int, results chan<- int, wg *sync.WaitGroup) {\n\tdefer wg.Done()\n\tresults <- item * item // square\n}\n\nfunc main() {\n\titems := []int{1, 2, 3, 4, 5}\n\tresults := make(chan int, len(items))\n\tvar wg sync.WaitGroup\n\n\t// Fan-out: spawn a goroutine per item\n\tfor _, item := range items {\n\t\twg.Add(1)\n\t\tgo processItem(item, results, &wg)\n\t}\n\n\t// Close results channel after all finish\n\tgo func() {\n\t\twg.Wait()\n\t\tclose(results)\n\t}()\n\n\t// Collect results\n\tfor r := range results {\n\t\tfmt.Println(r)\n\t}\n}\n```\n\n## Important Rules\n\n1. **Always `Add` before `go`** — don't call `Add` inside the new goroutine\n2. **Use `defer wg.Done()`** — ensures Done is called even on panic\n3. **Pass `*sync.WaitGroup`** — always pass a pointer, never a value",
+  "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n\t\"time\"\n)\n\nfunc download(url string, wg *sync.WaitGroup) {\n\t// TODO: call wg.Done() when finished (use defer)\n\ttime.Sleep(100 * time.Millisecond)\n\tfmt.Println(\"Downloaded:\", url)\n}\n\nfunc main() {\n\turls := []string{\n\t\t\"https://example.com/file1\",\n\t\t\"https://example.com/file2\",\n\t\t\"https://example.com/file3\",\n\t}\n\n\tvar wg sync.WaitGroup\n\n\tfor _, url := range urls {\n\t\t// TODO: call wg.Add(1) and launch download as goroutine\n\t\tdownload(url, &wg)\n\t}\n\n\t// TODO: wait for all downloads to finish\n\tfmt.Println(\"All downloads complete\")\n}",
+  "quiz": [
+    {
+      "question_id": "Kapan sebaiknya memanggil wg.Add(1)?",
+      "question_en": "When should you call wg.Add(1)?",
+      "options_id": ["Sebelum statement `go`, di goroutine pemanggil", "Di dalam goroutine yang baru diluncurkan", "Setelah wg.Wait()", "Di awal fungsi main saja"],
+      "options_en": ["Before the `go` statement, in the calling goroutine", "Inside the newly launched goroutine", "After wg.Wait()", "Only at the start of main"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa sebaiknya menggunakan `defer wg.Done()` di dalam goroutine?",
+      "question_en": "Why is it recommended to use `defer wg.Done()` inside a goroutine?",
+      "options_id": ["Memastikan Done dipanggil meski terjadi panic atau return awal", "Agar wg.Done() dipanggil lebih cepat", "Agar goroutine berjalan paralel", "Agar wg.Wait() tidak memblokir"],
+      "options_en": ["Ensures Done is called even on panic or early return", "So wg.Done() is called faster", "So the goroutine runs in parallel", "So wg.Wait() doesn't block"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang terjadi jika Anda mengoper sync.WaitGroup by value (bukan pointer)?",
+      "question_en": "What happens if you pass sync.WaitGroup by value instead of by pointer?",
+      "options_id": ["WaitGroup di-copy, sehingga Add/Done tidak mempengaruhi yang asli", "Program berjalan lebih cepat", "WaitGroup otomatis menjadi pointer", "Tidak ada perbedaan"],
+      "options_en": ["The WaitGroup is copied, so Add/Done don't affect the original", "Program runs faster", "WaitGroup automatically becomes a pointer", "No difference"],
+      "correct": 0
+    }
+  ]
+}

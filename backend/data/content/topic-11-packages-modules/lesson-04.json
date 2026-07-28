@@ -1,0 +1,32 @@
+{
+  "id": "04",
+  "title_id": "go get, Versioning & Replace Directive",
+  "title_en": "go get, Versioning & Replace Directive",
+  "estimatedMinutes": 10,
+  "content_id": "## Go Modules\n\n**Go Modules** (diperkenalkan di Go 1.11) adalah sistem manajemen dependensi resmi Go. File `go.mod` mendefinisikan module dan dependensinya.\n\n## Membuat Module Baru\n\n```bash\nmkdir myapp\ncd myapp\ngo mod init github.com/username/myapp\n```\n\nIni membuat `go.mod`:\n\n```\nmodule github.com/username/myapp\n\ngo 1.21\n```\n\n## Menambahkan Dependensi dengan go get\n\n```bash\n# Tambah dependensi terbaru\ngo get github.com/gin-gonic/gin\n\n# Tambah versi spesifik\ngo get github.com/gin-gonic/gin@v1.9.1\n\n# Update ke minor terbaru\ngo get -u github.com/gin-gonic/gin\n\n# Hapus dependensi yang tidak digunakan\ngo mod tidy\n```\n\n## go.mod & go.sum\n\n`go.mod` setelah menambahkan dependensi:\n\n```\nmodule github.com/username/myapp\n\ngo 1.21\n\nrequire (\n\tgithub.com/gin-gonic/gin v1.9.1\n)\n```\n\n`go.sum` berisi **hash kriptografis** untuk memverifikasi integritas dependensi.\n\n## Semantic Versioning\n\nGo modules menggunakan **semantic versioning (semver)**:\n\n```\nv1.2.3\n│ │ └── PATCH: bug fixes\n│ └──── MINOR: new features (backward compatible)\n└────── MAJOR: breaking changes\n```\n\nUntuk major version >= 2, import path berubah:\n\n```go\nimport \"github.com/user/pkg/v2\" // major version suffix\n```\n\n## Replace Directive\n\nGunakan `replace` untuk mengganti dependensi dengan versi lokal atau fork:\n\n```\nmodule myapp\n\ngo 1.21\n\nrequire github.com/original/lib v1.0.0\n\nreplace github.com/original/lib => ../local-fork\n// atau pin ke commit tertentu:\nreplace github.com/original/lib => github.com/fork/lib v1.0.1-fix\n```\n\n## Perintah go mod Penting\n\n```bash\ngo mod init     # inisialisasi module\ngo mod tidy     # tambah yang hilang, hapus yang tidak dipakai\ngo mod vendor   # salin dependensi ke direktori vendor/\ngo mod download # download semua dependensi\ngo list -m all  # tampilkan semua dependensi\n```",
+  "content_en": "## Go Modules\n\n**Go Modules** (introduced in Go 1.11) is the official Go dependency management system. The `go.mod` file defines the module and its dependencies.\n\n## Creating a New Module\n\n```bash\nmkdir myapp\ncd myapp\ngo mod init github.com/username/myapp\n```\n\nThis creates `go.mod`:\n\n```\nmodule github.com/username/myapp\n\ngo 1.21\n```\n\n## Adding Dependencies with go get\n\n```bash\n# Add latest version\ngo get github.com/gin-gonic/gin\n\n# Add specific version\ngo get github.com/gin-gonic/gin@v1.9.1\n\n# Update to latest minor version\ngo get -u github.com/gin-gonic/gin\n\n# Remove unused dependencies\ngo mod tidy\n```\n\n## go.mod & go.sum\n\n`go.mod` after adding a dependency:\n\n```\nmodule github.com/username/myapp\n\ngo 1.21\n\nrequire (\n\tgithub.com/gin-gonic/gin v1.9.1\n)\n```\n\n`go.sum` contains **cryptographic hashes** to verify dependency integrity.\n\n## Semantic Versioning\n\nGo modules use **semantic versioning (semver)**:\n\n```\nv1.2.3\n│ │ └── PATCH: bug fixes\n│ └──── MINOR: new features (backward compatible)\n└────── MAJOR: breaking changes\n```\n\nFor major versions >= 2, the import path changes:\n\n```go\nimport \"github.com/user/pkg/v2\" // major version suffix\n```\n\n## Replace Directive\n\nUse `replace` to substitute a dependency with a local copy or fork:\n\n```\nmodule myapp\n\ngo 1.21\n\nrequire github.com/original/lib v1.0.0\n\nreplace github.com/original/lib => ../local-fork\n// or pin to a specific commit/fork:\nreplace github.com/original/lib => github.com/fork/lib v1.0.1-fix\n```\n\n## Important go mod Commands\n\n```bash\ngo mod init     # initialize a module\ngo mod tidy     # add missing, remove unused\ngo mod vendor   # copy deps to vendor/ directory\ngo mod download # download all dependencies\ngo list -m all  # show all dependencies\n```",
+  "starterCode": "package main\n\nimport \"fmt\"\n\n// This file demonstrates module concepts.\n// In a real project you would have a go.mod file.\n\n// Simulated version info from a hypothetical go.mod\nconst moduleVersion = \"v1.0.0\"\nconst moduleName = \"github.com/example/learngo\"\n\nfunc printModuleInfo() {\n\tfmt.Printf(\"Module: %s\\n\", moduleName)\n\tfmt.Printf(\"Version: %s\\n\", moduleVersion)\n}\n\n// Semantic version parser\nfunc parseVersion(v string) (major, minor, patch int) {\n\t// TODO: parse \"v1.2.3\" format and return 1, 2, 3\n\t// Hint: use fmt.Sscanf(v, \"v%d.%d.%d\", &major, &minor, &patch)\n\tfmt.Sscanf(v, \"v%d.%d.%d\", &major, &minor, &patch)\n\treturn\n}\n\nfunc main() {\n\tprintModuleInfo()\n\n\tmaj, min, pat := parseVersion(\"v2.5.13\")\n\tfmt.Printf(\"Major: %d, Minor: %d, Patch: %d\\n\", maj, min, pat)\n}",
+  "quiz": [
+    {
+      "question_id": "Perintah apa yang digunakan untuk menambahkan dependensi baru ke Go module?",
+      "question_en": "Which command adds a new dependency to a Go module?",
+      "options_id": ["go get <package>", "go import <package>", "go add <package>", "go install <package>"],
+      "options_en": ["go get <package>", "go import <package>", "go add <package>", "go install <package>"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa fungsi dari perintah `go mod tidy`?",
+      "question_en": "What does the `go mod tidy` command do?",
+      "options_id": ["Menambahkan dependensi yang hilang dan menghapus yang tidak digunakan", "Mendownload semua dependensi", "Memperbarui semua dependensi ke versi terbaru", "Membuat file go.sum baru"],
+      "options_en": ["Adds missing dependencies and removes unused ones", "Downloads all dependencies", "Updates all dependencies to latest", "Creates a new go.sum file"],
+      "correct": 0
+    },
+    {
+      "question_id": "Kapan import path membutuhkan suffix versi major (seperti /v2)?",
+      "question_en": "When does an import path require a major version suffix (like /v2)?",
+      "options_id": ["Ketika major version >= 2", "Ketika minor version berubah", "Selalu", "Hanya untuk package stdlib"],
+      "options_en": ["When major version is >= 2", "When minor version changes", "Always", "Only for stdlib packages"],
+      "correct": 0
+    }
+  ]
+}

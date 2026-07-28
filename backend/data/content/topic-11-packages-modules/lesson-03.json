@@ -1,0 +1,32 @@
+{
+  "id": "03",
+  "title_id": "Import Paths, Alias & Blank Import",
+  "title_en": "Import Paths, Aliases & Blank Import",
+  "estimatedMinutes": 10,
+  "content_id": "## Import Path\n\nImport path adalah **string unik** yang mengidentifikasi sebuah package. Go menggunakan import path berbasis URL untuk package eksternal.\n\n```go\nimport (\n\t\"fmt\"                          // stdlib\n\t\"net/http\"                     // stdlib dengan subdirektori\n\t\"github.com/user/repo/package\" // package eksternal\n\t\"myapp/internal/database\"      // package lokal\n)\n```\n\n## Import Alias\n\nGunakan alias untuk menghindari konflik nama atau mempersingkat nama package yang panjang:\n\n```go\nimport (\n\t\"fmt\"\n\n\t// Alias karena konflik nama\n\tmypkg \"github.com/user/fmt\"     // alias untuk package yang namanya sama\n\n\t// Alias untuk mempersingkat\n\tyaml \"gopkg.in/yaml.v3\"        // gunakan yaml.Unmarshal bukan v3.Unmarshal\n)\n\nfunc main() {\n\tfmt.Println(\"standard fmt\")\n\tmypkg.DoSomething()\n\n\tdata, _ := yaml.Marshal(map[string]int{\"port\": 8080})\n\tfmt.Println(string(data))\n}\n```\n\n## Dot Import\n\nImport dengan `.` membuat semua exported identifier tersedia tanpa prefix package. **Jarang digunakan** dan umumnya dihindari:\n\n```go\nimport . \"fmt\"\n\nfunc main() {\n\tPrintln(\"no fmt. prefix needed\") // bukan fmt.Println\n}\n```\n\n## Blank Import\n\nImport dengan `_` mengeksekusi `init()` package tersebut **tanpa menggunakan** identifier apapun darinya:\n\n```go\nimport (\n\t\"database/sql\"\n\t_ \"github.com/lib/pq\" // mendaftarkan postgres driver via init()\n)\n\nfunc main() {\n\t// postgres driver sudah terdaftar ke database/sql\n\tdb, _ := sql.Open(\"postgres\", \"...\") \n\t_ = db\n}\n```\n\n**Kapan blank import digunakan?**\n- Driver registration (database, image format)\n- Side-effect initialization\n- Interface compliance checks\n\n## Package Visibility Levels\n\n```\nmyapp/\n├── main.go           (package main)\n├── api/              (package api — bisa diimport dari mana saja)\n├── internal/         (package internal — HANYA bisa diimport dari myapp)\n│   └── db/\n└── pkg/              (package pkg — konvensi untuk sharable packages)\n```\n\nDirectory `internal/` adalah fitur Go yang secara **otomatis** membatasi akses dari luar module.",
+  "content_en": "## Import Path\n\nAn import path is the **unique string** identifying a package. Go uses URL-based import paths for external packages.\n\n```go\nimport (\n\t\"fmt\"                          // stdlib\n\t\"net/http\"                     // stdlib with subdirectory\n\t\"github.com/user/repo/package\" // external package\n\t\"myapp/internal/database\"      // local package\n)\n```\n\n## Import Alias\n\nUse an alias to avoid name conflicts or shorten long package names:\n\n```go\nimport (\n\t\"fmt\"\n\n\t// Alias due to name conflict\n\tmypkg \"github.com/user/fmt\"     // alias for a package with the same name\n\n\t// Alias to shorten\n\tyaml \"gopkg.in/yaml.v3\"        // use yaml.Unmarshal not v3.Unmarshal\n)\n\nfunc main() {\n\tfmt.Println(\"standard fmt\")\n\tmypkg.DoSomething()\n\n\tdata, _ := yaml.Marshal(map[string]int{\"port\": 8080})\n\tfmt.Println(string(data))\n}\n```\n\n## Dot Import\n\nA `.` import makes all exported identifiers available without a package prefix. **Rarely used** and generally avoided:\n\n```go\nimport . \"fmt\"\n\nfunc main() {\n\tPrintln(\"no fmt. prefix needed\") // not fmt.Println\n}\n```\n\n## Blank Import\n\nImporting with `_` executes the package's `init()` **without using** any of its identifiers:\n\n```go\nimport (\n\t\"database/sql\"\n\t_ \"github.com/lib/pq\" // registers postgres driver via init()\n)\n\nfunc main() {\n\t// postgres driver is now registered with database/sql\n\tdb, _ := sql.Open(\"postgres\", \"...\")\n\t_ = db\n}\n```\n\n**When is blank import used?**\n- Driver registration (database, image formats)\n- Side-effect initialization\n- Interface compliance checks\n\n## Package Visibility Levels\n\n```\nmyapp/\n├── main.go           (package main)\n├── api/              (package api — importable from anywhere)\n├── internal/         (package internal — ONLY importable from myapp)\n│   └── db/\n└── pkg/              (package pkg — convention for shareable packages)\n```\n\nThe `internal/` directory is a Go feature that **automatically** restricts access from outside the module.",
+  "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t// TODO: import \"math/rand\" with alias 'rng'\n\t// TODO: import \"math\" normally\n\t// TODO: import \"strings\" with alias 'str'\n)\n\nfunc main() {\n\t// Use rng.Intn(100) to get a random number\n\tfmt.Println(\"Random number:\", 42) // replace 42 with rng.Intn(100)\n\n\t// Use math.Sqrt to compute square root of 144\n\tfmt.Println(\"Sqrt(144):\", 12.0) // replace with math.Sqrt(144)\n\n\t// Use str.ToTitle to convert a string\n\tfmt.Println(str.ToTitle(\"hello gopher\")) // uncomment after importing\n}",
+  "quiz": [
+    {
+      "question_id": "Apa tujuan dari blank import (`import _ \"pkg\"`) di Go?",
+      "question_en": "What is the purpose of a blank import (`import _ \"pkg\"`) in Go?",
+      "options_id": ["Menjalankan fungsi init() package tanpa menggunakan identifier apapun", "Mengimpor package tanpa nama", "Membuat package tersembunyi", "Mencegah package dari garbage collection"],
+      "options_en": ["Execute the package's init() without using any identifiers", "Import a package without a name", "Make the package invisible", "Prevent the package from garbage collection"],
+      "correct": 0
+    },
+    {
+      "question_id": "Bagaimana cara memberikan alias 'rng' untuk package math/rand?",
+      "question_en": "How do you give the alias 'rng' to the math/rand package?",
+      "options_id": ["rng \"math/rand\"", "\"math/rand\" as rng", "import rng from \"math/rand\"", "alias rng = math/rand"],
+      "options_en": ["rng \"math/rand\"", "\"math/rand\" as rng", "import rng from \"math/rand\"", "alias rng = math/rand"],
+      "correct": 0
+    },
+    {
+      "question_id": "Package di direktori `internal/` hanya bisa diimport dari?",
+      "question_en": "Packages in the `internal/` directory can only be imported from?",
+      "options_id": ["Module yang sama (parent dari direktori internal)", "Package manapun", "Hanya dari package main", "Hanya dari stdlib"],
+      "options_en": ["The same module (parent of the internal directory)", "Any package", "Only from package main", "Only from stdlib"],
+      "correct": 0
+    }
+  ]
+}

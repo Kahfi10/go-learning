@@ -1,0 +1,32 @@
+{
+  "id": "06",
+  "title_id": "sync.Mutex & Race Conditions",
+  "title_en": "sync.Mutex & Race Conditions",
+  "estimatedMinutes": 10,
+  "content_id": "## Race Condition\n\nKetika beberapa goroutine membaca dan menulis variabel yang sama secara bersamaan tanpa sinkronisasi, terjadi **race condition** — bug yang sulit direproduksi.\n\n```go\n// BUG: race condition!\nvar counter int\n\nfor i := 0; i < 1000; i++ {\n\tgo func() {\n\t\tcounter++ // read-modify-write tidak atomic!\n\t}()\n}\n```\n\n## sync.Mutex\n\n`sync.Mutex` menyediakan **mutual exclusion** — hanya satu goroutine yang bisa berada di antara `Lock()` dan `Unlock()` pada satu waktu.\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n)\n\ntype SafeCounter struct {\n\tmu sync.Mutex\n\tvalue int\n}\n\nfunc (c *SafeCounter) Increment() {\n\tc.mu.Lock()\n\tdefer c.mu.Unlock() // selalu gunakan defer!\n\tc.value++\n}\n\nfunc (c *SafeCounter) Value() int {\n\tc.mu.Lock()\n\tdefer c.mu.Unlock()\n\treturn c.value\n}\n\nfunc main() {\n\tvar wg sync.WaitGroup\n\tc := &SafeCounter{}\n\n\tfor i := 0; i < 1000; i++ {\n\t\twg.Add(1)\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\tc.Increment()\n\t\t}()\n\t}\n\n\twg.Wait()\n\tfmt.Println(\"Counter:\", c.Value()) // selalu 1000\n}\n```\n\n## sync.RWMutex\n\nKetika data banyak dibaca dan jarang ditulis, gunakan `sync.RWMutex` untuk performa lebih baik:\n\n```go\ntype Cache struct {\n\tmu   sync.RWMutex\n\tdata map[string]string\n}\n\nfunc (c *Cache) Get(key string) (string, bool) {\n\tc.mu.RLock()         // multiple readers bisa bersamaan\n\tdefer c.mu.RUnlock()\n\tv, ok := c.data[key]\n\treturn v, ok\n}\n\nfunc (c *Cache) Set(key, value string) {\n\tc.mu.Lock()          // exclusive write lock\n\tdefer c.mu.Unlock()\n\tc.data[key] = value\n}\n```\n\n## Deteksi Race dengan -race Flag\n\nGo memiliki built-in race detector:\n\n```bash\ngo run -race main.go\ngo test -race ./...\n```\n\n> **Aturan Emas:** Selalu jalankan tests dengan `-race` flag sebelum deploy!\n\n## Pilih Channel atau Mutex?\n\n| Situasi | Pilihan |\n|---|---|\n| Transfer ownership data | Channel |\n| Distribusi kerja | Channel |\n| Cache / state bersama | Mutex |\n| Counter | Mutex / atomic |",
+  "content_en": "## Race Condition\n\nWhen multiple goroutines read and write a shared variable simultaneously without synchronization, a **race condition** occurs — a hard-to-reproduce bug.\n\n```go\n// BUG: race condition!\nvar counter int\n\nfor i := 0; i < 1000; i++ {\n\tgo func() {\n\t\tcounter++ // read-modify-write is not atomic!\n\t}()\n}\n```\n\n## sync.Mutex\n\n`sync.Mutex` provides **mutual exclusion** — only one goroutine can be between `Lock()` and `Unlock()` at a time.\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n)\n\ntype SafeCounter struct {\n\tmu sync.Mutex\n\tvalue int\n}\n\nfunc (c *SafeCounter) Increment() {\n\tc.mu.Lock()\n\tdefer c.mu.Unlock() // always use defer!\n\tc.value++\n}\n\nfunc (c *SafeCounter) Value() int {\n\tc.mu.Lock()\n\tdefer c.mu.Unlock()\n\treturn c.value\n}\n\nfunc main() {\n\tvar wg sync.WaitGroup\n\tc := &SafeCounter{}\n\n\tfor i := 0; i < 1000; i++ {\n\t\twg.Add(1)\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\tc.Increment()\n\t\t}()\n\t}\n\n\twg.Wait()\n\tfmt.Println(\"Counter:\", c.Value()) // always 1000\n}\n```\n\n## sync.RWMutex\n\nWhen data is read frequently but written rarely, use `sync.RWMutex` for better performance:\n\n```go\ntype Cache struct {\n\tmu   sync.RWMutex\n\tdata map[string]string\n}\n\nfunc (c *Cache) Get(key string) (string, bool) {\n\tc.mu.RLock()         // multiple readers can proceed simultaneously\n\tdefer c.mu.RUnlock()\n\tv, ok := c.data[key]\n\treturn v, ok\n}\n\nfunc (c *Cache) Set(key, value string) {\n\tc.mu.Lock()          // exclusive write lock\n\tdefer c.mu.Unlock()\n\tc.data[key] = value\n}\n```\n\n## Detecting Races with the -race Flag\n\nGo has a built-in race detector:\n\n```bash\ngo run -race main.go\ngo test -race ./...\n```\n\n> **Golden Rule:** Always run tests with the `-race` flag before deploying!\n\n## Channel or Mutex?\n\n| Situation | Choice |\n|---|---|\n| Transferring data ownership | Channel |\n| Work distribution | Channel |\n| Shared cache/state | Mutex |\n| Counter | Mutex / atomic |",
+  "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n)\n\n// BankAccount has a race condition — fix it!\ntype BankAccount struct {\n\t// TODO: add a sync.Mutex field\n\tbalance int\n}\n\nfunc (a *BankAccount) Deposit(amount int) {\n\t// TODO: Lock and Unlock the mutex\n\ta.balance += amount\n}\n\nfunc (a *BankAccount) Balance() int {\n\t// TODO: Lock and Unlock the mutex\n\treturn a.balance\n}\n\nfunc main() {\n\tvar wg sync.WaitGroup\n\taccount := &BankAccount{balance: 0}\n\n\tfor i := 0; i < 100; i++ {\n\t\twg.Add(1)\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\taccount.Deposit(10)\n\t\t}()\n\t}\n\n\twg.Wait()\n\tfmt.Println(\"Balance:\", account.Balance()) // should be 1000\n}",
+  "quiz": [
+    {
+      "question_id": "Apa yang dimaksud dengan race condition?",
+      "question_en": "What is a race condition?",
+      "options_id": ["Beberapa goroutine mengakses data bersama tanpa sinkronisasi", "Goroutine yang berjalan lebih lambat dari yang lain", "Konflik antara dua goroutine yang sama", "Error saat compile time"],
+      "options_en": ["Multiple goroutines accessing shared data without synchronization", "A goroutine that runs slower than others", "A conflict between two identical goroutines", "An error at compile time"],
+      "correct": 0
+    },
+    {
+      "question_id": "Perbedaan antara sync.Mutex dan sync.RWMutex adalah?",
+      "question_en": "What is the difference between sync.Mutex and sync.RWMutex?",
+      "options_id": ["RWMutex memungkinkan banyak reader bersamaan tapi hanya satu writer", "RWMutex lebih cepat dalam semua kasus", "Mutex tidak bisa digunakan dengan goroutine", "RWMutex hanya untuk channels"],
+      "options_en": ["RWMutex allows multiple concurrent readers but only one writer", "RWMutex is faster in all cases", "Mutex cannot be used with goroutines", "RWMutex is only for channels"],
+      "correct": 0
+    },
+    {
+      "question_id": "Flag apa yang digunakan untuk mendeteksi race condition di Go?",
+      "question_en": "Which flag detects race conditions in Go?",
+      "options_id": ["-race", "-sync", "-detect", "-concurrent"],
+      "options_en": ["-race", "-sync", "-detect", "-concurrent"],
+      "correct": 0
+    }
+  ]
+}

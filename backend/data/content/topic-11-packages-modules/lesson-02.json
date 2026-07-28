@@ -1,0 +1,32 @@
+{
+  "id": "02",
+  "title_id": "Exported vs Unexported Identifiers",
+  "title_en": "Exported vs Unexported Identifiers",
+  "estimatedMinutes": 10,
+  "content_id": "## Exported vs Unexported\n\nDi Go, **visibilitas** dikontrol oleh huruf pertama identifier:\n\n- **Huruf kapital** (`Foo`) → **Exported** (public) — bisa diakses dari luar package\n- **Huruf kecil** (`foo`) → **Unexported** (private) — hanya bisa diakses dalam package yang sama\n\nIni berlaku untuk fungsi, tipe, variabel, konstanta, dan field struct.\n\n## Contoh\n\n```go\npackage user\n\n// User adalah exported type — bisa digunakan dari package lain\ntype User struct {\n\tID       int    // exported field\n\tUsername string // exported field\n\tpassword string // unexported field — hanya bisa diakses dalam package user\n}\n\n// NewUser adalah exported constructor\nfunc NewUser(id int, username, password string) *User {\n\treturn &User{\n\t\tID:       id,\n\t\tUsername: username,\n\t\tpassword: hashPassword(password), // menggunakan unexported function\n\t}\n}\n\n// hashPassword adalah unexported helper function\nfunc hashPassword(p string) string {\n\t// implementasi hashing...\n\treturn \"hashed_\" + p\n}\n\n// CheckPassword adalah exported method untuk validasi\nfunc (u *User) CheckPassword(password string) bool {\n\treturn u.password == hashPassword(password)\n}\n```\n\n## Menggunakan dari Package Lain\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"myapp/user\"\n)\n\nfunc main() {\n\tu := user.NewUser(1, \"alice\", \"secret123\")\n\n\tfmt.Println(u.ID)       // OK — exported\n\tfmt.Println(u.Username) // OK — exported\n\t// fmt.Println(u.password)  // ERROR: cannot refer to unexported field\n\t// user.hashPassword(\"x\")   // ERROR: cannot refer to unexported function\n\n\tfmt.Println(u.CheckPassword(\"secret123\")) // true\n}\n```\n\n## Prinsip Encapsulation\n\nUnexported identifiers memungkinkan kita untuk:\n1. **Menyembunyikan implementasi detail** dari pengguna package\n2. **Mengubah internal implementation** tanpa mempengaruhi API publik\n3. **Mencegah penggunaan yang tidak sengaja** dari state internal\n\n> **Pedoman:** Ekspor sesedikit mungkin. Mulai dengan unexported, ekspor hanya jika diperlukan.",
+  "content_en": "## Exported vs Unexported\n\nIn Go, **visibility** is controlled by the first letter of an identifier:\n\n- **Uppercase** (`Foo`) → **Exported** (public) — accessible from outside the package\n- **Lowercase** (`foo`) → **Unexported** (private) — only accessible within the same package\n\nThis applies to functions, types, variables, constants, and struct fields.\n\n## Example\n\n```go\npackage user\n\n// User is an exported type — usable from other packages\ntype User struct {\n\tID       int    // exported field\n\tUsername string // exported field\n\tpassword string // unexported field — only accessible within package user\n}\n\n// NewUser is an exported constructor\nfunc NewUser(id int, username, password string) *User {\n\treturn &User{\n\t\tID:       id,\n\t\tUsername: username,\n\t\tpassword: hashPassword(password), // uses unexported function\n\t}\n}\n\n// hashPassword is an unexported helper function\nfunc hashPassword(p string) string {\n\t// hashing implementation...\n\treturn \"hashed_\" + p\n}\n\n// CheckPassword is an exported method for validation\nfunc (u *User) CheckPassword(password string) bool {\n\treturn u.password == hashPassword(password)\n}\n```\n\n## Using from Another Package\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"myapp/user\"\n)\n\nfunc main() {\n\tu := user.NewUser(1, \"alice\", \"secret123\")\n\n\tfmt.Println(u.ID)       // OK — exported\n\tfmt.Println(u.Username) // OK — exported\n\t// fmt.Println(u.password)  // ERROR: cannot refer to unexported field\n\t// user.hashPassword(\"x\")   // ERROR: cannot refer to unexported function\n\n\tfmt.Println(u.CheckPassword(\"secret123\")) // true\n}\n```\n\n## Encapsulation Principle\n\nUnexported identifiers allow us to:\n1. **Hide implementation details** from package users\n2. **Change internal implementation** without affecting the public API\n3. **Prevent accidental use** of internal state\n\n> **Guideline:** Export as little as possible. Start unexported, export only when needed.",
+  "starterCode": "package main\n\nimport \"fmt\"\n\n// Rectangle represents a rectangle shape\ntype Rectangle struct {\n\tWidth  float64 // exported\n\tHeight float64 // exported\n\t// TODO: add an unexported field 'area float64' to cache the area\n}\n\n// NewRectangle creates a new Rectangle\nfunc NewRectangle(w, h float64) *Rectangle {\n\treturn &Rectangle{Width: w, Height: h}\n}\n\n// Area returns the area of the rectangle\n// TODO: cache the result in the unexported 'area' field\nfunc (r *Rectangle) Area() float64 {\n\treturn r.Width * r.Height\n}\n\n// Perimeter returns the perimeter of the rectangle\nfunc (r *Rectangle) Perimeter() float64 {\n\treturn 2 * (r.Width + r.Height)\n}\n\nfunc main() {\n\trect := NewRectangle(5, 3)\n\tfmt.Printf(\"Area: %.1f\\n\", rect.Area())\n\tfmt.Printf(\"Perimeter: %.1f\\n\", rect.Perimeter())\n}",
+  "quiz": [
+    {
+      "question_id": "Bagaimana cara membuat identifier exported di Go?",
+      "question_en": "How do you make an identifier exported in Go?",
+      "options_id": ["Mulai dengan huruf kapital", "Gunakan keyword `public`", "Tambahkan prefix `export_`", "Deklarasikan di luar fungsi"],
+      "options_en": ["Start it with an uppercase letter", "Use the `public` keyword", "Add the prefix `export_`", "Declare it outside any function"],
+      "correct": 0
+    },
+    {
+      "question_id": "Field struct unexported bisa diakses dari mana?",
+      "question_en": "Where can an unexported struct field be accessed?",
+      "options_id": ["Hanya dari dalam package yang sama", "Dari package manapun", "Hanya dari main package", "Tidak bisa diakses sama sekali"],
+      "options_en": ["Only from within the same package", "From any package", "Only from the main package", "Cannot be accessed at all"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa manfaat utama dari unexported identifiers?",
+      "question_en": "What is the main benefit of unexported identifiers?",
+      "options_id": ["Encapsulation — menyembunyikan detail implementasi", "Membuat kode lebih cepat", "Mengurangi ukuran binary", "Mencegah kompilasi error"],
+      "options_en": ["Encapsulation — hiding implementation details", "Making code faster", "Reducing binary size", "Preventing compile errors"],
+      "correct": 0
+    }
+  ]
+}

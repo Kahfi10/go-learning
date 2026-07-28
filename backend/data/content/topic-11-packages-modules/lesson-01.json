@@ -1,0 +1,32 @@
+{
+  "id": "01",
+  "title_id": "Membuat Package Sendiri",
+  "title_en": "Creating Your Own Package",
+  "estimatedMinutes": 10,
+  "content_id": "## Apa itu Package di Go?\n\n**Package** adalah unit organisasi kode di Go. Setiap file `.go` dimulai dengan deklarasi `package`. Package memungkinkan kita untuk **memisahkan kode** berdasarkan fungsionalitas dan **menggunakannya kembali**.\n\n## Struktur Direktori\n\n```\nmyapp/\n├── go.mod\n├── main.go\n└── mathutil/\n    ├── add.go\n    └── multiply.go\n```\n\n## Membuat Package\n\nBuat file `mathutil/add.go`:\n\n```go\n// Package mathutil menyediakan utilitas matematika.\npackage mathutil\n\n// Add menambahkan dua integer dan mengembalikan hasilnya.\nfunc Add(a, b int) int {\n\treturn a + b\n}\n\n// Subtract mengurangi b dari a.\nfunc Subtract(a, b int) int {\n\treturn a - b\n}\n```\n\nBuat file `mathutil/multiply.go` (paket yang sama, file berbeda):\n\n```go\npackage mathutil\n\n// Multiply mengalikan dua integer.\nfunc Multiply(a, b int) int {\n\treturn a * b\n}\n```\n\n## Menggunakan Package\n\nDi `main.go`, import dan gunakan package:\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"myapp/mathutil\"\n)\n\nfunc main() {\n\tsum := mathutil.Add(3, 4)\n\tfmt.Println(\"3 + 4 =\", sum)\n\n\tproduct := mathutil.Multiply(3, 4)\n\tfmt.Println(\"3 * 4 =\", product)\n}\n```\n\n## Inisialisasi Package dengan init()\n\nFungsi `init()` dijalankan **otomatis** saat package di-import:\n\n```go\npackage config\n\nimport \"fmt\"\n\nvar defaultPort int\n\nfunc init() {\n\tdefaultPort = 8080\n\tfmt.Println(\"config package initialized\")\n}\n\nfunc GetPort() int {\n\treturn defaultPort\n}\n```\n\n> **Catatan:** Nama package sebaiknya **singkat, huruf kecil**, dan sama dengan nama direktorinya.",
+  "content_en": "## What is a Package in Go?\n\nA **package** is the unit of code organization in Go. Every `.go` file starts with a `package` declaration. Packages let us **separate code** by functionality and **reuse it**.\n\n## Directory Structure\n\n```\nmyapp/\n├── go.mod\n├── main.go\n└── mathutil/\n    ├── add.go\n    └── multiply.go\n```\n\n## Creating a Package\n\nCreate `mathutil/add.go`:\n\n```go\n// Package mathutil provides math utilities.\npackage mathutil\n\n// Add adds two integers and returns the result.\nfunc Add(a, b int) int {\n\treturn a + b\n}\n\n// Subtract subtracts b from a.\nfunc Subtract(a, b int) int {\n\treturn a - b\n}\n```\n\nCreate `mathutil/multiply.go` (same package, different file):\n\n```go\npackage mathutil\n\n// Multiply multiplies two integers.\nfunc Multiply(a, b int) int {\n\treturn a * b\n}\n```\n\n## Using the Package\n\nIn `main.go`, import and use the package:\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"myapp/mathutil\"\n)\n\nfunc main() {\n\tsum := mathutil.Add(3, 4)\n\tfmt.Println(\"3 + 4 =\", sum)\n\n\tproduct := mathutil.Multiply(3, 4)\n\tfmt.Println(\"3 * 4 =\", product)\n}\n```\n\n## Package Initialization with init()\n\nThe `init()` function runs **automatically** when a package is imported:\n\n```go\npackage config\n\nimport \"fmt\"\n\nvar defaultPort int\n\nfunc init() {\n\tdefaultPort = 8080\n\tfmt.Println(\"config package initialized\")\n}\n\nfunc GetPort() int {\n\treturn defaultPort\n}\n```\n\n> **Note:** Package names should be **short, lowercase**, and match the directory name.",
+  "starterCode": "package main\n\nimport \"fmt\"\n\n// Imagine this is in a separate package: stringutil/reverse.go\n// package stringutil\n\n// Reverse returns the string s reversed.\nfunc Reverse(s string) string {\n\trunes := []rune(s)\n\tfor i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {\n\t\trunes[i], runes[j] = runes[j], runes[i]\n\t}\n\treturn string(runes)\n}\n\n// ToUpper returns s in uppercase.\nfunc ToUpper(s string) string {\n\t// TODO: implement using a loop or strings package\n\treturn s\n}\n\nfunc main() {\n\tfmt.Println(Reverse(\"Hello, Gopher!\"))\n\tfmt.Println(ToUpper(\"hello world\"))\n}",
+  "quiz": [
+    {
+      "question_id": "Apa baris pertama yang harus ada di setiap file Go?",
+      "question_en": "What must be the first line in every Go file?",
+      "options_id": ["Deklarasi package (package nama)", "Import statement", "Fungsi main()", "Komentar file"],
+      "options_en": ["Package declaration (package name)", "Import statement", "The main() function", "A file comment"],
+      "correct": 0
+    },
+    {
+      "question_id": "Kapan fungsi init() dijalankan?",
+      "question_en": "When is the init() function called?",
+      "options_id": ["Secara otomatis saat package di-import", "Hanya ketika dipanggil secara eksplisit", "Setelah main() selesai", "Sebelum kompilasi"],
+      "options_en": ["Automatically when the package is imported", "Only when explicitly called", "After main() finishes", "Before compilation"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa konvensi penamaan package yang baik di Go?",
+      "question_en": "What is the Go convention for naming packages?",
+      "options_id": ["Singkat, huruf kecil semua, tanpa underscore", "CamelCase seperti nama fungsi", "Diawali dengan huruf kapital", "Sama dengan nama file .go"],
+      "options_en": ["Short, all lowercase, no underscores", "CamelCase like function names", "Starting with an uppercase letter", "Same as the .go file name"],
+      "correct": 0
+    }
+  ]
+}

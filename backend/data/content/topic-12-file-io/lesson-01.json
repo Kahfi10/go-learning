@@ -1,0 +1,32 @@
+{
+  "id": "01",
+  "title_id": "Membaca & Menulis File",
+  "title_en": "Reading & Writing Files",
+  "estimatedMinutes": 10,
+  "content_id": "## Membaca File\n\nGo menyediakan beberapa cara untuk membaca file. Untuk file kecil, gunakan `os.ReadFile`:\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n)\n\nfunc main() {\n\t// Baca seluruh file sekaligus\n\tdata, err := os.ReadFile(\"hello.txt\")\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t\treturn\n\t}\n\tfmt.Println(string(data))\n}\n```\n\n## Menulis File\n\nGunakan `os.WriteFile` untuk menulis file secara langsung:\n\n```go\ncontent := []byte(\"Hello, Go File I/O!\\n\")\nerr := os.WriteFile(\"output.txt\", content, 0644)\nif err != nil {\n\tlog.Fatal(err)\n}\n```\n\n## Membaca Baris per Baris dengan bufio.Scanner\n\nUntuk file besar, gunakan `bufio.Scanner` agar efisien:\n\n```go\npackage main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"os\"\n)\n\nfunc main() {\n\tfile, err := os.Open(\"data.txt\")\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t\treturn\n\t}\n\tdefer file.Close() // selalu tutup file!\n\n\tscanner := bufio.NewScanner(file)\n\tlineNum := 0\n\tfor scanner.Scan() {\n\t\tlineNum++\n\t\tfmt.Printf(\"Line %d: %s\\n\", lineNum, scanner.Text())\n\t}\n\n\tif err := scanner.Err(); err != nil {\n\t\tfmt.Println(\"Scanner error:\", err)\n\t}\n}\n```\n\n## Menulis dengan bufio.Writer\n\nUntuk penulisan berulang, `bufio.Writer` lebih efisien:\n\n```go\npackage main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"os\"\n)\n\nfunc main() {\n\tfile, err := os.Create(\"output.txt\")\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t\treturn\n\t}\n\tdefer file.Close()\n\n\tw := bufio.NewWriter(file)\n\tfor i := 1; i <= 5; i++ {\n\t\tfmt.Fprintf(w, \"Line %d\\n\", i)\n\t}\n\tw.Flush() // jangan lupa flush!\n}\n```\n\n## Permission Bits\n\n`0644` adalah permission UNIX standard:\n- `6` = owner: read+write\n- `4` = group: read\n- `4` = others: read",
+  "content_en": "## Reading Files\n\nGo provides several ways to read files. For small files, use `os.ReadFile`:\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n)\n\nfunc main() {\n\t// Read entire file at once\n\tdata, err := os.ReadFile(\"hello.txt\")\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t\treturn\n\t}\n\tfmt.Println(string(data))\n}\n```\n\n## Writing Files\n\nUse `os.WriteFile` to write a file directly:\n\n```go\ncontent := []byte(\"Hello, Go File I/O!\\n\")\nerr := os.WriteFile(\"output.txt\", content, 0644)\nif err != nil {\n\tlog.Fatal(err)\n}\n```\n\n## Reading Line by Line with bufio.Scanner\n\nFor large files, use `bufio.Scanner` for efficiency:\n\n```go\npackage main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"os\"\n)\n\nfunc main() {\n\tfile, err := os.Open(\"data.txt\")\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t\treturn\n\t}\n\tdefer file.Close() // always close the file!\n\n\tscanner := bufio.NewScanner(file)\n\tlineNum := 0\n\tfor scanner.Scan() {\n\t\tlineNum++\n\t\tfmt.Printf(\"Line %d: %s\\n\", lineNum, scanner.Text())\n\t}\n\n\tif err := scanner.Err(); err != nil {\n\t\tfmt.Println(\"Scanner error:\", err)\n\t}\n}\n```\n\n## Writing with bufio.Writer\n\nFor repeated writes, `bufio.Writer` is more efficient:\n\n```go\npackage main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"os\"\n)\n\nfunc main() {\n\tfile, err := os.Create(\"output.txt\")\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t\treturn\n\t}\n\tdefer file.Close()\n\n\tw := bufio.NewWriter(file)\n\tfor i := 1; i <= 5; i++ {\n\t\tfmt.Fprintf(w, \"Line %d\\n\", i)\n\t}\n\tw.Flush() // don't forget to flush!\n}\n```\n\n## Permission Bits\n\n`0644` is the standard UNIX permission:\n- `6` = owner: read+write\n- `4` = group: read\n- `4` = others: read",
+  "starterCode": "package main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"os\"\n\t\"strings\"\n)\n\nfunc writeLines(filename string, lines []string) error {\n\t// TODO: create the file, write each line using bufio.Writer, flush\n\t_ = filename\n\t_ = lines\n\treturn nil\n}\n\nfunc countWords(filename string) (int, error) {\n\t// TODO: open the file, use bufio.Scanner to read line by line\n\t// count total words using strings.Fields\n\t_ = strings.Fields\n\treturn 0, nil\n}\n\nfunc main() {\n\tlines := []string{\n\t\t\"Go is an open source programming language\",\n\t\t\"that makes it easy to build simple reliable\",\n\t\t\"and efficient software\",\n\t}\n\n\tfilename := \"temp_test.txt\"\n\n\tif err := writeLines(filename, lines); err != nil {\n\t\tfmt.Println(\"Write error:\", err)\n\t\treturn\n\t}\n\n\tcount, err := countWords(filename)\n\tif err != nil {\n\t\tfmt.Println(\"Read error:\", err)\n\t\treturn\n\t}\n\n\tfmt.Printf(\"Total words: %d\\n\", count) // should be 18\n\tos.Remove(filename)\n}",
+  "quiz": [
+    {
+      "question_id": "Fungsi mana yang paling efisien untuk membaca seluruh file kecil sekaligus?",
+      "question_en": "Which function is most convenient for reading an entire small file at once?",
+      "options_id": ["os.ReadFile()", "os.Open() + bufio.Scanner", "io.ReadAll()", "ioutil.ReadFile()"],
+      "options_en": ["os.ReadFile()", "os.Open() + bufio.Scanner", "io.ReadAll()", "ioutil.ReadFile()"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa penting memanggil w.Flush() setelah bufio.Writer?",
+      "question_en": "Why is it important to call w.Flush() after using bufio.Writer?",
+      "options_id": ["Memastikan data yang di-buffer ditulis ke disk", "Menutup file secara otomatis", "Membebaskan memori buffer", "Memeriksa error penulisan"],
+      "options_en": ["Ensures buffered data is written to disk", "Automatically closes the file", "Frees the buffer memory", "Checks for write errors"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang dimaksud dengan `defer file.Close()` setelah membuka file?",
+      "question_en": "What does `defer file.Close()` do after opening a file?",
+      "options_id": ["Menutup file otomatis saat fungsi selesai, meski ada error", "Menutup file segera", "Mencegah file dari dihapus", "Mengunci file untuk penulisan"],
+      "options_en": ["Closes the file automatically when the function ends, even on error", "Closes the file immediately", "Prevents the file from being deleted", "Locks the file for writing"],
+      "correct": 0
+    }
+  ]
+}

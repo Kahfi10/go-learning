@@ -1,0 +1,32 @@
+{
+  "id": "01",
+  "title_id": "Goroutines",
+  "title_en": "Goroutines",
+  "estimatedMinutes": 10,
+  "content_id": "## Apa itu Goroutine?\n\nGoroutine adalah **lightweight thread** yang dikelola oleh Go runtime, bukan oleh OS. Ribuan goroutine bisa berjalan secara bersamaan dengan overhead memori yang sangat kecil (mulai dari ~2KB).\n\n## Menjalankan Goroutine dengan `go`\n\nCukup tambahkan keyword `go` sebelum pemanggilan fungsi:\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc say(msg string) {\n\tfor i := 0; i < 3; i++ {\n\t\ttime.Sleep(100 * time.Millisecond)\n\t\tfmt.Println(msg)\n\t}\n}\n\nfunc main() {\n\tgo say(\"world\") // jalankan secara concurrent\n\tsay(\"hello\")    // jalankan di goroutine utama\n}\n```\n\n## Concurrent vs Parallel\n\n- **Concurrent**: dua task berjalan *bergantian* pada satu core (overlapping in time)\n- **Parallel**: dua task berjalan *bersamaan* di core berbeda (simultaneously)\n\nGo mendukung keduanya. Anda bisa mengontrol jumlah OS thread dengan `runtime.GOMAXPROCS(n)`.\n\n## Goroutine Anonim\n\n```go\nfunc main() {\n\tfor i := 0; i < 5; i++ {\n\t\ti := i // capture loop variable!\n\t\tgo func() {\n\t\t\tfmt.Println(\"goroutine\", i)\n\t\t}()\n\t}\n\ttime.Sleep(time.Second) // tunggu goroutine selesai (cara sederhana)\n}\n```\n\n> **Perhatian:** `time.Sleep` untuk menunggu goroutine bukan praktik yang baik. Kita akan belajar `sync.WaitGroup` di lesson berikutnya.\n\n## Main Goroutine\n\nFungsi `main()` sendiri berjalan di sebuah goroutine. Ketika `main()` selesai, **semua goroutine lainnya langsung dihentikan**, bahkan jika belum selesai.",
+  "content_en": "## What is a Goroutine?\n\nA goroutine is a **lightweight thread** managed by the Go runtime, not the OS. Thousands of goroutines can run concurrently with very small memory overhead (starting at ~2KB).\n\n## Launching a Goroutine with `go`\n\nJust add the `go` keyword before a function call:\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc say(msg string) {\n\tfor i := 0; i < 3; i++ {\n\t\ttime.Sleep(100 * time.Millisecond)\n\t\tfmt.Println(msg)\n\t}\n}\n\nfunc main() {\n\tgo say(\"world\") // run concurrently\n\tsay(\"hello\")    // run in main goroutine\n}\n```\n\n## Concurrent vs Parallel\n\n- **Concurrent**: two tasks run *alternately* on one core (overlapping in time)\n- **Parallel**: two tasks run *simultaneously* on different cores\n\nGo supports both. You can control the number of OS threads with `runtime.GOMAXPROCS(n)`.\n\n## Anonymous Goroutines\n\n```go\nfunc main() {\n\tfor i := 0; i < 5; i++ {\n\t\ti := i // capture loop variable!\n\t\tgo func() {\n\t\t\tfmt.Println(\"goroutine\", i)\n\t\t}()\n\t}\n\ttime.Sleep(time.Second) // wait for goroutines (naive approach)\n}\n```\n\n> **Warning:** Using `time.Sleep` to wait for goroutines is not good practice. We'll learn `sync.WaitGroup` in an upcoming lesson.\n\n## The Main Goroutine\n\nThe `main()` function itself runs in a goroutine. When `main()` exits, **all other goroutines are immediately terminated**, even if they haven't finished.",
+  "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc printNumbers() {\n\tfor i := 1; i <= 5; i++ {\n\t\ttime.Sleep(50 * time.Millisecond)\n\t\tfmt.Println(\"number:\", i)\n\t}\n}\n\nfunc printLetters() {\n\tfor _, c := range \"ABCDE\" {\n\t\ttime.Sleep(70 * time.Millisecond)\n\t\tfmt.Printf(\"letter: %c\\n\", c)\n\t}\n}\n\nfunc main() {\n\t// TODO: run printNumbers as a goroutine\n\tprintNumbers()\n\tprintLetters()\n\n\t// Give goroutines time to finish\n\ttime.Sleep(time.Second)\n}",
+  "quiz": [
+    {
+      "question_id": "Bagaimana cara menjalankan sebuah fungsi sebagai goroutine?",
+      "question_en": "How do you run a function as a goroutine?",
+      "options_id": ["Tambahkan keyword `go` sebelum pemanggilan fungsi", "Gunakan thread.Start(func)", "Panggil runtime.Go(func)", "Gunakan async/await"],
+      "options_en": ["Add the `go` keyword before the function call", "Use thread.Start(func)", "Call runtime.Go(func)", "Use async/await"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang terjadi pada goroutine lain ketika main() selesai?",
+      "question_en": "What happens to other goroutines when main() exits?",
+      "options_id": ["Semua goroutine langsung dihentikan", "Goroutine menyelesaikan tugasnya terlebih dahulu", "Goroutine dipindahkan ke background", "Go runtime menunggu semua goroutine selesai"],
+      "options_en": ["All goroutines are immediately terminated", "Goroutines finish their current task first", "Goroutines are moved to background", "The Go runtime waits for all goroutines"],
+      "correct": 0
+    },
+    {
+      "question_id": "Berapa besar memori awal yang dibutuhkan satu goroutine?",
+      "question_en": "What is the initial memory footprint of a single goroutine?",
+      "options_id": ["Sekitar 2KB", "Sekitar 1MB", "Sekitar 8MB (sama dengan OS thread)", "Tidak membutuhkan memori"],
+      "options_en": ["Around 2KB", "Around 1MB", "Around 8MB (same as OS thread)", "No memory required"],
+      "correct": 0
+    }
+  ]
+}
