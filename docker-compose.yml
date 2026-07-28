@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: golearn-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: golearn
+      POSTGRES_USER: golearn
+      POSTGRES_PASSWORD: golearn_secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U golearn"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: golearn-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: 8080
+      DB_URL: postgres://golearn:golearn_secret@postgres:5432/golearn?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET:-supersecretkey_change_in_production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-refresh_supersecret_change_in_production}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+      FRONTEND_URL: http://localhost:3000
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/data:/app/data:ro
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: golearn-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:

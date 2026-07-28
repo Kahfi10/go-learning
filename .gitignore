@@ -1,0 +1,42 @@
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+vendor/
+
+# Build outputs
+frontend/.next/
+frontend/out/
+backend/bin/
+*.exe
+*.out
+
+# Go
+*.test
+*.prof
+/tmp/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OpenCode (agent config — not part of app)
+.agents/
+opencode.json
+skills-lock.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Docker
+.dockerignore
