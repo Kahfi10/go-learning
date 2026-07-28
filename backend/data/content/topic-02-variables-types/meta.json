@@ -1,0 +1,11 @@
+{
+  "slug": "variables-types",
+  "number": 2,
+  "title_id": "Variabel, Konstanta & Tipe Data",
+  "title_en": "Variables, Constants & Types",
+  "description_id": "Pelajari cara mendeklarasikan variabel, konstanta, dan berbagai tipe data primitif di Go.",
+  "description_en": "Learn how to declare variables, constants, and various primitive data types in Go.",
+  "level": "Beginner",
+  "color": "#34C759",
+  "estimatedMinutes": 50
+}

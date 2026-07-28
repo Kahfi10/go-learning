@@ -1,0 +1,62 @@
+{
+  "id": "02",
+  "title_id": "Multiple Return Values",
+  "title_en": "Multiple Return Values",
+  "estimatedMinutes": 10,
+  "content_id": "# Multiple Return Values\n\nGo mendukung fungsi yang mengembalikan **lebih dari satu nilai**. Ini adalah fitur yang sangat idiomatik dan kuat, terutama untuk pola **(result, error)**.\n\n## Sintaks Multiple Return\n\n```go\nfunc namaFungsi() (tipe1, tipe2) {\n    return nilai1, nilai2\n}\n```\n\n## Contoh Dasar\n\n```go\nfunc minMax(nums []int) (int, int) {\n    min, max := nums[0], nums[0]\n    for _, n := range nums {\n        if n < min {\n            min = n\n        }\n        if n > max {\n            max = n\n        }\n    }\n    return min, max\n}\n\nfunc main() {\n    minimum, maximum := minMax([]int{3, 1, 4, 1, 5, 9, 2, 6})\n    fmt.Printf(\"Min: %d, Max: %d\\n\", minimum, maximum) // Min: 1, Max: 9\n}\n```\n\n## Pola (result, error) — Idiom Go\n\nCara paling umum menggunakan multiple return di Go adalah dengan **pola error handling**:\n\n```go\nfunc divide(a, b float64) (float64, error) {\n    if b == 0 {\n        return 0, fmt.Errorf(\"tidak bisa membagi dengan nol\")\n    }\n    return a / b, nil\n}\n\nfunc main() {\n    // Kasus sukses\n    result, err := divide(10, 3)\n    if err != nil {\n        fmt.Println(\"Error:\", err)\n    } else {\n        fmt.Printf(\"10 / 3 = %.4f\\n\", result) // 3.3333\n    }\n\n    // Kasus error\n    result2, err2 := divide(5, 0)\n    if err2 != nil {\n        fmt.Println(\"Error:\", err2) // Error: tidak bisa membagi dengan nol\n    } else {\n        fmt.Println(result2)\n    }\n}\n```\n\n## Mengabaikan Return Value dengan `_`\n\n```go\n// Jika tidak butuh error\nresult, _ := divide(10, 2)\nfmt.Println(result) // 5\n\n// Jika tidak butuh hasil\n_, err := divide(10, 0)\nif err != nil {\n    fmt.Println(\"Terjadi error\")\n}\n```\n\n## Mengapa Pola (result, error) Idiomatik?\n\nGo **tidak menggunakan exception** seperti Java/Python. Sebagai gantinya:\n\n| Bahasa | Error Handling |\n|---|---|\n| Java | `try { ... } catch (Exception e) { ... }` |\n| Python | `try: ... except Exception as e: ...` |\n| Go | `result, err := func(); if err != nil { ... }` |\n\nKelebihan pendekatan Go:\n- Error handling **eksplisit** dan mudah ditelusuri\n- Tidak ada exception tersembunyi\n- Kode lebih mudah dipahami alur eksekusinya\n\n## Contoh Real: Parse JSON-like\n\n```go\nfunc parseAge(s string) (int, error) {\n    age, err := strconv.Atoi(s)\n    if err != nil {\n        return 0, fmt.Errorf(\"input tidak valid: %w\", err)\n    }\n    if age < 0 || age > 150 {\n        return 0, fmt.Errorf(\"umur %d tidak masuk akal\", age)\n    }\n    return age, nil\n}\n```",
+  "content_en": "# Multiple Return Values\n\nGo supports functions that return **more than one value**. This is a very idiomatic and powerful feature, especially for the **(result, error)** pattern.\n\n## Multiple Return Syntax\n\n```go\nfunc functionName() (type1, type2) {\n    return value1, value2\n}\n```\n\n## Basic Example\n\n```go\nfunc minMax(nums []int) (int, int) {\n    min, max := nums[0], nums[0]\n    for _, n := range nums {\n        if n < min {\n            min = n\n        }\n        if n > max {\n            max = n\n        }\n    }\n    return min, max\n}\n\nfunc main() {\n    minimum, maximum := minMax([]int{3, 1, 4, 1, 5, 9, 2, 6})\n    fmt.Printf(\"Min: %d, Max: %d\\n\", minimum, maximum) // Min: 1, Max: 9\n}\n```\n\n## The (result, error) Pattern — Go's Idiom\n\nThe most common use of multiple returns in Go is the **error handling pattern**:\n\n```go\nfunc divide(a, b float64) (float64, error) {\n    if b == 0 {\n        return 0, fmt.Errorf(\"cannot divide by zero\")\n    }\n    return a / b, nil\n}\n\nfunc main() {\n    // Success case\n    result, err := divide(10, 3)\n    if err != nil {\n        fmt.Println(\"Error:\", err)\n    } else {\n        fmt.Printf(\"10 / 3 = %.4f\\n\", result) // 3.3333\n    }\n\n    // Error case\n    result2, err2 := divide(5, 0)\n    if err2 != nil {\n        fmt.Println(\"Error:\", err2) // Error: cannot divide by zero\n    } else {\n        fmt.Println(result2)\n    }\n}\n```\n\n## Ignoring Return Values with `_`\n\n```go\n// If you don't need the error\nresult, _ := divide(10, 2)\nfmt.Println(result) // 5\n\n// If you don't need the result\n_, err := divide(10, 0)\nif err != nil {\n    fmt.Println(\"An error occurred\")\n}\n```\n\n## Why Is the (result, error) Pattern Idiomatic?\n\nGo **does not use exceptions** like Java/Python. Instead:\n\n| Language | Error Handling |\n|---|---|\n| Java | `try { ... } catch (Exception e) { ... }` |\n| Python | `try: ... except Exception as e: ...` |\n| Go | `result, err := func(); if err != nil { ... }` |\n\nAdvantages of Go's approach:\n- Error handling is **explicit** and easy to trace\n- No hidden exceptions\n- Execution flow is easier to understand\n\n## Real-World Example: Parse Input\n\n```go\nfunc parseAge(s string) (int, error) {\n    age, err := strconv.Atoi(s)\n    if err != nil {\n        return 0, fmt.Errorf(\"invalid input: %w\", err)\n    }\n    if age < 0 || age > 150 {\n        return 0, fmt.Errorf(\"age %d is unreasonable\", age)\n    }\n    return age, nil\n}\n```",
+  "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"errors\"\n)\n\n// divide mengembalikan hasil dan error\nfunc divide(a, b float64) (float64, error) {\n\tif b == 0 {\n\t\treturn 0, errors.New(\"tidak bisa membagi dengan nol\")\n\t}\n\treturn a / b, nil\n}\n\n// swap menukar dua string dan mengembalikan keduanya\nfunc swap(a, b string) (string, string) {\n\treturn b, a\n}\n\nfunc main() {\n\t// Test divide - sukses\n\tresult, err := divide(10, 4)\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t} else {\n\t\tfmt.Printf(\"10 / 4 = %.4f\\n\", result)\n\t}\n\n\t// Test divide - error\n\t_, err = divide(5, 0)\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t}\n\n\t// Test swap\n\tx, y := swap(\"Hello\", \"World\")\n\tfmt.Println(x, y)\n}",
+  "quiz": [
+    {
+      "question_id": "Bagaimana cara yang benar untuk mendeklarasikan fungsi dengan dua return value di Go?",
+      "question_en": "How do you correctly declare a function with two return values in Go?",
+      "options_id": [
+        "func f() float64, error { }",
+        "func f() [float64, error] { }",
+        "func f() (float64, error) { }",
+        "func f() <float64, error> { }"
+      ],
+      "options_en": [
+        "func f() float64, error { }",
+        "func f() [float64, error] { }",
+        "func f() (float64, error) { }",
+        "func f() <float64, error> { }"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Dalam pola error handling Go, jika tidak ada error, nilai apa yang dikembalikan sebagai error?",
+      "question_en": "In Go's error handling pattern, what value is returned as the error when there is no error?",
+      "options_id": [
+        "false",
+        "0",
+        "\"\"",
+        "nil"
+      ],
+      "options_en": [
+        "false",
+        "0",
+        "\"\"",
+        "nil"
+      ],
+      "correct": 3
+    },
+    {
+      "question_id": "Apa yang dimaksud dengan menggunakan `_` saat menerima multiple return value?",
+      "question_en": "What does using `_` mean when receiving multiple return values?",
+      "options_id": [
+        "Menyimpan nilai ke variabel private",
+        "Menandai nilai sebagai nol",
+        "Mengabaikan/membuang nilai tersebut",
+        "Mengkonversi nilai ke string"
+      ],
+      "options_en": [
+        "Store the value in a private variable",
+        "Mark the value as zero",
+        "Discard/ignore that value",
+        "Convert the value to a string"
+      ],
+      "correct": 2
+    }
+  ]
+}

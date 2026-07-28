@@ -1,0 +1,62 @@
+{
+  "id": "05",
+  "title_id": "First-Class Functions",
+  "title_en": "First-Class Functions",
+  "estimatedMinutes": 10,
+  "content_id": "# First-Class Functions\n\nDi Go, fungsi adalah **first-class citizen** — artinya fungsi diperlakukan sama seperti nilai lainnya: bisa disimpan dalam variabel, diteruskan sebagai argumen, dan dikembalikan dari fungsi lain.\n\n## Fungsi sebagai Nilai\n\n```go\n// Fungsi biasa\nfunc square(x int) int {\n    return x * x\n}\n\nfunc main() {\n    // Simpan fungsi ke variabel\n    fn := square\n    fmt.Println(fn(5))  // 25\n\n    // Tipe dari fn adalah: func(int) int\n    fmt.Printf(\"%T\\n\", fn) // func(int) int\n}\n```\n\n## Tipe Fungsi\n\n```go\n// Deklarasi tipe fungsi\ntype MathOp func(int, int) int\n\nfunc add(a, b int) int { return a + b }\nfunc subtract(a, b int) int { return a - b }\nfunc multiply(a, b int) int { return a * b }\n\nfunc applyOp(a, b int, op MathOp) int {\n    return op(a, b)\n}\n\nfunc main() {\n    fmt.Println(applyOp(10, 5, add))      // 15\n    fmt.Println(applyOp(10, 5, subtract)) // 5\n    fmt.Println(applyOp(10, 5, multiply)) // 50\n}\n```\n\n## Fungsi sebagai Parameter (Callback)\n\n```go\n// Filter slice berdasarkan kondisi fungsi\nfunc filter(nums []int, predicate func(int) bool) []int {\n    result := []int{}\n    for _, n := range nums {\n        if predicate(n) {\n            result = append(result, n)\n        }\n    }\n    return result\n}\n\nfunc isEven(n int) bool { return n%2 == 0 }\nfunc isPositive(n int) bool { return n > 0 }\n\nfunc main() {\n    nums := []int{-3, -1, 0, 1, 2, 3, 4, 5}\n    evens := filter(nums, isEven)\n    fmt.Println(evens) // [0 2 4]\n\n    positives := filter(nums, isPositive)\n    fmt.Println(positives) // [1 2 3 4 5]\n}\n```\n\n## Fungsi yang Mengembalikan Fungsi\n\n```go\nfunc multiplier(factor int) func(int) int {\n    return func(x int) int {\n        return x * factor\n    }\n}\n\nfunc main() {\n    double := multiplier(2)\n    triple := multiplier(3)\n\n    fmt.Println(double(5))  // 10\n    fmt.Println(triple(5))  // 15\n    fmt.Println(double(triple(4))) // 24\n}\n```\n\n## sort.Slice — Contoh Nyata\n\n`sort.Slice` adalah contoh nyata penggunaan fungsi sebagai parameter di standard library:\n\n```go\nimport \"sort\"\n\ntype Person struct {\n    Name string\n    Age  int\n}\n\npeople := []Person{\n    {\"Alice\", 30},\n    {\"Bob\", 25},\n    {\"Charlie\", 35},\n}\n\n// Urutkan berdasarkan Age (ascending)\nsort.Slice(people, func(i, j int) bool {\n    return people[i].Age < people[j].Age\n})\n\nfor _, p := range people {\n    fmt.Printf(\"%s: %d\\n\", p.Name, p.Age)\n}\n// Bob: 25\n// Alice: 30\n// Charlie: 35\n```\n\n## Anonymous Function (Fungsi Anonim)\n\n```go\n// Fungsi anonim yang langsung dipanggil (IIFE)\nresult := func(a, b int) int {\n    return a + b\n}(3, 4)\nfmt.Println(result) // 7\n\n// Fungsi anonim disimpan ke variabel\ngreet := func(name string) string {\n    return \"Hello, \" + name\n}\nfmt.Println(greet(\"Gopher\")) // Hello, Gopher\n```",
+  "content_en": "# First-Class Functions\n\nIn Go, functions are **first-class citizens** — meaning they are treated like any other value: they can be stored in variables, passed as arguments, and returned from other functions.\n\n## Functions as Values\n\n```go\n// Regular function\nfunc square(x int) int {\n    return x * x\n}\n\nfunc main() {\n    // Store a function in a variable\n    fn := square\n    fmt.Println(fn(5))  // 25\n\n    // The type of fn is: func(int) int\n    fmt.Printf(\"%T\\n\", fn) // func(int) int\n}\n```\n\n## Function Types\n\n```go\n// Declare a function type\ntype MathOp func(int, int) int\n\nfunc add(a, b int) int { return a + b }\nfunc subtract(a, b int) int { return a - b }\nfunc multiply(a, b int) int { return a * b }\n\nfunc applyOp(a, b int, op MathOp) int {\n    return op(a, b)\n}\n\nfunc main() {\n    fmt.Println(applyOp(10, 5, add))      // 15\n    fmt.Println(applyOp(10, 5, subtract)) // 5\n    fmt.Println(applyOp(10, 5, multiply)) // 50\n}\n```\n\n## Functions as Parameters (Callbacks)\n\n```go\n// Filter a slice based on a predicate function\nfunc filter(nums []int, predicate func(int) bool) []int {\n    result := []int{}\n    for _, n := range nums {\n        if predicate(n) {\n            result = append(result, n)\n        }\n    }\n    return result\n}\n\nfunc isEven(n int) bool { return n%2 == 0 }\nfunc isPositive(n int) bool { return n > 0 }\n\nfunc main() {\n    nums := []int{-3, -1, 0, 1, 2, 3, 4, 5}\n    evens := filter(nums, isEven)\n    fmt.Println(evens) // [0 2 4]\n\n    positives := filter(nums, isPositive)\n    fmt.Println(positives) // [1 2 3 4 5]\n}\n```\n\n## Functions Returning Functions\n\n```go\nfunc multiplier(factor int) func(int) int {\n    return func(x int) int {\n        return x * factor\n    }\n}\n\nfunc main() {\n    double := multiplier(2)\n    triple := multiplier(3)\n\n    fmt.Println(double(5))  // 10\n    fmt.Println(triple(5))  // 15\n    fmt.Println(double(triple(4))) // 24\n}\n```\n\n## sort.Slice — Real-World Example\n\n`sort.Slice` is a real example of a function-as-parameter from the standard library:\n\n```go\nimport \"sort\"\n\ntype Person struct {\n    Name string\n    Age  int\n}\n\npeople := []Person{\n    {\"Alice\", 30},\n    {\"Bob\", 25},\n    {\"Charlie\", 35},\n}\n\n// Sort by Age (ascending)\nsort.Slice(people, func(i, j int) bool {\n    return people[i].Age < people[j].Age\n})\n\nfor _, p := range people {\n    fmt.Printf(\"%s: %d\\n\", p.Name, p.Age)\n}\n// Bob: 25\n// Alice: 30\n// Charlie: 35\n```\n\n## Anonymous Functions\n\n```go\n// Anonymous function called immediately (IIFE)\nresult := func(a, b int) int {\n    return a + b\n}(3, 4)\nfmt.Println(result) // 7\n\n// Anonymous function stored in a variable\ngreet := func(name string) string {\n    return \"Hello, \" + name\n}\nfmt.Println(greet(\"Gopher\")) // Hello, Gopher\n```",
+  "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\n// apply menerapkan fungsi ke setiap elemen slice\nfunc apply(nums []int, fn func(int) int) []int {\n\tresult := make([]int, len(nums))\n\tfor i, n := range nums {\n\t\tresult[i] = fn(n)\n\t}\n\treturn result\n}\n\nfunc main() {\n\tnums := []int{1, 2, 3, 4, 5}\n\n\t// Gunakan fungsi bernama\n\tsquare := func(x int) int { return x * x }\n\tdouble := func(x int) int { return x * 2 }\n\n\tfmt.Println(\"Original:\", nums)\n\tfmt.Println(\"Squared: \", apply(nums, square))\n\tfmt.Println(\"Doubled: \", apply(nums, double))\n\n\t// sort.Slice dengan fungsi anonim\n\twords := []string{\"banana\", \"apple\", \"cherry\", \"date\"}\n\tsort.Slice(words, func(i, j int) bool {\n\t\treturn words[i] < words[j]\n\t})\n\tfmt.Println(\"Sorted:\", words)\n}",
+  "quiz": [
+    {
+      "question_id": "Apa yang dimaksud dengan fungsi sebagai 'first-class citizen' di Go?",
+      "question_en": "What does it mean for functions to be 'first-class citizens' in Go?",
+      "options_id": [
+        "Fungsi memiliki prioritas eksekusi lebih tinggi dari operasi lain",
+        "Fungsi hanya bisa dideklarasikan di level package",
+        "Fungsi bisa disimpan dalam variabel, diteruskan sebagai argumen, dan dikembalikan dari fungsi lain",
+        "Fungsi selalu dieksekusi sebelum variabel diinisialisasi"
+      ],
+      "options_en": [
+        "Functions have higher execution priority than other operations",
+        "Functions can only be declared at package level",
+        "Functions can be stored in variables, passed as arguments, and returned from other functions",
+        "Functions are always executed before variables are initialized"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa tipe dari variabel `fn` jika dideklarasikan sebagai `fn := func(a, b int) int { return a+b }` ?",
+      "question_en": "What is the type of variable `fn` if declared as `fn := func(a, b int) int { return a+b }` ?",
+      "options_id": [
+        "int",
+        "func",
+        "func(int, int) int",
+        "function(int,int)->int"
+      ],
+      "options_en": [
+        "int",
+        "func",
+        "func(int, int) int",
+        "function(int,int)->int"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Fungsi `sort.Slice` di standard library Go menerima fungsi sebagai parameter untuk?",
+      "question_en": "The `sort.Slice` function in Go's standard library accepts a function parameter for?",
+      "options_id": [
+        "Menentukan cara mencetak elemen",
+        "Mendefinisikan logika perbandingan untuk pengurutan",
+        "Menentukan cara menyalin elemen",
+        "Menentukan kapasitas memori yang dibutuhkan"
+      ],
+      "options_en": [
+        "Determining how to print elements",
+        "Defining the comparison logic for sorting",
+        "Determining how to copy elements",
+        "Determining how much memory is needed"
+      ],
+      "correct": 1
+    }
+  ]
+}

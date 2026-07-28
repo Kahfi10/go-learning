@@ -1,0 +1,79 @@
+{
+  "id": "04",
+  "title_id": "Constants & iota",
+  "title_en": "Constants & iota",
+  "estimatedMinutes": 10,
+  "content_id": "# Constants & iota\n\n## Konstanta dengan `const`\n\nKonstanta adalah nilai yang **tidak dapat diubah** setelah dideklarasikan. Konstanta dievaluasi saat kompilasi.\n\n```go\nconst Pi = 3.14159\nconst AppName = \"GoApp\"\nconst MaxRetry = 3\n\n// Pi = 4.0  // ERROR! Tidak bisa mengubah konstanta\n```\n\n## Typed vs Untyped Constants\n\n```go\n// Typed constant — memiliki tipe eksplisit\nconst typedPi float64 = 3.14159\n\n// Untyped constant — lebih fleksibel, tipe ditentukan saat digunakan\nconst untypedPi = 3.14159\n\nvar f32 float32 = untypedPi  // OK: untyped bisa digunakan sebagai float32\nvar f64 float64 = untypedPi  // OK: juga bisa float64\n// var f32b float32 = typedPi  // ERROR: typedPi adalah float64\n```\n\n## Const Group\n\n```go\nconst (\n    StatusOK       = 200\n    StatusNotFound = 404\n    StatusError    = 500\n\n    AppVersion = \"2.0.0\"\n    MaxWorkers = 10\n)\n```\n\n## `iota` — Auto-increment untuk Konstanta\n\n`iota` adalah penghitung yang dimulai dari **0** dan bertambah 1 setiap baris dalam blok `const`:\n\n```go\nconst (\n    Minggu  = iota // 0\n    Senin          // 1\n    Selasa         // 2\n    Rabu           // 3\n    Kamis          // 4\n    Jumat          // 5\n    Sabtu          // 6\n)\n\nfmt.Println(Senin, Rabu, Sabtu) // 1 3 6\n```\n\n## iota dengan Ekspresi Aritmatika\n\n```go\nconst (\n    _  = iota             // 0 (diabaikan dengan _)\n    KB = 1 << (10 * iota) // 1 << 10 = 1024\n    MB                    // 1 << 20 = 1048576\n    GB                    // 1 << 30 = 1073741824\n    TB                    // 1 << 40\n)\n\nfmt.Printf(\"1 KB = %d bytes\\n\", KB)  // 1024\nfmt.Printf(\"1 MB = %d bytes\\n\", MB)  // 1048576\nfmt.Printf(\"1 GB = %d bytes\\n\", GB)  // 1073741824\n```\n\n## Enum dengan iota (Direction)\n\n```go\ntype Direction int\n\nconst (\n    North Direction = iota  // 0\n    East                    // 1\n    South                   // 2\n    West                    // 3\n)\n\nfunc (d Direction) String() string {\n    return [...]string{\"North\", \"East\", \"South\", \"West\"}[d]\n}\n\nfmt.Println(North) // North\nfmt.Println(East)  // East\n```\n\n## iota Mulai dari Nilai Tertentu\n\n```go\nconst (\n    Level1 = iota + 1  // 1 (bukan 0)\n    Level2             // 2\n    Level3             // 3\n)\n\nconst (\n    HTTP  = iota * 100  // 0\n    FTP                 // 100\n    SSH                 // 200\n    SMTP                // 300\n)\n```",
+  "content_en": "# Constants & iota\n\n## Constants with `const`\n\nConstants are values that **cannot be changed** after declaration. They are evaluated at compile time.\n\n```go\nconst Pi = 3.14159\nconst AppName = \"GoApp\"\nconst MaxRetry = 3\n\n// Pi = 4.0  // ERROR! Cannot change a constant\n```\n\n## Typed vs Untyped Constants\n\n```go\n// Typed constant — has an explicit type\nconst typedPi float64 = 3.14159\n\n// Untyped constant — more flexible, type determined at usage\nconst untypedPi = 3.14159\n\nvar f32 float32 = untypedPi  // OK: untyped can be used as float32\nvar f64 float64 = untypedPi  // OK: also works as float64\n// var f32b float32 = typedPi  // ERROR: typedPi is float64\n```\n\n## Const Group\n\n```go\nconst (\n    StatusOK       = 200\n    StatusNotFound = 404\n    StatusError    = 500\n\n    AppVersion = \"2.0.0\"\n    MaxWorkers = 10\n)\n```\n\n## `iota` — Auto-increment for Constants\n\n`iota` is a counter starting at **0** that increments by 1 with each line in a `const` block:\n\n```go\nconst (\n    Sunday    = iota // 0\n    Monday           // 1\n    Tuesday          // 2\n    Wednesday        // 3\n    Thursday         // 4\n    Friday           // 5\n    Saturday         // 6\n)\n\nfmt.Println(Monday, Wednesday, Saturday) // 1 3 6\n```\n\n## iota with Arithmetic Expressions\n\n```go\nconst (\n    _  = iota             // 0 (discarded with _)\n    KB = 1 << (10 * iota) // 1 << 10 = 1024\n    MB                    // 1 << 20 = 1048576\n    GB                    // 1 << 30 = 1073741824\n    TB                    // 1 << 40\n)\n\nfmt.Printf(\"1 KB = %d bytes\\n\", KB)  // 1024\nfmt.Printf(\"1 MB = %d bytes\\n\", MB)  // 1048576\nfmt.Printf(\"1 GB = %d bytes\\n\", GB)  // 1073741824\n```\n\n## Enum with iota (Direction)\n\n```go\ntype Direction int\n\nconst (\n    North Direction = iota  // 0\n    East                    // 1\n    South                   // 2\n    West                    // 3\n)\n\nfunc (d Direction) String() string {\n    return [...]string{\"North\", \"East\", \"South\", \"West\"}[d]\n}\n\nfmt.Println(North) // North\nfmt.Println(East)  // East\n```\n\n## iota Starting from a Specific Value\n\n```go\nconst (\n    Level1 = iota + 1  // 1 (not 0)\n    Level2             // 2\n    Level3             // 3\n)\n\nconst (\n    HTTP  = iota * 100  // 0\n    FTP                 // 100\n    SSH                 // 200\n    SMTP                // 300\n)\n```",
+  "starterCode": "package main\n\nimport \"fmt\"\n\nconst (\n\tAppName = \"BelajarGo\"\n\tVersion = \"1.0.0\"\n\tMaxUsers = 100\n)\n\ntype Weekday int\n\nconst (\n\tSunday Weekday = iota\n\tMonday\n\tTuesday\n\tWednesday\n\tThursday\n\tFriday\n\tSaturday\n)\n\nconst (\n\t_  = iota\n\tKB = 1 << (10 * iota)\n\tMB\n\tGB\n)\n\nfunc main() {\n\tfmt.Printf(\"App: %s v%s, MaxUsers: %d\\n\", AppName, Version, MaxUsers)\n\tfmt.Printf(\"Hari ke-1: %d (Monday)\\n\", Monday)\n\tfmt.Printf(\"Hari ke-5: %d (Friday)\\n\", Friday)\n\tfmt.Printf(\"1 KB = %d bytes\\n\", KB)\n\tfmt.Printf(\"1 MB = %d bytes\\n\", MB)\n\tfmt.Printf(\"1 GB = %d bytes\\n\", GB)\n}",
+  "quiz": [
+    {
+      "question_id": "Nilai awal dari `iota` dalam setiap blok `const` di Go adalah?",
+      "question_en": "What is the starting value of `iota` in each `const` block in Go?",
+      "options_id": [
+        "-1",
+        "0",
+        "1",
+        "Tidak tentu"
+      ],
+      "options_en": [
+        "-1",
+        "0",
+        "1",
+        "Indeterminate"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa perbedaan utama antara 'typed constant' dan 'untyped constant' di Go?",
+      "question_en": "What is the main difference between a 'typed constant' and an 'untyped constant' in Go?",
+      "options_id": [
+        "Typed constant lebih cepat diproses",
+        "Untyped constant lebih fleksibel karena tipenya ditentukan saat digunakan",
+        "Typed constant bisa diubah nilainya",
+        "Untyped constant hanya bisa digunakan untuk angka"
+      ],
+      "options_en": [
+        "Typed constants are processed faster",
+        "Untyped constants are more flexible because their type is determined at usage",
+        "Typed constants can have their value changed",
+        "Untyped constants can only be used for numbers"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Ekspresi `1 << (10 * iota)` dengan iota=2 menghasilkan nilai berapa?",
+      "question_en": "What value does the expression `1 << (10 * iota)` produce when iota=2?",
+      "options_id": [
+        "1024",
+        "1048576",
+        "1073741824",
+        "20"
+      ],
+      "options_en": [
+        "1024",
+        "1048576",
+        "1073741824",
+        "20"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang terjadi jika Anda mencoba mengubah nilai konstanta setelah dideklarasikan di Go?",
+      "question_en": "What happens if you try to change the value of a constant after declaration in Go?",
+      "options_id": [
+        "Nilai konstanta berubah sesuai nilai baru",
+        "Program memberikan peringatan runtime",
+        "Kompilasi gagal dengan error",
+        "Nilai baru diabaikan secara diam-diam"
+      ],
+      "options_en": [
+        "The constant value changes to the new value",
+        "The program gives a runtime warning",
+        "Compilation fails with an error",
+        "The new value is silently ignored"
+      ],
+      "correct": 2
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "id": "02",
+  "title_id": "Tipe Data Primitif",
+  "title_en": "Primitive Data Types",
+  "estimatedMinutes": 12,
+  "content_id": "# Tipe Data Primitif\n\n## Integer\n\nGo memiliki berbagai ukuran integer:\n\n| Tipe | Ukuran | Range |\n|---|---|---|\n| `int8` | 8 bit | -128 to 127 |\n| `int16` | 16 bit | -32,768 to 32,767 |\n| `int32` | 32 bit | -2,147,483,648 to 2,147,483,647 |\n| `int64` | 64 bit | -9.2×10¹⁸ to 9.2×10¹⁸ |\n| `int` | 32 atau 64 bit | Tergantung platform |\n| `uint8` | 8 bit | 0 to 255 |\n| `uint16` | 16 bit | 0 to 65,535 |\n| `uint32` | 32 bit | 0 to 4,294,967,295 |\n| `uint64` | 64 bit | 0 to 1.8×10¹⁹ |\n| `uint` | 32 atau 64 bit | Tergantung platform |\n\n```go\nimport \"math\"\n\nvar a int = 42\nvar b int64 = 9_000_000_000  // underscore sebagai pemisah\nvar c uint = 255\n\nfmt.Println(math.MaxInt)    // max value untuk int\nfmt.Println(math.MaxInt64)  // max value untuk int64\n```\n\n## Float\n\n```go\nvar f32 float32 = 3.14          // presisi ~6-7 digit\nvar f64 float64 = 3.14159265358 // presisi ~15-17 digit (lebih disarankan)\n\nfmt.Printf(\"float32: %.7f\\n\", f32) // 3.1400001 (ada error presisi)\nfmt.Printf(\"float64: %.11f\\n\", f64) // 3.14159265358\n```\n\n## Boolean\n\n```go\nvar benar bool = true\nvar salah bool = false\n\nfmt.Println(benar && salah) // false (AND)\nfmt.Println(benar || salah) // true  (OR)\nfmt.Println(!benar)          // false (NOT)\n```\n\n## String\n\nString di Go adalah urutan byte yang **immutable** (tidak bisa diubah setelah dibuat).\n\n```go\nvar s string = \"Hello, Go!\"\n\nfmt.Println(len(s))    // 10 (panjang byte)\nfmt.Println(s[0])      // 72 (nilai byte dari 'H')\nfmt.Println(s[0:5])    // Hello (slice)\nfmt.Println(s + \" \" + \"World\") // concatenation\n```\n\n### Iterasi string\n```go\nfor i, r := range \"Go!\" {\n    fmt.Printf(\"index %d: %c (%d)\\n\", i, r, r)\n}\n```\n\n## Rune (int32) dan Byte (uint8)\n\n```go\nvar r rune = 'A'       // rune = int32, untuk karakter Unicode\nvar b byte = 'z'       // byte = uint8, untuk karakter ASCII\n\nfmt.Println(r)         // 65 (kode ASCII 'A')\nfmt.Printf(\"%c\\n\", r) // A\nfmt.Println(b)         // 122 (kode ASCII 'z')\n```\n\nPerbedaan rune vs byte:\n- `byte` (`uint8`) — untuk karakter ASCII (0-127)\n- `rune` (`int32`) — untuk karakter Unicode (mendukung semua bahasa)\n\n## Contoh Lengkap Semua Tipe\n\n```go\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n    var i int = 100\n    var f float64 = 9.81\n    var b bool = true\n    var s string = \"Golang\"\n    var r rune = '\\u00e9'  // é\n    var by byte = 'A'\n\n    fmt.Printf(\"%T = %v\\n\", i, i)\n    fmt.Printf(\"%T = %v\\n\", f, f)\n    fmt.Printf(\"%T = %v\\n\", b, b)\n    fmt.Printf(\"%T = %v\\n\", s, s)\n    fmt.Printf(\"%T = %c\\n\", r, r)\n    fmt.Printf(\"%T = %c\\n\", by, by)\n}\n```",
+  "content_en": "# Primitive Data Types\n\n## Integer\n\nGo has several integer sizes:\n\n| Type | Size | Range |\n|---|---|---|\n| `int8` | 8 bit | -128 to 127 |\n| `int16` | 16 bit | -32,768 to 32,767 |\n| `int32` | 32 bit | -2,147,483,648 to 2,147,483,647 |\n| `int64` | 64 bit | -9.2×10¹⁸ to 9.2×10¹⁸ |\n| `int` | 32 or 64 bit | Platform dependent |\n| `uint8` | 8 bit | 0 to 255 |\n| `uint16` | 16 bit | 0 to 65,535 |\n| `uint32` | 32 bit | 0 to 4,294,967,295 |\n| `uint64` | 64 bit | 0 to 1.8×10¹⁹ |\n| `uint` | 32 or 64 bit | Platform dependent |\n\n```go\nimport \"math\"\n\nvar a int = 42\nvar b int64 = 9_000_000_000  // underscore as separator\nvar c uint = 255\n\nfmt.Println(math.MaxInt)    // max value for int\nfmt.Println(math.MaxInt64)  // max value for int64\n```\n\n## Float\n\n```go\nvar f32 float32 = 3.14          // ~6-7 digit precision\nvar f64 float64 = 3.14159265358 // ~15-17 digit precision (recommended)\n\nfmt.Printf(\"float32: %.7f\\n\", f32) // 3.1400001 (precision error)\nfmt.Printf(\"float64: %.11f\\n\", f64) // 3.14159265358\n```\n\n## Boolean\n\n```go\nvar yes bool = true\nvar no  bool = false\n\nfmt.Println(yes && no)  // false (AND)\nfmt.Println(yes || no)  // true  (OR)\nfmt.Println(!yes)       // false (NOT)\n```\n\n## String\n\nStrings in Go are **immutable** sequences of bytes (cannot be changed after creation).\n\n```go\nvar s string = \"Hello, Go!\"\n\nfmt.Println(len(s))    // 10 (byte length)\nfmt.Println(s[0])      // 72 (byte value of 'H')\nfmt.Println(s[0:5])    // Hello (slice)\nfmt.Println(s + \" \" + \"World\") // concatenation\n```\n\n### Iterating over a string\n```go\nfor i, r := range \"Go!\" {\n    fmt.Printf(\"index %d: %c (%d)\\n\", i, r, r)\n}\n```\n\n## Rune (int32) and Byte (uint8)\n\n```go\nvar r rune = 'A'       // rune = int32, for Unicode characters\nvar b byte = 'z'       // byte = uint8, for ASCII characters\n\nfmt.Println(r)         // 65 (ASCII code of 'A')\nfmt.Printf(\"%c\\n\", r) // A\nfmt.Println(b)         // 122 (ASCII code of 'z')\n```\n\nDifference between rune and byte:\n- `byte` (`uint8`) — for ASCII characters (0-127)\n- `rune` (`int32`) — for Unicode characters (supports all languages)\n\n## Full Example of All Types\n\n```go\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n    var i int = 100\n    var f float64 = 9.81\n    var b bool = true\n    var s string = \"Golang\"\n    var r rune = '\\u00e9'  // é\n    var by byte = 'A'\n\n    fmt.Printf(\"%T = %v\\n\", i, i)\n    fmt.Printf(\"%T = %v\\n\", f, f)\n    fmt.Printf(\"%T = %v\\n\", b, b)\n    fmt.Printf(\"%T = %v\\n\", s, s)\n    fmt.Printf(\"%T = %c\\n\", r, r)\n    fmt.Printf(\"%T = %c\\n\", by, by)\n}\n```",
+  "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n)\n\nfunc main() {\n\t// Integer\n\tvar i int = 42\n\tvar i64 int64 = 9_000_000_000\n\tfmt.Printf(\"int: %d, int64: %d\\n\", i, i64)\n\tfmt.Printf(\"MaxInt64: %d\\n\", math.MaxInt64)\n\n\t// Float\n\tvar f64 float64 = 3.14159265358979\n\tfmt.Printf(\"float64: %.10f\\n\", f64)\n\n\t// Boolean\n\tbool1, bool2 := true, false\n\tfmt.Printf(\"AND: %t, OR: %t\\n\", bool1 && bool2, bool1 || bool2)\n\n\t// String\n\ts := \"Hello, Gopher!\"\n\tfmt.Printf(\"string: %s, len: %d\\n\", s, len(s))\n\n\t// Rune dan byte\n\tvar r rune = '\\u4e16' // karakter Cina: 世\n\tfmt.Printf(\"rune: %c (U+%04X)\\n\", r, r)\n}",
+  "quiz": [
+    {
+      "question_id": "Tipe data `rune` di Go adalah alias untuk tipe apa?",
+      "question_en": "The `rune` data type in Go is an alias for which type?",
+      "options_id": [
+        "uint8",
+        "int16",
+        "int32",
+        "int64"
+      ],
+      "options_en": [
+        "uint8",
+        "int16",
+        "int32",
+        "int64"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Fungsi `len()` pada string di Go mengembalikan?",
+      "question_en": "What does the `len()` function return for a string in Go?",
+      "options_id": [
+        "Jumlah karakter Unicode",
+        "Jumlah byte",
+        "Jumlah kata",
+        "Jumlah rune"
+      ],
+      "options_en": [
+        "Number of Unicode characters",
+        "Number of bytes",
+        "Number of words",
+        "Number of runes"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Tipe float mana yang memiliki presisi lebih tinggi dan lebih direkomendasikan di Go?",
+      "question_en": "Which float type has higher precision and is more recommended in Go?",
+      "options_id": [
+        "float16",
+        "float32",
+        "float64",
+        "float128"
+      ],
+      "options_en": [
+        "float16",
+        "float32",
+        "float64",
+        "float128"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa yang dimaksud dengan string yang bersifat 'immutable' di Go?",
+      "question_en": "What does it mean that strings are 'immutable' in Go?",
+      "options_id": [
+        "String tidak bisa dibaca setelah dibuat",
+        "String tidak bisa diubah isinya setelah dibuat",
+        "String tidak bisa digabungkan dengan string lain",
+        "String tidak bisa memiliki panjang lebih dari 255 karakter"
+      ],
+      "options_en": [
+        "A string cannot be read after creation",
+        "A string's content cannot be changed after creation",
+        "A string cannot be concatenated with another string",
+        "A string cannot be longer than 255 characters"
+      ],
+      "correct": 1
+    }
+  ]
+}

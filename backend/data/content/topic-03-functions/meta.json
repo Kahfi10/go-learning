@@ -1,0 +1,11 @@
+{
+  "slug": "functions",
+  "number": 3,
+  "title_id": "Fungsi",
+  "title_en": "Functions",
+  "description_id": "Pelajari cara mendefinisikan fungsi, multiple return values, closures, dan first-class functions di Go.",
+  "description_en": "Learn how to define functions, multiple return values, closures, and first-class functions in Go.",
+  "level": "Beginner",
+  "color": "#FF9500",
+  "estimatedMinutes": 60
+}

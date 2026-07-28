@@ -1,0 +1,62 @@
+{
+  "id": "05",
+  "title_id": "Konversi Tipe Data",
+  "title_en": "Type Conversion",
+  "estimatedMinutes": 10,
+  "content_id": "# Konversi Tipe Data\n\nGo menggunakan **konversi eksplisit** — tidak ada konversi tipe otomatis (implicit casting) seperti di C atau Java. Anda harus secara eksplisit mengkonversi tipe.\n\n## Konversi Numerik\n\n```go\nvar i int = 42\nvar f float64 = float64(i)  // int ke float64\nvar u uint = uint(f)        // float64 ke uint\n\nfmt.Println(i, f, u) // 42 42 42\n\n// Hati-hati: kehilangan presisi\nvar pi float64 = 3.99\nvar piInt int = int(pi)  // truncate, bukan round!\nfmt.Println(piInt)       // 3, bukan 4!\n```\n\n## Konversi String\n\n### Angka ke String dengan `strconv`\n\n```go\nimport \"strconv\"\n\n// int ke string\nn := 42\ns := strconv.Itoa(n)       // \"42\"\nfmt.Printf(\"%T: %s\\n\", s, s) // string: 42\n\n// string ke int\nnum, err := strconv.Atoi(\"123\")\nif err != nil {\n    fmt.Println(\"Error:\", err)\n} else {\n    fmt.Println(num + 1) // 124\n}\n\n// String ke int gagal\n_, err = strconv.Atoi(\"abc\")\nfmt.Println(err) // strconv.Atoi: parsing \"abc\": invalid syntax\n```\n\n### Float ke String\n\n```go\nf := 3.14159\n\n// FormatFloat: precision dan format\ns := strconv.FormatFloat(f, 'f', 2, 64)\nfmt.Println(s) // \"3.14\"\n\n// ParseFloat: string ke float\nf2, _ := strconv.ParseFloat(\"2.718\", 64)\nfmt.Printf(\"%.3f\\n\", f2) // 2.718\n```\n\n### Rune/Byte ke String\n\n```go\nr := rune('A')\ns1 := string(r)      // \"A\"\nfmt.Println(s1)\n\nb := byte(65)\ns2 := string(b)      // \"A\"\nfmt.Println(s2)\n\n// PERHATIAN: int ke string bukan angka, tapi karakter!\nn := 65\ns3 := string(rune(n)) // \"A\", bukan \"65\"!\nfmt.Println(s3)\n```\n\n## Type Alias vs Defined Type\n\n```go\n// Type alias: hanya nama lain, kompatibel penuh\ntype MyString = string\nvar ms MyString = \"hello\"\nvar s string = ms  // OK tanpa konversi\n\n// Defined type: tipe baru, tidak kompatibel otomatis\ntype Celsius float64\ntype Fahrenheit float64\n\nvar c Celsius = 100\n// var f Fahrenheit = c  // ERROR! Tipe berbeda\nvar f Fahrenheit = Fahrenheit(c)  // harus konversi eksplisit\nfmt.Println(f) // 100\n```\n\n## Menggunakan `reflect.TypeOf`\n\n```go\nimport \"reflect\"\n\nx := 42\ny := 3.14\nz := \"hello\"\n\nfmt.Println(reflect.TypeOf(x)) // int\nfmt.Println(reflect.TypeOf(y)) // float64\nfmt.Println(reflect.TypeOf(z)) // string\n```\n\n## Contoh Lengkap\n\n```go\npackage main\n\nimport (\n    \"fmt\"\n    \"strconv\"\n)\n\nfunc main() {\n    // Konversi numerik\n    var i int = 100\n    var f float64 = float64(i) * 1.5\n    fmt.Printf(\"int: %d, float: %.1f\\n\", i, f)\n\n    // Konversi string\n    numStr := strconv.Itoa(i)\n    fmt.Printf(\"string: %q\\n\", numStr)\n\n    parsed, err := strconv.Atoi(\"999\")\n    if err == nil {\n        fmt.Println(\"parsed:\", parsed)\n    }\n}\n```",
+  "content_en": "# Type Conversion\n\nGo uses **explicit conversion** — there is no automatic type conversion (implicit casting) like in C or Java. You must explicitly convert types.\n\n## Numeric Conversion\n\n```go\nvar i int = 42\nvar f float64 = float64(i)  // int to float64\nvar u uint = uint(f)        // float64 to uint\n\nfmt.Println(i, f, u) // 42 42 42\n\n// Warning: loss of precision\nvar pi float64 = 3.99\nvar piInt int = int(pi)  // truncates, does NOT round!\nfmt.Println(piInt)       // 3, not 4!\n```\n\n## String Conversion\n\n### Number to String with `strconv`\n\n```go\nimport \"strconv\"\n\n// int to string\nn := 42\ns := strconv.Itoa(n)       // \"42\"\nfmt.Printf(\"%T: %s\\n\", s, s) // string: 42\n\n// string to int\nnum, err := strconv.Atoi(\"123\")\nif err != nil {\n    fmt.Println(\"Error:\", err)\n} else {\n    fmt.Println(num + 1) // 124\n}\n\n// Failed string-to-int\n_, err = strconv.Atoi(\"abc\")\nfmt.Println(err) // strconv.Atoi: parsing \"abc\": invalid syntax\n```\n\n### Float to String\n\n```go\nf := 3.14159\n\n// FormatFloat: precision and format\ns := strconv.FormatFloat(f, 'f', 2, 64)\nfmt.Println(s) // \"3.14\"\n\n// ParseFloat: string to float\nf2, _ := strconv.ParseFloat(\"2.718\", 64)\nfmt.Printf(\"%.3f\\n\", f2) // 2.718\n```\n\n### Rune/Byte to String\n\n```go\nr := rune('A')\ns1 := string(r)      // \"A\"\nfmt.Println(s1)\n\nb := byte(65)\ns2 := string(b)      // \"A\"\nfmt.Println(s2)\n\n// CAUTION: int to string gives a character, not a number!\nn := 65\ns3 := string(rune(n)) // \"A\", not \"65\"!\nfmt.Println(s3)\n```\n\n## Type Alias vs Defined Type\n\n```go\n// Type alias: just another name, fully compatible\ntype MyString = string\nvar ms MyString = \"hello\"\nvar s string = ms  // OK without conversion\n\n// Defined type: new type, not automatically compatible\ntype Celsius float64\ntype Fahrenheit float64\n\nvar c Celsius = 100\n// var f Fahrenheit = c  // ERROR! Different types\nvar f Fahrenheit = Fahrenheit(c)  // must explicitly convert\nfmt.Println(f) // 100\n```\n\n## Using `reflect.TypeOf`\n\n```go\nimport \"reflect\"\n\nx := 42\ny := 3.14\nz := \"hello\"\n\nfmt.Println(reflect.TypeOf(x)) // int\nfmt.Println(reflect.TypeOf(y)) // float64\nfmt.Println(reflect.TypeOf(z)) // string\n```\n\n## Complete Example\n\n```go\npackage main\n\nimport (\n    \"fmt\"\n    \"strconv\"\n)\n\nfunc main() {\n    // Numeric conversion\n    var i int = 100\n    var f float64 = float64(i) * 1.5\n    fmt.Printf(\"int: %d, float: %.1f\\n\", i, f)\n\n    // String conversion\n    numStr := strconv.Itoa(i)\n    fmt.Printf(\"string: %q\\n\", numStr)\n\n    parsed, err := strconv.Atoi(\"999\")\n    if err == nil {\n        fmt.Println(\"parsed:\", parsed)\n    }\n}\n```",
+  "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"reflect\"\n\t\"strconv\"\n)\n\nfunc main() {\n\t// Konversi numerik\n\tvar i int = 255\n\tf := float64(i)\n\tu := uint8(i)\n\tfmt.Printf(\"int: %d, float64: %.1f, uint8: %d\\n\", i, f, u)\n\n\t// Truncation (bukan round)\n\tpi := 3.99\n\tpiInt := int(pi)\n\tfmt.Printf(\"%.2f -> int = %d (truncated!)\\n\", pi, piInt)\n\n\t// strconv\n\ts := strconv.Itoa(42)\n\tfmt.Printf(\"Itoa: %q (type: %s)\\n\", s, reflect.TypeOf(s))\n\n\tnum, err := strconv.Atoi(\"789\")\n\tif err == nil {\n\t\tfmt.Printf(\"Atoi: %d (type: %s)\\n\", num, reflect.TypeOf(num))\n\t}\n\n\t// Float formatting\n\tfs := strconv.FormatFloat(3.14159, 'f', 3, 64)\n\tfmt.Println(\"FormatFloat:\", fs)\n}",
+  "quiz": [
+    {
+      "question_id": "Apa hasil dari konversi `int(3.99)` di Go?",
+      "question_en": "What is the result of `int(3.99)` conversion in Go?",
+      "options_id": [
+        "4 (dibulatkan ke atas)",
+        "3 (dipotong/truncated)",
+        "3.99 (tidak berubah)",
+        "Error kompilasi"
+      ],
+      "options_en": [
+        "4 (rounded up)",
+        "3 (truncated)",
+        "3.99 (unchanged)",
+        "Compile error"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Fungsi `strconv.Atoi` digunakan untuk?",
+      "question_en": "The `strconv.Atoi` function is used to?",
+      "options_id": [
+        "Mengkonversi integer ke string ASCII",
+        "Mengkonversi string ke integer",
+        "Mengkonversi float ke integer",
+        "Mengkonversi byte ke integer"
+      ],
+      "options_en": [
+        "Convert an integer to ASCII string",
+        "Convert a string to an integer",
+        "Convert a float to an integer",
+        "Convert a byte to an integer"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa perbedaan antara 'type alias' (`type A = B`) dan 'defined type' (`type A B`) di Go?",
+      "question_en": "What is the difference between a 'type alias' (`type A = B`) and a 'defined type' (`type A B`) in Go?",
+      "options_id": [
+        "Tidak ada perbedaan",
+        "Type alias membuat tipe baru yang tidak kompatibel, defined type hanya nama lain",
+        "Type alias hanya nama lain (kompatibel penuh), defined type membuat tipe baru yang tidak kompatibel otomatis",
+        "Defined type lebih cepat diproses daripada type alias"
+      ],
+      "options_en": [
+        "There is no difference",
+        "Type alias creates a new incompatible type, defined type is just another name",
+        "Type alias is just another name (fully compatible), defined type creates a new type that is not automatically compatible",
+        "Defined type is processed faster than type alias"
+      ],
+      "correct": 2
+    }
+  ]
+}

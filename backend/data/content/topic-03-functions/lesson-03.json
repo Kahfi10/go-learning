@@ -1,0 +1,62 @@
+{
+  "id": "03",
+  "title_id": "Named Return Values",
+  "title_en": "Named Return Values",
+  "estimatedMinutes": 8,
+  "content_id": "# Named Return Values\n\n## Apa itu Named Return Values?\n\nGo memungkinkan Anda memberikan **nama** pada return values di tanda tangan fungsi. Nilai-nilai ini bertindak seperti variabel lokal yang sudah dideklarasikan.\n\n## Sintaks\n\n```go\nfunc namaFungsi() (namaReturn1 tipe1, namaReturn2 tipe2) {\n    // bisa langsung assign namaReturn1 dan namaReturn2\n    return // naked return\n}\n```\n\n## Contoh: Tanpa Named Returns vs Dengan Named Returns\n\n```go\n// Tanpa named returns\nfunc split(sum int) (int, int) {\n    x := sum * 4 / 9\n    y := sum - x\n    return x, y\n}\n\n// Dengan named returns\nfunc splitNamed(sum int) (x, y int) {\n    x = sum * 4 / 9\n    y = sum - x\n    return // naked return: mengembalikan x dan y\n}\n\nfmt.Println(split(17))      // 7 10\nfmt.Println(splitNamed(17)) // 7 10\n```\n\n## Naked Return\n\n**Naked return** adalah pernyataan `return` tanpa argumen. Ia mengembalikan semua named return values yang ada saat itu:\n\n```go\nfunc clamp(val, min, max int) (result int, clamped bool) {\n    if val < min {\n        result = min\n        clamped = true\n        return  // naked return: mengembalikan result=min, clamped=true\n    }\n    if val > max {\n        result = max\n        clamped = true\n        return  // naked return\n    }\n    result = val\n    return  // naked return: clamped masih false (zero value)\n}\n\nfunc main() {\n    r, c := clamp(150, 0, 100)\n    fmt.Printf(\"result: %d, clamped: %t\\n\", r, c) // result: 100, clamped: true\n\n    r2, c2 := clamp(50, 0, 100)\n    fmt.Printf(\"result: %d, clamped: %t\\n\", r2, c2) // result: 50, clamped: false\n}\n```\n\n## Kapan Menggunakan Named Returns?\n\n### Gunakan untuk fungsi pendek:\n\n```go\n// Bagus: dokumentasi singkat\nfunc circleArea(r float64) (area float64) {\n    area = 3.14159 * r * r\n    return\n}\n```\n\n### Hindari untuk fungsi panjang:\n\n```go\n// Buruk: sulit dilacak di fungsi panjang\nfunc processData(data []byte) (result string, count int, err error) {\n    // ... banyak logika di sini ...\n    // return di sini membingungkan\n    return  // apa nilai result, count, dan err sekarang?\n}\n```\n\n## Keuntungan Named Returns\n\n1. **Self-documenting** — nama return value menjelaskan maksudnya\n2. **defer** — bisa memodifikasi named return di defer\n\n```go\nfunc readFile(name string) (content string, err error) {\n    // err bisa dimodifikasi oleh deferred function\n    defer func() {\n        if err != nil {\n            err = fmt.Errorf(\"readFile %s: %w\", name, err)\n        }\n    }()\n    // ... baca file ...\n    return content, err\n}\n```\n\n## Perbandingan\n\n| Aspek | Named Returns | Unnamed Returns |\n|---|---|---|\n| Fungsi pendek | Lebih bersih | Verbosity lebih |\n| Fungsi panjang | Membingungkan | Lebih jelas |\n| Dokumentasi | Otomatis dari nama | Perlu komentar |\n| Defer wrapping | Mudah | Lebih sulit |",
+  "content_en": "# Named Return Values\n\n## What Are Named Return Values?\n\nGo allows you to give **names** to return values in the function signature. These act like pre-declared local variables.\n\n## Syntax\n\n```go\nfunc functionName() (returnName1 type1, returnName2 type2) {\n    // can directly assign returnName1 and returnName2\n    return // naked return\n}\n```\n\n## Example: Without vs With Named Returns\n\n```go\n// Without named returns\nfunc split(sum int) (int, int) {\n    x := sum * 4 / 9\n    y := sum - x\n    return x, y\n}\n\n// With named returns\nfunc splitNamed(sum int) (x, y int) {\n    x = sum * 4 / 9\n    y = sum - x\n    return // naked return: returns x and y\n}\n\nfmt.Println(split(17))      // 7 10\nfmt.Println(splitNamed(17)) // 7 10\n```\n\n## Naked Return\n\nA **naked return** is a `return` statement with no arguments. It returns all named return values at their current state:\n\n```go\nfunc clamp(val, min, max int) (result int, clamped bool) {\n    if val < min {\n        result = min\n        clamped = true\n        return  // naked return: result=min, clamped=true\n    }\n    if val > max {\n        result = max\n        clamped = true\n        return  // naked return\n    }\n    result = val\n    return  // naked return: clamped is still false (zero value)\n}\n\nfunc main() {\n    r, c := clamp(150, 0, 100)\n    fmt.Printf(\"result: %d, clamped: %t\\n\", r, c) // result: 100, clamped: true\n\n    r2, c2 := clamp(50, 0, 100)\n    fmt.Printf(\"result: %d, clamped: %t\\n\", r2, c2) // result: 50, clamped: false\n}\n```\n\n## When to Use Named Returns?\n\n### Good for short functions:\n\n```go\n// Good: concise documentation\nfunc circleArea(r float64) (area float64) {\n    area = 3.14159 * r * r\n    return\n}\n```\n\n### Avoid for long functions:\n\n```go\n// Bad: hard to track in long functions\nfunc processData(data []byte) (result string, count int, err error) {\n    // ... lots of logic here ...\n    return  // what are result, count, and err right now?\n}\n```\n\n## Benefits of Named Returns\n\n1. **Self-documenting** — the return name explains its purpose\n2. **defer** — can modify named returns inside a defer\n\n```go\nfunc readFile(name string) (content string, err error) {\n    // err can be modified by a deferred function\n    defer func() {\n        if err != nil {\n            err = fmt.Errorf(\"readFile %s: %w\", name, err)\n        }\n    }()\n    // ... read file ...\n    return content, err\n}\n```\n\n## Comparison\n\n| Aspect | Named Returns | Unnamed Returns |\n|---|---|---|\n| Short functions | Cleaner | More verbose |\n| Long functions | Confusing | Clearer |\n| Documentation | Automatic from name | Needs comments |\n| Defer wrapping | Easier | More difficult |",
+  "starterCode": "package main\n\nimport \"fmt\"\n\n// minMax menggunakan named return values\nfunc minMax(nums []int) (min, max int) {\n\tmin = nums[0]\n\tmax = nums[0]\n\tfor _, n := range nums {\n\t\tif n < min {\n\t\t\tmin = n\n\t\t}\n\t\tif n > max {\n\t\t\tmax = n\n\t\t}\n\t}\n\treturn // naked return\n}\n\n// clamp menggunakan named return\nfunc clamp(val, lo, hi int) (result int, wasClamped bool) {\n\tswitch {\n\tcase val < lo:\n\t\tresult = lo\n\t\twasClamped = true\n\tcase val > hi:\n\t\tresult = hi\n\t\twasClamped = true\n\tdefault:\n\t\tresult = val\n\t}\n\treturn\n}\n\nfunc main() {\n\tnums := []int{5, 2, 8, 1, 9, 3}\n\tmin, max := minMax(nums)\n\tfmt.Printf(\"Min: %d, Max: %d\\n\", min, max)\n\n\tr1, c1 := clamp(150, 0, 100)\n\tfmt.Printf(\"clamp(150,0,100) = %d, clamped=%t\\n\", r1, c1)\n\n\tr2, c2 := clamp(50, 0, 100)\n\tfmt.Printf(\"clamp(50,0,100)  = %d, clamped=%t\\n\", r2, c2)\n}",
+  "quiz": [
+    {
+      "question_id": "Apa yang dimaksud dengan 'naked return' di Go?",
+      "question_en": "What is a 'naked return' in Go?",
+      "options_id": [
+        "Return tanpa nilai apapun dari fungsi void",
+        "Return yang mengembalikan nilai nil",
+        "Return tanpa argumen eksplisit yang mengembalikan named return values saat itu",
+        "Return yang melempar error"
+      ],
+      "options_en": [
+        "A return with no value from a void function",
+        "A return that returns a nil value",
+        "A return with no explicit arguments that returns the current named return values",
+        "A return that throws an error"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Untuk jenis fungsi apa penggunaan named return values paling direkomendasikan?",
+      "question_en": "For which type of function is using named return values most recommended?",
+      "options_id": [
+        "Fungsi panjang dengan banyak logika kompleks",
+        "Fungsi rekursif",
+        "Fungsi pendek yang membutuhkan dokumentasi singkat",
+        "Fungsi yang tidak mengembalikan nilai"
+      ],
+      "options_en": [
+        "Long functions with lots of complex logic",
+        "Recursive functions",
+        "Short functions that need concise documentation",
+        "Functions that don't return values"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Nilai awal dari named return value di Go adalah?",
+      "question_en": "What is the initial value of a named return value in Go?",
+      "options_id": [
+        "undefined",
+        "null",
+        "Zero value dari tipenya",
+        "Nilai terakhir yang diassign"
+      ],
+      "options_en": [
+        "undefined",
+        "null",
+        "The zero value of its type",
+        "The last assigned value"
+      ],
+      "correct": 2
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "id": "06",
+  "title_id": "Closures",
+  "title_en": "Closures",
+  "estimatedMinutes": 12,
+  "content_id": "# Closures\n\n## Apa itu Closure?\n\nClosure adalah fungsi yang **menangkap (capture) variabel dari scope di sekitarnya** — bahkan setelah scope tersebut sudah selesai dieksekusi. Closure \"menutup\" variabel-variabel dari lingkungan tempatnya dibuat.\n\n## Contoh Dasar\n\n```go\nfunc makeCounter() func() int {\n    count := 0  // variabel yang di-capture\n    return func() int {\n        count++    // mengakses dan memodifikasi count dari luar\n        return count\n    }\n}\n\nfunc main() {\n    counter := makeCounter()\n    fmt.Println(counter()) // 1\n    fmt.Println(counter()) // 2\n    fmt.Println(counter()) // 3\n\n    // Counter baru memiliki state sendiri!\n    counter2 := makeCounter()\n    fmt.Println(counter2()) // 1 (state terpisah)\n    fmt.Println(counter())  // 4 (counter pertama lanjut)\n}\n```\n\n## Adder Factory\n\n```go\nfunc makeAdder(x int) func(int) int {\n    return func(y int) int {\n        return x + y  // x di-capture dari makeAdder\n    }\n}\n\nfunc main() {\n    add5 := makeAdder(5)\n    add10 := makeAdder(10)\n\n    fmt.Println(add5(3))  // 8  (5+3)\n    fmt.Println(add10(3)) // 13 (10+3)\n    fmt.Println(add5(7))  // 12 (5+7)\n}\n```\n\n## Mengapa Closures Penting?\n\n1. **State tersembunyi** — menyimpan state tanpa global variable\n2. **Konfigurasi** — membuat fungsi yang sudah dikonfigurasi\n3. **Callback** — membawa konteks ke fungsi callback\n\n## Closure Menangkap Referensi, Bukan Nilai!\n\n```go\nfunc main() {\n    // PERHATIAN: closure menangkap referensi ke variabel\n    funcs := make([]func(), 3)\n    for i := 0; i < 3; i++ {\n        i := i  // buat variabel baru di setiap iterasi (PENTING!)\n        funcs[i] = func() {\n            fmt.Println(i)\n        }\n    }\n\n    funcs[0]() // 0\n    funcs[1]() // 1\n    funcs[2]() // 2\n}\n```\n\nTanpa `i := i` (shadow variable), semua closure akan mencetak nilai `i` terakhir.\n\n## Contoh Memoization\n\n```go\nfunc memoize(fn func(int) int) func(int) int {\n    cache := map[int]int{}\n    return func(n int) int {\n        if v, ok := cache[n]; ok {\n            fmt.Printf(\"cache hit: %d\\n\", n)\n            return v\n        }\n        result := fn(n)\n        cache[n] = result\n        return result\n    }\n}\n\nfunc slow_square(n int) int {\n    return n * n\n}\n\nfunc main() {\n    fastSquare := memoize(slow_square)\n\n    fmt.Println(fastSquare(4))  // hitung: 16\n    fmt.Println(fastSquare(4))  // cache hit: 16\n    fmt.Println(fastSquare(5))  // hitung: 25\n    fmt.Println(fastSquare(5))  // cache hit: 25\n}\n```\n\n## Closure sebagai Middleware\n\n```go\ntype Handler func(string) string\n\nfunc withLogging(h Handler) Handler {\n    return func(input string) string {\n        fmt.Printf(\"Input: %s\\n\", input)\n        result := h(input)\n        fmt.Printf(\"Output: %s\\n\", result)\n        return result\n    }\n}\n\nfunc toUpper(s string) string {\n    result := \"\"\n    for _, c := range s {\n        if c >= 'a' && c <= 'z' {\n            result += string(c - 32)\n        } else {\n            result += string(c)\n        }\n    }\n    return result\n}\n\nfunc main() {\n    loggedUpper := withLogging(toUpper)\n    loggedUpper(\"hello go\")\n    // Input: hello go\n    // Output: HELLO GO\n}\n```",
+  "content_en": "# Closures\n\n## What Is a Closure?\n\nA closure is a function that **captures variables from its surrounding scope** — even after that scope has finished executing. A closure \"closes over\" the variables from the environment where it was created.\n\n## Basic Example\n\n```go\nfunc makeCounter() func() int {\n    count := 0  // captured variable\n    return func() int {\n        count++    // accesses and modifies count from outside\n        return count\n    }\n}\n\nfunc main() {\n    counter := makeCounter()\n    fmt.Println(counter()) // 1\n    fmt.Println(counter()) // 2\n    fmt.Println(counter()) // 3\n\n    // A new counter has its own state!\n    counter2 := makeCounter()\n    fmt.Println(counter2()) // 1 (separate state)\n    fmt.Println(counter())  // 4 (first counter continues)\n}\n```\n\n## Adder Factory\n\n```go\nfunc makeAdder(x int) func(int) int {\n    return func(y int) int {\n        return x + y  // x is captured from makeAdder\n    }\n}\n\nfunc main() {\n    add5 := makeAdder(5)\n    add10 := makeAdder(10)\n\n    fmt.Println(add5(3))  // 8  (5+3)\n    fmt.Println(add10(3)) // 13 (10+3)\n    fmt.Println(add5(7))  // 12 (5+7)\n}\n```\n\n## Why Do Closures Matter?\n\n1. **Hidden state** — store state without global variables\n2. **Configuration** — create pre-configured functions\n3. **Callbacks** — carry context into callback functions\n\n## Closures Capture References, Not Values!\n\n```go\nfunc main() {\n    // WARNING: closures capture a reference to the variable\n    funcs := make([]func(), 3)\n    for i := 0; i < 3; i++ {\n        i := i  // create a new variable in each iteration (IMPORTANT!)\n        funcs[i] = func() {\n            fmt.Println(i)\n        }\n    }\n\n    funcs[0]() // 0\n    funcs[1]() // 1\n    funcs[2]() // 2\n}\n```\n\nWithout `i := i` (shadow variable), all closures would print the final value of `i`.\n\n## Memoization Example\n\n```go\nfunc memoize(fn func(int) int) func(int) int {\n    cache := map[int]int{}\n    return func(n int) int {\n        if v, ok := cache[n]; ok {\n            fmt.Printf(\"cache hit: %d\\n\", n)\n            return v\n        }\n        result := fn(n)\n        cache[n] = result\n        return result\n    }\n}\n\nfunc slowSquare(n int) int {\n    return n * n\n}\n\nfunc main() {\n    fastSquare := memoize(slowSquare)\n\n    fmt.Println(fastSquare(4))  // compute: 16\n    fmt.Println(fastSquare(4))  // cache hit: 16\n    fmt.Println(fastSquare(5))  // compute: 25\n    fmt.Println(fastSquare(5))  // cache hit: 25\n}\n```\n\n## Closure as Middleware\n\n```go\ntype Handler func(string) string\n\nfunc withLogging(h Handler) Handler {\n    return func(input string) string {\n        fmt.Printf(\"Input: %s\\n\", input)\n        result := h(input)\n        fmt.Printf(\"Output: %s\\n\", result)\n        return result\n    }\n}\n```",
+  "starterCode": "package main\n\nimport \"fmt\"\n\n// makeCounter mengembalikan closure counter\nfunc makeCounter() func() int {\n\tcount := 0\n\treturn func() int {\n\t\tcount++\n\t\treturn count\n\t}\n}\n\n// makeAdder mengembalikan closure adder yang dikonfigurasi\nfunc makeAdder(x int) func(int) int {\n\treturn func(y int) int {\n\t\treturn x + y\n\t}\n}\n\n// makeMultiplier mengembalikan closure untuk perkalian\nfunc makeMultiplier(factor int) func(int) int {\n\treturn func(n int) int {\n\t\treturn n * factor\n\t}\n}\n\nfunc main() {\n\t// Counter\n\tc1 := makeCounter()\n\tc2 := makeCounter()\n\tfmt.Println(\"c1:\", c1(), c1(), c1()) // 1 2 3\n\tfmt.Println(\"c2:\", c2(), c2())       // 1 2 (state terpisah)\n\n\t// Adder\n\tadd10 := makeAdder(10)\n\tadd100 := makeAdder(100)\n\tfmt.Println(\"add10(5):\", add10(5))\n\tfmt.Println(\"add100(5):\", add100(5))\n\n\t// Multiplier\n\tdouble := makeMultiplier(2)\n\ttriple := makeMultiplier(3)\n\tfmt.Println(\"double(7):\", double(7))\n\tfmt.Println(\"triple(7):\", triple(7))\n}",
+  "quiz": [
+    {
+      "question_id": "Apa yang dimaksud dengan 'closure' dalam pemrograman Go?",
+      "question_en": "What is a 'closure' in Go programming?",
+      "options_id": [
+        "Sebuah fungsi yang hanya bisa dipanggil sekali",
+        "Sebuah fungsi yang menangkap variabel dari scope di sekitarnya",
+        "Sebuah fungsi tanpa nama (anonymous function)",
+        "Sebuah fungsi yang tidak mengembalikan nilai"
+      ],
+      "options_en": [
+        "A function that can only be called once",
+        "A function that captures variables from its surrounding scope",
+        "A function without a name (anonymous function)",
+        "A function that does not return a value"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Pada contoh `counter := makeCounter()`, setiap kali `counter()` dipanggil, apa yang terjadi?",
+      "question_en": "In the example `counter := makeCounter()`, what happens each time `counter()` is called?",
+      "options_id": [
+        "Variabel count direset ke 0",
+        "Fungsi makeCounter dipanggil ulang",
+        "Variabel count yang di-capture bertambah 1",
+        "Closure baru dibuat"
+      ],
+      "options_en": [
+        "The count variable resets to 0",
+        "The makeCounter function is called again",
+        "The captured count variable increments by 1",
+        "A new closure is created"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Jika `c1 := makeCounter()` dan `c2 := makeCounter()` dibuat secara terpisah, bagaimana state `count` keduanya?",
+      "question_en": "If `c1 := makeCounter()` and `c2 := makeCounter()` are created separately, how does their `count` state relate?",
+      "options_id": [
+        "c1 dan c2 berbagi state count yang sama",
+        "c1 dan c2 memiliki state count yang independen/terpisah",
+        "State count c2 selalu lebih besar dari c1",
+        "c2 mewarisi nilai count terakhir dari c1"
+      ],
+      "options_en": [
+        "c1 and c2 share the same count state",
+        "c1 and c2 have independent/separate count states",
+        "c2's count state is always greater than c1's",
+        "c2 inherits the last count value from c1"
+      ],
+      "correct": 1
+    }
+  ]
+}

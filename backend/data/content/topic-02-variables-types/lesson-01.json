@@ -1,0 +1,62 @@
+{
+  "id": "01",
+  "title_id": "Deklarasi Variabel",
+  "title_en": "Variable Declaration",
+  "estimatedMinutes": 10,
+  "content_id": "# Deklarasi Variabel\n\nVariabel adalah nama yang diberikan untuk menyimpan nilai di memori. Go memiliki beberapa cara untuk mendeklarasikan variabel.\n\n## 1. `var` dengan Tipe Eksplisit\n\n```go\nvar nama string\nvar umur int\nvar tinggi float64\n\nnama = \"Budi\"\numur = 25\ntinggi = 1.75\n```\n\n## 2. `var` dengan Nilai Langsung\n\n```go\nvar nama string = \"Budi\"\nvar umur int = 25\nvar tinggi float64 = 1.75\n\n// Go dapat menyimpulkan tipe dari nilai\nvar kota = \"Jakarta\"  // tipe: string\nvar tahun = 2024      // tipe: int\n```\n\n## 3. `var` Group — Deklarasi Banyak Sekaligus\n\n```go\nvar (\n    nama   string  = \"Budi\"\n    umur   int     = 25\n    aktif  bool    = true\n    saldo  float64 = 1500000.50\n)\n```\n\n## 4. Short Variable Declaration `:=`\n\nCara paling umum dan idiomatik di Go, hanya bisa digunakan **di dalam fungsi**:\n\n```go\nfunc main() {\n    nama := \"Sari\"       // string\n    umur := 22           // int\n    tinggi := 1.62       // float64\n    aktif := true        // bool\n\n    fmt.Println(nama, umur, tinggi, aktif)\n}\n```\n\n## 5. Multiple Assignment\n\n```go\n// Deklarasi banyak variabel sekaligus\nx, y, z := 1, 2, 3\n\n// Swap nilai tanpa variabel temp\na, b := 10, 20\na, b = b, a  // sekarang a=20, b=10\nfmt.Println(a, b) // 20 10\n```\n\n## Package-Level vs Function-Level\n\n```go\npackage main\n\nimport \"fmt\"\n\n// Package-level: harus menggunakan var\nvar appName = \"GoApp\"\nvar version = \"1.0.0\"\n\nfunc main() {\n    // Function-level: bisa menggunakan :=\n    pesan := \"Selamat datang di \" + appName\n    fmt.Println(pesan)\n    fmt.Println(\"Versi:\", version)\n}\n```\n\n**Catatan:** `:=` hanya bisa digunakan di dalam fungsi.\n\n## Perbandingan: `var` vs `:=`\n\n| Aspek | `var` | `:=` |\n|---|---|---|\n| Lokasi | Package & function level | Function level saja |\n| Tipe eksplisit | Bisa | Tidak (disimpulkan) |\n| Zero value | Otomatis | Tidak (nilai wajib) |\n| Idiomatik | Untuk package-level | Untuk function-level |\n| Contoh | `var x int = 5` | `x := 5` |",
+  "content_en": "# Variable Declaration\n\nA variable is a name given to store a value in memory. Go has several ways to declare variables.\n\n## 1. `var` with Explicit Type\n\n```go\nvar name string\nvar age int\nvar height float64\n\nname = \"Budi\"\nage = 25\nheight = 1.75\n```\n\n## 2. `var` with Immediate Value\n\n```go\nvar name string = \"Budi\"\nvar age int = 25\nvar height float64 = 1.75\n\n// Go can infer the type from the value\nvar city = \"Jakarta\"  // type: string\nvar year = 2024       // type: int\n```\n\n## 3. `var` Group — Declare Many at Once\n\n```go\nvar (\n    name    string  = \"Budi\"\n    age     int     = 25\n    active  bool    = true\n    balance float64 = 1500000.50\n)\n```\n\n## 4. Short Variable Declaration `:=`\n\nThe most common and idiomatic way in Go, can only be used **inside functions**:\n\n```go\nfunc main() {\n    name   := \"Sari\"   // string\n    age    := 22       // int\n    height := 1.62     // float64\n    active := true     // bool\n\n    fmt.Println(name, age, height, active)\n}\n```\n\n## 5. Multiple Assignment\n\n```go\n// Declare many variables at once\nx, y, z := 1, 2, 3\n\n// Swap values without a temp variable\na, b := 10, 20\na, b = b, a  // now a=20, b=10\nfmt.Println(a, b) // 20 10\n```\n\n## Package-Level vs Function-Level\n\n```go\npackage main\n\nimport \"fmt\"\n\n// Package-level: must use var\nvar appName = \"GoApp\"\nvar version = \"1.0.0\"\n\nfunc main() {\n    // Function-level: can use :=\n    message := \"Welcome to \" + appName\n    fmt.Println(message)\n    fmt.Println(\"Version:\", version)\n}\n```\n\n**Note:** `:=` can only be used inside functions.\n\n## Comparison: `var` vs `:=`\n\n| Aspect | `var` | `:=` |\n|---|---|---|\n| Location | Package & function level | Function level only |\n| Explicit type | Yes | No (inferred) |\n| Zero value | Automatic | No (value required) |\n| Idiomatic use | For package-level | For function-level |\n| Example | `var x int = 5` | `x := 5` |",
+  "starterCode": "package main\n\nimport \"fmt\"\n\n// Package-level variables\nvar appName = \"BelajarGo\"\nvar version = \"1.0\"\n\nfunc main() {\n\t// var dengan tipe eksplisit\n\tvar nama string = \"Gopher\"\n\tvar umur int = 5\n\n\t// Short declaration\n\tkota := \"Jakarta\"\n\ttinggi := 1.80\n\n\t// Multiple assignment\n\tx, y := 10, 20\n\tx, y = y, x // swap!\n\n\tfmt.Printf(\"App: %s v%s\\n\", appName, version)\n\tfmt.Printf(\"Nama: %s, Umur: %d tahun\\n\", nama, umur)\n\tfmt.Printf(\"Kota: %s, Tinggi: %.2f\\n\", kota, tinggi)\n\tfmt.Printf(\"x=%d, y=%d (setelah swap)\\n\", x, y)\n}",
+  "quiz": [
+    {
+      "question_id": "Operator deklarasi variabel mana yang HANYA bisa digunakan di dalam fungsi di Go?",
+      "question_en": "Which variable declaration operator can ONLY be used inside functions in Go?",
+      "options_id": [
+        "var x int",
+        "x := value",
+        "x = value",
+        "let x = value"
+      ],
+      "options_en": [
+        "var x int",
+        "x := value",
+        "x = value",
+        "let x = value"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Bagaimana cara menukar nilai dua variabel `a` dan `b` secara idiomatik di Go?",
+      "question_en": "How do you idiomatically swap the values of two variables `a` and `b` in Go?",
+      "options_id": [
+        "temp := a; a = b; b = temp",
+        "a, b = b, a",
+        "swap(a, b)",
+        "a.swap(b)"
+      ],
+      "options_en": [
+        "temp := a; a = b; b = temp",
+        "a, b = b, a",
+        "swap(a, b)",
+        "a.swap(b)"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Deklarasi variabel `var x int` di level package (di luar fungsi) akan memiliki nilai awal berapa?",
+      "question_en": "A variable declared as `var x int` at package level (outside functions) will have what initial value?",
+      "options_id": [
+        "nil",
+        "undefined",
+        "0",
+        "1"
+      ],
+      "options_en": [
+        "nil",
+        "undefined",
+        "0",
+        "1"
+      ],
+      "correct": 2
+    }
+  ]
+}

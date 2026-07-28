@@ -1,0 +1,62 @@
+{
+  "id": "03",
+  "title_id": "Hello World & Struktur Program",
+  "title_en": "Hello World & Program Structure",
+  "estimatedMinutes": 10,
+  "content_id": "# Hello World & Struktur Program\n\n## Anatomi Program Go\n\n```go\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n    fmt.Println(\"Hello, World!\")\n}\n```\n\nSetiap program Go yang bisa dieksekusi terdiri dari:\n\n### 1. `package main`\nBaris pertama mendeklarasikan **package**. Package `main` adalah paket khusus yang memberitahu compiler bahwa ini adalah program yang dapat dijalankan (bukan library).\n\n### 2. `import`\nMengimpor package yang dibutuhkan. Package `fmt` (format) menyediakan fungsi untuk input/output.\n\n```go\n// Import satu package\nimport \"fmt\"\n\n// Import banyak package\nimport (\n    \"fmt\"\n    \"math\"\n    \"strings\"\n)\n```\n\n### 3. `func main()`\nFungsi `main()` adalah titik masuk program. Go akan menjalankan fungsi ini pertama kali saat program dieksekusi.\n\n## Fungsi-Fungsi fmt\n\n### `fmt.Print` — Cetak tanpa newline\n```go\nfmt.Print(\"Hello\")\nfmt.Print(\" World\")\n// Output: Hello World\n```\n\n### `fmt.Println` — Cetak dengan newline otomatis\n```go\nfmt.Println(\"Hello, World!\")\nfmt.Println(\"Baris kedua\")\n// Output:\n// Hello, World!\n// Baris kedua\n```\n\n### `fmt.Printf` — Cetak dengan format\n```go\nname := \"Budi\"\nage := 25\nfmt.Printf(\"Nama: %s, Umur: %d\\n\", name, age)\n// Output: Nama: Budi, Umur: 25\n```\n\n### `fmt.Sprintf` — Format ke string (tidak dicetak)\n```go\nresult := fmt.Sprintf(\"PI = %.2f\", 3.14159)\nfmt.Println(result)\n// Output: PI = 3.14\n```\n\n## Tabel Format Verbs\n\n| Verb | Tipe | Contoh Input | Output |\n|---|---|---|---|\n| `%s` | string | `\"Go\"` | `Go` |\n| `%d` | integer | `42` | `42` |\n| `%f` | float | `3.14` | `3.140000` |\n| `%.2f` | float (2 desimal) | `3.14159` | `3.14` |\n| `%t` | boolean | `true` | `true` |\n| `%v` | nilai default | `[]int{1,2}` | `[1 2]` |\n| `%T` | tipe data | `42` | `int` |\n| `%p` | pointer address | `&x` | `0xc000...` |\n| `%b` | binary | `10` | `1010` |\n| `%x` | hexadecimal | `255` | `ff` |\n| `%q` | quoted string | `\"Go\"` | `\"Go\"` |\n\n## Contoh Lengkap\n\n```go\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n    name := \"Golang\"\n    version := 1.22\n    isAwesome := true\n\n    fmt.Printf(\"Bahasa: %s\\n\", name)\n    fmt.Printf(\"Versi: %.2f\\n\", version)\n    fmt.Printf(\"Keren? %t\\n\", isAwesome)\n    fmt.Printf(\"Tipe name: %T\\n\", name)\n\n    // Sprintf untuk membuat string\n    msg := fmt.Sprintf(\"%s v%.2f\", name, version)\n    fmt.Println(msg)\n}\n```\n\n**Output:**\n```\nBahasa: Golang\nVersi: 1.22\nKeren? true\nTipe name: string\nGolang v1.22\n```",
+  "content_en": "# Hello World & Program Structure\n\n## Anatomy of a Go Program\n\n```go\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n    fmt.Println(\"Hello, World!\")\n}\n```\n\nEvery executable Go program consists of:\n\n### 1. `package main`\nThe first line declares the **package**. The `main` package is special — it tells the compiler this is an executable program (not a library).\n\n### 2. `import`\nImports needed packages. The `fmt` (format) package provides input/output functions.\n\n```go\n// Import a single package\nimport \"fmt\"\n\n// Import multiple packages\nimport (\n    \"fmt\"\n    \"math\"\n    \"strings\"\n)\n```\n\n### 3. `func main()`\nThe `main()` function is the program entry point. Go executes this function first when the program runs.\n\n## The fmt Functions\n\n### `fmt.Print` — Print without newline\n```go\nfmt.Print(\"Hello\")\nfmt.Print(\" World\")\n// Output: Hello World\n```\n\n### `fmt.Println` — Print with automatic newline\n```go\nfmt.Println(\"Hello, World!\")\nfmt.Println(\"Second line\")\n// Output:\n// Hello, World!\n// Second line\n```\n\n### `fmt.Printf` — Print with formatting\n```go\nname := \"Budi\"\nage := 25\nfmt.Printf(\"Name: %s, Age: %d\\n\", name, age)\n// Output: Name: Budi, Age: 25\n```\n\n### `fmt.Sprintf` — Format to string (not printed)\n```go\nresult := fmt.Sprintf(\"PI = %.2f\", 3.14159)\nfmt.Println(result)\n// Output: PI = 3.14\n```\n\n## Format Verbs Table\n\n| Verb | Type | Example Input | Output |\n|---|---|---|---|\n| `%s` | string | `\"Go\"` | `Go` |\n| `%d` | integer | `42` | `42` |\n| `%f` | float | `3.14` | `3.140000` |\n| `%.2f` | float (2 decimals) | `3.14159` | `3.14` |\n| `%t` | boolean | `true` | `true` |\n| `%v` | default value | `[]int{1,2}` | `[1 2]` |\n| `%T` | data type | `42` | `int` |\n| `%p` | pointer address | `&x` | `0xc000...` |\n| `%b` | binary | `10` | `1010` |\n| `%x` | hexadecimal | `255` | `ff` |\n| `%q` | quoted string | `\"Go\"` | `\"Go\"` |\n\n## Complete Example\n\n```go\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n    name := \"Golang\"\n    version := 1.22\n    isAwesome := true\n\n    fmt.Printf(\"Language: %s\\n\", name)\n    fmt.Printf(\"Version: %.2f\\n\", version)\n    fmt.Printf(\"Awesome? %t\\n\", isAwesome)\n    fmt.Printf(\"Type of name: %T\\n\", name)\n\n    // Sprintf to build a string\n    msg := fmt.Sprintf(\"%s v%.2f\", name, version)\n    fmt.Println(msg)\n}\n```\n\n**Output:**\n```\nLanguage: Golang\nVersion: 1.22\nAwesome? true\nType of name: string\nGolang v1.22\n```",
+  "starterCode": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tname := \"Gopher\"\n\tage := 15\n\theight := 1.75\n\tisLearning := true\n\n\t// Gunakan format verbs yang berbeda / Use different format verbs\n\tfmt.Printf(\"Nama: %s\\n\", name)\n\tfmt.Printf(\"Umur: %d tahun\\n\", age)\n\tfmt.Printf(\"Tinggi: %.2f meter\\n\", height)\n\tfmt.Printf(\"Sedang belajar Go: %t\\n\", isLearning)\n\tfmt.Printf(\"Tipe data name: %T\\n\", name)\n\n\t// Coba Sprintf\n\tprofile := fmt.Sprintf(\"%s (%d tahun)\", name, age)\n\tfmt.Println(profile)\n}",
+  "quiz": [
+    {
+      "question_id": "Package apa yang harus dideklarasikan agar sebuah file Go dapat dijalankan sebagai program?",
+      "question_en": "Which package must be declared for a Go file to run as a program?",
+      "options_id": [
+        "package program",
+        "package run",
+        "package main",
+        "package exec"
+      ],
+      "options_en": [
+        "package program",
+        "package run",
+        "package main",
+        "package exec"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Format verb `%T` di Go digunakan untuk?",
+      "question_en": "What is the `%T` format verb used for in Go?",
+      "options_id": [
+        "Mencetak nilai boolean",
+        "Mencetak nilai dalam format binary",
+        "Mencetak tipe data dari sebuah nilai",
+        "Mencetak nilai dalam format hexadecimal"
+      ],
+      "options_en": [
+        "Print a boolean value",
+        "Print a value in binary format",
+        "Print the data type of a value",
+        "Print a value in hexadecimal format"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Fungsi fmt mana yang memformat string tetapi TIDAK mencetak langsung ke konsol?",
+      "question_en": "Which fmt function formats a string but does NOT print it directly to the console?",
+      "options_id": [
+        "fmt.Println",
+        "fmt.Printf",
+        "fmt.Sprintf",
+        "fmt.Print"
+      ],
+      "options_en": [
+        "fmt.Println",
+        "fmt.Printf",
+        "fmt.Sprintf",
+        "fmt.Print"
+      ],
+      "correct": 2
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "id": "04",
+  "title_id": "Go Modules",
+  "title_en": "Go Modules",
+  "estimatedMinutes": 10,
+  "content_id": "# Go Modules\n\nGo Modules adalah sistem manajemen dependency resmi di Go (diperkenalkan pada Go 1.11, resmi pada Go 1.16). Modules menggantikan `GOPATH` sebagai cara mengelola proyek dan dependencies.\n\n## Membuat Module Baru\n\n```bash\nmkdir myproject\ncd myproject\ngo mod init github.com/username/myproject\n```\n\nPerintah ini membuat file `go.mod` di direktori proyek.\n\n## Struktur `go.mod`\n\n```\nmodule github.com/username/myproject\n\ngo 1.22\n\nrequire (\n    github.com/gin-gonic/gin v1.9.1\n    github.com/stretchr/testify v1.8.4\n)\n```\n\nKomponen dalam `go.mod`:\n- **module** — path unik modul Anda (biasanya URL repository)\n- **go** — versi minimum Go yang dibutuhkan\n- **require** — daftar dependency dan versinya\n\n## File `go.sum`\n\nFile `go.sum` berisi **checksum kriptografis** dari setiap dependency:\n\n```\ngithub.com/gin-gonic/gin v1.9.1 h1:4idEAncQnU5cB7BeOkPtxjfCSye0AAm1R0RVIqJ+Jmg=\ngithub.com/gin-gonic/gin v1.9.1/go.mod h1:hPrL7YrpYKXt5YId3A/Tnip5kqbEAP+KLuI3SUcPTeU=\n```\n\nFile ini **tidak boleh diedit manual** dan harus di-commit ke version control untuk menjamin keamanan dependency.\n\n## Perintah go mod\n\n### `go get` — Tambahkan atau update dependency\n```bash\n# Tambahkan dependency baru\ngo get github.com/gin-gonic/gin\n\n# Tambahkan versi spesifik\ngo get github.com/gin-gonic/gin@v1.9.1\n\n# Update ke versi terbaru\ngo get -u github.com/gin-gonic/gin\n```\n\n### `go mod tidy` — Bersihkan dependency\n```bash\ngo mod tidy\n```\nMenambahkan dependency yang hilang dan menghapus dependency yang tidak digunakan.\n\n### `go mod vendor` — Salin dependency ke folder vendor\n```bash\ngo mod vendor\n```\nMenyalin semua dependency ke folder `vendor/` untuk build offline.\n\n### `go mod verify` — Verifikasi integritas dependency\n```bash\ngo mod verify\n```\nMemastikan dependency yang terunduh sesuai dengan checksum di `go.sum`.\n\n## Contoh: Menggunakan External Package\n\nMisalkan kita ingin menggunakan package `color` dari `fatih`:\n\n```bash\ngo get github.com/fatih/color\n```\n\nKemudian gunakan di kode:\n\n```go\npackage main\n\nimport (\n    \"fmt\"\n    \"github.com/fatih/color\"\n)\n\nfunc main() {\n    color.Cyan(\"Hello dari package eksternal!\")\n    fmt.Println(\"Module bekerja dengan baik\")\n}\n```\n\n## Ringkasan Perintah Modules\n\n| Perintah | Fungsi |\n|---|---|\n| `go mod init <path>` | Inisialisasi module baru |\n| `go get <package>` | Tambahkan dependency |\n| `go mod tidy` | Sinkronkan go.mod dengan kode |\n| `go mod vendor` | Salin ke folder vendor |\n| `go mod verify` | Verifikasi checksum dependency |\n| `go mod download` | Download dependency ke cache |",
+  "content_en": "# Go Modules\n\nGo Modules is the official dependency management system in Go (introduced in Go 1.11, official in Go 1.16). Modules replaced `GOPATH` as the way to manage projects and dependencies.\n\n## Creating a New Module\n\n```bash\nmkdir myproject\ncd myproject\ngo mod init github.com/username/myproject\n```\n\nThis creates a `go.mod` file in the project directory.\n\n## Structure of `go.mod`\n\n```\nmodule github.com/username/myproject\n\ngo 1.22\n\nrequire (\n    github.com/gin-gonic/gin v1.9.1\n    github.com/stretchr/testify v1.8.4\n)\n```\n\nComponents in `go.mod`:\n- **module** — unique path for your module (usually a repository URL)\n- **go** — the minimum required Go version\n- **require** — list of dependencies and their versions\n\n## The `go.sum` File\n\nThe `go.sum` file contains **cryptographic checksums** of each dependency:\n\n```\ngithub.com/gin-gonic/gin v1.9.1 h1:4idEAncQnU5cB7BeOkPtxjfCSye0AAm1R0RVIqJ+Jmg=\ngithub.com/gin-gonic/gin v1.9.1/go.mod h1:hPrL7YrpYKXt5YId3A/Tnip5kqbEAP+KLuI3SUcPTeU=\n```\n\nThis file **must not be edited manually** and should be committed to version control to guarantee dependency security.\n\n## go mod Commands\n\n### `go get` — Add or update a dependency\n```bash\n# Add a new dependency\ngo get github.com/gin-gonic/gin\n\n# Add a specific version\ngo get github.com/gin-gonic/gin@v1.9.1\n\n# Update to latest version\ngo get -u github.com/gin-gonic/gin\n```\n\n### `go mod tidy` — Clean up dependencies\n```bash\ngo mod tidy\n```\nAdds missing dependencies and removes unused ones.\n\n### `go mod vendor` — Copy dependencies to vendor folder\n```bash\ngo mod vendor\n```\nCopies all dependencies into a `vendor/` directory for offline builds.\n\n### `go mod verify` — Verify dependency integrity\n```bash\ngo mod verify\n```\nEnsures downloaded dependencies match the checksums in `go.sum`.\n\n## Example: Using an External Package\n\nTo use the `color` package from `fatih`:\n\n```bash\ngo get github.com/fatih/color\n```\n\nThen use it in code:\n\n```go\npackage main\n\nimport (\n    \"fmt\"\n    \"github.com/fatih/color\"\n)\n\nfunc main() {\n    color.Cyan(\"Hello from an external package!\")\n    fmt.Println(\"Module is working correctly\")\n}\n```\n\n## Module Commands Summary\n\n| Command | Purpose |\n|---|---|\n| `go mod init <path>` | Initialize a new module |\n| `go get <package>` | Add a dependency |\n| `go mod tidy` | Sync go.mod with code |\n| `go mod vendor` | Copy to vendor folder |\n| `go mod verify` | Verify dependency checksums |\n| `go mod download` | Download dependencies to cache |",
+  "starterCode": "package main\n\nimport \"fmt\"\n\n// Contoh struktur go.mod:\n// module github.com/username/myproject\n//\n// go 1.22\n//\n// require (\n//     github.com/gin-gonic/gin v1.9.1\n// )\n\nfunc main() {\n\tfmt.Println(\"Module: github.com/username/myproject\")\n\tfmt.Println(\"Jalankan 'go mod init' untuk memulai modul baru\")\n\tfmt.Println(\"Jalankan 'go mod tidy' untuk merapikan dependency\")\n}",
+  "quiz": [
+    {
+      "question_id": "Perintah apa yang digunakan untuk menginisialisasi module Go baru di direktori proyek?",
+      "question_en": "Which command initializes a new Go module in a project directory?",
+      "options_id": [
+        "go init",
+        "go new module",
+        "go mod init",
+        "go create module"
+      ],
+      "options_en": [
+        "go init",
+        "go new module",
+        "go mod init",
+        "go create module"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa fungsi dari file `go.sum` dalam Go Modules?",
+      "question_en": "What is the purpose of the `go.sum` file in Go Modules?",
+      "options_id": [
+        "Menyimpan source code dependency",
+        "Menyimpan checksum kriptografis untuk memverifikasi integritas dependency",
+        "Menyimpan konfigurasi environment Go",
+        "Menyimpan daftar perintah build"
+      ],
+      "options_en": [
+        "Stores dependency source code",
+        "Stores cryptographic checksums to verify dependency integrity",
+        "Stores Go environment configuration",
+        "Stores a list of build commands"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Perintah apa yang menghapus dependency tidak terpakai dan menambahkan dependency yang hilang di go.mod?",
+      "question_en": "Which command removes unused dependencies and adds missing ones to go.mod?",
+      "options_id": [
+        "go mod clean",
+        "go mod sync",
+        "go mod tidy",
+        "go mod fix"
+      ],
+      "options_en": [
+        "go mod clean",
+        "go mod sync",
+        "go mod tidy",
+        "go mod fix"
+      ],
+      "correct": 2
+    }
+  ]
+}

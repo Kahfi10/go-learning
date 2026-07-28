@@ -1,0 +1,62 @@
+{
+  "id": "03",
+  "title_id": "Zero Values & Multiple Assignment",
+  "title_en": "Zero Values & Multiple Assignment",
+  "estimatedMinutes": 8,
+  "content_id": "# Zero Values & Multiple Assignment\n\n## Zero Values\n\nDi Go, setiap variabel yang dideklarasikan tanpa nilai awal akan secara otomatis mendapatkan **zero value** sesuai tipenya. Ini menghilangkan masalah variabel yang tidak terinisialisasi.\n\n| Tipe | Zero Value |\n|---|---|\n| `int`, `int8`, ... `int64` | `0` |\n| `uint`, `uint8`, ... `uint64` | `0` |\n| `float32`, `float64` | `0.0` atau `0` |\n| `bool` | `false` |\n| `string` | `\"\"` (string kosong) |\n| `pointer` | `nil` |\n| `slice` | `nil` |\n| `map` | `nil` |\n| `channel` | `nil` |\n| `interface` | `nil` |\n| `func` | `nil` |\n\n### Contoh Zero Values\n\n```go\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n    var i int\n    var f float64\n    var b bool\n    var s string\n\n    fmt.Printf(\"int zero: %d\\n\", i)       // 0\n    fmt.Printf(\"float zero: %f\\n\", f)     // 0.000000\n    fmt.Printf(\"bool zero: %t\\n\", b)      // false\n    fmt.Printf(\"string zero: %q\\n\", s)    // \"\"\n}\n```\n\n## Multiple Assignment\n\nGo mendukung assignment banyak variabel sekaligus dalam satu baris:\n\n```go\n// Deklarasi dan inisialisasi banyak variabel\nx, y, z := 1, 2, 3\nfmt.Println(x, y, z) // 1 2 3\n\n// Assignment ulang\na, b := 10, 20\na, b = 100, 200\nfmt.Println(a, b) // 100 200\n```\n\n### Swap Trick Idiomatik\n\n```go\na, b := 5, 10\nfmt.Println(\"Sebelum swap:\", a, b) // 5 10\n\na, b = b, a  // swap dalam satu baris!\nfmt.Println(\"Setelah swap:\", a, b) // 10 5\n```\n\nTanpa variabel temporary! Ini adalah salah satu keunggulan Go.\n\n## Blank Identifier `_`\n\nBlank identifier (`_`) digunakan untuk mengabaikan nilai yang tidak diperlukan:\n\n```go\n// Mengabaikan nilai return yang tidak dibutuhkan\nfunc getCoords() (int, int) {\n    return 10, 20\n}\n\nfunc main() {\n    // Hanya butuh y, abaikan x\n    _, y := getCoords()\n    fmt.Println(\"y:\", y) // y: 20\n\n    // Abaikan index saat range\n    nums := []int{1, 2, 3, 4, 5}\n    for _, v := range nums {\n        fmt.Print(v, \" \") // 1 2 3 4 5\n    }\n}\n```\n\n## Aturan Variabel Tidak Terpakai\n\nGo **memaksa** setiap variabel yang dideklarasikan untuk digunakan. Jika tidak, program tidak akan bisa dikompilasi:\n\n```go\nfunc main() {\n    x := 5  // ERROR jika x tidak pernah digunakan!\n    // compile error: x declared and not used\n}\n```\n\nIni berbeda dengan Python atau JavaScript yang memperbolehkan variabel tidak terpakai. Aturan ini membantu menjaga kode tetap bersih.",
+  "content_en": "# Zero Values & Multiple Assignment\n\n## Zero Values\n\nIn Go, every variable declared without an initial value automatically receives a **zero value** based on its type. This eliminates the problem of uninitialized variables.\n\n| Type | Zero Value |\n|---|---|\n| `int`, `int8`, ... `int64` | `0` |\n| `uint`, `uint8`, ... `uint64` | `0` |\n| `float32`, `float64` | `0.0` or `0` |\n| `bool` | `false` |\n| `string` | `\"\"` (empty string) |\n| `pointer` | `nil` |\n| `slice` | `nil` |\n| `map` | `nil` |\n| `channel` | `nil` |\n| `interface` | `nil` |\n| `func` | `nil` |\n\n### Zero Value Example\n\n```go\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n    var i int\n    var f float64\n    var b bool\n    var s string\n\n    fmt.Printf(\"int zero: %d\\n\", i)       // 0\n    fmt.Printf(\"float zero: %f\\n\", f)     // 0.000000\n    fmt.Printf(\"bool zero: %t\\n\", b)      // false\n    fmt.Printf(\"string zero: %q\\n\", s)    // \"\"\n}\n```\n\n## Multiple Assignment\n\nGo supports assigning multiple variables at once in one line:\n\n```go\n// Declare and initialize multiple variables\nx, y, z := 1, 2, 3\nfmt.Println(x, y, z) // 1 2 3\n\n// Re-assignment\na, b := 10, 20\na, b = 100, 200\nfmt.Println(a, b) // 100 200\n```\n\n### The Idiomatic Swap Trick\n\n```go\na, b := 5, 10\nfmt.Println(\"Before swap:\", a, b) // 5 10\n\na, b = b, a  // swap in one line!\nfmt.Println(\"After swap:\", a, b) // 10 5\n```\n\nNo temporary variable needed! This is one of Go's conveniences.\n\n## Blank Identifier `_`\n\nThe blank identifier (`_`) is used to discard values you don't need:\n\n```go\n// Ignore return values that aren't needed\nfunc getCoords() (int, int) {\n    return 10, 20\n}\n\nfunc main() {\n    // Only need y, ignore x\n    _, y := getCoords()\n    fmt.Println(\"y:\", y) // y: 20\n\n    // Ignore index during range\n    nums := []int{1, 2, 3, 4, 5}\n    for _, v := range nums {\n        fmt.Print(v, \" \") // 1 2 3 4 5\n    }\n}\n```\n\n## Unused Variable Rule\n\nGo **enforces** that every declared variable must be used. If not, the program won't compile:\n\n```go\nfunc main() {\n    x := 5  // ERROR if x is never used!\n    // compile error: x declared and not used\n}\n```\n\nThis differs from Python or JavaScript which allow unused variables. This rule helps keep code clean.",
+  "starterCode": "package main\n\nimport \"fmt\"\n\nfunc getPoint() (int, int) {\n\treturn 42, 100\n}\n\nfunc main() {\n\t// Zero values\n\tvar i int\n\tvar f float64\n\tvar b bool\n\tvar s string\n\tfmt.Printf(\"Zero values: int=%d, float=%f, bool=%t, string=%q\\n\", i, f, b, s)\n\n\t// Multiple assignment\n\tx, y, z := 10, 20, 30\n\tfmt.Println(\"x, y, z:\", x, y, z)\n\n\t// Swap trick\n\tx, y = y, x\n\tfmt.Println(\"Setelah swap x,y:\", x, y)\n\n\t// Blank identifier\n\t_, coordY := getPoint()\n\tfmt.Println(\"Hanya y:\", coordY)\n\n\t_ = z // gunakan z agar tidak error\n}",
+  "quiz": [
+    {
+      "question_id": "Apa zero value dari tipe data `bool` di Go?",
+      "question_en": "What is the zero value of the `bool` data type in Go?",
+      "options_id": [
+        "nil",
+        "0",
+        "false",
+        "undefined"
+      ],
+      "options_en": [
+        "nil",
+        "0",
+        "false",
+        "undefined"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa fungsi dari blank identifier `_` di Go?",
+      "question_en": "What is the purpose of the blank identifier `_` in Go?",
+      "options_id": [
+        "Mendeklarasikan variabel private",
+        "Mengabaikan nilai yang tidak diperlukan",
+        "Membuat variabel dengan tipe dinamis",
+        "Menyimpan nilai sementara"
+      ],
+      "options_en": [
+        "Declare a private variable",
+        "Discard a value that is not needed",
+        "Create a dynamically typed variable",
+        "Store a temporary value"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang terjadi jika Anda mendeklarasikan variabel di Go tetapi tidak menggunakannya?",
+      "question_en": "What happens if you declare a variable in Go but never use it?",
+      "options_id": [
+        "Program tetap berjalan dengan peringatan",
+        "Variabel dihapus otomatis oleh garbage collector",
+        "Kompilasi gagal dengan error",
+        "Variabel mendapatkan zero value"
+      ],
+      "options_en": [
+        "The program runs with a warning",
+        "The variable is automatically removed by the garbage collector",
+        "Compilation fails with an error",
+        "The variable gets a zero value"
+      ],
+      "correct": 2
+    }
+  ]
+}

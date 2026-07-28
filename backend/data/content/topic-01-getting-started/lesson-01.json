@@ -1,0 +1,52 @@
+{
+  "id": "01",
+  "title_id": "Apa itu Go?",
+  "title_en": "What is Go?",
+  "estimatedMinutes": 10,
+  "content_id": "# Apa itu Go?\n\n## Sejarah Go\n\nGo (dikenal juga sebagai **Golang**) adalah bahasa pemrograman open-source yang dikembangkan oleh **Google** pada tahun **2009**. Bahasa ini dirancang oleh tiga insinyur berbakat:\n\n- **Robert Griesemer** — pengembang kompiler V8 JavaScript dan HotSpot JVM\n- **Rob Pike** — co-creator sistem operasi Plan 9 dan UTF-8\n- **Ken Thompson** — co-creator Unix dan bahasa pemrograman C\n\nGo lahir dari frustrasi tim Google terhadap kompleksitas C++ ketika membangun sistem berskala sangat besar. Mereka menginginkan bahasa yang cepat dikompilasi, mudah dibaca, namun tetap efisien secara performa.\n\n## Mengapa Memilih Go?\n\n| Keunggulan | Penjelasan |\n|---|---|\n| **Kompilasi Cepat** | Waktu build sangat singkat bahkan untuk proyek besar |\n| **Sintaks Sederhana** | Hanya ~25 kata kunci, mudah dibaca dan dipelajari |\n| **Concurrency Bawaan** | Goroutine dan channel untuk pemrograman paralel |\n| **Garbage Collection** | Manajemen memori otomatis, tidak perlu `malloc/free` |\n| **Static Typing** | Error tipe terdeteksi saat kompilasi, bukan saat runtime |\n| **Single Binary** | Output satu file executable, sangat mudah di-deploy |\n\n## Siapa yang Menggunakan Go?\n\nGo telah diadopsi oleh banyak perusahaan teknologi terkemuka:\n\n- **Docker** — platform containerisasi terpopuler di dunia, ditulis hampir seluruhnya dalam Go\n- **Kubernetes** — sistem orkestrasi container skala enterprise dari Google\n- **Uber** — backend layanan ride-hailing yang menangani jutaan request per detik\n- **Cloudflare** — infrastruktur CDN dan keamanan internet\n- **Dropbox** — layanan penyimpanan cloud\n\n## Perbandingan: Go vs Python vs Java\n\n| Aspek | Go | Python | Java |\n|---|---|---|---|\n| Kecepatan eksekusi | Sangat cepat | Lambat | Cepat |\n| Sintaks | Sederhana | Sangat sederhana | Verbose |\n| Concurrency | Goroutine native | GIL (terbatas) | JVM Thread |\n| Output build | Native binary | Interpreted | JVM bytecode |\n| Tipe data | Statis | Dinamis | Statis |\n| Deploy | Satu binary | Butuh Python runtime | Butuh JVM |\n| Kurva belajar | Landai | Sangat landai | Curam |\n\n## Program Pertama: Hello World\n\n```go\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n    fmt.Println(\"Hello, World!\")\n}\n```\n\n**Output:**\n```\nHello, World!\n```\n\nSetiap program Go yang dapat dieksekusi wajib memiliki tiga komponen:\n1. `package main` — menandakan ini adalah program yang bisa dijalankan langsung\n2. `import` — mengimpor package eksternal yang dibutuhkan\n3. `func main()` — fungsi utama sebagai titik masuk (entry point) program",
+  "content_en": "# What is Go?\n\n## History of Go\n\nGo (also known as **Golang**) is an open-source programming language developed by **Google** in **2009**. It was designed by three talented engineers:\n\n- **Robert Griesemer** — worked on the V8 JavaScript compiler and HotSpot JVM\n- **Rob Pike** — co-creator of the Plan 9 operating system and UTF-8\n- **Ken Thompson** — co-creator of Unix and the C programming language\n\nGo was born out of frustration with the complexity of C++ when building Google's large-scale systems. They wanted a language that compiled quickly, was easy to read, yet remained highly performant.\n\n## Why Choose Go?\n\n| Advantage | Description |\n|---|---|\n| **Fast Compilation** | Very short build times, even for large projects |\n| **Simple Syntax** | Only ~25 keywords, easy to read and learn |\n| **Built-in Concurrency** | Goroutines and channels for parallel programming |\n| **Garbage Collection** | Automatic memory management, no `malloc/free` needed |\n| **Static Typing** | Type errors caught at compile time, not at runtime |\n| **Single Binary** | Produces one executable file, extremely easy to deploy |\n\n## Who Uses Go?\n\nGo has been adopted by many leading technology companies:\n\n- **Docker** — the world's most popular containerization platform, written almost entirely in Go\n- **Kubernetes** — Google's enterprise-scale container orchestration system\n- **Uber** — ride-hailing backend handling millions of requests per second\n- **Cloudflare** — CDN and internet security infrastructure\n- **Dropbox** — cloud storage service\n\n## Comparison: Go vs Python vs Java\n\n| Aspect | Go | Python | Java |\n|---|---|---|---|\n| Execution speed | Very fast | Slow | Fast |\n| Syntax | Simple | Very simple | Verbose |\n| Concurrency | Native goroutines | GIL (limited) | JVM threads |\n| Build output | Native binary | Interpreted | JVM bytecode |\n| Type system | Static | Dynamic | Static |\n| Deployment | Single binary | Needs Python runtime | Needs JVM |\n| Learning curve | Gentle | Very gentle | Steep |\n\n## First Program: Hello World\n\n```go\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n    fmt.Println(\"Hello, World!\")\n}\n```\n\n**Output:**\n```\nHello, World!\n```\n\nEvery executable Go program must have three components:\n1. `package main` — marks this as a directly runnable program\n2. `import` — imports external packages needed\n3. `func main()` — the main function as the program entry point",
+  "starterCode": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\t// Program Go pertama Anda! / Your first Go program!\n\tfmt.Println(\"Hello, World!\")\n\tfmt.Println(\"Go dibuat oleh Google pada tahun 2009\")\n\tfmt.Println(\"Go was created by Google in 2009\")\n}",
+  "quiz": [
+    {
+      "question_id": "Siapa saja tiga insinyur yang merancang bahasa pemrograman Go?",
+      "question_en": "Who are the three engineers who designed the Go programming language?",
+      "options_id": [
+        "James Gosling, Mike Sheridan, Patrick Naughton",
+        "Robert Griesemer, Rob Pike, Ken Thompson",
+        "Guido van Rossum, Barry Warsaw, Jeremy Hylton",
+        "Linus Torvalds, Andrew Tanenbaum, Dennis Ritchie"
+      ],
+      "options_en": [
+        "James Gosling, Mike Sheridan, Patrick Naughton",
+        "Robert Griesemer, Rob Pike, Ken Thompson",
+        "Guido van Rossum, Barry Warsaw, Jeremy Hylton",
+        "Linus Torvalds, Andrew Tanenbaum, Dennis Ritchie"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Pada tahun berapa Go pertama kali diperkenalkan oleh Google?",
+      "question_en": "In what year was Go first introduced by Google?",
+      "options_id": ["2005", "2007", "2009", "2012"],
+      "options_en": ["2005", "2007", "2009", "2012"],
+      "correct": 2
+    },
+    {
+      "question_id": "Fitur bawaan Go yang memungkinkan pemrograman konkuren secara efisien adalah?",
+      "question_en": "Which built-in Go feature enables efficient concurrent programming?",
+      "options_id": [
+        "Thread dan Mutex",
+        "Async dan Await",
+        "Goroutine dan Channel",
+        "Process dan Semaphore"
+      ],
+      "options_en": [
+        "Thread and Mutex",
+        "Async and Await",
+        "Goroutine and Channel",
+        "Process and Semaphore"
+      ],
+      "correct": 2
+    }
+  ]
+}

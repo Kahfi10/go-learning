@@ -1,0 +1,62 @@
+{
+  "id": "01",
+  "title_id": "Deklarasi & Pemanggilan Fungsi",
+  "title_en": "Function Declaration & Calling",
+  "estimatedMinutes": 10,
+  "content_id": "# Deklarasi & Pemanggilan Fungsi\n\nFungsi adalah blok kode yang dapat dipanggil berulang kali. Di Go, fungsi adalah *first-class citizen* — bisa disimpan dalam variabel, diteruskan sebagai argumen, dan dikembalikan dari fungsi lain.\n\n## Sintaks Dasar\n\n```go\nfunc namaFungsi(param1 tipe1, param2 tipe2) tipeReturn {\n    // body fungsi\n    return nilai\n}\n```\n\n## Contoh Fungsi Sederhana\n\n```go\n// Fungsi tanpa parameter dan return value\nfunc greet() {\n    fmt.Println(\"Halo dari fungsi!\")\n}\n\n// Fungsi dengan parameter\nfunc greetName(name string) {\n    fmt.Printf(\"Halo, %s!\\n\", name)\n}\n\n// Fungsi dengan return value\nfunc add(a int, b int) int {\n    return a + b\n}\n\n// Jika parameter memiliki tipe sama, bisa disingkat\nfunc multiply(a, b int) int {\n    return a * b\n}\n\n// Fungsi dengan string return\nfunc greetFormal(name string) string {\n    return \"Selamat datang, \" + name + \"!\"\n}\n```\n\n## Memanggil Fungsi\n\n```go\npackage main\n\nimport \"fmt\"\n\nfunc add(a, b int) int {\n    return a + b\n}\n\nfunc greet(name string) string {\n    return fmt.Sprintf(\"Hello, %s!\", name)\n}\n\nfunc main() {\n    // Panggil fungsi langsung\n    greet_result := greet(\"Gopher\")\n    fmt.Println(greet_result)   // Hello, Gopher!\n\n    // Gunakan return value langsung\n    fmt.Println(add(3, 4))     // 7\n    fmt.Println(add(10, 20))   // 30\n\n    // Simpan ke variabel\n    sum := add(100, 200)\n    fmt.Println(\"Sum:\", sum)   // Sum: 300\n}\n```\n\n## Parameter dengan Tipe yang Sama\n\n```go\n// Cara verbose\nfunc addVerbose(a int, b int, c int) int {\n    return a + b + c\n}\n\n// Cara ringkas (tipe sama)\nfunc addConcise(a, b, c int) int {\n    return a + b + c\n}\n```\n\n## Function Scope\n\n```go\nfunc calculate(x, y float64) float64 {\n    // result hanya ada di dalam fungsi ini\n    result := x*x + y*y\n    return result\n}\n\nfunc main() {\n    r := calculate(3, 4)\n    fmt.Println(r)    // 25\n    // fmt.Println(result) // ERROR: undefined result\n}\n```\n\n## Fungsi Tanpa Return Value\n\n```go\nfunc printBanner(title string) {\n    fmt.Println(\"==================\")\n    fmt.Println(title)\n    fmt.Println(\"==================\")\n    // tidak ada return\n}\n```",
+  "content_en": "# Function Declaration & Calling\n\nFunctions are blocks of code that can be called repeatedly. In Go, functions are *first-class citizens* — they can be stored in variables, passed as arguments, and returned from other functions.\n\n## Basic Syntax\n\n```go\nfunc functionName(param1 type1, param2 type2) returnType {\n    // function body\n    return value\n}\n```\n\n## Simple Function Examples\n\n```go\n// Function with no parameters or return value\nfunc greet() {\n    fmt.Println(\"Hello from a function!\")\n}\n\n// Function with a parameter\nfunc greetName(name string) {\n    fmt.Printf(\"Hello, %s!\\n\", name)\n}\n\n// Function with a return value\nfunc add(a int, b int) int {\n    return a + b\n}\n\n// If parameters share the same type, you can shorten it\nfunc multiply(a, b int) int {\n    return a * b\n}\n\n// Function returning a string\nfunc greetFormal(name string) string {\n    return \"Welcome, \" + name + \"!\"\n}\n```\n\n## Calling Functions\n\n```go\npackage main\n\nimport \"fmt\"\n\nfunc add(a, b int) int {\n    return a + b\n}\n\nfunc greet(name string) string {\n    return fmt.Sprintf(\"Hello, %s!\", name)\n}\n\nfunc main() {\n    // Call the function and save result\n    greetResult := greet(\"Gopher\")\n    fmt.Println(greetResult)   // Hello, Gopher!\n\n    // Use return value directly\n    fmt.Println(add(3, 4))     // 7\n    fmt.Println(add(10, 20))   // 30\n\n    // Store in a variable\n    sum := add(100, 200)\n    fmt.Println(\"Sum:\", sum)   // Sum: 300\n}\n```\n\n## Parameters with the Same Type\n\n```go\n// Verbose way\nfunc addVerbose(a int, b int, c int) int {\n    return a + b + c\n}\n\n// Concise way (same type)\nfunc addConcise(a, b, c int) int {\n    return a + b + c\n}\n```\n\n## Function Scope\n\n```go\nfunc calculate(x, y float64) float64 {\n    // result only exists inside this function\n    result := x*x + y*y\n    return result\n}\n\nfunc main() {\n    r := calculate(3, 4)\n    fmt.Println(r)    // 25\n    // fmt.Println(result) // ERROR: undefined result\n}\n```\n\n## Function Without Return Value\n\n```go\nfunc printBanner(title string) {\n    fmt.Println(\"==================\")\n    fmt.Println(title)\n    fmt.Println(\"==================\")\n    // no return statement\n}\n```",
+  "starterCode": "package main\n\nimport \"fmt\"\n\n// Fungsi add: menjumlahkan dua integer\nfunc add(a, b int) int {\n\treturn a + b\n}\n\n// Fungsi greet: membuat pesan sapaan\nfunc greet(name string) string {\n\treturn fmt.Sprintf(\"Hello, %s! Selamat belajar Go!\", name)\n}\n\n// Fungsi calculateArea: menghitung luas persegi panjang\nfunc calculateArea(width, height float64) float64 {\n\treturn width * height\n}\n\nfunc main() {\n\t// Panggil add\n\tresult := add(15, 27)\n\tfmt.Println(\"15 + 27 =\", result)\n\n\t// Panggil greet\n\tmsg := greet(\"Gopher\")\n\tfmt.Println(msg)\n\n\t// Panggil calculateArea\n\tarea := calculateArea(5.5, 3.2)\n\tfmt.Printf(\"Luas: %.2f\\n\", area)\n}",
+  "quiz": [
+    {
+      "question_id": "Apa kata kunci yang digunakan untuk mendeklarasikan fungsi di Go?",
+      "question_en": "What keyword is used to declare a function in Go?",
+      "options_id": [
+        "function",
+        "def",
+        "fn",
+        "func"
+      ],
+      "options_en": [
+        "function",
+        "def",
+        "fn",
+        "func"
+      ],
+      "correct": 3
+    },
+    {
+      "question_id": "Bagaimana cara mendeklarasikan fungsi `add` yang menerima dua parameter `int` dan mengembalikan `int` di Go?",
+      "question_en": "How do you declare an `add` function that takes two `int` parameters and returns an `int` in Go?",
+      "options_id": [
+        "function add(a, b int) -> int { }",
+        "func add(a int, b int) int { }",
+        "def add(a, b: int) int: pass",
+        "int add(int a, int b) { }"
+      ],
+      "options_en": [
+        "function add(a, b int) -> int { }",
+        "func add(a int, b int) int { }",
+        "def add(a, b: int) int: pass",
+        "int add(int a, int b) { }"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika beberapa parameter fungsi memiliki tipe yang sama, bagaimana cara yang benar untuk mempersingkat deklarasinya?",
+      "question_en": "If several function parameters share the same type, how can you shorten the declaration?",
+      "options_id": [
+        "func f(a, b, c) int { }",
+        "func f(a b c int) { }",
+        "func f(a, b, c int) int { }",
+        "func f([a,b,c] int) int { }"
+      ],
+      "options_en": [
+        "func f(a, b, c) int { }",
+        "func f(a b c int) { }",
+        "func f(a, b, c int) int { }",
+        "func f([a,b,c] int) int { }"
+      ],
+      "correct": 2
+    }
+  ]
+}

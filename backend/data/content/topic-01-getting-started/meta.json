@@ -1,0 +1,11 @@
+{
+  "slug": "getting-started",
+  "number": 1,
+  "title_id": "Memulai dengan Go",
+  "title_en": "Getting Started with Go",
+  "description_id": "Pelajari dasar-dasar Go: apa itu Go, cara instalasi, membuat program pertama, dan Go Modules.",
+  "description_en": "Learn Go basics: what Go is, how to install it, create your first program, and Go Modules.",
+  "level": "Beginner",
+  "color": "#0071E3",
+  "estimatedMinutes": 40
+}

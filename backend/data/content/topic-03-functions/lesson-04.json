@@ -1,0 +1,62 @@
+{
+  "id": "04",
+  "title_id": "Variadic Functions",
+  "title_en": "Variadic Functions",
+  "estimatedMinutes": 8,
+  "content_id": "# Variadic Functions\n\nVariadic function adalah fungsi yang dapat menerima **jumlah argumen yang tidak tetap** (nol atau lebih) dari tipe yang sama.\n\n## Sintaks `...T`\n\n```go\nfunc namaFungsi(params ...Tipe) {\n    // params adalah slice []Tipe di dalam fungsi\n}\n```\n\n## Contoh: Fungsi Sum\n\n```go\nfunc sum(nums ...int) int {\n    total := 0\n    for _, n := range nums {\n        total += n\n    }\n    return total\n}\n\nfunc main() {\n    fmt.Println(sum())           // 0  (nol argumen)\n    fmt.Println(sum(1))          // 1\n    fmt.Println(sum(1, 2, 3))    // 6\n    fmt.Println(sum(1, 2, 3, 4, 5)) // 15\n}\n```\n\n## Parameter Variadic Harus di Akhir\n\nParameter variadic **wajib** menjadi parameter terakhir:\n\n```go\n// Benar: variadic di akhir\nfunc printAll(prefix string, values ...int) {\n    for _, v := range values {\n        fmt.Printf(\"%s: %d\\n\", prefix, v)\n    }\n}\n\n// ERROR: variadic tidak bisa di tengah\n// func wrong(nums ...int, last string) {}\n```\n\n## Meneruskan Slice dengan `...`\n\nUntuk meneruskan slice sebagai argumen variadic, gunakan operator `...`:\n\n```go\nfunc sum(nums ...int) int {\n    total := 0\n    for _, n := range nums {\n        total += n\n    }\n    return total\n}\n\nfunc main() {\n    nums := []int{1, 2, 3, 4, 5}\n\n    // Cara salah (tidak bisa)\n    // sum(nums)  // ERROR: cannot use nums (type []int) as int\n\n    // Cara benar: spread operator\n    result := sum(nums...)\n    fmt.Println(result) // 15\n}\n```\n\n## fmt.Println adalah Variadic!\n\n`fmt.Println` adalah contoh nyata fungsi variadic di standard library:\n\n```go\n// Tanda tangan fmt.Println:\n// func Println(a ...any) (n int, err error)\n\nfmt.Println()                    // baris kosong\nfmt.Println(\"satu\")             // satu\nfmt.Println(\"a\", \"b\", \"c\")     // a b c\nfmt.Println(1, 2.5, true, \"go\") // 1 2.5 true go\n```\n\n## Contoh: Join String\n\n```go\nfunc join(sep string, words ...string) string {\n    result := \"\"\n    for i, w := range words {\n        if i > 0 {\n            result += sep\n        }\n        result += w\n    }\n    return result\n}\n\nfmt.Println(join(\", \", \"Go\", \"Python\", \"Rust\"))  // Go, Python, Rust\nfmt.Println(join(\" - \", \"a\", \"b\", \"c\"))          // a - b - c\n\n// Meneruskan slice\nlangs := []string{\"Java\", \"C++\", \"Go\"}\nfmt.Println(join(\" | \", langs...)) // Java | C++ | Go\n```\n\n## Di Dalam Fungsi, Variadic adalah Slice\n\n```go\nfunc describe(nums ...int) {\n    fmt.Printf(\"Type: %T\\n\", nums)  // []int\n    fmt.Printf(\"Len: %d\\n\", len(nums))\n    fmt.Printf(\"Values: %v\\n\", nums)\n}\n\ndescribe(1, 2, 3)\n// Type: []int\n// Len: 3\n// Values: [1 2 3]\n```",
+  "content_en": "# Variadic Functions\n\nA variadic function can accept an **arbitrary number of arguments** (zero or more) of the same type.\n\n## The `...T` Syntax\n\n```go\nfunc functionName(params ...Type) {\n    // params is a []Type slice inside the function\n}\n```\n\n## Example: Sum Function\n\n```go\nfunc sum(nums ...int) int {\n    total := 0\n    for _, n := range nums {\n        total += n\n    }\n    return total\n}\n\nfunc main() {\n    fmt.Println(sum())              // 0  (zero arguments)\n    fmt.Println(sum(1))             // 1\n    fmt.Println(sum(1, 2, 3))       // 6\n    fmt.Println(sum(1, 2, 3, 4, 5)) // 15\n}\n```\n\n## Variadic Parameter Must Be Last\n\nThe variadic parameter **must** be the last parameter:\n\n```go\n// Correct: variadic at the end\nfunc printAll(prefix string, values ...int) {\n    for _, v := range values {\n        fmt.Printf(\"%s: %d\\n\", prefix, v)\n    }\n}\n\n// ERROR: variadic cannot be in the middle\n// func wrong(nums ...int, last string) {}\n```\n\n## Passing a Slice with `...`\n\nTo pass a slice as a variadic argument, use the `...` operator:\n\n```go\nfunc sum(nums ...int) int {\n    total := 0\n    for _, n := range nums {\n        total += n\n    }\n    return total\n}\n\nfunc main() {\n    nums := []int{1, 2, 3, 4, 5}\n\n    // Wrong (won't compile)\n    // sum(nums)  // ERROR: cannot use nums (type []int) as int\n\n    // Correct: spread operator\n    result := sum(nums...)\n    fmt.Println(result) // 15\n}\n```\n\n## fmt.Println Is Variadic!\n\n`fmt.Println` is a real example of a variadic function in the standard library:\n\n```go\n// Signature of fmt.Println:\n// func Println(a ...any) (n int, err error)\n\nfmt.Println()                     // empty line\nfmt.Println(\"one\")               // one\nfmt.Println(\"a\", \"b\", \"c\")      // a b c\nfmt.Println(1, 2.5, true, \"go\")  // 1 2.5 true go\n```\n\n## Example: Join Strings\n\n```go\nfunc join(sep string, words ...string) string {\n    result := \"\"\n    for i, w := range words {\n        if i > 0 {\n            result += sep\n        }\n        result += w\n    }\n    return result\n}\n\nfmt.Println(join(\", \", \"Go\", \"Python\", \"Rust\"))  // Go, Python, Rust\nfmt.Println(join(\" - \", \"a\", \"b\", \"c\"))          // a - b - c\n\n// Pass a slice\nlangs := []string{\"Java\", \"C++\", \"Go\"}\nfmt.Println(join(\" | \", langs...)) // Java | C++ | Go\n```\n\n## Inside the Function, Variadic Is a Slice\n\n```go\nfunc describe(nums ...int) {\n    fmt.Printf(\"Type: %T\\n\", nums)  // []int\n    fmt.Printf(\"Len: %d\\n\", len(nums))\n    fmt.Printf(\"Values: %v\\n\", nums)\n}\n\ndescribe(1, 2, 3)\n// Type: []int\n// Len: 3\n// Values: [1 2 3]\n```",
+  "starterCode": "package main\n\nimport \"fmt\"\n\n// sum: menjumlahkan angka variadic\nfunc sum(nums ...int) int {\n\ttotal := 0\n\tfor _, n := range nums {\n\t\ttotal += n\n\t}\n\treturn total\n}\n\n// max: mencari nilai maksimum\nfunc max(first int, rest ...int) int {\n\tm := first\n\tfor _, n := range rest {\n\t\tif n > m {\n\t\t\tm = n\n\t\t}\n\t}\n\treturn m\n}\n\nfunc main() {\n\t// Panggil dengan berbagai jumlah argumen\n\tfmt.Println(\"sum():\", sum())\n\tfmt.Println(\"sum(5):\", sum(5))\n\tfmt.Println(\"sum(1,2,3,4,5):\", sum(1, 2, 3, 4, 5))\n\n\t// Teruskan slice\n\tnums := []int{10, 20, 30, 40}\n\tfmt.Println(\"sum(slice...):\", sum(nums...))\n\n\t// max\n\tfmt.Println(\"max(3,1,4,1,5,9):\", max(3, 1, 4, 1, 5, 9))\n}",
+  "quiz": [
+    {
+      "question_id": "Di mana posisi parameter variadic dalam daftar parameter fungsi Go?",
+      "question_en": "Where must the variadic parameter appear in a Go function's parameter list?",
+      "options_id": [
+        "Di awal (parameter pertama)",
+        "Di tengah",
+        "Di akhir (parameter terakhir)",
+        "Bisa di mana saja"
+      ],
+      "options_en": [
+        "At the beginning (first parameter)",
+        "In the middle",
+        "At the end (last parameter)",
+        "Anywhere"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Bagaimana cara meneruskan slice `s []int` ke fungsi variadic `func f(nums ...int)` di Go?",
+      "question_en": "How do you pass a slice `s []int` to a variadic function `func f(nums ...int)` in Go?",
+      "options_id": [
+        "f(s)",
+        "f(&s)",
+        "f(s...)",
+        "f(*s)"
+      ],
+      "options_en": [
+        "f(s)",
+        "f(&s)",
+        "f(s...)",
+        "f(*s)"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Di dalam sebuah variadic function, parameter variadic `nums ...int` memiliki tipe apa?",
+      "question_en": "Inside a variadic function, what type does the variadic parameter `nums ...int` have?",
+      "options_id": [
+        "int",
+        "...int",
+        "[]int",
+        "*int"
+      ],
+      "options_en": [
+        "int",
+        "...int",
+        "[]int",
+        "*int"
+      ],
+      "correct": 2
+    }
+  ]
+}

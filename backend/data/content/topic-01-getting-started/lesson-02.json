@@ -1,0 +1,62 @@
+{
+  "id": "02",
+  "title_id": "Instalasi & Go CLI",
+  "title_en": "Installation & Go CLI",
+  "estimatedMinutes": 10,
+  "content_id": "# Instalasi & Go CLI\n\n## Cara Install Go\n\n### Windows\n1. Kunjungi [go.dev/dl](https://go.dev/dl)\n2. Unduh installer `.msi` versi terbaru\n3. Jalankan installer dan ikuti petunjuk\n4. Go akan otomatis menambahkan dirinya ke PATH\n\n### macOS\n```bash\n# Menggunakan Homebrew\nbrew install go\n```\nAtau unduh `.pkg` installer dari go.dev/dl.\n\n### Linux\n```bash\n# Unduh dan ekstrak\nwget https://go.dev/dl/go1.22.0.linux-amd64.tar.gz\nsudo tar -C /usr/local -xzf go1.22.0.linux-amd64.tar.gz\n\n# Tambahkan ke PATH di ~/.bashrc atau ~/.profile\nexport PATH=$PATH:/usr/local/go/bin\n```\n\n## Verifikasi Instalasi\n\n```bash\ngo version\n```\n\n**Output:**\n```\ngo version go1.22.0 linux/amd64\n```\n\n## Melihat Versi Go dari dalam Program\n\n```go\npackage main\n\nimport (\n    \"fmt\"\n    \"runtime\"\n)\n\nfunc main() {\n    fmt.Println(\"Go version:\", runtime.Version())\n    fmt.Println(\"OS:\", runtime.GOOS)\n    fmt.Println(\"Architecture:\", runtime.GOARCH)\n}\n```\n\n## Perintah Go CLI\n\n### `go run` — Jalankan tanpa build\n```bash\ngo run main.go\n```\nMengkompilasi dan langsung menjalankan file Go. Cocok untuk development.\n\n### `go build` — Kompilasi ke binary\n```bash\ngo build -o myapp main.go\n```\nMenghasilkan file executable yang bisa didistribusikan.\n\n### `go fmt` — Format kode otomatis\n```bash\ngo fmt ./...\n```\nMemformat semua file Go sesuai standar Go (indentasi, spasi, dll).\n\n### `go vet` — Cek bug potensial\n```bash\ngo vet ./...\n```\nMenganalisis kode dan melaporkan konstruksi yang mencurigakan.\n\n### `go test` — Jalankan unit test\n```bash\ngo test ./...\ngo test -v ./...    # verbose output\ngo test -cover ./.. # tampilkan coverage\n```\n\n### `go get` — Tambahkan dependency\n```bash\ngo get github.com/gin-gonic/gin\n```\n\n### Ringkasan Perintah CLI\n\n| Perintah | Fungsi |\n|---|---|\n| `go run` | Kompilasi dan jalankan langsung |\n| `go build` | Kompilasi ke binary executable |\n| `go fmt` | Format kode sesuai standar Go |\n| `go vet` | Analisis kode untuk bug potensial |\n| `go test` | Jalankan test suite |\n| `go get` | Download dan install dependency |\n| `go mod tidy` | Bersihkan dependency yang tidak terpakai |",
+  "content_en": "# Installation & Go CLI\n\n## How to Install Go\n\n### Windows\n1. Visit [go.dev/dl](https://go.dev/dl)\n2. Download the latest `.msi` installer\n3. Run the installer and follow the prompts\n4. Go will automatically add itself to PATH\n\n### macOS\n```bash\n# Using Homebrew\nbrew install go\n```\nOr download the `.pkg` installer from go.dev/dl.\n\n### Linux\n```bash\n# Download and extract\nwget https://go.dev/dl/go1.22.0.linux-amd64.tar.gz\nsudo tar -C /usr/local -xzf go1.22.0.linux-amd64.tar.gz\n\n# Add to PATH in ~/.bashrc or ~/.profile\nexport PATH=$PATH:/usr/local/go/bin\n```\n\n## Verify Installation\n\n```bash\ngo version\n```\n\n**Output:**\n```\ngo version go1.22.0 linux/amd64\n```\n\n## Checking Go Version from Inside a Program\n\n```go\npackage main\n\nimport (\n    \"fmt\"\n    \"runtime\"\n)\n\nfunc main() {\n    fmt.Println(\"Go version:\", runtime.Version())\n    fmt.Println(\"OS:\", runtime.GOOS)\n    fmt.Println(\"Architecture:\", runtime.GOARCH)\n}\n```\n\n## Go CLI Commands\n\n### `go run` — Run without building\n```bash\ngo run main.go\n```\nCompiles and immediately runs a Go file. Great for development.\n\n### `go build` — Compile to binary\n```bash\ngo build -o myapp main.go\n```\nProduces an executable file ready for distribution.\n\n### `go fmt` — Auto-format code\n```bash\ngo fmt ./...\n```\nFormats all Go files according to Go standards (indentation, spacing, etc).\n\n### `go vet` — Check for potential bugs\n```bash\ngo vet ./...\n```\nAnalyzes code and reports suspicious constructs.\n\n### `go test` — Run unit tests\n```bash\ngo test ./...\ngo test -v ./...     # verbose output\ngo test -cover ./..  # show coverage\n```\n\n### `go get` — Add a dependency\n```bash\ngo get github.com/gin-gonic/gin\n```\n\n### CLI Command Summary\n\n| Command | Purpose |\n|---|---|\n| `go run` | Compile and run immediately |\n| `go build` | Compile to executable binary |\n| `go fmt` | Format code to Go standards |\n| `go vet` | Analyze code for potential bugs |\n| `go test` | Run test suite |\n| `go get` | Download and install dependency |\n| `go mod tidy` | Remove unused dependencies |",
+  "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"runtime\"\n)\n\nfunc main() {\n\tfmt.Println(\"Go version:\", runtime.Version())\n\tfmt.Println(\"OS:\", runtime.GOOS)\n\tfmt.Println(\"Architecture:\", runtime.GOARCH)\n\tfmt.Println(\"NumCPU:\", runtime.NumCPU())\n}",
+  "quiz": [
+    {
+      "question_id": "Perintah Go CLI mana yang digunakan untuk mengkompilasi dan langsung menjalankan program tanpa menghasilkan file binary?",
+      "question_en": "Which Go CLI command compiles and immediately runs a program without producing a binary file?",
+      "options_id": [
+        "go build",
+        "go run",
+        "go exec",
+        "go start"
+      ],
+      "options_en": [
+        "go build",
+        "go run",
+        "go exec",
+        "go start"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Perintah apa yang digunakan untuk memformat kode Go sesuai standar resmi?",
+      "question_en": "Which command is used to format Go code according to the official standard?",
+      "options_id": [
+        "go lint",
+        "go check",
+        "go fmt",
+        "go style"
+      ],
+      "options_en": [
+        "go lint",
+        "go check",
+        "go fmt",
+        "go style"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Package Go mana yang menyediakan fungsi `runtime.Version()` untuk melihat versi Go?",
+      "question_en": "Which Go package provides the `runtime.Version()` function to check the Go version?",
+      "options_id": [
+        "os",
+        "fmt",
+        "sys",
+        "runtime"
+      ],
+      "options_en": [
+        "os",
+        "fmt",
+        "sys",
+        "runtime"
+      ],
+      "correct": 3
+    }
+  ]
+}
