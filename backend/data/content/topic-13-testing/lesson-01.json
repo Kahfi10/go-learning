@@ -1,0 +1,32 @@
+{
+  "id": "01",
+  "title_id": "Unit Testing dengan Package testing",
+  "title_en": "Unit Testing with the testing Package",
+  "estimatedMinutes": 10,
+  "content_id": "## Unit Testing di Go\n\nGo memiliki framework testing **built-in** — tidak perlu library eksternal. File test memiliki suffix `_test.go` dan fungsi test diawali dengan `Test`.\n\n## Struktur Test Dasar\n\nFile: `mathutil_test.go`\n\n```go\npackage mathutil\n\nimport \"testing\"\n\nfunc TestAdd(t *testing.T) {\n\tresult := Add(2, 3)\n\tif result != 5 {\n\t\tt.Errorf(\"Add(2, 3) = %d; want 5\", result)\n\t}\n}\n\nfunc TestSubtract(t *testing.T) {\n\tgot := Subtract(10, 4)\n\twant := 6\n\tif got != want {\n\t\tt.Errorf(\"Subtract(10, 4) = %d; want %d\", got, want)\n\t}\n}\n```\n\n## Menjalankan Test\n\n```bash\ngo test ./...          # semua package\ngo test -v ./...       # verbose output\ngo test -run TestAdd   # hanya fungsi tertentu\ngo test -count=1 ./... # disable test caching\n```\n\n## Metode t *testing.T\n\n| Method | Kegunaan |\n|---|---|\n| `t.Error(msg)` | Log error, lanjutkan test |\n| `t.Errorf(format, args)` | Log formatted error |\n| `t.Fatal(msg)` | Log error, hentikan test |\n| `t.Fatalf(format, args)` | Log formatted error, hentikan |\n| `t.Log(msg)` | Log pesan (hanya tampil jika `-v` atau gagal) |\n| `t.Skip(msg)` | Skip test ini |\n\n## Contoh Lengkap\n\nFile: `calculator.go`\n\n```go\npackage calculator\n\nimport \"errors\"\n\nfunc Divide(a, b float64) (float64, error) {\n\tif b == 0 {\n\t\treturn 0, errors.New(\"division by zero\")\n\t}\n\treturn a / b, nil\n}\n```\n\nFile: `calculator_test.go`\n\n```go\npackage calculator\n\nimport \"testing\"\n\nfunc TestDivide(t *testing.T) {\n\tresult, err := Divide(10, 2)\n\tif err != nil {\n\t\tt.Fatalf(\"unexpected error: %v\", err)\n\t}\n\tif result != 5.0 {\n\t\tt.Errorf(\"Divide(10, 2) = %f; want 5.0\", result)\n\t}\n}\n\nfunc TestDivideByZero(t *testing.T) {\n\t_, err := Divide(10, 0)\n\tif err == nil {\n\t\tt.Error(\"expected error for division by zero, got nil\")\n\t}\n}\n```",
+  "content_en": "## Unit Testing in Go\n\nGo has a **built-in** testing framework — no external libraries needed. Test files have a `_test.go` suffix and test functions start with `Test`.\n\n## Basic Test Structure\n\nFile: `mathutil_test.go`\n\n```go\npackage mathutil\n\nimport \"testing\"\n\nfunc TestAdd(t *testing.T) {\n\tresult := Add(2, 3)\n\tif result != 5 {\n\t\tt.Errorf(\"Add(2, 3) = %d; want 5\", result)\n\t}\n}\n\nfunc TestSubtract(t *testing.T) {\n\tgot := Subtract(10, 4)\n\twant := 6\n\tif got != want {\n\t\tt.Errorf(\"Subtract(10, 4) = %d; want %d\", got, want)\n\t}\n}\n```\n\n## Running Tests\n\n```bash\ngo test ./...          # all packages\ngo test -v ./...       # verbose output\ngo test -run TestAdd   # specific function\ngo test -count=1 ./... # disable test caching\n```\n\n## Methods of t *testing.T\n\n| Method | Purpose |\n|---|---|\n| `t.Error(msg)` | Log error, continue test |\n| `t.Errorf(format, args)` | Log formatted error |\n| `t.Fatal(msg)` | Log error, stop test |\n| `t.Fatalf(format, args)` | Log formatted error, stop |\n| `t.Log(msg)` | Log message (only shown with `-v` or on failure) |\n| `t.Skip(msg)` | Skip this test |\n\n## Complete Example\n\nFile: `calculator.go`\n\n```go\npackage calculator\n\nimport \"errors\"\n\nfunc Divide(a, b float64) (float64, error) {\n\tif b == 0 {\n\t\treturn 0, errors.New(\"division by zero\")\n\t}\n\treturn a / b, nil\n}\n```\n\nFile: `calculator_test.go`\n\n```go\npackage calculator\n\nimport \"testing\"\n\nfunc TestDivide(t *testing.T) {\n\tresult, err := Divide(10, 2)\n\tif err != nil {\n\t\tt.Fatalf(\"unexpected error: %v\", err)\n\t}\n\tif result != 5.0 {\n\t\tt.Errorf(\"Divide(10, 2) = %f; want 5.0\", result)\n\t}\n}\n\nfunc TestDivideByZero(t *testing.T) {\n\t_, err := Divide(10, 0)\n\tif err == nil {\n\t\tt.Error(\"expected error for division by zero, got nil\")\n\t}\n}\n```",
+  "starterCode": "package main\n\nimport (\n\t\"strings\"\n\t\"testing\"\n)\n\n// isPalindrome returns true if s reads the same forwards and backwards\nfunc isPalindrome(s string) bool {\n\ts = strings.ToLower(s)\n\trunes := []rune(s)\n\tfor i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {\n\t\tif runes[i] != runes[j] {\n\t\t\treturn false\n\t\t}\n\t}\n\treturn true\n}\n\n// TestIsPalindrome tests the isPalindrome function\nfunc TestIsPalindrome(t *testing.T) {\n\t// TODO: test that \"racecar\" is a palindrome\n\t// TODO: test that \"hello\" is NOT a palindrome\n\t// TODO: test that \"level\" is a palindrome\n\t// TODO: test that empty string is a palindrome\n\n\tif !isPalindrome(\"racecar\") {\n\t\tt.Error(\"expected racecar to be a palindrome\")\n\t}\n}\n\nfunc main() {\n\t// In real code, tests are run with 'go test'\n\t// This main is just for the playground\n\tt := &testing.T{}\n\tTestIsPalindrome(t)\n}",
+  "quiz": [
+    {
+      "question_id": "Apa nama konvensi untuk file test di Go?",
+      "question_en": "What is the naming convention for test files in Go?",
+      "options_id": ["Nama file diakhiri dengan _test.go", "Nama file diawali dengan test_", "File disimpan di direktori test/", "Nama fungsi diawali dengan test"],
+      "options_en": ["File name ends with _test.go", "File name starts with test_", "File is stored in test/ directory", "Function name starts with test"],
+      "correct": 0
+    },
+    {
+      "question_id": "Perbedaan antara t.Error dan t.Fatal adalah?",
+      "question_en": "What is the difference between t.Error and t.Fatal?",
+      "options_id": ["Fatal menghentikan test saat itu juga, Error melanjutkan", "Fatal lebih keras dalam melaporkan error", "Error tidak mencetak pesan", "Tidak ada perbedaan"],
+      "options_en": ["Fatal stops the test immediately, Error continues", "Fatal reports errors more loudly", "Error doesn't print a message", "No difference"],
+      "correct": 0
+    },
+    {
+      "question_id": "Perintah apa untuk menjalankan semua test secara verbose?",
+      "question_en": "Which command runs all tests with verbose output?",
+      "options_id": ["go test -v ./...", "go run test ./...", "go test --verbose", "go check ./..."],
+      "options_en": ["go test -v ./...", "go run test ./...", "go test --verbose", "go check ./..."],
+      "correct": 0
+    }
+  ]
+}

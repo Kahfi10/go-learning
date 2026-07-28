@@ -1,0 +1,11 @@
+{
+  "slug": "go-patterns",
+  "number": 15,
+  "title_id": "Go Patterns & Best Practices",
+  "title_en": "Go Patterns & Best Practices",
+  "description_id": "Pelajari pola-pola lanjutan Go: context, functional options, worker pool, embed, dan project layout.",
+  "description_en": "Learn advanced Go patterns: context, functional options, worker pool, embed, and project layout.",
+  "level": "Advanced",
+  "color": "#FF2D55",
+  "estimatedMinutes": 50
+}

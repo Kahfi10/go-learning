@@ -1,0 +1,11 @@
+{
+  "slug": "testing",
+  "number": 13,
+  "title_id": "Testing di Go",
+  "title_en": "Testing in Go",
+  "description_id": "Pelajari unit testing, table-driven tests, benchmarks, dan mocking dengan interface di Go.",
+  "description_en": "Learn unit testing, table-driven tests, benchmarks, and interface-based mocking in Go.",
+  "level": "Advanced",
+  "color": "#32D74B",
+  "estimatedMinutes": 50
+}

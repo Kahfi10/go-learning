@@ -1,0 +1,11 @@
+{
+  "slug": "http-web",
+  "number": 14,
+  "title_id": "HTTP & Web",
+  "title_en": "HTTP & Web",
+  "description_id": "Pelajari cara membuat HTTP server, routing, middleware, HTTP client, dan REST API di Go.",
+  "description_en": "Learn how to build HTTP servers, routing, middleware, HTTP clients, and REST APIs in Go.",
+  "level": "Advanced",
+  "color": "#FF9F0A",
+  "estimatedMinutes": 60
+}
