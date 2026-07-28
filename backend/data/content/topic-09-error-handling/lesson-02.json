@@ -1,0 +1,32 @@
+{
+  "id": "02",
+  "title_id": "fmt.Errorf & %w Error Wrapping",
+  "title_en": "fmt.Errorf & %w Error Wrapping",
+  "estimatedMinutes": 10,
+  "content_id": "## Menambahkan Konteks ke Error\n\nKetika sebuah error muncul jauh di dalam call stack, sulit untuk tahu *di mana* dan *mengapa* error terjadi. **Error wrapping** menambahkan konteks tanpa kehilangan error asli.\n\n## fmt.Errorf dengan %w\n\nGunakan `%w` verb di `fmt.Errorf` untuk membungkus error:\n\n```go\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\nfunc readConfig(path string) error {\n\treturn errors.New(\"file not found\")\n}\n\nfunc loadApp() error {\n\terr := readConfig(\"/etc/app.conf\")\n\tif err != nil {\n\t\t// Bungkus dengan konteks\n\t\treturn fmt.Errorf(\"loadApp: %w\", err)\n\t}\n\treturn nil\n}\n\nfunc main() {\n\terr := loadApp()\n\tif err != nil {\n\t\tfmt.Println(err)\n\t\t// Output: loadApp: file not found\n\t}\n}\n```\n\n## errors.Unwrap\n\n`errors.Unwrap()` mengembalikan error yang dibungkus:\n\n```go\noriginal := errors.New(\"disk full\")\nwrapped := fmt.Errorf(\"write failed: %w\", original)\n\nunwrapped := errors.Unwrap(wrapped)\nfmt.Println(unwrapped) // disk full\nfmt.Println(unwrapped == original) // true\n```\n\n## Wrapping Berantai\n\nError bisa dibungkus berkali-kali, membentuk sebuah rantai:\n\n```go\nbase := errors.New(\"connection refused\")\nlayer1 := fmt.Errorf(\"dial tcp: %w\", base)\nlayer2 := fmt.Errorf(\"http client: %w\", layer1)\nlayer3 := fmt.Errorf(\"fetchUser: %w\", layer2)\n\nfmt.Println(layer3)\n// fetchUser: http client: dial tcp: connection refused\n```\n\n> **Catatan:** Gunakan `%w` hanya jika Anda ingin caller bisa memeriksa error asli. Gunakan `%v` jika tidak.",
+  "content_en": "## Adding Context to Errors\n\nWhen an error surfaces deep in a call stack, it's hard to know *where* and *why* it occurred. **Error wrapping** adds context without losing the original error.\n\n## fmt.Errorf with %w\n\nUse the `%w` verb in `fmt.Errorf` to wrap an error:\n\n```go\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\nfunc readConfig(path string) error {\n\treturn errors.New(\"file not found\")\n}\n\nfunc loadApp() error {\n\terr := readConfig(\"/etc/app.conf\")\n\tif err != nil {\n\t\t// Wrap with context\n\t\treturn fmt.Errorf(\"loadApp: %w\", err)\n\t}\n\treturn nil\n}\n\nfunc main() {\n\terr := loadApp()\n\tif err != nil {\n\t\tfmt.Println(err)\n\t\t// Output: loadApp: file not found\n\t}\n}\n```\n\n## errors.Unwrap\n\n`errors.Unwrap()` returns the wrapped error:\n\n```go\noriginal := errors.New(\"disk full\")\nwrapped := fmt.Errorf(\"write failed: %w\", original)\n\nunwrapped := errors.Unwrap(wrapped)\nfmt.Println(unwrapped) // disk full\nfmt.Println(unwrapped == original) // true\n```\n\n## Chained Wrapping\n\nErrors can be wrapped multiple times, forming a chain:\n\n```go\nbase := errors.New(\"connection refused\")\nlayer1 := fmt.Errorf(\"dial tcp: %w\", base)\nlayer2 := fmt.Errorf(\"http client: %w\", layer1)\nlayer3 := fmt.Errorf(\"fetchUser: %w\", layer2)\n\nfmt.Println(layer3)\n// fetchUser: http client: dial tcp: connection refused\n```\n\n> **Note:** Use `%w` only when you want callers to inspect the underlying error. Use `%v` otherwise.",
+  "starterCode": "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\nvar ErrNotFound = errors.New(\"not found\")\n\nfunc findUser(id int) error {\n\tif id <= 0 {\n\t\treturn ErrNotFound\n\t}\n\treturn nil\n}\n\nfunc getProfile(id int) error {\n\terr := findUser(id)\n\tif err != nil {\n\t\t// TODO: wrap the error with context using fmt.Errorf and %w\n\t\treturn err\n\t}\n\treturn nil\n}\n\nfunc main() {\n\terr := getProfile(-1)\n\tif err != nil {\n\t\tfmt.Println(err)\n\t\tfmt.Println(\"Unwrapped:\", errors.Unwrap(err))\n\t}\n}",
+  "quiz": [
+    {
+      "question_id": "Verb apa yang digunakan di fmt.Errorf untuk membungkus error?",
+      "question_en": "Which verb is used in fmt.Errorf to wrap an error?",
+      "options_id": ["%w", "%e", "%v", "%s"],
+      "options_en": ["%w", "%e", "%v", "%s"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa fungsi dari errors.Unwrap()?",
+      "question_en": "What does errors.Unwrap() do?",
+      "options_id": ["Mengembalikan error yang dibungkus di dalamnya", "Menghapus semua error", "Mengubah error menjadi string", "Membuat error baru"],
+      "options_en": ["Returns the wrapped error inside", "Removes all errors", "Converts an error to string", "Creates a new error"],
+      "correct": 0
+    },
+    {
+      "question_id": "Kapan sebaiknya menggunakan %v daripada %w di fmt.Errorf?",
+      "question_en": "When should you use %v instead of %w in fmt.Errorf?",
+      "options_id": ["Ketika Anda tidak ingin caller bisa memeriksa error asli", "Ketika error adalah nil", "Ketika error adalah string", "Ketika error perlu dicetak"],
+      "options_en": ["When you don't want callers to inspect the underlying error", "When the error is nil", "When the error is a string", "When the error needs to be printed"],
+      "correct": 0
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "id": "04",
+  "title_id": "Nil Pointer & Safe Access",
+  "title_en": "Nil Pointer & Safe Access",
+  "estimatedMinutes": 10,
+  "content_id": "# Nil Pointer & Safe Access di Go\n\nNil pointer dereference adalah salah satu runtime error yang paling umum di Go. Memahami cara mencegah dan menanganinya adalah skill penting untuk setiap Go developer.\n\n## Nilai Nil pada Pointer\n\nZero value dari semua tipe pointer adalah `nil`, yang berarti pointer tidak menunjuk ke alamat memori apapun:\n\n```go\nvar p *int       // nil\nvar s *string    // nil\nvar person *struct{ Name string } // nil\n\nfmt.Println(p == nil)      // true\nfmt.Println(p)             // <nil>\nfmt.Printf(\"%v\\n\", p)     // <nil>\nfmt.Printf(\"%p\\n\", p)     // 0x0\n```\n\n## Nil Pointer Dereference Panic\n\n```go\nvar p *int\n\n// Ini aman — hanya membandingkan pointer\nfmt.Println(p == nil) // true\n\n// INI BERBAHAYA — akan panic!\nfmt.Println(*p) // panic: runtime error: invalid memory address or nil pointer dereference\n\n// Selalu cek sebelum dereference\nif p != nil {\n    fmt.Println(*p)\n} else {\n    fmt.Println(\"pointer adalah nil\")\n}\n```\n\n## Memeriksa Nil Sebelum Digunakan\n\n```go\ntype User struct {\n    ID   int\n    Name string\n    Age  int\n}\n\nfunc findUser(id int) *User {\n    users := map[int]*User{\n        1: {1, \"Alice\", 30},\n        2: {2, \"Bob\", 25},\n    }\n    return users[id] // mengembalikan nil jika tidak ada\n}\n\n// Tanpa nil check — berbahaya\nuser := findUser(99)\n// fmt.Println(user.Name) // panic jika nil!\n\n// Dengan nil check — aman\nif user != nil {\n    fmt.Println(\"Ditemukan:\", user.Name)\n} else {\n    fmt.Println(\"User tidak ditemukan\")\n}\n\n// Pola idiomatic Go\nfunc processUser(id int) error {\n    user := findUser(id)\n    if user == nil {\n        return fmt.Errorf(\"user %d tidak ditemukan\", id)\n    }\n    // user aman untuk digunakan di sini\n    fmt.Println(\"Processing:\", user.Name)\n    return nil\n}\n```\n\n## Pointer to Interface Gotcha\n\nIni adalah jebakan umum di Go — pointer ke interface tidak sama dengan interface nil:\n\n```go\ntype Animal interface {\n    Sound() string\n}\n\ntype Dog struct{ Name string }\nfunc (d *Dog) Sound() string { return \"Woof\" }\n\n// GOTCHA: pointer to interface\nvar a Animal\nfmt.Println(a == nil) // true — interface nil\n\nvar d *Dog // nil pointer to Dog\na = d      // a sekarang berisi (*Dog)(nil)\n\n// PERHATIAN: a != nil meskipun d == nil!\nfmt.Println(a == nil) // FALSE! interface menyimpan type info\nfmt.Println(d == nil) // true\n\n// Ini akan panic jika Sound() dereference d!\n// fmt.Println(a.Sound()) // panic!\n\n// Solusi: cek dengan type assertion\nif dog, ok := a.(*Dog); ok && dog != nil {\n    fmt.Println(dog.Sound())\n}\n```\n\n## Safe Access Patterns\n\n### Pattern 1: Early Return\n\n```go\nfunc getUserName(user *User) string {\n    if user == nil {\n        return \"unknown\"\n    }\n    return user.Name\n}\n```\n\n### Pattern 2: Fungsi Helper\n\n```go\n// Safe dereferencing dengan default value\nfunc derefInt(p *int, defaultVal int) int {\n    if p == nil {\n        return defaultVal\n    }\n    return *p\n}\n\nfunc derefString(p *string, defaultVal string) string {\n    if p == nil {\n        return defaultVal\n    }\n    return *p\n}\n\nvar name *string\nfmt.Println(derefString(name, \"anonymous\")) // anonymous\n\nactual := \"Alice\"\nfmt.Println(derefString(&actual, \"anonymous\")) // Alice\n```\n\n### Pattern 3: Method yang Aman pada Nil Receiver\n\n```go\ntype Node struct {\n    Val  int\n    Next *Node\n}\n\n// Method yang aman untuk nil receiver\nfunc (n *Node) IsNil() bool {\n    return n == nil\n}\n\nfunc (n *Node) SafeVal() int {\n    if n == nil {\n        return 0\n    }\n    return n.Val\n}\n\nfunc (n *Node) Length() int {\n    if n == nil {\n        return 0\n    }\n    return 1 + n.Next.Length() // rekursif, aman karena cek nil\n}\n\nvar nilNode *Node\nfmt.Println(nilNode.IsNil())   // true — tidak panic!\nfmt.Println(nilNode.SafeVal()) // 0\nfmt.Println(nilNode.Length())  // 0\n\nlist := &Node{1, &Node{2, &Node{3, nil}}}\nfmt.Println(list.Length()) // 3\n```\n\n## Pointer ke Optional Values\n\nPointer berguna untuk mewakili nilai opsional (seperti NULL di database):\n\n```go\ntype Profile struct {\n    UserID      int\n    DisplayName string\n    Bio         *string  // nil = belum diisi\n    Age         *int     // nil = tidak disebutkan\n    WebsiteURL  *string  // nil = tidak ada\n}\n\nfunc (p *Profile) HasBio() bool { return p.Bio != nil }\n\nfunc (p *Profile) GetBio() string {\n    if p.Bio == nil {\n        return \"(belum ada bio)\"\n    }\n    return *p.Bio\n}\n\nbio := \"Go developer\"\nprofile := Profile{\n    UserID:      1,\n    DisplayName: \"Alice\",\n    Bio:         &bio,\n}\n\nfmt.Println(profile.HasBio())  // true\nfmt.Println(profile.GetBio())  // Go developer\n\nemptyProfile := Profile{UserID: 2, DisplayName: \"Bob\"}\nfmt.Println(emptyProfile.HasBio())  // false\nfmt.Println(emptyProfile.GetBio())  // (belum ada bio)\n```",
+  "content_en": "# Nil Pointer & Safe Access in Go\n\nNil pointer dereference is one of the most common runtime errors in Go. Understanding how to prevent and handle it is an essential skill for every Go developer.\n\n## Nil Pointer Value\n\n```go\nvar p *int\nfmt.Println(p == nil) // true\nfmt.Println(p)        // <nil>\n```\n\n## Nil Pointer Dereference Panic\n\n```go\nvar p *int\n// fmt.Println(*p) // PANIC: nil pointer dereference!\n\nif p != nil {\n    fmt.Println(*p)\n} else {\n    fmt.Println(\"pointer is nil\")\n}\n```\n\n## Pointer to Interface Gotcha\n\n```go\nvar a Animal    // nil interface\nvar d *Dog      // nil pointer\na = d           // a contains (*Dog)(nil)\n\nfmt.Println(a == nil) // FALSE! interface has type info\nfmt.Println(d == nil) // true\n\n// Safe check:\nif dog, ok := a.(*Dog); ok && dog != nil {\n    fmt.Println(dog.Sound())\n}\n```\n\n## Safe Patterns\n\n```go\n// Early return\nfunc getUserName(u *User) string {\n    if u == nil { return \"unknown\" }\n    return u.Name\n}\n\n// Nil-safe method\nfunc (n *Node) Length() int {\n    if n == nil { return 0 }\n    return 1 + n.Next.Length()\n}\n\n// Optional values via pointer\ntype Profile struct {\n    Bio *string // nil = not set\n}\nfunc (p *Profile) GetBio() string {\n    if p.Bio == nil { return \"(no bio)\" }\n    return *p.Bio\n}\n```",
+  "starterCode": "package main\n\nimport \"fmt\"\n\ntype TreeNode struct {\n\tVal   int\n\tLeft  *TreeNode\n\tRight *TreeNode\n}\n\nfunc newNode(val int) *TreeNode {\n\treturn &TreeNode{Val: val}\n}\n\n// Safe tree operations\nfunc (n *TreeNode) Height() int {\n\tif n == nil {\n\t\treturn 0\n\t}\n\tleftH := n.Left.Height()\n\trightH := n.Right.Height()\n\tif leftH > rightH {\n\t\treturn 1 + leftH\n\t}\n\treturn 1 + rightH\n}\n\nfunc (n *TreeNode) Sum() int {\n\tif n == nil {\n\t\treturn 0\n\t}\n\treturn n.Val + n.Left.Sum() + n.Right.Sum()\n}\n\nfunc (n *TreeNode) InOrder() []int {\n\tif n == nil {\n\t\treturn nil\n\t}\n\tresult := n.Left.InOrder()\n\tresult = append(result, n.Val)\n\tresult = append(result, n.Right.InOrder()...)\n\treturn result\n}\n\n// Safe dereferencing helpers\nfunc derefInt(p *int, def int) int {\n\tif p == nil {\n\t\treturn def\n\t}\n\treturn *p\n}\n\nfunc derefString(p *string, def string) string {\n\tif p == nil {\n\t\treturn def\n\t}\n\treturn *p\n}\n\nfunc main() {\n\t// Binary tree:\n\t//       4\n\t//      / \\\n\t//     2   6\n\t//    / \\ / \\\n\t//   1  3 5  7\n\troot := newNode(4)\n\troot.Left = newNode(2)\n\troot.Right = newNode(6)\n\troot.Left.Left = newNode(1)\n\troot.Left.Right = newNode(3)\n\troot.Right.Left = newNode(5)\n\troot.Right.Right = newNode(7)\n\n\tfmt.Println(\"Tree height:\", root.Height())\n\tfmt.Println(\"Tree sum:\", root.Sum())\n\tfmt.Println(\"In-order:\", root.InOrder())\n\n\t// Nil tree is safe\n\tvar nilTree *TreeNode\n\tfmt.Println(\"Nil tree height:\", nilTree.Height())\n\tfmt.Println(\"Nil tree sum:\", nilTree.Sum())\n\n\t// Safe deref helpers\n\tvar age *int\n\tname := \"Alice\"\n\n\tfmt.Println(\"Age:\", derefInt(age, -1))\n\tfmt.Println(\"Name:\", derefString(&name, \"unknown\"))\n\n\tval := 42\n\tfmt.Println(\"Val:\", derefInt(&val, -1))\n}",
+  "quiz": [
+    {
+      "question_id": "Apa yang menyebabkan 'nil pointer dereference panic' di Go?",
+      "question_en": "What causes a 'nil pointer dereference panic' in Go?",
+      "options_id": [
+        "Mendeklarasikan pointer tanpa inisialisasi",
+        "Mengakses nilai (`*p`) atau field dari pointer yang bernilai nil",
+        "Membandingkan dua nil pointer",
+        "Mengirim nil pointer sebagai parameter fungsi"
+      ],
+      "options_en": [
+        "Declaring a pointer without initialization",
+        "Accessing the value (`*p`) or field of a nil pointer",
+        "Comparing two nil pointers",
+        "Passing a nil pointer as a function argument"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `var a Animal = (*Dog)(nil)` menghasilkan `a != nil` meskipun Dog-nya nil?",
+      "question_en": "Why does `var a Animal = (*Dog)(nil)` result in `a != nil` even though the Dog is nil?",
+      "options_id": [
+        "Ini adalah bug di Go",
+        "Interface value terdiri dari pasangan (type, value) — type info (*Dog) menyebabkan interface tidak nil",
+        "Karena Animal bukan interface",
+        "Karena nil tidak bisa disimpan dalam interface"
+      ],
+      "options_en": [
+        "This is a bug in Go",
+        "Interface values are (type, value) pairs — the type info (*Dog) makes the interface non-nil",
+        "Because Animal is not an interface",
+        "Because nil cannot be stored in an interface"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa cara paling idiomatis di Go untuk menangani pointer yang mungkin nil sebelum menggunakannya?",
+      "question_en": "What is the most idiomatic Go way to handle a potentially nil pointer before using it?",
+      "options_id": [
+        "Gunakan try-catch untuk menangkap panic",
+        "Cek `if ptr != nil` sebelum dereference dan kembalikan error atau default jika nil",
+        "Gunakan recover() di setiap fungsi",
+        "Inisialisasi semua pointer dengan new(T)"
+      ],
+      "options_en": [
+        "Use try-catch to catch the panic",
+        "Check `if ptr != nil` before dereference and return error or default if nil",
+        "Use recover() in every function",
+        "Initialize all pointers with new(T)"
+      ],
+      "correct": 1
+    }
+  ]
+}

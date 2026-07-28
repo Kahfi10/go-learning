@@ -1,0 +1,62 @@
+{
+  "id": "02",
+  "title_id": "Interface Composition",
+  "title_en": "Interface Composition",
+  "estimatedMinutes": 8,
+  "content_id": "# Interface Composition di Go\n\nSalah satu kekuatan Go adalah kemampuan untuk **menggabungkan interface kecil** menjadi interface yang lebih besar. Ini mendorong desain yang **modular** dan mengikuti Interface Segregation Principle.\n\n## Embedding Interface\n\nInterface bisa di-embed ke dalam interface lain:\n\n```go\ntype Reader interface {\n    Read(p []byte) (n int, err error)\n}\n\ntype Writer interface {\n    Write(p []byte) (n int, err error)\n}\n\ntype Closer interface {\n    Close() error\n}\n\n// io.ReadWriter = io.Reader + io.Writer\ntype ReadWriter interface {\n    Reader\n    Writer\n}\n\n// io.ReadWriteCloser = semua tiga\ntype ReadWriteCloser interface {\n    Reader\n    Writer\n    Closer\n}\n```\n\n## Contoh dari stdlib: io Package\n\n```go\n// Dari package io di Go standard library:\npackage io\n\ntype Reader interface {\n    Read(p []byte) (n int, err error)\n}\n\ntype Writer interface {\n    Write(p []byte) (n int, err error)\n}\n\ntype ReadWriter interface {\n    Reader // embed Reader\n    Writer // embed Writer\n}\n\ntype ReadCloser interface {\n    Reader\n    Closer\n}\n\ntype WriteCloser interface {\n    Writer\n    Closer\n}\n```\n\n## Membuat Interface yang Di-compose\n\n```go\ntype Namer interface {\n    Name() string\n}\n\ntype Ager interface {\n    Age() int\n}\n\ntype Emailer interface {\n    Email() string\n}\n\n// Compose: semua property\ntype Person interface {\n    Namer\n    Ager\n    Emailer\n}\n\n// Implementasi\ntype Employee struct {\n    name  string\n    age   int\n    email string\n    dept  string\n}\n\nfunc (e Employee) Name() string  { return e.name }\nfunc (e Employee) Age() int      { return e.age }\nfunc (e Employee) Email() string { return e.email }\nfunc (e Employee) Dept() string  { return e.dept }\n\n// Employee memenuhi interface Person secara otomatis\nvar p Person = Employee{\"Alice\", 30, \"alice@corp.com\", \"Engineering\"}\nfmt.Println(p.Name())  // Alice\nfmt.Println(p.Age())   // 30\nfmt.Println(p.Email()) // alice@corp.com\n```\n\n## Interface Segregation Principle di Go\n\nJangan memaksa klien untuk bergantung pada method yang tidak mereka gunakan:\n\n```go\n// BURUK: interface terlalu besar\ntype UserRepository interface {\n    Create(user User) error\n    Read(id int) (User, error)\n    Update(user User) error\n    Delete(id int) error\n    List() ([]User, error)\n    Search(query string) ([]User, error)\n    Export() ([]byte, error)\n    Import(data []byte) error\n}\n\n// BAIK: pisahkan sesuai kebutuhan\ntype UserReader interface {\n    Read(id int) (User, error)\n    List() ([]User, error)\n}\n\ntype UserWriter interface {\n    Create(user User) error\n    Update(user User) error\n    Delete(id int) error\n}\n\ntype UserRepository interface {\n    UserReader\n    UserWriter\n}\n\n// Fungsi yang hanya perlu baca\nfunc showUser(repo UserReader, id int) {\n    u, _ := repo.Read(id)\n    fmt.Println(u)\n}\n```\n\n## Manfaat Interface Kecil\n\n```go\n// fmt.Stringer — hanya satu method\ntype Stringer interface {\n    String() string\n}\n\n// error — hanya satu method\ntype error interface {\n    Error() string\n}\n\n// io.Reader — hanya satu method\ntype Reader interface {\n    Read(p []byte) (n int, err error)\n}\n\n// Interface kecil:\n// 1. Mudah diimplementasikan\n// 2. Mudah di-mock untuk testing\n// 3. Mudah di-compose\n// 4. Lebih fokus dan jelas maksudnya\n```\n\n## Contoh Dunia Nyata: Storage System\n\n```go\ntype Saver interface {\n    Save(key string, data []byte) error\n}\n\ntype Loader interface {\n    Load(key string) ([]byte, error)\n}\n\ntype Deleter interface {\n    Delete(key string) error\n}\n\ntype Storage interface {\n    Saver\n    Loader\n    Deleter\n}\n\n// Fungsi berbeda gunakan bagian yang berbeda\nfunc backup(s Saver, data []byte) error {\n    return s.Save(\"backup\", data)\n}\n\nfunc restore(l Loader) ([]byte, error) {\n    return l.Load(\"backup\")\n}\n```",
+  "content_en": "# Interface Composition in Go\n\nOne of Go's strengths is the ability to **combine small interfaces** into larger ones. This encourages **modular** design and follows the Interface Segregation Principle.\n\n## Embedding Interfaces\n\n```go\ntype Reader interface { Read(p []byte) (n int, err error) }\ntype Writer interface { Write(p []byte) (n int, err error) }\ntype Closer interface { Close() error }\n\n// Composed interfaces\ntype ReadWriter interface {\n    Reader\n    Writer\n}\n\ntype ReadWriteCloser interface {\n    Reader\n    Writer\n    Closer\n}\n```\n\n## Interface Segregation Principle\n\n```go\n// GOOD: small, focused interfaces\ntype UserReader interface { Read(id int) (User, error) }\ntype UserWriter interface { Create(User) error; Update(User) error }\n\n// Compose when needed\ntype UserRepository interface {\n    UserReader\n    UserWriter\n}\n\n// Functions only depend on what they need\nfunc showUser(repo UserReader, id int) {\n    u, _ := repo.Read(id)\n    fmt.Println(u)\n}\n```\n\n## Why Small Interfaces?\n\n1. **Easy to implement** — less surface area\n2. **Easy to mock** in tests\n3. **Easy to compose** into larger contracts\n4. **Clear intent** — each interface has one purpose",
+  "starterCode": "package main\n\nimport \"fmt\"\n\n// Small, focused interfaces\ntype Namer interface {\n\tName() string\n}\n\ntype Describer interface {\n\tDescribe() string\n}\n\ntype Pricer interface {\n\tPrice() float64\n}\n\n// Composed interface\ntype Product interface {\n\tNamer\n\tDescriber\n\tPricer\n}\n\n// Concrete types\ntype Laptop struct {\n\tmodel string\n\tram   int\n\tprice float64\n}\n\nfunc (l Laptop) Name() string { return l.model }\nfunc (l Laptop) Describe() string {\n\treturn fmt.Sprintf(\"%s with %dGB RAM\", l.model, l.ram)\n}\nfunc (l Laptop) Price() float64 { return l.price }\n\ntype Book struct {\n\ttitle  string\n\tauthor string\n\tprice  float64\n}\n\nfunc (b Book) Name() string    { return b.title }\nfunc (b Book) Describe() string { return fmt.Sprintf(\"%s by %s\", b.title, b.author) }\nfunc (b Book) Price() float64  { return b.price }\n\n// Functions using interface subsets\nfunc printName(n Namer) {\n\tfmt.Println(\"Name:\", n.Name())\n}\n\nfunc printCatalog(products []Product) {\n\tfor _, p := range products {\n\t\tfmt.Printf(\"%-30s Rp %.0f\\n\", p.Describe(), p.Price())\n\t}\n}\n\nfunc totalCost(items []Pricer) float64 {\n\ttotal := 0.0\n\tfor _, item := range items {\n\t\ttotal += item.Price()\n\t}\n\treturn total\n}\n\nfunc main() {\n\tproducts := []Product{\n\t\tLaptop{\"MacBook Pro\", 16, 25_000_000},\n\t\tLaptop{\"ThinkPad X1\", 32, 22_000_000},\n\t\tBook{\"The Go Programming Language\", \"Donovan & Kernighan\", 350_000},\n\t\tBook{\"Clean Code\", \"Robert C. Martin\", 280_000},\n\t}\n\n\tfmt.Println(\"=== Product Catalog ===\")\n\tprintCatalog(products)\n\n\t// Use subset interface\n\tpricers := make([]Pricer, len(products))\n\tfor i, p := range products {\n\t\tpricers[i] = p\n\t}\n\tfmt.Printf(\"\\nTotal cost: Rp %.0f\\n\", totalCost(pricers))\n}",
+  "quiz": [
+    {
+      "question_id": "Apa itu interface composition di Go?",
+      "question_en": "What is interface composition in Go?",
+      "options_id": [
+        "Menggabungkan dua struct menjadi satu",
+        "Mendefinisikan interface baru yang meng-embed satu atau lebih interface lain",
+        "Membuat instance dari interface",
+        "Mengimplementasikan interface secara eksplisit"
+      ],
+      "options_en": [
+        "Merging two structs into one",
+        "Defining a new interface that embeds one or more other interfaces",
+        "Creating an instance from an interface",
+        "Implementing an interface explicitly"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa interface kecil lebih disukai di Go?",
+      "question_en": "Why are small interfaces preferred in Go?",
+      "options_id": [
+        "Karena Go tidak mendukung interface dengan banyak method",
+        "Karena lebih mudah diimplementasikan, di-mock, dan di-compose",
+        "Karena lebih cepat saat runtime",
+        "Karena compiler Go hanya bisa menangani interface kecil"
+      ],
+      "options_en": [
+        "Because Go doesn't support interfaces with many methods",
+        "Because they are easier to implement, mock, and compose",
+        "Because they are faster at runtime",
+        "Because the Go compiler can only handle small interfaces"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika fungsi hanya membutuhkan kemampuan membaca data, parameter tipe interface yang tepat adalah?",
+      "question_en": "If a function only needs to read data, the appropriate interface parameter type is?",
+      "options_id": [
+        "UserRepository (yang memiliki semua CRUD)",
+        "UserReader (hanya method read)",
+        "interface{} (any type)",
+        "Harus menggunakan struct konkret"
+      ],
+      "options_en": [
+        "UserRepository (which has all CRUD methods)",
+        "UserReader (only read methods)",
+        "interface{} (any type)",
+        "Must use a concrete struct"
+      ],
+      "correct": 1
+    }
+  ]
+}

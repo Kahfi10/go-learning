@@ -1,0 +1,32 @@
+{
+  "id": "03",
+  "title_id": "errors.Is & errors.As",
+  "title_en": "errors.Is & errors.As",
+  "estimatedMinutes": 10,
+  "content_id": "## Memeriksa Error Secara Type-Safe\n\nSetelah belajar wrapping, kita perlu cara untuk **memeriksa** apakah error tertentu ada di dalam rantai wrapping.\n\n## errors.Is — Periksa Identitas Error\n\n`errors.Is(err, target)` memeriksa apakah `target` ada di **mana saja** dalam rantai error:\n\n```go\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\nvar ErrNotFound = errors.New(\"not found\")\n\nfunc findItem(id int) error {\n\tif id == 0 {\n\t\treturn ErrNotFound\n\t}\n\treturn nil\n}\n\nfunc getItem(id int) error {\n\terr := findItem(id)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"getItem(%d): %w\", id, err)\n\t}\n\treturn nil\n}\n\nfunc main() {\n\terr := getItem(0)\n\n\t// Meskipun error sudah di-wrap, errors.Is tetap bisa menemukan ErrNotFound\n\tif errors.Is(err, ErrNotFound) {\n\t\tfmt.Println(\"Item tidak ditemukan\")\n\t}\n}\n```\n\n## errors.As — Ekstrak Tipe Error Tertentu\n\n`errors.As(err, &target)` mencari error dalam rantai yang bisa di-assign ke tipe `target`:\n\n```go\ntype ValidationError struct {\n\tField   string\n\tMessage string\n}\n\nfunc (e *ValidationError) Error() string {\n\treturn fmt.Sprintf(\"validation error on field %s: %s\", e.Field, e.Message)\n}\n\nfunc validate(name string) error {\n\tif name == \"\" {\n\t\treturn &ValidationError{Field: \"name\", Message: \"cannot be empty\"}\n\t}\n\treturn nil\n}\n\nfunc process(name string) error {\n\tif err := validate(name); err != nil {\n\t\treturn fmt.Errorf(\"process: %w\", err)\n\t}\n\treturn nil\n}\n\nfunc main() {\n\terr := process(\"\")\n\n\tvar ve *ValidationError\n\tif errors.As(err, &ve) {\n\t\t// ve sekarang berisi *ValidationError\n\t\tfmt.Printf(\"Field: %s, Message: %s\\n\", ve.Field, ve.Message)\n\t}\n}\n```\n\n## Perbedaan errors.Is vs errors.As\n\n| | `errors.Is` | `errors.As` |\n|---|---|---|\n| Tujuan | Periksa kesamaan nilai | Ekstrak tipe tertentu |\n| Argument | `error` target | Pointer ke tipe target |\n| Contoh use case | Sentinel errors | Custom error types |",
+  "content_en": "## Type-Safe Error Inspection\n\nAfter learning about wrapping, we need a way to **inspect** whether a specific error is anywhere in the wrapping chain.\n\n## errors.Is — Check Error Identity\n\n`errors.Is(err, target)` checks whether `target` exists **anywhere** in the error chain:\n\n```go\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\nvar ErrNotFound = errors.New(\"not found\")\n\nfunc findItem(id int) error {\n\tif id == 0 {\n\t\treturn ErrNotFound\n\t}\n\treturn nil\n}\n\nfunc getItem(id int) error {\n\terr := findItem(id)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"getItem(%d): %w\", id, err)\n\t}\n\treturn nil\n}\n\nfunc main() {\n\terr := getItem(0)\n\n\t// Even though the error is wrapped, errors.Is still finds ErrNotFound\n\tif errors.Is(err, ErrNotFound) {\n\t\tfmt.Println(\"Item not found\")\n\t}\n}\n```\n\n## errors.As — Extract a Specific Error Type\n\n`errors.As(err, &target)` finds the first error in the chain that can be assigned to `target`:\n\n```go\ntype ValidationError struct {\n\tField   string\n\tMessage string\n}\n\nfunc (e *ValidationError) Error() string {\n\treturn fmt.Sprintf(\"validation error on field %s: %s\", e.Field, e.Message)\n}\n\nfunc validate(name string) error {\n\tif name == \"\" {\n\t\treturn &ValidationError{Field: \"name\", Message: \"cannot be empty\"}\n\t}\n\treturn nil\n}\n\nfunc process(name string) error {\n\tif err := validate(name); err != nil {\n\t\treturn fmt.Errorf(\"process: %w\", err)\n\t}\n\treturn nil\n}\n\nfunc main() {\n\terr := process(\"\")\n\n\tvar ve *ValidationError\n\tif errors.As(err, &ve) {\n\t\t// ve now holds the *ValidationError\n\t\tfmt.Printf(\"Field: %s, Message: %s\\n\", ve.Field, ve.Message)\n\t}\n}\n```\n\n## errors.Is vs errors.As\n\n| | `errors.Is` | `errors.As` |\n|---|---|---|\n| Purpose | Check value equality | Extract a specific type |\n| Argument | `error` target | Pointer to target type |\n| Use case | Sentinel errors | Custom error types |",
+  "starterCode": "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\nvar ErrPermission = errors.New(\"permission denied\")\n\ntype DBError struct {\n\tCode    int\n\tMessage string\n}\n\nfunc (e *DBError) Error() string {\n\treturn fmt.Sprintf(\"db error %d: %s\", e.Code, e.Message)\n}\n\nfunc queryDB() error {\n\treturn &DBError{Code: 500, Message: \"connection timeout\"}\n}\n\nfunc fetchData() error {\n\terr := queryDB()\n\tif err != nil {\n\t\treturn fmt.Errorf(\"fetchData: %w\", err)\n\t}\n\treturn nil\n}\n\nfunc main() {\n\terr := fetchData()\n\tif err == nil {\n\t\treturn\n\t}\n\n\t// TODO: use errors.Is to check for ErrPermission\n\t// TODO: use errors.As to extract *DBError and print its Code\n\tfmt.Println(err)\n}",
+  "quiz": [
+    {
+      "question_id": "errors.Is() memeriksa error di mana dalam rantai wrapping?",
+      "question_en": "Where in the wrapping chain does errors.Is() check for an error?",
+      "options_id": ["Di seluruh rantai (termasuk yang terbungkus)", "Hanya di error terluar", "Hanya di error terdalam", "Hanya satu level"],
+      "options_en": ["Throughout the entire chain (including wrapped errors)", "Only the outermost error", "Only the innermost error", "Only one level deep"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang harus dioper sebagai argumen kedua ke errors.As()?",
+      "question_en": "What must be passed as the second argument to errors.As()?",
+      "options_id": ["Pointer ke tipe error target", "Nilai error target langsung", "String nama tipe", "Interface error"],
+      "options_en": ["A pointer to the target error type", "The target error value directly", "A string type name", "An error interface"],
+      "correct": 0
+    },
+    {
+      "question_id": "Kapan sebaiknya menggunakan errors.As daripada errors.Is?",
+      "question_en": "When should you use errors.As instead of errors.Is?",
+      "options_id": ["Ketika Anda perlu mengakses field dari custom error type", "Ketika Anda ingin membandingkan dua pesan error", "Ketika error adalah nil", "Ketika menggunakan errors.New"],
+      "options_en": ["When you need to access fields from a custom error type", "When you want to compare two error messages", "When the error is nil", "When using errors.New"],
+      "correct": 0
+    }
+  ]
+}

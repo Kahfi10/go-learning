@@ -1,0 +1,62 @@
+{
+  "id": "02",
+  "title_id": "Value vs Pointer Semantics",
+  "title_en": "Value vs Pointer Semantics",
+  "estimatedMinutes": 10,
+  "content_id": "# Value vs Pointer Semantics di Go\n\nSalah satu keputusan desain terpenting di Go adalah memilih antara **value semantics** (salinan nilai) dan **pointer semantics** (referensi ke nilai). Pemilihan yang tepat mempengaruhi kebenaran dan performa program.\n\n## Value Semantics — Salinan Data\n\nSaat menggunakan value semantics, setiap assignment atau parameter fungsi membuat **salinan independen**:\n\n```go\ntype Point struct{ X, Y int }\n\nfunc moveByValue(p Point, dx, dy int) Point {\n    p.X += dx  // memodifikasi salinan, bukan aslinya\n    p.Y += dy\n    return p   // mengembalikan salinan yang dimodifikasi\n}\n\noriginal := Point{1, 2}\nmoved := moveByValue(original, 5, 3)\n\nfmt.Println(original) // {1 2} — tidak berubah\nfmt.Println(moved)    // {6 5} — salinan yang dimodifikasi\n```\n\n## Pointer Semantics — Referensi Data\n\nDengan pointer semantics, modifikasi melalui pointer langsung mengubah data asli:\n\n```go\nfunc moveByPointer(p *Point, dx, dy int) {\n    p.X += dx  // memodifikasi nilai asli!\n    p.Y += dy\n}\n\noriginal := Point{1, 2}\nmoveByPointer(&original, 5, 3)\n\nfmt.Println(original) // {6 5} — berubah!\n```\n\n## Ketika Mutasi Penting\n\n```go\ntype Player struct {\n    Name   string\n    Health int\n    Score  int\n}\n\n// Salah — modifikasi tidak tersimpan\nfunc takeDamageWrong(p Player, damage int) {\n    p.Health -= damage // hanya salinan yang berubah!\n}\n\n// Benar — menggunakan pointer receiver\nfunc (p *Player) TakeDamage(damage int) {\n    p.Health -= damage\n    if p.Health < 0 {\n        p.Health = 0\n    }\n}\n\nfunc (p *Player) AddScore(points int) {\n    p.Score += points\n}\n\nfunc (p Player) IsAlive() bool {\n    return p.Health > 0\n}\n\nplayer := Player{Name: \"Hero\", Health: 100, Score: 0}\ntakeDamageWrong(player, 30)\nfmt.Println(player.Health) // 100 — tidak berubah!\n\nplayer.TakeDamage(30)\nfmt.Println(player.Health) // 70 — berubah!\nfmt.Println(player.IsAlive()) // true\n```\n\n## Stack vs Heap (Konseptual)\n\nMeskipun Go mengelola memori secara otomatis, pemahaman konseptual ini berguna:\n\n```go\n// Variabel lokal biasanya di stack — cepat, otomatis dibebaskan\nfunc stackExample() {\n    x := 42  // biasanya di stack\n    _ = x\n}  // x dibebaskan saat fungsi return\n\n// Ketika pointer di-escape ke luar fungsi, nilai di-heap\nfunc heapExample() *int {\n    x := 42\n    return &x  // x \"escape\" ke heap karena pointer-nya dikembalikan\n}\n\np := heapExample()\nfmt.Println(*p) // 42 — masih valid karena di heap\n```\n\n## Go Compiler Escape Analysis\n\nGo compiler secara otomatis menentukan apakah variabel harus ada di stack atau heap melalui **escape analysis**:\n\n```go\n// Lihat escape analysis dengan:\n// go build -gcflags='-m' .\n\nfunc createInt() *int {\n    x := 42\n    return &x  // compiler mendeteksi x harus di heap\n    // Output: ./main.go:3:2: moved to heap: x\n}\n\nfunc noEscape() int {\n    x := 42\n    return x   // x tetap di stack\n}\n```\n\n## Pertimbangan Performa untuk Struct Besar\n\n```go\ntype LargeStruct struct {\n    Data [1000]int\n    Name string\n    // ...banyak field lainnya\n}\n\n// Mahal — menyalin 1000 int setiap kali\nfunc processByValue(s LargeStruct) {\n    // bekerja dengan salinan\n    fmt.Println(s.Name)\n}\n\n// Efisien — hanya menyalin pointer (8 bytes)\nfunc processByPointer(s *LargeStruct) {\n    fmt.Println(s.Name)\n}\n\nbig := LargeStruct{Name: \"Large\"}\nfor i := range big.Data {\n    big.Data[i] = i\n}\n\nprocessByValue(big)    // menyalin semua data\nprocessByPointer(&big) // hanya menyalin pointer\n```\n\n## Panduan Pemilihan\n\n```go\n// Gunakan VALUE semantics ketika:\n// 1. Data kecil (int, float, small struct)\n// 2. Tidak perlu mengubah nilai\n// 3. Ingin immutability (keamanan)\n// 4. Tipe seperti time.Time — selalu value\n\n// Gunakan POINTER semantics ketika:\n// 1. Struct besar (>= ~100 bytes, rule of thumb)\n// 2. Perlu mengubah nilai\n// 3. Tipe memiliki internal state yang dibagi\n// 4. Nil mewakili \"tidak ada\" (optional values)\n\n// Tipe yang selalu value: int, string, bool, float, array, small struct\n// Tipe yang selalu pointer/reference: slice, map, channel, func\n```",
+  "content_en": "# Value vs Pointer Semantics in Go\n\nOne of the most important design decisions in Go is choosing between **value semantics** (copy of data) and **pointer semantics** (reference to data). The right choice affects both correctness and performance.\n\n## Value Semantics — Data Copy\n\n```go\ntype Point struct{ X, Y int }\n\nfunc moveByValue(p Point, dx, dy int) Point {\n    p.X += dx // modifies copy, not original\n    p.Y += dy\n    return p\n}\n\noriginal := Point{1, 2}\nmoved := moveByValue(original, 5, 3)\nfmt.Println(original) // {1 2} — unchanged\nfmt.Println(moved)    // {6 5}\n```\n\n## Pointer Semantics — Data Reference\n\n```go\nfunc moveByPointer(p *Point, dx, dy int) {\n    p.X += dx // modifies original!\n    p.Y += dy\n}\n\noriginal := Point{1, 2}\nmoveByPointer(&original, 5, 3)\nfmt.Println(original) // {6 5} — changed!\n```\n\n## Performance Consideration\n\n```go\ntype LargeStruct struct { Data [1000]int; Name string }\n\n// Expensive — copies 1000 ints each call\nfunc processByValue(s LargeStruct) { fmt.Println(s.Name) }\n\n// Efficient — copies only 8-byte pointer\nfunc processByPointer(s *LargeStruct) { fmt.Println(s.Name) }\n```\n\n## Escape Analysis\n\nGo compiler automatically determines stack vs heap placement:\n```\ngo build -gcflags='-m' .\n// ./main.go:3:2: moved to heap: x\n```",
+  "starterCode": "package main\n\nimport \"fmt\"\n\ntype Inventory struct {\n\tItems  [100]string\n\tCounts [100]int\n\tSize   int\n}\n\nfunc addItemByValue(inv Inventory, item string, count int) Inventory {\n\t// Must return modified copy\n\tif inv.Size < 100 {\n\t\tinv.Items[inv.Size] = item\n\t\tinv.Counts[inv.Size] = count\n\t\tinv.Size++\n\t}\n\treturn inv\n}\n\nfunc addItemByPointer(inv *Inventory, item string, count int) {\n\t// Modifies directly\n\tif inv.Size < 100 {\n\t\tinv.Items[inv.Size] = item\n\t\tinv.Counts[inv.Size] = count\n\t\tinv.Size++\n\t}\n}\n\ntype Player struct {\n\tName   string\n\tHealth int\n\tScore  int\n}\n\nfunc (p *Player) TakeDamage(d int) {\n\tp.Health -= d\n\tif p.Health < 0 {\n\t\tp.Health = 0\n\t}\n}\n\nfunc (p *Player) Heal(h int) {\n\tp.Health += h\n\tif p.Health > 100 {\n\t\tp.Health = 100\n\t}\n}\n\nfunc (p Player) IsAlive() bool { return p.Health > 0 }\n\nfunc main() {\n\t// Value semantics: must reassign\n\tinv1 := Inventory{}\n\tinv1 = addItemByValue(inv1, \"Sword\", 1)\n\tinv1 = addItemByValue(inv1, \"Shield\", 1)\n\tfmt.Printf(\"Inventory size (value): %d\\n\", inv1.Size)\n\n\t// Pointer semantics: direct modification\n\tinv2 := Inventory{}\n\taddItemByPointer(&inv2, \"Bow\", 1)\n\taddItemByPointer(&inv2, \"Arrow\", 50)\n\tfmt.Printf(\"Inventory size (pointer): %d\\n\", inv2.Size)\n\n\t// Game player demo\n\tplayer := Player{Name: \"Warrior\", Health: 100, Score: 0}\n\tfmt.Printf(\"%s: HP=%d\\n\", player.Name, player.Health)\n\n\tplayer.TakeDamage(40)\n\tfmt.Printf(\"After damage: HP=%d\\n\", player.Health)\n\n\tplayer.Heal(20)\n\tfmt.Printf(\"After heal: HP=%d\\n\", player.Health)\n\n\tplayer.TakeDamage(200) // more than max HP\n\tfmt.Printf(\"After lethal damage: HP=%d, alive=%v\\n\",\n\t\tplayer.Health, player.IsAlive())\n}",
+  "quiz": [
+    {
+      "question_id": "Jika struct besar dikirim ke fungsi tanpa pointer, apa yang terjadi?",
+      "question_en": "If a large struct is passed to a function without a pointer, what happens?",
+      "options_id": [
+        "Fungsi menerima referensi ke struct asli",
+        "Seluruh struct disalin ke parameter fungsi",
+        "Program panic karena struct terlalu besar",
+        "Hanya field pertama yang disalin"
+      ],
+      "options_en": [
+        "The function receives a reference to the original struct",
+        "The entire struct is copied into the function parameter",
+        "The program panics because the struct is too large",
+        "Only the first field is copied"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang dimaksud dengan 'escape analysis' di Go?",
+      "question_en": "What does 'escape analysis' mean in Go?",
+      "options_id": [
+        "Analisis untuk mendeteksi memory leak",
+        "Proses compiler menentukan apakah variabel harus di stack atau heap",
+        "Teknik untuk menghindari garbage collection",
+        "Cara Go mengoptimalkan pointer arithmetic"
+      ],
+      "options_en": [
+        "Analysis to detect memory leaks",
+        "Compiler process determining whether a variable should be on stack or heap",
+        "A technique to avoid garbage collection",
+        "How Go optimizes pointer arithmetic"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Kapan sebaiknya menggunakan value semantics daripada pointer semantics?",
+      "question_en": "When should you use value semantics instead of pointer semantics?",
+      "options_id": [
+        "Selalu gunakan pointer untuk performa terbaik",
+        "Untuk data kecil, immutable, atau ketika salinan independen diinginkan",
+        "Hanya untuk tipe built-in seperti int dan string",
+        "Ketika struct memiliki lebih dari 5 field"
+      ],
+      "options_en": [
+        "Always use pointers for best performance",
+        "For small, immutable data, or when independent copies are desired",
+        "Only for built-in types like int and string",
+        "When a struct has more than 5 fields"
+      ],
+      "correct": 1
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "01",
+  "title_id": "Error Interface & errors.New",
+  "title_en": "Error Interface & errors.New",
+  "estimatedMinutes": 10,
+  "content_id": "## Error Interface\n\nDi Go, `error` adalah **built-in interface** yang sangat sederhana:\n\n```go\ntype error interface {\n\tError() string\n}\n```\n\nTipe apapun yang memiliki method `Error() string` dianggap sebagai error.\n\n## Membuat Error dengan errors.New\n\nPackage `errors` menyediakan fungsi `errors.New()` untuk membuat error sederhana:\n\n```go\nimport \"errors\"\n\nvar errDivByZero = errors.New(\"division by zero\")\n```\n\n## Pola Return Error\n\nFungsi di Go biasanya mengembalikan `(nilai, error)`. Jika berhasil, error bernilai `nil`:\n\n```go\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\nfunc divide(a, b float64) (float64, error) {\n\tif b == 0 {\n\t\treturn 0, errors.New(\"division by zero\")\n\t}\n\treturn a / b, nil\n}\n\nfunc main() {\n\tresult, err := divide(10, 2)\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t\treturn\n\t}\n\tfmt.Println(\"Result:\", result) // Result: 5\n\n\t_, err = divide(10, 0)\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err) // Error: division by zero\n\t}\n}\n```\n\n## Pola if err != nil\n\nPola `if err != nil` adalah cara idiomatis Go untuk menangani error:\n\n```go\nresult, err := someFunction()\nif err != nil {\n\t// tangani error\n\tlog.Fatal(err)\n}\n// gunakan result\n```\n\n> **Tip:** Jangan pernah abaikan error dengan `_`. Selalu periksa dan tangani.",
+  "content_en": "## Error Interface\n\nIn Go, `error` is a **built-in interface** with just one method:\n\n```go\ntype error interface {\n\tError() string\n}\n```\n\nAny type that implements `Error() string` satisfies the `error` interface.\n\n## Creating Errors with errors.New\n\nThe `errors` package provides `errors.New()` to create simple errors:\n\n```go\nimport \"errors\"\n\nvar errDivByZero = errors.New(\"division by zero\")\n```\n\n## The Return Error Pattern\n\nGo functions typically return `(value, error)`. On success, the error is `nil`:\n\n```go\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\nfunc divide(a, b float64) (float64, error) {\n\tif b == 0 {\n\t\treturn 0, errors.New(\"division by zero\")\n\t}\n\treturn a / b, nil\n}\n\nfunc main() {\n\tresult, err := divide(10, 2)\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t\treturn\n\t}\n\tfmt.Println(\"Result:\", result) // Result: 5\n\n\t_, err = divide(10, 0)\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err) // Error: division by zero\n\t}\n}\n```\n\n## The if err != nil Pattern\n\nThe `if err != nil` pattern is idiomatic Go error handling:\n\n```go\nresult, err := someFunction()\nif err != nil {\n\t// handle error\n\tlog.Fatal(err)\n}\n// use result\n```\n\n> **Tip:** Never ignore errors with `_`. Always check and handle them.",
+  "starterCode": "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\n// divide returns a / b, or an error if b is zero\nfunc divide(a, b float64) (float64, error) {\n\t// TODO: return an error if b == 0\n\treturn a / b, nil\n}\n\nfunc main() {\n\tresult, err := divide(10, 0)\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t\treturn\n\t}\n\tfmt.Println(\"Result:\", result)\n\n\t_ = errors.New // hint: use this\n}",
+  "quiz": [
+    {
+      "question_id": "Apa yang harus diimplementasikan sebuah tipe agar memenuhi interface `error`?",
+      "question_en": "What must a type implement to satisfy the `error` interface?",
+      "options_id": ["Error() string", "Error() error", "String() string", "Err() string"],
+      "options_en": ["Error() string", "Error() error", "String() string", "Err() string"],
+      "correct": 0
+    },
+    {
+      "question_id": "Fungsi apa yang digunakan untuk membuat error sederhana dengan pesan teks?",
+      "question_en": "Which function creates a simple error with a text message?",
+      "options_id": ["errors.New()", "error.Create()", "fmt.Error()", "errors.Make()"],
+      "options_en": ["errors.New()", "error.Create()", "fmt.Error()", "errors.Make()"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa nilai yang dikembalikan ketika sebuah fungsi berhasil (tidak ada error)?",
+      "question_en": "What value is returned for error when a function succeeds?",
+      "options_id": ["nil", "0", "\"\"", "false"],
+      "options_en": ["nil", "0", "\"\"", "false"],
+      "correct": 0
+    },
+    {
+      "question_id": "Bagaimana cara idiomatis memeriksa error di Go?",
+      "question_en": "What is the idiomatic way to check for an error in Go?",
+      "options_id": ["if err != nil { ... }", "try { ... } catch { ... }", "if error(err) { ... }", "err.check()"],
+      "options_en": ["if err != nil { ... }", "try { ... } catch { ... }", "if error(err) { ... }", "err.check()"],
+      "correct": 0
+    }
+  ]
+}

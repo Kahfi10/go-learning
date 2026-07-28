@@ -1,0 +1,32 @@
+{
+  "id": "04",
+  "title_id": "Custom Error Types",
+  "title_en": "Custom Error Types",
+  "estimatedMinutes": 10,
+  "content_id": "## Mengapa Custom Error Types?\n\nTerkadang kita butuh error yang membawa **informasi lebih** dari sekadar pesan teks. Custom error types memungkinkan kita menambahkan field seperti kode status, operasi yang gagal, dan konteks lainnya.\n\n## Membuat Custom Error Type\n\nBuat sebuah struct yang mengimplementasikan interface `error`:\n\n```go\npackage main\n\nimport \"fmt\"\n\n// AppError adalah custom error type dengan kode status\ntype AppError struct {\n\tCode    int\n\tOp      string\n\tMessage string\n\tErr     error // error asli yang dibungkus\n}\n\nfunc (e *AppError) Error() string {\n\tif e.Err != nil {\n\t\treturn fmt.Sprintf(\"[%d] %s: %s: %v\", e.Code, e.Op, e.Message, e.Err)\n\t}\n\treturn fmt.Sprintf(\"[%d] %s: %s\", e.Code, e.Op, e.Message)\n}\n\n// Unwrap mendukung errors.Is dan errors.As\nfunc (e *AppError) Unwrap() error {\n\treturn e.Err\n}\n```\n\n## Menggunakan Custom Error\n\n```go\nfunc getUser(id int) (string, error) {\n\tif id <= 0 {\n\t\treturn \"\", &AppError{\n\t\t\tCode:    400,\n\t\t\tOp:      \"getUser\",\n\t\t\tMessage: \"invalid user id\",\n\t\t}\n\t}\n\tif id == 999 {\n\t\treturn \"\", &AppError{\n\t\t\tCode:    404,\n\t\t\tOp:      \"getUser\",\n\t\t\tMessage: \"user not found\",\n\t\t}\n\t}\n\treturn \"Alice\", nil\n}\n\nfunc main() {\n\t_, err := getUser(-1)\n\tif err != nil {\n\t\tvar ae *AppError\n\t\tif errors.As(err, &ae) {\n\t\t\tfmt.Printf(\"Status: %d, Op: %s\\n\", ae.Code, ae.Op)\n\t\t}\n\t\tfmt.Println(err)\n\t}\n}\n```\n\n## Method Unwrap() untuk Kompatibilitas\n\nTambahkan method `Unwrap() error` agar custom error Anda bisa digunakan bersama `errors.Is` dan `errors.As`:\n\n```go\ntype NotFoundError struct {\n\tName string\n\tErr  error\n}\n\nfunc (e *NotFoundError) Error() string {\n\treturn fmt.Sprintf(\"%s: not found\", e.Name)\n}\n\nfunc (e *NotFoundError) Unwrap() error {\n\treturn e.Err\n}\n```\n\n> **Best Practice:** Selalu tambahkan method `Unwrap()` ke custom error type jika ia membungkus error lain.",
+  "content_en": "## Why Custom Error Types?\n\nSometimes we need errors that carry **more information** than just a text message. Custom error types let us add fields like status codes, failed operations, and other context.\n\n## Creating a Custom Error Type\n\nCreate a struct that implements the `error` interface:\n\n```go\npackage main\n\nimport \"fmt\"\n\n// AppError is a custom error type with a status code\ntype AppError struct {\n\tCode    int\n\tOp      string\n\tMessage string\n\tErr     error // the wrapped underlying error\n}\n\nfunc (e *AppError) Error() string {\n\tif e.Err != nil {\n\t\treturn fmt.Sprintf(\"[%d] %s: %s: %v\", e.Code, e.Op, e.Message, e.Err)\n\t}\n\treturn fmt.Sprintf(\"[%d] %s: %s\", e.Code, e.Op, e.Message)\n}\n\n// Unwrap supports errors.Is and errors.As\nfunc (e *AppError) Unwrap() error {\n\treturn e.Err\n}\n```\n\n## Using the Custom Error\n\n```go\nfunc getUser(id int) (string, error) {\n\tif id <= 0 {\n\t\treturn \"\", &AppError{\n\t\t\tCode:    400,\n\t\t\tOp:      \"getUser\",\n\t\t\tMessage: \"invalid user id\",\n\t\t}\n\t}\n\tif id == 999 {\n\t\treturn \"\", &AppError{\n\t\t\tCode:    404,\n\t\t\tOp:      \"getUser\",\n\t\t\tMessage: \"user not found\",\n\t\t}\n\t}\n\treturn \"Alice\", nil\n}\n\nfunc main() {\n\t_, err := getUser(-1)\n\tif err != nil {\n\t\tvar ae *AppError\n\t\tif errors.As(err, &ae) {\n\t\t\tfmt.Printf(\"Status: %d, Op: %s\\n\", ae.Code, ae.Op)\n\t\t}\n\t\tfmt.Println(err)\n\t}\n}\n```\n\n## The Unwrap() Method for Compatibility\n\nAdd an `Unwrap() error` method so your custom error works with `errors.Is` and `errors.As`:\n\n```go\ntype NotFoundError struct {\n\tName string\n\tErr  error\n}\n\nfunc (e *NotFoundError) Error() string {\n\treturn fmt.Sprintf(\"%s: not found\", e.Name)\n}\n\nfunc (e *NotFoundError) Unwrap() error {\n\treturn e.Err\n}\n```\n\n> **Best Practice:** Always add the `Unwrap()` method to custom error types if they wrap another error.",
+  "starterCode": "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\n// TODO: Define a custom HTTPError struct with fields:\n// - StatusCode int\n// - Method string\n// - URL string\n// Implement the Error() string method.\n\nfunc makeRequest(method, url string) error {\n\tif url == \"\" {\n\t\t// TODO: return an HTTPError with StatusCode 400\n\t\treturn errors.New(\"bad request\")\n\t}\n\treturn nil\n}\n\nfunc main() {\n\terr := makeRequest(\"GET\", \"\")\n\tif err != nil {\n\t\t// TODO: use errors.As to extract HTTPError and print its StatusCode\n\t\tfmt.Println(err)\n\t}\n}",
+  "quiz": [
+    {
+      "question_id": "Method apa yang harus diimplementasikan agar sebuah struct menjadi `error` type?",
+      "question_en": "Which method must a struct implement to become an `error` type?",
+      "options_id": ["Error() string", "String() error", "Err() string", "Error() error"],
+      "options_en": ["Error() string", "String() error", "Err() string", "Error() error"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa kita perlu mengimplementasikan method Unwrap() pada custom error type?",
+      "question_en": "Why should we implement the Unwrap() method on a custom error type?",
+      "options_id": ["Agar errors.Is dan errors.As bisa menelusuri error chain", "Agar error bisa dicetak", "Agar error bisa dibandingkan dengan ==", "Agar error bisa di-log"],
+      "options_en": ["So errors.Is and errors.As can traverse the error chain", "So the error can be printed", "So the error can be compared with ==", "So the error can be logged"],
+      "correct": 0
+    },
+    {
+      "question_id": "Manfaat utama menggunakan custom error type dibanding errors.New adalah?",
+      "question_en": "The main benefit of custom error types over errors.New is?",
+      "options_id": ["Bisa membawa data tambahan seperti kode status, operasi, dll.", "Lebih cepat saat runtime", "Lebih mudah ditulis", "Tidak perlu di-import"],
+      "options_en": ["Can carry additional data like status codes, operations, etc.", "Faster at runtime", "Easier to write", "No import needed"],
+      "correct": 0
+    }
+  ]
+}

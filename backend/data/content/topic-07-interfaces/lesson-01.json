@@ -1,0 +1,62 @@
+{
+  "id": "01",
+  "title_id": "Interface Dasar",
+  "title_en": "Basic Interfaces",
+  "estimatedMinutes": 10,
+  "content_id": "# Interface Dasar di Go\n\nInterface di Go mendefinisikan **kontrak perilaku** — sekumpulan method signature yang harus diimplementasikan oleh tipe. Interface memungkinkan **polimorfisme** tanpa hierarki class yang rumit.\n\n## Definisi Interface\n\n```go\n// Interface mendefinisikan behavior, bukan data\ntype Shape interface {\n    Area() float64\n    Perimeter() float64\n}\n```\n\n## Implementasi Implicit (Duck Typing)\n\nDi Go, implementasi interface bersifat **implisit** — tidak perlu mendeklarasikan `implements Shape`. Sebuah tipe otomatis mengimplementasikan interface jika memiliki semua method yang diperlukan:\n\n```go\ntype Circle struct {\n    Radius float64\n}\n\nfunc (c Circle) Area() float64 {\n    return math.Pi * c.Radius * c.Radius\n}\n\nfunc (c Circle) Perimeter() float64 {\n    return 2 * math.Pi * c.Radius\n}\n\ntype Rectangle struct {\n    Width, Height float64\n}\n\nfunc (r Rectangle) Area() float64 {\n    return r.Width * r.Height\n}\n\nfunc (r Rectangle) Perimeter() float64 {\n    return 2 * (r.Width + r.Height)\n}\n\ntype Triangle struct {\n    A, B, C float64 // panjang ketiga sisi\n}\n\nfunc (t Triangle) Area() float64 {\n    // Rumus Heron\n    s := (t.A + t.B + t.C) / 2\n    return math.Sqrt(s * (s - t.A) * (s - t.B) * (s - t.C))\n}\n\nfunc (t Triangle) Perimeter() float64 {\n    return t.A + t.B + t.C\n}\n```\n\n## Perbedaan dari Java/C#\n\n| Aspek | Go | Java/C# |\n|-------|----|---------|\n| Deklarasi | Implisit | Eksplisit (`implements`/`:`) |\n| Coupling | Longgar | Ketat |\n| Retroaktif | Bisa implementasi tanpa ubah kode asli | Tidak bisa |\n| File | Tidak perlu tahu interface saat membuat tipe | Harus import interface |\n\n```go\n// Di Java: class Circle implements Shape { ... }\n// Di Go: tidak perlu — cukup punya method yang sesuai\n```\n\n## Polimorfisme dengan Interface\n\n```go\nfunc printShapeInfo(s Shape) {\n    fmt.Printf(\"Area: %.2f\\n\", s.Area())\n    fmt.Printf(\"Perimeter: %.2f\\n\", s.Perimeter())\n    fmt.Println(\"---\")\n}\n\nfunc totalArea(shapes []Shape) float64 {\n    total := 0.0\n    for _, s := range shapes {\n        total += s.Area()\n    }\n    return total\n}\n\nfunc main() {\n    shapes := []Shape{\n        Circle{Radius: 5},\n        Rectangle{Width: 4, Height: 6},\n        Triangle{A: 3, B: 4, C: 5},\n    }\n\n    for _, s := range shapes {\n        printShapeInfo(s)\n    }\n\n    fmt.Printf(\"Total area: %.2f\\n\", totalArea(shapes))\n}\n```\n\n## Interface Nil\n\n```go\nvar s Shape\nfmt.Println(s == nil) // true\n// s.Area() // panic: nil pointer dereference\n\nif s != nil {\n    fmt.Println(s.Area())\n}\n```\n\n## Interface sebagai Parameter Fungsi\n\n```go\n// Lebih fleksibel — menerima tipe apapun yang implement Stringer\ntype Stringer interface {\n    String() string\n}\n\nfunc printAll(items []Stringer) {\n    for _, item := range items {\n        fmt.Println(item.String())\n    }\n}\n\n// Kode baru bisa ditambahkan tanpa mengubah printAll\n```\n\n## Tips: Interface Sebaiknya Kecil\n\n```go\n// BAIK: interface kecil, satu tanggung jawab\ntype Reader interface {\n    Read(p []byte) (n int, err error)\n}\n\ntype Writer interface {\n    Write(p []byte) (n int, err error)\n}\n\n// Komposisi jika perlu keduanya\ntype ReadWriter interface {\n    Reader\n    Writer\n}\n\n// HINDARI: interface yang terlalu besar dan sulit diimplementasikan\ntype BigInterface interface {\n    Read()\n    Write()\n    Delete()\n    Update()\n    Search()\n    Export()\n    // ... 20 method lagi\n}\n```",
+  "content_en": "# Basic Interfaces in Go\n\nA Go interface defines a **behavioral contract** — a set of method signatures that a type must implement. Interfaces enable **polymorphism** without complex class hierarchies.\n\n## Interface Definition\n\n```go\ntype Shape interface {\n    Area() float64\n    Perimeter() float64\n}\n```\n\n## Implicit Implementation (Duck Typing)\n\nIn Go, interface implementation is **implicit** — no need to declare `implements Shape`. A type automatically satisfies an interface if it has all the required methods:\n\n```go\ntype Circle struct { Radius float64 }\nfunc (c Circle) Area() float64      { return math.Pi * c.Radius * c.Radius }\nfunc (c Circle) Perimeter() float64 { return 2 * math.Pi * c.Radius }\n\ntype Rectangle struct { Width, Height float64 }\nfunc (r Rectangle) Area() float64      { return r.Width * r.Height }\nfunc (r Rectangle) Perimeter() float64 { return 2 * (r.Width + r.Height) }\n```\n\n## Polymorphism with Interfaces\n\n```go\nfunc printInfo(s Shape) {\n    fmt.Printf(\"Area: %.2f, Perimeter: %.2f\\n\", s.Area(), s.Perimeter())\n}\n\nshapes := []Shape{Circle{5}, Rectangle{4, 6}}\nfor _, s := range shapes {\n    printInfo(s)\n}\n```\n\n## Difference from Java/C#\n\n- **Go**: Implicit — just have the right methods\n- **Java/C#**: Explicit — must declare `implements Interface`\n- Go enables **retroactive implementation**: add interface compliance to types you don't own",
+  "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n)\n\ntype Shape interface {\n\tArea() float64\n\tPerimeter() float64\n}\n\ntype Circle struct {\n\tRadius float64\n}\n\nfunc (c Circle) Area() float64 {\n\treturn math.Pi * c.Radius * c.Radius\n}\n\nfunc (c Circle) Perimeter() float64 {\n\treturn 2 * math.Pi * c.Radius\n}\n\ntype Rectangle struct {\n\tWidth, Height float64\n}\n\nfunc (r Rectangle) Area() float64 {\n\treturn r.Width * r.Height\n}\n\nfunc (r Rectangle) Perimeter() float64 {\n\treturn 2 * (r.Width + r.Height)\n}\n\ntype Triangle struct {\n\tBase, Height float64\n}\n\nfunc (t Triangle) Area() float64 {\n\treturn 0.5 * t.Base * t.Height\n}\n\nfunc (t Triangle) Perimeter() float64 {\n\t// Assume right triangle for simplicity\n\thyp := math.Sqrt(t.Base*t.Base + t.Height*t.Height)\n\treturn t.Base + t.Height + hyp\n}\n\nfunc printShapeInfo(s Shape) {\n\tfmt.Printf(\"Type: %T\\n\", s)\n\tfmt.Printf(\"  Area: %.2f\\n\", s.Area())\n\tfmt.Printf(\"  Perimeter: %.2f\\n\", s.Perimeter())\n}\n\nfunc totalArea(shapes []Shape) float64 {\n\ttotal := 0.0\n\tfor _, s := range shapes {\n\t\ttotal += s.Area()\n\t}\n\treturn total\n}\n\nfunc main() {\n\tshapes := []Shape{\n\t\tCircle{Radius: 5},\n\t\tRectangle{Width: 4, Height: 6},\n\t\tTriangle{Base: 3, Height: 4},\n\t}\n\n\tfor _, s := range shapes {\n\t\tprintShapeInfo(s)\n\t}\n\n\tfmt.Printf(\"\\nTotal area of all shapes: %.2f\\n\", totalArea(shapes))\n}",
+  "quiz": [
+    {
+      "question_id": "Bagaimana cara sebuah tipe mengimplementasikan interface di Go?",
+      "question_en": "How does a type implement an interface in Go?",
+      "options_id": [
+        "Dengan mendeklarasikan `type MyType implements MyInterface`",
+        "Secara implisit — dengan memiliki semua method yang didefinisikan dalam interface",
+        "Dengan menggunakan keyword `implements`",
+        "Dengan mendaftarkan tipe ke interface secara eksplisit"
+      ],
+      "options_en": [
+        "By declaring `type MyType implements MyInterface`",
+        "Implicitly — by having all methods defined in the interface",
+        "By using the `implements` keyword",
+        "By explicitly registering the type with the interface"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang terjadi jika fungsi `printShapeInfo(s Shape)` dipanggil dengan nilai nil?",
+      "question_en": "What happens if function `printShapeInfo(s Shape)` is called with a nil value?",
+      "options_id": [
+        "Fungsi berjalan normal",
+        "Terjadi panic saat method dipanggil pada nil interface",
+        "Error kompilasi",
+        "Mengembalikan zero value"
+      ],
+      "options_en": [
+        "The function runs normally",
+        "Panic occurs when a method is called on a nil interface",
+        "Compilation error",
+        "Returns zero value"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa keuntungan implementasi interface yang implisit di Go dibanding Java?",
+      "question_en": "What is the advantage of Go's implicit interface implementation compared to Java?",
+      "options_id": [
+        "Lebih cepat saat runtime",
+        "Tipe bisa memenuhi interface yang belum ada saat tipe tersebut dibuat (retroaktif)",
+        "Memerlukan lebih sedikit memori",
+        "Lebih aman dari type errors"
+      ],
+      "options_en": [
+        "Faster at runtime",
+        "A type can satisfy interfaces that didn't exist when the type was created (retroactive)",
+        "Requires less memory",
+        "Safer from type errors"
+      ],
+      "correct": 1
+    }
+  ]
+}

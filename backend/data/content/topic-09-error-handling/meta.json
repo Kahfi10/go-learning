@@ -1,0 +1,11 @@
+{
+  "slug": "error-handling",
+  "number": 9,
+  "title_id": "Penanganan Error",
+  "title_en": "Error Handling",
+  "description_id": "Pelajari cara menangani error di Go: error interface, wrapping, custom errors, dan best practices.",
+  "description_en": "Learn error handling in Go: error interface, wrapping, custom errors, and best practices.",
+  "level": "Intermediate",
+  "color": "#FF453A",
+  "estimatedMinutes": 50
+}

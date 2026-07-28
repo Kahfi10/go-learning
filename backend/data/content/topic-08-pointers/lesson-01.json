@@ -1,0 +1,52 @@
+{
+  "id": "01",
+  "title_id": "Pointer Basics",
+  "title_en": "Pointer Basics",
+  "estimatedMinutes": 10,
+  "content_id": "# Pointer Basics di Go\n\nPointer adalah variabel yang menyimpan **alamat memori** dari variabel lain. Dengan pointer, kamu bisa memanipulasi data secara langsung di lokasi memorinya tanpa membuat salinan.\n\n## Operator `&` — Address-Of\n\nOperator `&` mengambil alamat memori dari sebuah variabel:\n\n```go\nx := 42\np := &x // p adalah pointer ke x, tipenya *int\n\nfmt.Println(x)  // 42    — nilai x\nfmt.Println(p)  // 0xc0000b4010 — alamat memori x\nfmt.Println(&x) // 0xc0000b4010 — sama dengan p\nfmt.Printf(\"Alamat x: %p\\n\", p) // format %p untuk pointer\n```\n\n## Operator `*` — Dereference\n\nOperator `*` mengakses nilai pada alamat yang ditunjuk pointer:\n\n```go\nx := 42\np := &x\n\nfmt.Println(*p)  // 42 — dereference: akses nilai di alamat p\n\n// Ubah nilai melalui pointer\n*p = 100\nfmt.Println(x)   // 100 — x berubah!\nfmt.Println(*p)  // 100\n```\n\n## Tipe Pointer `*T`\n\nTipe pointer ditulis sebagai `*T` dimana T adalah tipe nilai yang ditunjuk:\n\n```go\nvar pi *int     // pointer ke int, nilai awal: nil\nvar ps *string  // pointer ke string\nvar pb *bool    // pointer ke bool\n\na := 10\nb := \"hello\"\nc := true\n\npi = &a\nps = &b\npb = &c\n\nfmt.Println(*pi, *ps, *pb) // 10 hello true\n```\n\n## Fungsi `new(T)`\n\nFungsi `new(T)` mengalokasikan memori untuk satu nilai bertipe `T`, menginisialisasinya dengan zero value, dan mengembalikan pointer:\n\n```go\n// new(T) — alokasi + zero value + return pointer\np := new(int)\nfmt.Println(*p) // 0 — zero value untuk int\n*p = 42\nfmt.Println(*p) // 42\n\np2 := new(string)\nfmt.Println(*p2 == \"\")  // true — zero value string\n*p2 = \"hello\"\nfmt.Println(*p2) // hello\n\n// new vs &T{} — biasanya &T{} lebih idiomatis untuk struct\np3 := new(int)  // sama dengan:\np4 := new(int)\n_ = p4\nvar temp int\np5 := &temp     // ekuivalen dengan new(int)\nfmt.Println(p3, p5)\n```\n\n## Zero Value Pointer: `nil`\n\nZero value untuk semua tipe pointer adalah `nil`:\n\n```go\nvar p *int\nfmt.Println(p)        // <nil>\nfmt.Println(p == nil) // true\n\n// JANGAN dereference nil pointer!\n// fmt.Println(*p) // panic: runtime error: invalid memory address or nil pointer dereference\n\n// Selalu cek nil sebelum dereference\nif p != nil {\n    fmt.Println(*p)\n} else {\n    fmt.Println(\"pointer adalah nil\")\n}\n```\n\n## Mencetak Alamat Pointer dengan `%p`\n\n```go\nx := 42\np := &x\n\nfmt.Printf(\"Nilai x: %d\\n\", x)\nfmt.Printf(\"Alamat x: %p\\n\", p)\nfmt.Printf(\"Nilai melalui pointer: %d\\n\", *p)\n\n// Perbandingan alamat dua variabel\ny := 42\nfmt.Println(&x == &y) // false — alamat berbeda meski nilai sama\n\n// Pointer ke variabel yang sama\np2 := &x\nfmt.Println(p == p2)  // true — menunjuk ke variabel yang sama\n```\n\n## Pointer Aritmatika — Tidak Ada di Go!\n\nBerbeda dari C/C++, Go **tidak mendukung pointer aritmatika** secara langsung:\n\n```go\nx := [3]int{1, 2, 3}\np := &x[0]\n// p++  // ERROR di Go — tidak bisa\n// p+1  // ERROR\n\n// Go sengaja tidak punya pointer aritmatika untuk keamanan\n// Gunakan indeks array/slice biasa\nfmt.Println(x[0], x[1], x[2])\n```\n\n## Contoh Praktis: Fungsi yang Mengubah Nilai\n\n```go\n// Tanpa pointer — tidak mengubah nilai asli\nfunc doubleVal(n int) {\n    n *= 2\n}\n\n// Dengan pointer — mengubah nilai asli\nfunc doublePtr(n *int) {\n    *n *= 2\n}\n\nx := 5\ndoubleVal(x)\nfmt.Println(x) // 5 — tidak berubah\n\ndoublePtr(&x)\nfmt.Println(x) // 10 — berubah!\n```",
+  "content_en": "# Pointer Basics in Go\n\nA pointer is a variable that stores the **memory address** of another variable. With pointers, you can manipulate data directly at its memory location without making a copy.\n\n## `&` Operator — Address-Of\n\n```go\nx := 42\np := &x  // p is a pointer to x, type *int\n\nfmt.Println(x)  // 42\nfmt.Println(p)  // 0xc0000b4010 (memory address)\nfmt.Printf(\"%p\\n\", p) // use %p format verb\n```\n\n## `*` Operator — Dereference\n\n```go\nx := 42\np := &x\n\nfmt.Println(*p) // 42 — dereference: read value at address\n*p = 100        // write through pointer\nfmt.Println(x)  // 100 — x changed!\n```\n\n## Pointer Type `*T`\n\n```go\nvar pi *int    // pointer to int, zero value: nil\na := 10\npi = &a\nfmt.Println(*pi) // 10\n```\n\n## `new(T)` Function\n\n```go\n// Allocates memory, zero-initializes, returns pointer\np := new(int)\nfmt.Println(*p) // 0\n*p = 42\nfmt.Println(*p) // 42\n```\n\n## Zero Value: `nil`\n\n```go\nvar p *int\nfmt.Println(p == nil) // true\n// *p // PANIC: nil pointer dereference\nif p != nil { fmt.Println(*p) }\n```\n\n## No Pointer Arithmetic in Go\n\nUnlike C/C++, Go **does not support pointer arithmetic** — this is by design for safety. Use slice indexing instead.",
+  "starterCode": "package main\n\nimport \"fmt\"\n\nfunc doubleValue(n int) {\n\tn *= 2 // only changes local copy\n}\n\nfunc doublePointer(n *int) {\n\t*n *= 2 // modifies the original\n}\n\nfunc swap(a, b *int) {\n\t*a, *b = *b, *a\n}\n\nfunc main() {\n\t// Basic pointer operations\n\tx := 42\n\tp := &x\n\n\tfmt.Printf(\"Value of x: %d\\n\", x)\n\tfmt.Printf(\"Address of x: %p\\n\", p)\n\tfmt.Printf(\"Value via pointer: %d\\n\", *p)\n\n\t// Modify via pointer\n\t*p = 100\n\tfmt.Printf(\"x after *p=100: %d\\n\", x)\n\n\t// new(T)\n\tpi := new(int)\n\tfmt.Printf(\"new(int) zero value: %d\\n\", *pi)\n\t*pi = 99\n\tfmt.Printf(\"new(int) after assign: %d\\n\", *pi)\n\n\t// nil pointer check\n\tvar nilPtr *int\n\tfmt.Println(\"nil pointer:\", nilPtr == nil)\n\n\t// Without pointer — no change\n\tval := 5\n\tdoubleValue(val)\n\tfmt.Println(\"After doubleValue:\", val)\n\n\t// With pointer — changes original\n\tdoublePointer(&val)\n\tfmt.Println(\"After doublePointer:\", val)\n\n\t// Swap using pointers\n\ta, b := 10, 20\n\tfmt.Printf(\"Before swap: a=%d, b=%d\\n\", a, b)\n\tswap(&a, &b)\n\tfmt.Printf(\"After swap: a=%d, b=%d\\n\", a, b)\n}",
+  "quiz": [
+    {
+      "question_id": "Apa yang dilakukan operator `&` pada variabel?",
+      "question_en": "What does the `&` operator do to a variable?",
+      "options_id": [
+        "Mengembalikan nilai variabel",
+        "Mengembalikan alamat memori variabel",
+        "Membuat salinan variabel",
+        "Menghapus variabel dari memori"
+      ],
+      "options_en": [
+        "Returns the value of the variable",
+        "Returns the memory address of the variable",
+        "Creates a copy of the variable",
+        "Removes the variable from memory"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa zero value dari variabel pointer `var p *int`?",
+      "question_en": "What is the zero value of pointer variable `var p *int`?",
+      "options_id": ["0", "\"\"", "nil", "false"],
+      "options_en": ["0", "\"\"", "nil", "false"],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa yang terjadi jika kamu melakukan `*p` ketika `p` adalah nil pointer?",
+      "question_en": "What happens if you dereference `*p` when `p` is a nil pointer?",
+      "options_id": [
+        "Mengembalikan zero value dari tipe",
+        "Program panic: nil pointer dereference",
+        "Error kompilasi",
+        "Mengembalikan 0"
+      ],
+      "options_en": [
+        "Returns zero value of the type",
+        "Program panics: nil pointer dereference",
+        "Compilation error",
+        "Returns 0"
+      ],
+      "correct": 1
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "id": "03",
+  "title_id": "Pointers ke Struct",
+  "title_en": "Pointers to Structs",
+  "estimatedMinutes": 10,
+  "content_id": "# Pointers ke Struct di Go\n\nPointer ke struct adalah pola yang sangat umum di Go, terutama untuk struct yang memiliki state yang bisa berubah atau struct yang besar. Go menyediakan **automatic dereference** yang membuat kode lebih bersih.\n\n## Membuat Pointer ke Struct\n\n```go\ntype Person struct {\n    Name string\n    Age  int\n}\n\n// Cara 1: & pada struct literal\np1 := &Person{Name: \"Alice\", Age: 30}\nfmt.Printf(\"Tipe: %T\\n\", p1)  // *Person\nfmt.Println(p1.Name)           // Alice\n\n// Cara 2: & pada variabel\nperson := Person{Name: \"Bob\", Age: 25}\np2 := &person\nfmt.Println(p2.Name) // Bob\n\n// Cara 3: new(T)\np3 := new(Person)\np3.Name = \"Charlie\"\np3.Age = 35\nfmt.Println(*p3) // {Charlie 35}\n```\n\n## Automatic Dereference\n\nGo secara otomatis melakukan dereference ketika mengakses field melalui pointer. Tidak perlu `(*p).Name` — cukup `p.Name`:\n\n```go\np := &Person{Name: \"Alice\", Age: 30}\n\n// Cara verbose — tidak perlu di Go\nfmt.Println((*p).Name) // Alice\n\n// Cara idiomatis Go — automatic dereference\nfmt.Println(p.Name)    // Alice — sama hasilnya\n\n// Update field melalui pointer\np.Name = \"Alicia\"  // Go otomatis: (*p).Name = \"Alicia\"\np.Age++\nfmt.Println(p.Name, p.Age) // Alicia 31\n```\n\n## Pointer Receiver\n\nPointer receiver memungkinkan method mengubah nilai struct:\n\n```go\ntype BankAccount struct {\n    Owner   string\n    Balance float64\n}\n\nfunc (b *BankAccount) Deposit(amount float64) error {\n    if amount <= 0 {\n        return fmt.Errorf(\"jumlah deposit harus positif\")\n    }\n    b.Balance += amount\n    return nil\n}\n\nfunc (b *BankAccount) Withdraw(amount float64) error {\n    if amount <= 0 {\n        return fmt.Errorf(\"jumlah penarikan harus positif\")\n    }\n    if amount > b.Balance {\n        return fmt.Errorf(\"saldo tidak cukup: %.2f < %.2f\", b.Balance, amount)\n    }\n    b.Balance -= amount\n    return nil\n}\n\nfunc (b BankAccount) String() string {\n    return fmt.Sprintf(\"Rekening[%s]: Rp%.2f\", b.Owner, b.Balance)\n}\n\naccount := &BankAccount{Owner: \"Alice\", Balance: 1_000_000}\naccount.Deposit(500_000)\nerr := account.Withdraw(200_000)\nif err != nil {\n    fmt.Println(\"Error:\", err)\n}\nfmt.Println(account) // Rekening[Alice]: Rp1300000.00\n```\n\n## Mengirim Pointer ke Fungsi\n\n```go\ntype Config struct {\n    Host    string\n    Port    int\n    Debug   bool\n    Timeout int\n}\n\n// Fungsi yang memodifikasi config\nfunc applyDefaults(c *Config) {\n    if c.Host == \"\" {\n        c.Host = \"localhost\"\n    }\n    if c.Port == 0 {\n        c.Port = 8080\n    }\n    if c.Timeout == 0 {\n        c.Timeout = 30\n    }\n}\n\ncfg := Config{Debug: true}\napplyDefaults(&cfg)\nfmt.Printf(\"%+v\\n\", cfg)\n// {Host:localhost Port:8080 Debug:true Timeout:30}\n\n// Dengan pointer, fungsi bisa mengubah nilai tanpa return\nfunc setPort(c *Config, port int) {\n    c.Port = port\n}\n\nsetPort(&cfg, 9090)\nfmt.Println(cfg.Port) // 9090\n```\n\n## Membandingkan Pointer\n\n```go\na := &Person{\"Alice\", 30}\nb := a       // b dan a menunjuk ke struct yang sama\nc := &Person{\"Alice\", 30} // struct berbeda dengan nilai sama\n\nfmt.Println(a == b)   // true — pointer sama\nfmt.Println(a == c)   // false — pointer berbeda\nfmt.Println(*a == *c) // true — nilai yang ditunjuk sama\n```\n\n## Pointer dalam Slice dan Map\n\n```go\n// Slice of pointers\npeople := []*Person{\n    {\"Alice\", 30},\n    {\"Bob\", 25},\n    {\"Charlie\", 35},\n}\n\n// Memodifikasi elemen slice melalui pointer\nfor _, p := range people {\n    p.Age++ // langsung mengubah struct asli\n}\n\nfor _, p := range people {\n    fmt.Println(p.Name, p.Age)\n}\n// Alice 31, Bob 26, Charlie 36\n\n// Map of pointers\nregistry := map[string]*Person{\n    \"alice\": {\"Alice\", 30},\n    \"bob\":   {\"Bob\", 25},\n}\n\nregistry[\"alice\"].Age = 31 // langsung ubah melalui pointer\nfmt.Println(registry[\"alice\"]) // &{Alice 31}\n```\n\n## Pointer Nil Check dalam Method\n\n```go\nfunc (p *Person) Greet() string {\n    if p == nil {\n        return \"[nil person]\"\n    }\n    return fmt.Sprintf(\"Halo, saya %s!\", p.Name)\n}\n\nvar nilPerson *Person\nfmt.Println(nilPerson.Greet()) // [nil person] — tidak panic!\n\nalice := &Person{\"Alice\", 30}\nfmt.Println(alice.Greet()) // Halo, saya Alice!\n```",
+  "content_en": "# Pointers to Structs in Go\n\nPointers to structs are a very common Go pattern, especially for structs with mutable state or large structs. Go provides **automatic dereference** that keeps the code clean.\n\n## Creating Pointers to Structs\n\n```go\ntype Person struct { Name string; Age int }\n\n// Address of struct literal\np1 := &Person{Name: \"Alice\", Age: 30} // type: *Person\n\n// Address of variable\nperson := Person{\"Bob\", 25}\np2 := &person\n\n// Using new\np3 := new(Person)\np3.Name = \"Charlie\"\n```\n\n## Automatic Dereference\n\nGo automatically dereferences pointers for field access:\n\n```go\np := &Person{\"Alice\", 30}\n\n// Verbose — not needed in Go\nfmt.Println((*p).Name)\n\n// Idiomatic — automatic dereference\nfmt.Println(p.Name) // same result\np.Age++  // Go auto-does: (*p).Age++\n```\n\n## Passing Pointer to Function\n\n```go\nfunc applyDefaults(c *Config) {\n    if c.Host == \"\" { c.Host = \"localhost\" }\n    if c.Port == 0  { c.Port = 8080 }\n}\n\ncfg := Config{Debug: true}\napplyDefaults(&cfg)\nfmt.Println(cfg.Host, cfg.Port) // localhost 8080\n```\n\n## Comparing Pointers\n\n```go\na := &Person{\"Alice\", 30}\nb := a                    // same pointer\nc := &Person{\"Alice\", 30} // different pointer, same value\n\nfmt.Println(a == b)   // true\nfmt.Println(a == c)   // false\nfmt.Println(*a == *c) // true\n```",
+  "starterCode": "package main\n\nimport \"fmt\"\n\ntype Rectangle struct {\n\tWidth  float64\n\tHeight float64\n}\n\nfunc (r *Rectangle) Scale(factor float64) {\n\tr.Width *= factor\n\tr.Height *= factor\n}\n\nfunc (r *Rectangle) SetDimensions(w, h float64) {\n\tr.Width = w\n\tr.Height = h\n}\n\nfunc (r Rectangle) Area() float64 {\n\treturn r.Width * r.Height\n}\n\nfunc (r Rectangle) String() string {\n\treturn fmt.Sprintf(\"Rectangle(%.1f x %.1f, area=%.1f)\",\n\t\tr.Width, r.Height, r.Area())\n}\n\ntype Node struct {\n\tValue int\n\tNext  *Node // pointer to next node\n}\n\nfunc buildList(values []int) *Node {\n\tif len(values) == 0 {\n\t\treturn nil\n\t}\n\thead := &Node{Value: values[0]}\n\tcurrent := head\n\tfor _, v := range values[1:] {\n\t\tcurrent.Next = &Node{Value: v}\n\t\tcurrent = current.Next\n\t}\n\treturn head\n}\n\nfunc printList(head *Node) {\n\tfor n := head; n != nil; n = n.Next {\n\t\tif n.Next != nil {\n\t\t\tfmt.Printf(\"%d -> \", n.Value)\n\t\t} else {\n\t\t\tfmt.Printf(\"%d\\n\", n.Value)\n\t\t}\n\t}\n}\n\nfunc main() {\n\t// Pointer to struct with auto-dereference\n\trect := &Rectangle{Width: 5, Height: 3}\n\tfmt.Println(rect)\n\n\trect.Scale(2) // modifies through pointer\n\tfmt.Println(rect)\n\n\trect.SetDimensions(10, 4)\n\tfmt.Println(rect)\n\n\t// Slice of struct pointers\n\trectangles := []*Rectangle{\n\t\t{2, 3},\n\t\t{4, 5},\n\t\t{6, 7},\n\t}\n\n\ttotalArea := 0.0\n\tfor _, r := range rectangles {\n\t\tr.Scale(1.1) // modifies each rectangle\n\t\ttotalArea += r.Area()\n\t}\n\tfmt.Printf(\"\\nTotal area after scaling: %.2f\\n\", totalArea)\n\n\t// Linked list using pointers\n\tfmt.Println(\"\\nLinked list:\")\n\tlist := buildList([]int{1, 2, 3, 4, 5})\n\tprintList(list)\n}",
+  "quiz": [
+    {
+      "question_id": "Apa yang dilakukan Go secara otomatis ketika kamu menulis `p.Name` dimana `p` adalah `*Person`?",
+      "question_en": "What does Go automatically do when you write `p.Name` where `p` is `*Person`?",
+      "options_id": [
+        "Membuat salinan dari Person",
+        "Melakukan dereference: `(*p).Name`",
+        "Error kompilasi karena p adalah pointer",
+        "Mengembalikan alamat field Name"
+      ],
+      "options_en": [
+        "Creates a copy of Person",
+        "Dereferences automatically: `(*p).Name`",
+        "Compilation error because p is a pointer",
+        "Returns the address of the Name field"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa perbedaan antara `a == b` dan `*a == *b` untuk dua pointer ke struct?",
+      "question_en": "What is the difference between `a == b` and `*a == *b` for two struct pointers?",
+      "options_id": [
+        "Tidak ada perbedaan",
+        "`a == b` membandingkan alamat pointer, `*a == *b` membandingkan nilai yang ditunjuk",
+        "`a == b` selalu true jika tipenya sama",
+        "`*a == *b` membandingkan pointer, `a == b` membandingkan nilai"
+      ],
+      "options_en": [
+        "There is no difference",
+        "`a == b` compares pointer addresses, `*a == *b` compares pointed-to values",
+        "`a == b` is always true if they are the same type",
+        "`*a == *b` compares pointers, `a == b` compares values"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa menggunakan `[]*Person` (slice of pointers) daripada `[]Person` (slice of values)?",
+      "question_en": "Why use `[]*Person` (slice of pointers) instead of `[]Person` (slice of values)?",
+      "options_id": [
+        "Karena slice tidak bisa menyimpan struct",
+        "Agar modifikasi melalui range loop langsung mengubah elemen asli dalam slice",
+        "Karena pointer lebih efisien dalam semua kasus",
+        "Karena `[]Person` tidak valid di Go"
+      ],
+      "options_en": [
+        "Because slices cannot store structs",
+        "So modifications via range loop directly mutate the original elements in the slice",
+        "Because pointers are always more efficient",
+        "Because `[]Person` is not valid in Go"
+      ],
+      "correct": 1
+    }
+  ]
+}

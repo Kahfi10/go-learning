@@ -1,0 +1,62 @@
+{
+  "id": "03",
+  "title_id": "Empty Interface",
+  "title_en": "Empty Interface",
+  "estimatedMinutes": 8,
+  "content_id": "# Empty Interface di Go\n\n`interface{}` (atau `any` sejak Go 1.18) adalah interface yang tidak mendefinisikan method apapun. Karena semua tipe memenuhi interface kosong secara otomatis, `any` dapat menyimpan **nilai dari tipe apapun**.\n\n## `interface{}` dan `any`\n\n```go\n// Sejak Go 1.18, any adalah alias untuk interface{}\n// Keduanya identik\nvar x interface{}\nvar y any\n\n// Menyimpan berbagai tipe\nx = 42\nfmt.Println(x) // 42\n\nx = \"hello\"\nfmt.Println(x) // hello\n\nx = true\nfmt.Println(x) // true\n\nx = []int{1, 2, 3}\nfmt.Println(x) // [1 2 3]\n```\n\n## Mengapa `any` Ada?\n\nBeberapa situasi memerlukan tipe yang bisa menerima nilai apapun:\n\n```go\n// fmt.Println menerima apapun\nfunc Println(a ...any) (n int, err error)\n\nfmt.Println(42, \"hello\", true, 3.14) // semua tipe OK\n\n// Slice heterogen\ndata := []any{1, \"two\", 3.0, true, nil}\nfor _, v := range data {\n    fmt.Printf(\"%T: %v\\n\", v, v)\n}\n// int: 1\n// string: two\n// float64: 3\n// bool: true\n// <nil>: <nil>\n```\n\n## Use Cases yang Valid\n\n```go\n// 1. JSON parsing dengan struktur tidak diketahui\nvar result any\njson.Unmarshal(data, &result)\n\n// 2. Container generik sederhana (sebelum generics)\ntype Cache struct {\n    data map[string]any\n}\n\nfunc (c *Cache) Set(key string, value any) {\n    if c.data == nil {\n        c.data = make(map[string]any)\n    }\n    c.data[key] = value\n}\n\nfunc (c *Cache) Get(key string) (any, bool) {\n    v, ok := c.data[key]\n    return v, ok\n}\n\n// 3. Logger yang bisa menerima field apapun\nfunc log(msg string, fields map[string]any) {\n    fmt.Printf(\"[LOG] %s %v\\n\", msg, fields)\n}\n\nlog(\"user login\", map[string]any{\n    \"user_id\": 123,\n    \"ip\":      \"192.168.1.1\",\n    \"success\": true,\n})\n```\n\n## Bahaya: Hilangnya Type Safety\n\n```go\nfunc add(a, b any) any {\n    // Tidak bisa langsung a + b — tipe tidak diketahui!\n    // Harus type assert dulu\n    switch v := a.(type) {\n    case int:\n        return v + b.(int)   // bisa panic jika b bukan int!\n    case string:\n        return v + b.(string)\n    default:\n        return nil\n    }\n}\n\nresult := add(1, 2)\nfmt.Println(result) // 3\n\n// Type information hilang\nvar x any = 42\n// x + 1 // ERROR: tidak bisa operasi pada any\n// x * 2 // ERROR\n```\n\n## Package reflect Basics\n\nUntuk menganalisis tipe dinamis, gunakan package `reflect`:\n\n```go\nimport \"reflect\"\n\nfunc printType(v any) {\n    t := reflect.TypeOf(v)\n    val := reflect.ValueOf(v)\n    fmt.Printf(\"Type: %s, Kind: %s, Value: %v\\n\",\n        t.Name(), t.Kind(), val)\n}\n\nprintType(42)           // Type: int, Kind: int, Value: 42\nprintType(\"hello\")      // Type: string, Kind: string, Value: hello\nprintType([]int{1,2})   // Type: , Kind: slice, Value: [1 2]\n\n// Cek apakah nilai adalah struct\nfunc isStruct(v any) bool {\n    return reflect.TypeOf(v).Kind() == reflect.Struct\n}\n```\n\n## Kapan Menggunakan `any`?\n\n```go\n// GUNAKAN any ketika:\n// 1. Benar-benar perlu tipe heterogen\n// 2. Berinteraksi dengan JSON/YAML tidak terstruktur\n// 3. Fungsi library yang harus menerima semua tipe\n\n// HINDARI any ketika:\n// 1. Bisa menggunakan generic type parameter (Go 1.18+)\n// 2. Tipe sudah diketahui — gunakan interface spesifik\n// 3. Akan menyebabkan banyak type assertion\n\n// Lebih baik (Go 1.18+):\nfunc Max[T int | float64](a, b T) T {\n    if a > b { return a }\n    return b\n}\n\n// Daripada:\nfunc MaxAny(a, b any) any {\n    // ... type switch yang panjang\n}\n```",
+  "content_en": "# Empty Interface in Go\n\n`interface{}` (or `any` since Go 1.18) is an interface that defines no methods. Since every type satisfies an empty interface automatically, `any` can store a **value of any type**.\n\n## `interface{}` and `any`\n\n```go\n// Since Go 1.18, any is an alias for interface{}\nvar x any\n\nx = 42\nfmt.Println(x)    // 42\nx = \"hello\"\nfmt.Println(x)    // hello\nx = []int{1,2,3}\nfmt.Println(x)    // [1 2 3]\n```\n\n## Why `any` Exists\n\n```go\n// fmt.Println accepts anything\nfunc Println(a ...any) (n int, err error)\n\n// Heterogeneous slice\ndata := []any{1, \"two\", 3.0, true}\nfor _, v := range data {\n    fmt.Printf(\"%T: %v\\n\", v, v)\n}\n```\n\n## Dangers: Loss of Type Safety\n\n```go\nvar x any = 42\n// x + 1 // ERROR: cannot operate on any\n\n// Must type assert before using\nif n, ok := x.(int); ok {\n    fmt.Println(n + 1) // 43\n}\n```\n\n## When to Use `any`\n\n- Use when truly heterogeneous data is needed\n- Avoid when you can use Go generics (1.18+) or a specific interface\n- Signals loss of compile-time type safety",
+  "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"reflect\"\n)\n\n// Generic cache using any\ntype Cache struct {\n\tdata map[string]any\n}\n\nfunc NewCache() *Cache {\n\treturn &Cache{data: make(map[string]any)}\n}\n\nfunc (c *Cache) Set(key string, value any) {\n\tc.data[key] = value\n}\n\nfunc (c *Cache) Get(key string) (any, bool) {\n\tv, ok := c.data[key]\n\treturn v, ok\n}\n\n// Function accepting any type\nfunc describe(v any) {\n\tt := reflect.TypeOf(v)\n\tif t == nil {\n\t\tfmt.Println(\"nil\")\n\t\treturn\n\t}\n\tfmt.Printf(\"Type: %-12s Kind: %-10s Value: %v\\n\", t.Name(), t.Kind(), v)\n}\n\n// Type-safe add using any (not recommended — shows the problem)\nfunc addAny(a, b any) any {\n\tswitch v := a.(type) {\n\tcase int:\n\t\tif w, ok := b.(int); ok {\n\t\t\treturn v + w\n\t\t}\n\tcase float64:\n\t\tif w, ok := b.(float64); ok {\n\t\t\treturn v + w\n\t\t}\n\tcase string:\n\t\tif w, ok := b.(string); ok {\n\t\t\treturn v + w\n\t\t}\n\t}\n\treturn nil\n}\n\nfunc main() {\n\t// Store different types\n\tvar x any\n\tvalues := []any{42, \"hello\", 3.14, true, []int{1, 2, 3}}\n\tfor _, v := range values {\n\t\tx = v\n\t\tdescribe(x)\n\t}\n\n\t// Cache example\n\tcache := NewCache()\n\tcache.Set(\"user_id\", 123)\n\tcache.Set(\"username\", \"alice\")\n\tcache.Set(\"scores\", []int{90, 85, 92})\n\n\tif v, ok := cache.Get(\"username\"); ok {\n\t\tfmt.Printf(\"\\nCached username: %v (type: %T)\\n\", v, v)\n\t}\n\n\t// addAny example\n\tfmt.Println(\"\\naddAny:\", addAny(10, 20))\n\tfmt.Println(\"addAny:\", addAny(\"foo\", \"bar\"))\n\tfmt.Println(\"addAny mismatch:\", addAny(10, \"bar\")) // nil\n}",
+  "quiz": [
+    {
+      "question_id": "Apa itu `any` di Go?",
+      "question_en": "What is `any` in Go?",
+      "options_id": [
+        "Tipe data baru yang diperkenalkan di Go 1.18",
+        "Alias untuk `interface{}` — interface kosong yang bisa menyimpan nilai apapun",
+        "Tipe untuk menangani error",
+        "Tipe yang hanya bisa dipakai dengan reflect"
+      ],
+      "options_en": [
+        "A new data type introduced in Go 1.18",
+        "An alias for `interface{}` — an empty interface that can hold any value",
+        "A type for handling errors",
+        "A type that can only be used with reflect"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa risiko utama dari penggunaan `any` yang berlebihan?",
+      "question_en": "What is the main risk of overusing `any`?",
+      "options_id": [
+        "Program menjadi lebih lambat",
+        "Hilangnya type safety — error tipe hanya terdeteksi saat runtime",
+        "Menggunakan lebih banyak memori",
+        "Tidak kompatibel dengan package standard library"
+      ],
+      "options_en": [
+        "Program becomes slower",
+        "Loss of type safety — type errors are only detected at runtime",
+        "Uses more memory",
+        "Incompatible with standard library packages"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `fmt.Println` menggunakan `...any` sebagai parameter?",
+      "question_en": "Why does `fmt.Println` use `...any` as its parameter?",
+      "options_id": [
+        "Karena merupakan satu-satunya cara mendefinisikan variadic function",
+        "Agar bisa menerima argumen dari tipe apapun",
+        "Karena lebih efisien dalam penggunaan memori",
+        "Karena disyaratkan oleh Go specification"
+      ],
+      "options_en": [
+        "Because it's the only way to define variadic functions",
+        "So it can accept arguments of any type",
+        "Because it's more memory efficient",
+        "Because it's required by the Go specification"
+      ],
+      "correct": 1
+    }
+  ]
+}

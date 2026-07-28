@@ -1,0 +1,79 @@
+{
+  "id": "04",
+  "title_id": "Type Assertion & Type Switch",
+  "title_en": "Type Assertion & Type Switch",
+  "estimatedMinutes": 10,
+  "content_id": "# Type Assertion & Type Switch di Go\n\nKetika bekerja dengan interface, kita sering perlu mengambil kembali tipe konkret dari nilai interface. Go menyediakan **type assertion** dan **type switch** untuk tujuan ini.\n\n## Type Assertion: `x.(T)`\n\nType assertion mengekstrak nilai konkret bertipe `T` dari nilai interface `x`:\n\n```go\nvar i interface{} = \"hello\"\n\n// Assertion langsung — panic jika tipe salah!\ns := i.(string)\nfmt.Println(s)        // hello\nfmt.Println(len(s))   // 5\n\n// Ini akan panic:\n// n := i.(int) // panic: interface conversion: interface {} is string, not int\n```\n\n## Comma-Ok Pattern `v, ok := x.(T)`\n\nGunakan comma-ok pattern untuk menghindari panic:\n\n```go\nvar i interface{} = \"hello\"\n\n// Safe assertion\ns, ok := i.(string)\nfmt.Println(s, ok)   // hello true\n\nn, ok := i.(int)\nfmt.Println(n, ok)   // 0 false — bukan panic!\n\n// Pola penggunaan umum\nif s, ok := i.(string); ok {\n    fmt.Println(\"String:\", strings.ToUpper(s))\n} else {\n    fmt.Println(\"Bukan string\")\n}\n```\n\n## Type Switch\n\nType switch adalah cara elegan untuk menangani berbagai kemungkinan tipe:\n\n```go\nfunc describe(i interface{}) string {\n    switch v := i.(type) {\n    case int:\n        return fmt.Sprintf(\"int: %d\", v)\n    case string:\n        return fmt.Sprintf(\"string: %q (len=%d)\", v, len(v))\n    case bool:\n        return fmt.Sprintf(\"bool: %v\", v)\n    case []int:\n        return fmt.Sprintf(\"[]int dengan %d elemen\", len(v))\n    case nil:\n        return \"nil\"\n    default:\n        return fmt.Sprintf(\"tipe tidak diketahui: %T\", v)\n    }\n}\n\nfmt.Println(describe(42))           // int: 42\nfmt.Println(describe(\"hi\"))         // string: \"hi\" (len=2)\nfmt.Println(describe(true))         // bool: true\nfmt.Println(describe([]int{1,2}))   // []int dengan 2 elemen\nfmt.Println(describe(nil))          // nil\nfmt.Println(describe(3.14))         // tipe tidak diketahui: float64\n```\n\n## Type Switch pada Interface\n\n```go\ntype Animal interface {\n    Sound() string\n}\n\ntype Dog struct{ Name string }\ntype Cat struct{ Name string }\ntype Bird struct{ Name string; CanFly bool }\n\nfunc (d Dog) Sound() string  { return \"Woof\" }\nfunc (c Cat) Sound() string  { return \"Meow\" }\nfunc (b Bird) Sound() string { return \"Tweet\" }\n\nfunc processAnimal(a Animal) {\n    switch v := a.(type) {\n    case Dog:\n        fmt.Printf(\"Anjing bernama %s: %s\\n\", v.Name, v.Sound())\n    case Cat:\n        fmt.Printf(\"Kucing bernama %s: %s\\n\", v.Name, v.Sound())\n    case Bird:\n        canFly := \"tidak bisa terbang\"\n        if v.CanFly {\n            canFly = \"bisa terbang\"\n        }\n        fmt.Printf(\"Burung bernama %s (%s): %s\\n\", v.Name, canFly, v.Sound())\n    default:\n        fmt.Printf(\"Hewan tidak dikenal: %T\\n\", v)\n    }\n}\n\nanimals := []Animal{\n    Dog{\"Rex\"},\n    Cat{\"Whiskers\"},\n    Bird{\"Tweety\", true},\n}\n\nfor _, a := range animals {\n    processAnimal(a)\n}\n```\n\n## Multiple Types dalam Satu Case\n\n```go\nfunc isNumber(i interface{}) bool {\n    switch i.(type) {\n    case int, int8, int16, int32, int64,\n         uint, uint8, uint16, uint32, uint64,\n         float32, float64:\n        return true\n    default:\n        return false\n    }\n}\n\nfmt.Println(isNumber(42))      // true\nfmt.Println(isNumber(3.14))    // true\nfmt.Println(isNumber(\"hello\")) // false\n```\n\n## Kapan Menggunakan Type Assertion vs Type Switch?\n\n| Situasi | Gunakan |\n|---------|----------|\n| Tahu persis tipe yang diharapkan | Type assertion + comma-ok |\n| Banyak kemungkinan tipe | Type switch |\n| Perlu nilai dari tipe konkret | Type assertion |\n| Dispatch berdasarkan tipe | Type switch |\n\n```go\n// Contoh praktis: error handling\ntype ValidationError struct{ Field, Message string }\ntype NotFoundError struct{ Resource string }\n\nfunc handleError(err error) {\n    switch e := err.(type) {\n    case *ValidationError:\n        fmt.Printf(\"Validation error pada field %s: %s\\n\",\n            e.Field, e.Message)\n    case *NotFoundError:\n        fmt.Printf(\"Resource %s tidak ditemukan\\n\", e.Resource)\n    default:\n        fmt.Printf(\"Error tidak dikenal: %v\\n\", err)\n    }\n}\n```",
+  "content_en": "# Type Assertion & Type Switch in Go\n\nWhen working with interfaces, we often need to retrieve the underlying concrete type. Go provides **type assertion** and **type switch** for this purpose.\n\n## Type Assertion: `x.(T)`\n\n```go\nvar i interface{} = \"hello\"\ns := i.(string)  // panics if wrong type!\nfmt.Println(s)   // hello\n```\n\n## Comma-Ok Pattern\n\n```go\nvar i interface{} = \"hello\"\n\ns, ok := i.(string)\nfmt.Println(s, ok) // hello true\n\nn, ok := i.(int)\nfmt.Println(n, ok) // 0 false — no panic!\n```\n\n## Type Switch\n\n```go\nfunc describe(i interface{}) string {\n    switch v := i.(type) {\n    case int:    return fmt.Sprintf(\"int: %d\", v)\n    case string: return fmt.Sprintf(\"string: %q\", v)\n    case bool:   return fmt.Sprintf(\"bool: %v\", v)\n    case nil:    return \"nil\"\n    default:     return fmt.Sprintf(\"unknown: %T\", v)\n    }\n}\n```\n\n## Practical Error Handling\n\n```go\nfunc handleError(err error) {\n    switch e := err.(type) {\n    case *ValidationError:\n        fmt.Printf(\"Field %s: %s\\n\", e.Field, e.Message)\n    case *NotFoundError:\n        fmt.Printf(\"%s not found\\n\", e.Resource)\n    default:\n        fmt.Printf(\"Unknown error: %v\\n\", err)\n    }\n}\n```",
+  "starterCode": "package main\n\nimport \"fmt\"\n\ntype Shape interface {\n\tArea() float64\n}\n\ntype Circle struct {\n\tRadius float64\n}\n\ntype Rectangle struct {\n\tWidth, Height float64\n}\n\ntype Triangle struct {\n\tBase, Height float64\n}\n\nfunc (c Circle) Area() float64    { return 3.14159 * c.Radius * c.Radius }\nfunc (r Rectangle) Area() float64 { return r.Width * r.Height }\nfunc (t Triangle) Area() float64  { return 0.5 * t.Base * t.Height }\n\nfunc describeShape(s Shape) {\n\tswitch v := s.(type) {\n\tcase Circle:\n\t\tfmt.Printf(\"Circle with radius=%.1f, area=%.2f\\n\", v.Radius, v.Area())\n\tcase Rectangle:\n\t\tfmt.Printf(\"Rectangle %gx%g, area=%.2f\\n\", v.Width, v.Height, v.Area())\n\tcase Triangle:\n\t\tfmt.Printf(\"Triangle base=%g height=%g, area=%.2f\\n\", v.Base, v.Height, v.Area())\n\tdefault:\n\t\tfmt.Printf(\"Unknown shape: %T\\n\", v)\n\t}\n}\n\nfunc safeGetRadius(s Shape) (float64, bool) {\n\tc, ok := s.(Circle)\n\tif !ok {\n\t\treturn 0, false\n\t}\n\treturn c.Radius, true\n}\n\nfunc main() {\n\tshapes := []Shape{\n\t\tCircle{Radius: 5},\n\t\tRectangle{Width: 4, Height: 6},\n\t\tTriangle{Base: 3, Height: 8},\n\t}\n\n\tfor _, s := range shapes {\n\t\tdescribeShape(s)\n\t}\n\n\tfmt.Println()\n\tfor _, s := range shapes {\n\t\tif r, ok := safeGetRadius(s); ok {\n\t\t\tfmt.Printf(\"This is a circle with radius %.1f\\n\", r)\n\t\t} else {\n\t\t\tfmt.Printf(\"%T is not a circle\\n\", s)\n\t\t}\n\t}\n}",
+  "quiz": [
+    {
+      "question_id": "Apa yang terjadi jika type assertion `i.(int)` dilakukan tapi `i` berisi string?",
+      "question_en": "What happens if type assertion `i.(int)` is performed but `i` contains a string?",
+      "options_id": [
+        "Mengembalikan zero value int",
+        "Program panic dengan pesan 'interface conversion'",
+        "Error kompilasi",
+        "Mengembalikan nil"
+      ],
+      "options_en": [
+        "Returns zero value int",
+        "Program panics with 'interface conversion' message",
+        "Compilation error",
+        "Returns nil"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa kegunaan comma-ok pattern `v, ok := x.(T)`?",
+      "question_en": "What is the purpose of the comma-ok pattern `v, ok := x.(T)`?",
+      "options_id": [
+        "Membuat program lebih cepat",
+        "Melakukan type assertion dengan aman tanpa risiko panic",
+        "Mengkonversi tipe secara otomatis",
+        "Mendapatkan nama tipe sebagai string"
+      ],
+      "options_en": [
+        "Makes the program faster",
+        "Performs type assertion safely without panic risk",
+        "Automatically converts the type",
+        "Gets the type name as a string"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Dalam `switch v := i.(type)`, apa yang disimpan dalam `v` di dalam setiap case?",
+      "question_en": "In `switch v := i.(type)`, what is stored in `v` inside each case?",
+      "options_id": [
+        "Nilai interface asli",
+        "Nilai konkret dengan tipe yang sesuai dengan case tersebut",
+        "Nama tipe sebagai string",
+        "Pointer ke nilai interface"
+      ],
+      "options_en": [
+        "The original interface value",
+        "The concrete value with the type matching that case",
+        "The type name as a string",
+        "A pointer to the interface value"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Kapan sebaiknya menggunakan type switch daripada type assertion?",
+      "question_en": "When should you use a type switch instead of a type assertion?",
+      "options_id": [
+        "Selalu lebih baik menggunakan type assertion",
+        "Ketika ada banyak kemungkinan tipe dan perlu menangani masing-masing berbeda",
+        "Ketika bekerja dengan slice",
+        "Hanya ketika tipe tidak diketahui saat kompilasi"
+      ],
+      "options_en": [
+        "Type assertion is always better",
+        "When there are many possible types and each needs different handling",
+        "When working with slices",
+        "Only when types are unknown at compile time"
+      ],
+      "correct": 1
+    }
+  ]
+}

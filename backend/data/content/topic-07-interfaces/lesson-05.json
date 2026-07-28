@@ -1,0 +1,62 @@
+{
+  "id": "05",
+  "title_id": "Stdlib Interfaces",
+  "title_en": "Standard Library Interfaces",
+  "estimatedMinutes": 10,
+  "content_id": "# Standard Library Interfaces di Go\n\nGo standard library mendefinisikan beberapa interface fundamental yang digunakan di seluruh ekosistem Go. Memahami dan mengimplementasikan interface ini membuat kode kamu terintegrasi dengan baik dengan ekosistem Go.\n\n## io.Reader\n\n```go\n// Dari package io\ntype Reader interface {\n    Read(p []byte) (n int, err error)\n}\n```\n\n`io.Reader` adalah interface yang paling banyak digunakan di Go. Diimplementasikan oleh file, HTTP request body, string reader, dan lainnya:\n\n```go\nimport (\n    \"fmt\"\n    \"io\"\n    \"strings\"\n)\n\n// strings.NewReader mengimplementasikan io.Reader\nr := strings.NewReader(\"Hello, Go!\")\nbuf := make([]byte, 4)\nfor {\n    n, err := r.Read(buf)\n    if err == io.EOF {\n        break\n    }\n    fmt.Printf(\"Read %d bytes: %s\\n\", n, buf[:n])\n}\n\n// Implementasi io.Reader kustom\ntype RepeatReader struct {\n    data  []byte\n    count int\n    pos   int\n}\n\nfunc (r *RepeatReader) Read(p []byte) (int, error) {\n    if r.count <= 0 {\n        return 0, io.EOF\n    }\n    n := copy(p, r.data[r.pos:])\n    r.pos += n\n    if r.pos >= len(r.data) {\n        r.pos = 0\n        r.count--\n    }\n    return n, nil\n}\n```\n\n## io.Writer\n\n```go\ntype Writer interface {\n    Write(p []byte) (n int, err error)\n}\n```\n\n```go\nimport (\n    \"bytes\"\n    \"fmt\"\n    \"os\"\n)\n\n// os.Stdout mengimplementasikan io.Writer\nfmt.Fprintln(os.Stdout, \"Hello, Writer!\")\n\n// bytes.Buffer mengimplementasikan io.Writer dan io.Reader\nvar buf bytes.Buffer\nbuf.WriteString(\"Hello\")\nfmt.Fprintf(&buf, \", %s!\", \"World\")\nfmt.Println(buf.String()) // Hello, World!\n\n// Fungsi yang menerima io.Writer — sangat fleksibel\nfunc writeReport(w io.Writer, title string, data []string) {\n    fmt.Fprintf(w, \"=== %s ===\\n\", title)\n    for i, d := range data {\n        fmt.Fprintf(w, \"%d. %s\\n\", i+1, d)\n    }\n}\n\n// Bisa tulis ke file, buffer, atau stdout!\nwriteReport(os.Stdout, \"Laporan\", []string{\"Item 1\", \"Item 2\"})\n\nvar out bytes.Buffer\nwriteReport(&out, \"Laporan\", []string{\"Item 1\", \"Item 2\"})\nfmt.Println(out.String())\n```\n\n## fmt.Stringer\n\n```go\n// Dari package fmt\ntype Stringer interface {\n    String() string\n}\n```\n\nImplementasikan `Stringer` untuk representasi string kustom:\n\n```go\ntype Point struct {\n    X, Y int\n}\n\nfunc (p Point) String() string {\n    return fmt.Sprintf(\"(%d, %d)\", p.X, p.Y)\n}\n\ntype Color struct {\n    R, G, B uint8\n}\n\nfunc (c Color) String() string {\n    return fmt.Sprintf(\"#%02X%02X%02X\", c.R, c.G, c.B)\n}\n\np := Point{3, 4}\nfmt.Println(p)        // (3, 4) — menggunakan String() otomatis\nfmt.Printf(\"%v\\n\", p) // (3, 4)\nfmt.Printf(\"%s\\n\", p) // (3, 4)\n\nred := Color{255, 0, 0}\nfmt.Println(red) // #FF0000\n```\n\n## error Interface\n\n```go\n// Built-in error interface\ntype error interface {\n    Error() string\n}\n```\n\n```go\n// Implementasi custom error\ntype AppError struct {\n    Code    int\n    Message string\n    Err     error // wrapped error\n}\n\nfunc (e *AppError) Error() string {\n    if e.Err != nil {\n        return fmt.Sprintf(\"[%d] %s: %v\", e.Code, e.Message, e.Err)\n    }\n    return fmt.Sprintf(\"[%d] %s\", e.Code, e.Message)\n}\n\nfunc (e *AppError) Unwrap() error {\n    return e.Err\n}\n\nfunc findUser(id int) error {\n    if id <= 0 {\n        return &AppError{Code: 400, Message: \"invalid user ID\"}\n    }\n    if id > 1000 {\n        return &AppError{Code: 404, Message: \"user not found\"}\n    }\n    return nil\n}\n\nerr := findUser(9999)\nif err != nil {\n    fmt.Println(err) // [404] user not found\n}\n```\n\n## io.Closer\n\n```go\ntype Closer interface {\n    Close() error\n}\n```\n\nUmumnya digunakan dengan `defer` untuk memastikan resource di-release:\n\n```go\n// File mengimplementasikan io.ReadWriteCloser\nf, err := os.Open(\"data.txt\")\nif err != nil {\n    log.Fatal(err)\n}\ndefer f.Close() // selalu tutup!\n\n// Fungsi yang mengelola resource apapun yang bisa ditutup\nfunc readAndClose(rc io.ReadCloser) ([]byte, error) {\n    defer rc.Close()\n    return io.ReadAll(rc)\n}\n```\n\n## Implementasi Stringer pada Tipe Kustom\n\n```go\ntype Weekday int\n\nconst (\n    Senin Weekday = iota + 1\n    Selasa\n    Rabu\n    Kamis\n    Jumat\n    Sabtu\n    Minggu\n)\n\nfunc (w Weekday) String() string {\n    names := []string{\"\", \"Senin\", \"Selasa\", \"Rabu\",\n        \"Kamis\", \"Jumat\", \"Sabtu\", \"Minggu\"}\n    if int(w) < 1 || int(w) > 7 {\n        return fmt.Sprintf(\"Weekday(%d)\", int(w))\n    }\n    return names[w]\n}\n\nday := Rabu\nfmt.Println(day)          // Rabu\nfmt.Printf(\"Hari: %s\\n\", day) // Hari: Rabu\n```",
+  "content_en": "# Standard Library Interfaces in Go\n\nGo's standard library defines several fundamental interfaces used throughout the Go ecosystem. Understanding and implementing these interfaces makes your code integrate well with the Go world.\n\n## io.Reader\n\n```go\ntype Reader interface {\n    Read(p []byte) (n int, err error)\n}\n```\n\nImplemented by files, HTTP request bodies, string readers, and more:\n\n```go\nr := strings.NewReader(\"Hello, Go!\")\nbuf := make([]byte, 4)\nfor {\n    n, err := r.Read(buf)\n    if err == io.EOF { break }\n    fmt.Printf(\"Read %d bytes: %s\\n\", n, buf[:n])\n}\n```\n\n## io.Writer\n\n```go\n// Accept io.Writer for maximum flexibility\nfunc writeReport(w io.Writer, title string, items []string) {\n    fmt.Fprintf(w, \"=== %s ===\\n\", title)\n    for i, item := range items {\n        fmt.Fprintf(w, \"%d. %s\\n\", i+1, item)\n    }\n}\n// Write to stdout, file, or buffer!\n```\n\n## fmt.Stringer\n\n```go\ntype Point struct{ X, Y int }\nfunc (p Point) String() string {\n    return fmt.Sprintf(\"(%d, %d)\", p.X, p.Y)\n}\n\np := Point{3, 4}\nfmt.Println(p) // (3, 4) — String() called automatically\n```\n\n## error Interface\n\n```go\ntype error interface { Error() string }\n\ntype AppError struct { Code int; Message string }\nfunc (e *AppError) Error() string {\n    return fmt.Sprintf(\"[%d] %s\", e.Code, e.Message)\n}\n```\n\n## io.Closer\n\n```go\nf, _ := os.Open(\"data.txt\")\ndefer f.Close() // always close resources!\n```",
+  "starterCode": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\n// Custom type implementing fmt.Stringer\ntype Temperature struct {\n\tCelsius float64\n}\n\nfunc (t Temperature) String() string {\n\treturn fmt.Sprintf(\"%.1f°C (%.1f°F)\", t.Celsius, t.Celsius*9/5+32)\n}\n\n// Custom error type\ntype ParseError struct {\n\tInput string\n\tMsg   string\n}\n\nfunc (e *ParseError) Error() string {\n\treturn fmt.Sprintf(\"parse error for %q: %s\", e.Input, e.Msg)\n}\n\n// Function accepting io.Writer\nfunc generateReport(w io.Writer, title string, items []string) {\n\tfmt.Fprintf(w, \"\\n=== %s ===\\n\", title)\n\tfor i, item := range items {\n\t\tfmt.Fprintf(w, \"  %d. %s\\n\", i+1, item)\n\t}\n\tfmt.Fprintf(w, \"Total: %d items\\n\", len(items))\n}\n\n// Custom io.Reader\ntype UpperReader struct {\n\tr io.Reader\n}\n\nfunc NewUpperReader(s string) *UpperReader {\n\treturn &UpperReader{r: strings.NewReader(strings.ToUpper(s))}\n}\n\nfunc (u *UpperReader) Read(p []byte) (int, error) {\n\treturn u.r.Read(p)\n}\n\nfunc main() {\n\t// fmt.Stringer\n\ttemps := []Temperature{{0}, {100}, {37}, {-40}}\n\tfor _, t := range temps {\n\t\tfmt.Println(t)\n\t}\n\n\t// Custom error\n\terr := &ParseError{Input: \"abc\", Msg: \"not a number\"}\n\tfmt.Println(\"\\nError:\", err)\n\n\t// io.Writer — write to multiple targets\n\tvar buf bytes.Buffer\n\titems := []string{\"Go\", \"Rust\", \"Python\", \"TypeScript\"}\n\tgenerateReport(&buf, \"Top Languages\", items)\n\tgenerateReport(nil, \"\", nil) // would need os.Stdout\n\tfmt.Print(buf.String())\n\n\t// Custom io.Reader\n\treader := NewUpperReader(\"hello world from go\")\n\tdata, _ := io.ReadAll(reader)\n\tfmt.Println(\"\\nUpperReader:\", string(data))\n}",
+  "quiz": [
+    {
+      "question_id": "Apa signature method dari interface `io.Reader`?",
+      "question_en": "What is the method signature of the `io.Reader` interface?",
+      "options_id": [
+        "Read() []byte",
+        "Read(p []byte) (n int, err error)",
+        "ReadAll() ([]byte, error)",
+        "Read(n int) []byte"
+      ],
+      "options_en": [
+        "Read() []byte",
+        "Read(p []byte) (n int, err error)",
+        "ReadAll() ([]byte, error)",
+        "Read(n int) []byte"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang harus diimplementasikan agar tipe kustom ditampilkan dengan format kustom oleh `fmt.Println`?",
+      "question_en": "What must a custom type implement to be displayed with a custom format by `fmt.Println`?",
+      "options_id": [
+        "Method `Print() string`",
+        "Method `String() string` dari interface `fmt.Stringer`",
+        "Method `Format() string`",
+        "Method `ToString() string`"
+      ],
+      "options_en": [
+        "A `Print() string` method",
+        "A `String() string` method from the `fmt.Stringer` interface",
+        "A `Format() string` method",
+        "A `ToString() string` method"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa fungsi yang menerima `io.Writer` lebih fleksibel daripada yang menerima `*os.File`?",
+      "question_en": "Why is a function accepting `io.Writer` more flexible than one accepting `*os.File`?",
+      "options_id": [
+        "io.Writer lebih cepat",
+        "io.Writer bisa berupa file, buffer, HTTP response, atau tipe lain yang mengimplementasikannya",
+        "io.Writer tidak perlu di-close",
+        "io.Writer tidak bisa dipakai untuk file"
+      ],
+      "options_en": [
+        "io.Writer is faster",
+        "io.Writer can be a file, buffer, HTTP response, or any other implementing type",
+        "io.Writer doesn't need to be closed",
+        "io.Writer cannot be used for files"
+      ],
+      "correct": 1
+    }
+  ]
+}
