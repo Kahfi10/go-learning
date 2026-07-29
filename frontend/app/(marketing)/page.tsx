@@ -246,7 +246,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           HERO  — two-column grid
       ══════════════════════════════════════════ */}
-      <section className="relative pt-28 pb-20 px-6 overflow-hidden">
+      <section className="relative pt-24 pb-16 px-6 overflow-x-hidden">
         {/* Subtle radial glow — contained, won't overflow */}
         <div
           aria-hidden
@@ -392,26 +392,26 @@ func worker(id int, wg *sync.WaitGroup) {
           STATS
       ══════════════════════════════════════════ */}
       <section className="py-16 px-6 border-t border-[#D2D2D7]/40">
-        <div className="mx-auto max-w-4xl grid grid-cols-2 sm:grid-cols-4 gap-6">
+        <div className="mx-auto max-w-4xl grid grid-cols-2 sm:grid-cols-4 gap-8 py-4">
           {[
-            { target: 15,  suffix: "",  label: "Topik Go"        },
-            { target: 76,  suffix: "+", label: "Lessons"         },
-            { target: 300, suffix: "+", label: "Soal Quiz"       },
-            { target: 0,   suffix: "",  label: "Install Required"},
+            { target: 15,  suffix: "",  label: "Topik Go"         },
+            { target: 76,  suffix: "+", label: "Lessons"          },
+            { target: 300, suffix: "+", label: "Soal Quiz"        },
+            { target: 0,   suffix: "",  label: "Install Required" },
           ].map((s) => (
             <div key={s.label} className="text-center">
-              <div className="font-display font-semibold text-[48px] sm:text-[56px] tracking-[-0.04em] text-foreground leading-none">
+              <div className="font-display font-semibold text-[56px] sm:text-[68px] tracking-[-0.05em] text-foreground leading-none">
                 <span className="stat-num" data-target={s.target}>0</span>
                 <span className="text-[#0071E3]">{s.suffix}</span>
               </div>
-              <p className="text-[#86868B] text-[14px] mt-2">{s.label}</p>
+              <p className="text-[#86868B] text-[15px] mt-3">{s.label}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* ══════════════════════════════════════════
-          WHY GO
+          WHY GO — bento grid, big cards
       ══════════════════════════════════════════ */}
       <section className="py-24 px-6 bg-[#F5F5F7] dark:bg-[#0A0A0A]">
         <div className="mx-auto max-w-5xl">
@@ -421,22 +421,36 @@ func worker(id int, wg *sync.WaitGroup) {
               Bahasa yang dibangun<br className="hidden sm:block" /> untuk masa depan.
             </h2>
           </div>
-          <div className="why-grid grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+          {/* Bento grid: row 1 = 2 large | row 2 = 2 large */}
+          <div className="why-grid grid grid-cols-1 sm:grid-cols-2 gap-4">
             {WHY_GO.map((w) => (
-              <div key={w.label} className="why-card bg-background dark:bg-[#1C1C1E] rounded-[18px] p-6">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-                  style={{ backgroundColor: w.color + "18" }}>
-                  <w.icon className="w-5 h-5" style={{ color: w.color }} />
+              <div key={w.label}
+                className="why-card bg-background dark:bg-[#1C1C1E] rounded-[22px] p-8 min-h-[220px] flex flex-col justify-between group hover:scale-[1.01] transition-transform duration-300">
+                {/* Top: icon + sub */}
+                <div className="flex items-start justify-between">
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                    style={{ backgroundColor: w.color + "18" }}>
+                    <w.icon className="w-6 h-6" style={{ color: w.color }} />
+                  </div>
+                  <span className="text-[#86868B] text-[13px] leading-relaxed max-w-[140px] text-right">
+                    {w.sub}
+                  </span>
                 </div>
-                <p className="font-display font-semibold text-[34px] tracking-tight mb-1" style={{ color: w.color }}>
-                  {w.stat}
-                </p>
-                <p className="font-semibold text-[14px] text-foreground mb-1">{w.label}</p>
-                <p className="text-[#86868B] text-[13px] leading-relaxed">{w.sub}</p>
+                {/* Bottom: big stat + label */}
+                <div>
+                  <p className="font-display font-semibold text-[56px] sm:text-[64px] tracking-[-0.04em] leading-none mb-2"
+                    style={{ color: w.color }}>
+                    {w.stat}
+                  </p>
+                  <p className="font-semibold text-[16px] text-foreground">{w.label}</p>
+                </div>
               </div>
             ))}
           </div>
-          <div className="mt-12 text-center">
+
+          {/* Companies */}
+          <div className="mt-10 text-center">
             <p className="text-[#86868B] text-[13px] mb-4">Dipercaya oleh</p>
             <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
               {["Google", "Docker", "Kubernetes", "Cloudflare", "Uber", "Dropbox"].map((c) => (
@@ -463,15 +477,15 @@ func worker(id int, wg *sync.WaitGroup) {
           <div className="space-y-3">
             {HOW_STEPS.map((s, i) => (
               <div key={s.n}
-                className="how-step flex items-start gap-5 p-5 bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[16px] group hover:bg-[#EBEBED] dark:hover:bg-[#242424] transition-colors">
-                <div className="w-10 h-10 rounded-xl bg-[#0071E3]/10 flex items-center justify-center shrink-0 group-hover:bg-[#0071E3]/20 transition-colors">
-                  <span className="font-display font-semibold text-[14px] text-[#0071E3]">{s.n}</span>
+                className="how-step flex items-start gap-6 p-7 bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[20px] group hover:bg-[#EBEBED] dark:hover:bg-[#242424] transition-colors">
+                <div className="w-14 h-14 rounded-2xl bg-[#0071E3]/10 flex items-center justify-center shrink-0 group-hover:bg-[#0071E3]/20 transition-colors">
+                  <span className="font-display font-semibold text-[18px] text-[#0071E3]">{s.n}</span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-[16px] text-foreground mb-1">{s.title}</h3>
-                  <p className="text-[#86868B] text-[14px] leading-relaxed">{s.desc}</p>
+                <div className="flex-1 min-w-0 py-1">
+                  <h3 className="font-semibold text-[19px] text-foreground mb-2">{s.title}</h3>
+                  <p className="text-[#86868B] text-[15px] leading-relaxed">{s.desc}</p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-[#D2D2D7] group-hover:text-[#0071E3] transition-colors shrink-0 mt-1" />
+                <ChevronRight className="w-5 h-5 text-[#D2D2D7] group-hover:text-[#0071E3] transition-colors shrink-0 mt-2" />
               </div>
             ))}
           </div>
@@ -506,18 +520,20 @@ func worker(id int, wg *sync.WaitGroup) {
             <p className="text-[#86868B] text-[14px] pb-1">Scroll → untuk melihat semua</p>
           </div>
         </div>
-        <div className="topics-track flex gap-3 pl-6 pr-6 pb-10 w-max">
+        <div className="topics-track flex gap-4 pl-6 pr-6 pb-12 w-max">
           {TOPICS.map((t) => (
             <Link key={t.n} href={`/modules/${slugFromTitle(t.title)}`}
-              className="w-[180px] bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[16px] p-4 shrink-0 hover:scale-[1.03] transition-transform duration-200 block group">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-[12px] font-bold mb-3"
-                style={{ backgroundColor: t.color }}>
-                {t.n}
+              className="w-[210px] min-h-[180px] bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[20px] p-6 shrink-0 hover:scale-[1.03] transition-transform duration-200 block group flex flex-col justify-between">
+              <div>
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center text-white text-[13px] font-bold mb-4"
+                  style={{ backgroundColor: t.color }}>
+                  {t.n}
+                </div>
+                <p className="font-semibold text-[15px] text-foreground group-hover:text-[#0071E3] transition-colors leading-snug mb-2">
+                  {t.title}
+                </p>
+                <p className="text-[#86868B] text-[13px] mb-3">{t.lessons} lessons</p>
               </div>
-              <p className="font-semibold text-[13px] text-foreground group-hover:text-[#0071E3] transition-colors leading-snug mb-2">
-                {t.title}
-              </p>
-              <p className="text-[#86868B] text-[11px] mb-2">{t.lessons} lessons</p>
               <span className="text-[11px] font-medium px-2 py-0.5 rounded-full"
                 style={{
                   backgroundColor:
@@ -531,17 +547,17 @@ func worker(id int, wg *sync.WaitGroup) {
               </span>
             </Link>
           ))}
-          {/* End call-to-action card */}
-          <div className="w-[180px] bg-[#0071E3] rounded-[16px] p-4 shrink-0 flex flex-col justify-between">
+          {/* End CTA card */}
+          <div className="w-[210px] min-h-[180px] bg-[#0071E3] rounded-[20px] p-6 shrink-0 flex flex-col justify-between">
             <div>
-              <p className="font-semibold text-[13px] text-white mb-2">Siap mulai?</p>
-              <p className="text-white/70 text-[12px] leading-relaxed">
+              <p className="font-semibold text-[16px] text-white mb-3">Siap mulai?</p>
+              <p className="text-white/70 text-[14px] leading-relaxed">
                 Mulai dari topik 01 dan selesaikan satu per satu.
               </p>
             </div>
             <Link href="/modules"
-              className="inline-flex items-center gap-1 text-white text-[12px] font-medium mt-4 hover:gap-2 transition-all">
-              Lihat semua <ArrowRight className="w-3.5 h-3.5" />
+              className="inline-flex items-center gap-1.5 text-white text-[13px] font-medium mt-4 hover:gap-3 transition-all">
+              Lihat semua <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
@@ -580,31 +596,31 @@ func worker(id int, wg *sync.WaitGroup) {
               },
             ].map((f, i) => (
               <div key={f.tag}
-                className={`feature-panel rounded-[20px] p-7 sm:p-9 flex flex-col sm:flex-row items-start gap-7 ${
+                className={`feature-panel rounded-[22px] p-8 sm:p-10 flex flex-col sm:flex-row items-start gap-8 min-h-[180px] ${
                   i % 2 === 1
                     ? "bg-[#F5F5F7] dark:bg-[#1C1C1E]"
                     : "bg-background border border-[#D2D2D7]/60 dark:border-white/8"
                 }`}>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                  <div className="flex items-center gap-2.5 mb-5">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                       style={{ backgroundColor: f.color + "18" }}>
-                      <f.icon className="w-4 h-4" style={{ color: f.color }} />
+                      <f.icon className="w-5 h-5" style={{ color: f.color }} />
                     </div>
                     <span className="text-[12px] font-semibold uppercase tracking-widest" style={{ color: f.color }}>
                       {f.tag}
                     </span>
                   </div>
-                  <h3 className="font-display font-semibold text-[24px] sm:text-[30px] tracking-tight text-foreground mb-3 leading-snug">
+                  <h3 className="font-display font-semibold text-[26px] sm:text-[34px] tracking-tight text-foreground mb-4 leading-snug">
                     {f.title}
                   </h3>
-                  <p className="text-[#86868B] text-[15px] leading-relaxed">{f.desc}</p>
+                  <p className="text-[#86868B] text-[16px] leading-relaxed">{f.desc}</p>
                 </div>
                 <div className="flex sm:flex-col gap-3 shrink-0">
                   {f.stats.map((s) => (
-                    <div key={s.l} className="bg-background dark:bg-[#2C2C2E] rounded-[12px] px-4 py-3 text-center min-w-[80px]">
-                      <p className="font-display font-semibold text-[22px] tracking-tight text-foreground">{s.v}</p>
-                      <p className="text-[#86868B] text-[11px] mt-0.5">{s.l}</p>
+                    <div key={s.l} className="bg-background dark:bg-[#2C2C2E] rounded-[14px] px-5 py-4 text-center min-w-[90px]">
+                      <p className="font-display font-semibold text-[26px] tracking-tight text-foreground">{s.v}</p>
+                      <p className="text-[#86868B] text-[12px] mt-0.5">{s.l}</p>
                     </div>
                   ))}
                 </div>
