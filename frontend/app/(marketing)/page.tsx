@@ -156,20 +156,18 @@ export default function LandingPage() {
 
       ctx = gsap.context(() => {
 
-        /* Hero left col */
-        gsap.from(".hero-badge",    { opacity: 0, y: 16, duration: 0.5, ease: "expo.out", delay: 0.15 });
-        gsap.from(".hero-title",    { opacity: 0, y: 40, duration: 0.8, ease: "expo.out", delay: 0.3  });
-        gsap.from(".hero-sub",      { opacity: 0, y: 24, duration: 0.7, ease: "expo.out", delay: 0.5  });
-        gsap.from(".hero-cta-row",  { opacity: 0, y: 20, duration: 0.6, ease: "expo.out", delay: 0.65 });
-        gsap.from(".hero-trust",    { opacity: 0, y: 12, duration: 0.5, ease: "expo.out", delay: 0.8  });
+        /* Hero left col — y-only, NO opacity (prevents invisible flash) */
+        gsap.from(".hero-badge",   { y: 20, duration: 0.6, ease: "expo.out", delay: 0.1  });
+        gsap.from(".hero-title",   { y: 36, duration: 0.8, ease: "expo.out", delay: 0.22 });
+        gsap.from(".hero-sub",     { y: 24, duration: 0.7, ease: "expo.out", delay: 0.38 });
+        gsap.from(".hero-cta-row", { y: 18, duration: 0.6, ease: "expo.out", delay: 0.5  });
+        gsap.from(".hero-trust",   { y: 12, duration: 0.5, ease: "expo.out", delay: 0.62 });
 
-        /* Hero right col — code window */
-        gsap.from(".hero-code-window", {
-          opacity: 0, x: 48, duration: 1, ease: "expo.out", delay: 0.45,
-        });
-        /* Subtle float loop */
+        /* Hero right col — slide in from right, no opacity */
+        gsap.from(".hero-code-window", { x: 40, duration: 0.9, ease: "expo.out", delay: 0.28 });
+        /* Subtle float loop — start after entrance */
         gsap.to(".hero-code-window", {
-          y: -8, duration: 4, ease: "sine.inOut", yoyo: true, repeat: -1, delay: 1.2,
+          y: -8, duration: 4, ease: "sine.inOut", yoyo: true, repeat: -1, delay: 1.4,
         });
 
         /* Stats count-up */
@@ -188,14 +186,14 @@ export default function LandingPage() {
 
         /* Why-go cards stagger */
         gsap.from(".why-card", {
-          opacity: 0, y: 40, scale: 0.96, stagger: 0.09, duration: 0.65, ease: "expo.out",
+          y: 40, scale: 0.97, stagger: 0.09, duration: 0.65, ease: "expo.out",
           scrollTrigger: { trigger: ".why-grid", start: "top 80%", once: true },
         });
 
         /* How-steps alternating */
         document.querySelectorAll<HTMLElement>(".how-step").forEach((el, i) => {
           gsap.from(el, {
-            opacity: 0, x: i % 2 === 0 ? -40 : 40, duration: 0.7, ease: "expo.out",
+            x: i % 2 === 0 ? -36 : 36, duration: 0.7, ease: "expo.out",
             scrollTrigger: { trigger: el, start: "top 82%", once: true },
           });
         });
@@ -217,20 +215,20 @@ export default function LandingPage() {
         /* Feature panels */
         document.querySelectorAll<HTMLElement>(".feature-panel").forEach((el) => {
           gsap.from(el, {
-            opacity: 0, y: 36, scale: 0.97, duration: 0.8, ease: "expo.out",
+            y: 32, scale: 0.98, duration: 0.8, ease: "expo.out",
             scrollTrigger: { trigger: el, start: "top 82%", once: true },
           });
         });
 
         /* FAQ items */
         gsap.from(".faq-item", {
-          opacity: 0, y: 18, stagger: 0.06, duration: 0.5, ease: "expo.out",
+          y: 16, stagger: 0.06, duration: 0.5, ease: "expo.out",
           scrollTrigger: { trigger: ".faq-list", start: "top 82%", once: true },
         });
 
         /* Final CTA */
         gsap.from(".final-cta", {
-          opacity: 0, y: 32, duration: 0.8, ease: "expo.out",
+          y: 28, duration: 0.8, ease: "expo.out",
           scrollTrigger: { trigger: ".final-cta", start: "top 85%", once: true },
         });
 
