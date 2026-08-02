@@ -428,28 +428,31 @@ func worker(id int, wg *sync.WaitGroup) {
       </section>
 
       {/* ══════════════════════════════════════════
-          HOW IT WORKS
+          HOW IT WORKS — 2×2 grid
       ══════════════════════════════════════════ */}
       <section className="py-16 sm:py-20 px-4 sm:px-6">
-        <div className="mx-auto max-w-3xl">
-          <div className="text-center mb-14">
-            <p className="text-[#86868B] text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">Cara Kerja</p>
-            <h2 className="font-display font-semibold text-[36px] sm:text-[48px] tracking-[-0.03em] text-foreground">
+        <div className="mx-auto max-w-5xl">
+          <div className="text-center mb-10 sm:mb-12">
+            <p className="text-[#86868B] text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">Cara Kerja</p>
+            <h2 className="font-display font-semibold tracking-[-0.03em] text-foreground"
+              style={{ fontSize: "clamp(26px, 4vw, 48px)" }}>
               Belajar yang benar-benar efektif.
             </h2>
           </div>
-          <div className="space-y-3">
+
+          {/* 2×2 grid desktop, 1 col mobile */}
+          <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
             {HOW_STEPS.map((s, i) => (
               <div key={s.n}
-                className="how-step flex items-start gap-6 p-7 bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[20px] group hover:bg-[#EBEBED] dark:hover:bg-[#242424] transition-colors">
-                <div className="w-14 h-14 rounded-2xl bg-[#0071E3]/10 flex items-center justify-center shrink-0 group-hover:bg-[#0071E3]/20 transition-colors">
-                  <span className="font-display font-semibold text-[18px] text-[#0071E3]">{s.n}</span>
+                className="how-step bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[20px] p-6 sm:p-7 group hover:bg-[#EBEBED] dark:hover:bg-[#242424] transition-colors">
+                {/* Step number badge */}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-[#0071E3]/10 flex items-center justify-center shrink-0 group-hover:bg-[#0071E3]/20 transition-colors">
+                    <span className="font-display font-semibold text-[15px] text-[#0071E3]">{s.n}</span>
+                  </div>
+                  <h3 className="font-semibold text-[17px] sm:text-[18px] text-foreground">{s.title}</h3>
                 </div>
-                <div className="flex-1 min-w-0 py-1">
-                  <h3 className="font-semibold text-[19px] text-foreground mb-2">{s.title}</h3>
-                  <p className="text-[#86868B] text-[15px] leading-relaxed">{s.desc}</p>
-                </div>
-                <ChevronRight className="w-5 h-5 text-[#D2D2D7] group-hover:text-[#0071E3] transition-colors shrink-0 mt-2" />
+                <p className="text-[#86868B] text-[14px] sm:text-[15px] leading-relaxed">{s.desc}</p>
               </div>
             ))}
           </div>
