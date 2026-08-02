@@ -380,7 +380,7 @@ func worker(id int, wg *sync.WaitGroup) {
       ══════════════════════════════════════════ */}
       <section className="py-20 px-4 sm:px-6 bg-[#F5F5F7] dark:bg-[#0A0A0A]">
         <div className="mx-auto max-w-5xl">
-          <div className="text-center mb-12">
+          <div className="mb-10">
             <p className="text-[#86868B] text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">Mengapa Go?</p>
             <h2 className="font-display font-semibold text-[28px] sm:text-[40px] lg:text-[48px] tracking-[-0.03em] text-foreground leading-[1.07]">
               Bahasa yang dibangun untuk masa depan.
@@ -436,7 +436,7 @@ func worker(id int, wg *sync.WaitGroup) {
       ══════════════════════════════════════════ */}
       <section className="py-16 sm:py-20 px-4 sm:px-6">
         <div className="mx-auto max-w-5xl">
-          <div className="text-center mb-10 sm:mb-12">
+          <div className="mb-10">
             <p className="text-[#86868B] text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">Cara Kerja</p>
             <h2 className="font-display font-semibold tracking-[-0.03em] text-foreground"
               style={{ fontSize: "clamp(26px, 4vw, 48px)" }}>
@@ -468,7 +468,7 @@ func worker(id int, wg *sync.WaitGroup) {
       ══════════════════════════════════════════ */}
       <section className="py-16 sm:py-20 px-4 sm:px-6 bg-[#F5F5F7] dark:bg-[#0A0A0A]">
         <div className="mx-auto max-w-4xl">
-          <div className="text-center mb-12">
+          <div className="mb-10">
             <p className="text-[#86868B] text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">Contoh Kode</p>
             <h2 className="font-display font-semibold text-[36px] sm:text-[48px] tracking-[-0.03em] text-foreground">
               Go itu elegan dan ekspresif.
@@ -483,14 +483,18 @@ func worker(id int, wg *sync.WaitGroup) {
       ══════════════════════════════════════════ */}
       <section className="py-16 sm:py-20 bg-[#F5F5F7] dark:bg-[#0A0A0A] overflow-hidden">
         <div className="px-4 sm:px-6 max-w-6xl mx-auto mb-8">
-          <p className="text-[#86868B] text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">Kurikulum</p>
-          <div className="flex items-end justify-between flex-wrap gap-3">
-            <h2 className="font-display font-semibold tracking-[-0.03em] text-foreground"
-              style={{ fontSize: "clamp(24px, 4vw, 48px)" }}>
-              15 topik. 76 lessons.
-            </h2>
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            {/* Left: eyebrow + title stacked */}
+            <div>
+              <p className="text-[#86868B] text-[11px] font-semibold uppercase tracking-[0.18em] mb-1.5">Kurikulum</p>
+              <h2 className="font-display font-semibold tracking-[-0.03em] text-foreground"
+                style={{ fontSize: "clamp(22px, 3.5vw, 44px)" }}>
+                15 topik · 76 lessons
+              </h2>
+            </div>
+            {/* Right: CTA link */}
             <Link href="/modules"
-              className="flex items-center gap-1.5 text-[#0071E3] text-[13px] font-medium hover:gap-2.5 transition-all pb-1">
+              className="flex items-center gap-1.5 text-[#0071E3] text-[13px] font-medium hover:gap-2.5 transition-all shrink-0">
               Lihat semua <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -534,7 +538,7 @@ func worker(id int, wg *sync.WaitGroup) {
       ══════════════════════════════════════════ */}
       <section className="py-16 sm:py-20 px-4 sm:px-6">
         <div className="mx-auto max-w-5xl">
-          <div className="text-center mb-14">
+          <div className="mb-12">
             <p className="text-[#86868B] text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">Fitur</p>
             <h2 className="font-display font-semibold text-[36px] sm:text-[48px] tracking-[-0.03em] text-foreground">
               Dirancang untuk belajar<br className="hidden sm:block" /> yang sesungguhnya.
@@ -601,7 +605,7 @@ func worker(id int, wg *sync.WaitGroup) {
       ══════════════════════════════════════════ */}
       <section className="py-16 sm:py-20 px-4 sm:px-6 bg-[#F5F5F7] dark:bg-[#0A0A0A]">
         <div className="mx-auto max-w-3xl">
-          <div className="text-center mb-12">
+          <div className="mb-10">
             <p className="text-[#86868B] text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">FAQ</p>
             <h2 className="font-display font-semibold text-[36px] sm:text-[44px] tracking-[-0.03em] text-foreground">
               Pertanyaan yang sering ditanya.
