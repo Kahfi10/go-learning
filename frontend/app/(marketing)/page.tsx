@@ -482,33 +482,30 @@ func worker(id int, wg *sync.WaitGroup) {
           TOPICS — rich cards + GSAP stagger + hover tilt
       ══════════════════════════════════════════ */}
       <section className="py-16 sm:py-20 bg-[#F5F5F7] dark:bg-[#0A0A0A] overflow-hidden">
-        <div className="px-4 sm:px-6 max-w-6xl mx-auto mb-8">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            {/* Left: eyebrow + title stacked */}
-            <div>
-              <p className="text-[#86868B] text-[11px] font-semibold uppercase tracking-[0.18em] mb-1.5">Kurikulum</p>
-              <h2 className="font-display font-semibold tracking-[-0.03em] text-foreground"
-                style={{ fontSize: "clamp(22px, 3.5vw, 44px)" }}>
-                15 topik · 76 lessons
-              </h2>
-            </div>
-            {/* Right: CTA link */}
-            <Link href="/modules"
-              className="flex items-center gap-1.5 text-[#0071E3] text-[13px] font-medium hover:gap-2.5 transition-all shrink-0">
-              Lihat semua <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+        {/* Header — left aligned */}
+        <div className="px-4 sm:px-6 max-w-6xl mx-auto mb-8 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-[#86868B] text-[11px] font-semibold uppercase tracking-[0.18em] mb-1.5">Kurikulum</p>
+            <h2 className="font-display font-semibold tracking-[-0.03em] text-foreground"
+              style={{ fontSize: "clamp(22px, 3.5vw, 44px)" }}>
+              15 topik · 76 lessons
+            </h2>
           </div>
+          <Link href="/modules"
+            className="flex items-center gap-1.5 text-[#0071E3] text-[13px] font-medium hover:gap-2.5 transition-all shrink-0 mb-1">
+            Lihat semua <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
 
-        {/* Scrollable rich cards */}
-        <div className="overflow-x-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+        {/* Drag-to-scroll track */}
+        <DragScroll>
           <div id="topics-track" className="flex gap-3 sm:gap-4 px-4 sm:px-6 pb-4" style={{ width: "max-content" }}>
             {TOPICS.map((t, i) => (
               <TopicCard key={t.n} topic={t} index={i} />
             ))}
             {/* CTA card */}
             <div className="w-[220px] sm:w-[240px] rounded-[20px] p-6 shrink-0 flex flex-col justify-between relative overflow-hidden"
-              style={{ background: `linear-gradient(135deg, #0071E3, #0A84FF)` }}>
+              style={{ background: "linear-gradient(135deg, #0071E3, #0A84FF)" }}>
               <div className="absolute right-[-20px] top-[-20px] text-[120px] font-bold text-white/5 leading-none select-none">→</div>
               <div>
                 <p className="font-display font-semibold text-[22px] text-white mb-2 leading-tight">Mulai<br />sekarang.</p>
@@ -520,7 +517,7 @@ func worker(id int, wg *sync.WaitGroup) {
               </Link>
             </div>
           </div>
-        </div>
+        </DragScroll>
 
         {/* Level legend */}
         <div className="flex items-center gap-5 px-4 sm:px-6 mt-5">
@@ -741,7 +738,53 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   );
 }
 
-/* ── TopicCard — rich card with GSAP hover tilt ── */
+/* ── DragScroll — mouse drag to scroll horizontally ── */
+function DragScroll({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
+
+  function onMouseDown(e: React.MouseEvent) {
+    if (!ref.current) return;
+    isDragging.current = true;
+    startX.current = e.pageX - ref.current.offsetLeft;
+    scrollLeft.current = ref.current.scrollLeft;
+    ref.current.style.cursor = "grabbing";
+    ref.current.style.userSelect = "none";
+  }
+
+  function onMouseMove(e: React.MouseEvent) {
+    if (!isDragging.current || !ref.current) return;
+    e.preventDefault();
+    const x = e.pageX - ref.current.offsetLeft;
+    const walk = (x - startX.current) * 1.2;
+    ref.current.scrollLeft = scrollLeft.current - walk;
+  }
+
+  function onEnd() {
+    isDragging.current = false;
+    if (ref.current) {
+      ref.current.style.cursor = "grab";
+      ref.current.style.removeProperty("user-select");
+    }
+  }
+
+  return (
+    <div
+      ref={ref}
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseUp={onEnd}
+      onMouseLeave={onEnd}
+      className="overflow-x-auto"
+      style={{ scrollbarWidth: "none", msOverflowStyle: "none", cursor: "grab" }}>
+      {children}
+    </div>
+  );
+}
+
+
 function TopicCard({ topic: t, index: i }: { topic: typeof TOPICS[0]; index: number }) {
   const cardRef = useRef<HTMLAnchorElement>(null);
 
