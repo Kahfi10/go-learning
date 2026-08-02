@@ -198,19 +198,7 @@ export default function LandingPage() {
           });
         });
 
-        /* Topics track horizontal scroll */
-        const track = document.querySelector<HTMLElement>(".topics-track");
-        if (track) {
-          const dist = track.scrollWidth - window.innerWidth + 80;
-          gsap.to(track, {
-            x: -dist, ease: "none",
-            scrollTrigger: {
-              trigger: ".topics-scroll-section",
-              start: "top top", end: () => `+=${dist}`,
-              pin: true, scrub: 1, anticipatePin: 1,
-            },
-          });
-        }
+          /* Topics: NO pin — CSS scroll handles it */
 
         /* Feature panels */
         document.querySelectorAll<HTMLElement>(".feature-panel").forEach((el) => {
@@ -426,8 +414,8 @@ func worker(id int, wg *sync.WaitGroup) {
           </div>
 
           {/* Companies */}
-          <div className="mt-10 text-center">
-            <p className="text-[#86868B] text-[12px] sm:text-[13px] mb-4">Dipercaya oleh</p>
+          <div className="mt-8 pb-2 text-center">
+            <p className="text-[#86868B] text-[12px] sm:text-[13px] mb-3">Dipercaya oleh</p>
             <div className="flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-8 gap-y-2">
               {["Google", "Docker", "Kubernetes", "Cloudflare", "Uber", "Dropbox"].map((c) => (
                 <span key={c} className="text-[#86868B] text-[13px] sm:text-[14px] font-medium hover:text-foreground transition-colors">
@@ -442,7 +430,7 @@ func worker(id int, wg *sync.WaitGroup) {
       {/* ══════════════════════════════════════════
           HOW IT WORKS
       ══════════════════════════════════════════ */}
-      <section className="py-24 px-6">
+      <section className="py-16 sm:py-20 px-4 sm:px-6">
         <div className="mx-auto max-w-3xl">
           <div className="text-center mb-14">
             <p className="text-[#86868B] text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">Cara Kerja</p>
@@ -471,7 +459,7 @@ func worker(id int, wg *sync.WaitGroup) {
       {/* ══════════════════════════════════════════
           CODE SHOWCASE
       ══════════════════════════════════════════ */}
-      <section className="py-24 px-6 bg-[#F5F5F7] dark:bg-[#0A0A0A]">
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-[#F5F5F7] dark:bg-[#0A0A0A]">
         <div className="mx-auto max-w-4xl">
           <div className="text-center mb-12">
             <p className="text-[#86868B] text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">Contoh Kode</p>
@@ -484,65 +472,60 @@ func worker(id int, wg *sync.WaitGroup) {
       </section>
 
       {/* ══════════════════════════════════════════
-          TOPICS — horizontal scroll (pinned)
+          TOPICS — CSS native horizontal scroll
+          GSAP pin dihapus: bikin spacer kosong raksasa
       ══════════════════════════════════════════ */}
-      <div className="topics-scroll-section overflow-hidden">
-        <div className="pt-24 pb-6 px-6 max-w-6xl mx-auto">
-          <p className="text-[#86868B] text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">Kurikulum</p>
-          <div className="flex items-end justify-between flex-wrap gap-4">
-            <h2 className="font-display font-semibold text-[36px] sm:text-[48px] tracking-[-0.03em] text-foreground">
+      <section className="py-16 sm:py-20 bg-[#F5F5F7] dark:bg-[#0A0A0A]">
+        <div className="px-4 sm:px-6 max-w-6xl mx-auto mb-6">
+          <p className="text-[#86868B] text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">Kurikulum</p>
+          <div className="flex items-end justify-between flex-wrap gap-3">
+            <h2 className="font-display font-semibold tracking-[-0.03em] text-foreground"
+              style={{ fontSize: "clamp(24px, 4vw, 48px)" }}>
               15 topik. 76 lessons.
             </h2>
-            <p className="text-[#86868B] text-[14px] pb-1">Scroll → untuk melihat semua</p>
+            <p className="text-[#86868B] text-[13px] pb-1">← geser untuk semua →</p>
           </div>
         </div>
-        <div className="topics-track flex gap-4 pl-6 pr-6 pb-12 w-max">
-          {TOPICS.map((t) => (
-            <Link key={t.n} href={`/modules/${slugFromTitle(t.title)}`}
-              className="w-[210px] min-h-[180px] bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[20px] p-6 shrink-0 hover:scale-[1.03] transition-transform duration-200 block group flex flex-col justify-between">
-              <div>
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center text-white text-[13px] font-bold mb-4"
+        {/* Pure CSS horizontal scroll — no GSAP pin */}
+        <div className="overflow-x-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+          <div className="flex gap-3 px-4 sm:px-6 pb-2" style={{ width: "max-content" }}>
+            {TOPICS.map((t) => (
+              <Link key={t.n} href={`/modules/${slugFromTitle(t.title)}`}
+                className="w-[175px] sm:w-[195px] bg-background dark:bg-[#1C1C1E] rounded-[18px] p-5 shrink-0 hover:scale-[1.02] transition-all duration-200 block group flex flex-col gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-[12px] font-bold"
                   style={{ backgroundColor: t.color }}>
                   {t.n}
                 </div>
-                <p className="font-semibold text-[15px] text-foreground group-hover:text-[#0071E3] transition-colors leading-snug mb-2">
-                  {t.title}
-                </p>
-                <p className="text-[#86868B] text-[13px] mb-3">{t.lessons} lessons</p>
-              </div>
-              <span className="text-[11px] font-medium px-2 py-0.5 rounded-full"
-                style={{
-                  backgroundColor:
-                    t.level === "Beginner"     ? "#34C75918" :
-                    t.level === "Intermediate" ? "#0071E318" : "#FF453A18",
-                  color:
-                    t.level === "Beginner"     ? "#34C759" :
-                    t.level === "Intermediate" ? "#0071E3"  : "#FF453A",
-                }}>
-                {t.level}
-              </span>
-            </Link>
-          ))}
-          {/* End CTA card */}
-          <div className="w-[210px] min-h-[180px] bg-[#0071E3] rounded-[20px] p-6 shrink-0 flex flex-col justify-between">
-            <div>
-              <p className="font-semibold text-[16px] text-white mb-3">Siap mulai?</p>
-              <p className="text-white/70 text-[14px] leading-relaxed">
-                Mulai dari topik 01 dan selesaikan satu per satu.
-              </p>
+                <div className="flex-1">
+                  <p className="font-semibold text-[14px] text-foreground group-hover:text-[#0071E3] transition-colors leading-snug mb-1">
+                    {t.title}
+                  </p>
+                  <p className="text-[#86868B] text-[12px]">{t.lessons} lessons</p>
+                </div>
+                <span className="self-start text-[11px] font-medium px-2 py-0.5 rounded-full"
+                  style={{
+                    backgroundColor: t.level === "Beginner" ? "#34C75918" : t.level === "Intermediate" ? "#0071E318" : "#FF453A18",
+                    color: t.level === "Beginner" ? "#34C759" : t.level === "Intermediate" ? "#0071E3" : "#FF453A",
+                  }}>
+                  {t.level}
+                </span>
+              </Link>
+            ))}
+            <div className="w-[175px] sm:w-[195px] bg-[#0071E3] rounded-[18px] p-5 shrink-0 flex flex-col gap-3">
+              <p className="font-semibold text-[15px] text-white">Siap mulai?</p>
+              <p className="text-white/70 text-[13px] leading-relaxed flex-1">Mulai dari topik 01 dan selesaikan satu per satu.</p>
+              <Link href="/modules" className="inline-flex items-center gap-1.5 text-white text-[13px] font-medium hover:gap-2.5 transition-all self-start">
+                Lihat semua <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
-            <Link href="/modules"
-              className="inline-flex items-center gap-1.5 text-white text-[13px] font-medium mt-4 hover:gap-3 transition-all">
-              Lihat semua <ArrowRight className="w-4 h-4" />
-            </Link>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* ══════════════════════════════════════════
           FEATURES DEEP DIVE
       ══════════════════════════════════════════ */}
-      <section className="py-24 px-6">
+      <section className="py-16 sm:py-20 px-4 sm:px-6">
         <div className="mx-auto max-w-5xl">
           <div className="text-center mb-14">
             <p className="text-[#86868B] text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">Fitur</p>
@@ -609,7 +592,7 @@ func worker(id int, wg *sync.WaitGroup) {
       {/* ══════════════════════════════════════════
           FAQ
       ══════════════════════════════════════════ */}
-      <section className="py-24 px-6 bg-[#F5F5F7] dark:bg-[#0A0A0A]">
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-[#F5F5F7] dark:bg-[#0A0A0A]">
         <div className="mx-auto max-w-3xl">
           <div className="text-center mb-12">
             <p className="text-[#86868B] text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">FAQ</p>
