@@ -198,7 +198,11 @@ export default function LandingPage() {
           });
         });
 
-          /* Topics: NO pin — CSS scroll handles it */
+          /* Topics cards stagger reveal */
+          gsap.from(".topic-card", {
+            y: 30, scale: 0.94, stagger: 0.05, duration: 0.6, ease: "expo.out",
+            scrollTrigger: { trigger: "#topics-track", start: "top 85%", once: true },
+          });
 
         /* Feature panels */
         document.querySelectorAll<HTMLElement>(".feature-panel").forEach((el) => {
@@ -475,53 +479,53 @@ func worker(id int, wg *sync.WaitGroup) {
       </section>
 
       {/* ══════════════════════════════════════════
-          TOPICS — CSS native horizontal scroll
-          GSAP pin dihapus: bikin spacer kosong raksasa
+          TOPICS — rich cards + GSAP stagger + hover tilt
       ══════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 bg-[#F5F5F7] dark:bg-[#0A0A0A]">
-        <div className="px-4 sm:px-6 max-w-6xl mx-auto mb-6">
+      <section className="py-16 sm:py-20 bg-[#F5F5F7] dark:bg-[#0A0A0A] overflow-hidden">
+        <div className="px-4 sm:px-6 max-w-6xl mx-auto mb-8">
           <p className="text-[#86868B] text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">Kurikulum</p>
           <div className="flex items-end justify-between flex-wrap gap-3">
             <h2 className="font-display font-semibold tracking-[-0.03em] text-foreground"
               style={{ fontSize: "clamp(24px, 4vw, 48px)" }}>
               15 topik. 76 lessons.
             </h2>
-            <p className="text-[#86868B] text-[13px] pb-1">← geser untuk semua →</p>
+            <Link href="/modules"
+              className="flex items-center gap-1.5 text-[#0071E3] text-[13px] font-medium hover:gap-2.5 transition-all pb-1">
+              Lihat semua <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
         </div>
-        {/* Pure CSS horizontal scroll — no GSAP pin */}
+
+        {/* Scrollable rich cards */}
         <div className="overflow-x-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
-          <div className="flex gap-3 px-4 sm:px-6 pb-2" style={{ width: "max-content" }}>
-            {TOPICS.map((t) => (
-              <Link key={t.n} href={`/modules/${slugFromTitle(t.title)}`}
-                className="w-[175px] sm:w-[195px] bg-background dark:bg-[#1C1C1E] rounded-[18px] p-5 shrink-0 hover:scale-[1.02] transition-all duration-200 block group flex flex-col gap-3">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-[12px] font-bold"
-                  style={{ backgroundColor: t.color }}>
-                  {t.n}
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-[14px] text-foreground group-hover:text-[#0071E3] transition-colors leading-snug mb-1">
-                    {t.title}
-                  </p>
-                  <p className="text-[#86868B] text-[12px]">{t.lessons} lessons</p>
-                </div>
-                <span className="self-start text-[11px] font-medium px-2 py-0.5 rounded-full"
-                  style={{
-                    backgroundColor: t.level === "Beginner" ? "#34C75918" : t.level === "Intermediate" ? "#0071E318" : "#FF453A18",
-                    color: t.level === "Beginner" ? "#34C759" : t.level === "Intermediate" ? "#0071E3" : "#FF453A",
-                  }}>
-                  {t.level}
-                </span>
-              </Link>
+          <div id="topics-track" className="flex gap-3 sm:gap-4 px-4 sm:px-6 pb-4" style={{ width: "max-content" }}>
+            {TOPICS.map((t, i) => (
+              <TopicCard key={t.n} topic={t} index={i} />
             ))}
-            <div className="w-[175px] sm:w-[195px] bg-[#0071E3] rounded-[18px] p-5 shrink-0 flex flex-col gap-3">
-              <p className="font-semibold text-[15px] text-white">Siap mulai?</p>
-              <p className="text-white/70 text-[13px] leading-relaxed flex-1">Mulai dari topik 01 dan selesaikan satu per satu.</p>
-              <Link href="/modules" className="inline-flex items-center gap-1.5 text-white text-[13px] font-medium hover:gap-2.5 transition-all self-start">
-                Lihat semua <ArrowRight className="w-3.5 h-3.5" />
+            {/* CTA card */}
+            <div className="w-[220px] sm:w-[240px] rounded-[20px] p-6 shrink-0 flex flex-col justify-between relative overflow-hidden"
+              style={{ background: `linear-gradient(135deg, #0071E3, #0A84FF)` }}>
+              <div className="absolute right-[-20px] top-[-20px] text-[120px] font-bold text-white/5 leading-none select-none">→</div>
+              <div>
+                <p className="font-display font-semibold text-[22px] text-white mb-2 leading-tight">Mulai<br />sekarang.</p>
+                <p className="text-white/65 text-[13px] leading-relaxed">Gratis. Tanpa install. Langsung coding.</p>
+              </div>
+              <Link href="/modules"
+                className="inline-flex items-center gap-2 bg-white text-[#0071E3] text-[13px] font-semibold px-4 py-2 rounded-full hover:bg-white/90 transition-colors mt-6 self-start">
+                Mulai Belajar <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           </div>
+        </div>
+
+        {/* Level legend */}
+        <div className="flex items-center gap-5 px-4 sm:px-6 mt-5">
+          {[["#34C759","Beginner"],["#0071E3","Intermediate"],["#FF453A","Advanced"]].map(([c,l]) => (
+            <div key={l} className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: c }} />
+              <span className="text-[#86868B] text-[12px]">{l}</span>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -730,6 +734,79 @@ function FaqItem({ q, a }: { q: string; a: string }) {
         </div>
       )}
     </div>
+  );
+}
+
+/* ── TopicCard — rich card with GSAP hover tilt ── */
+function TopicCard({ topic: t, index: i }: { topic: typeof TOPICS[0]; index: number }) {
+  const cardRef = useRef<HTMLAnchorElement>(null);
+
+  function onEnter(e: React.MouseEvent<HTMLAnchorElement>) {
+    const card = cardRef.current;
+    if (!card) return;
+    import("gsap").then(({ gsap }) => {
+      const rect = card.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 14;
+      const y = ((e.clientY - rect.top) / rect.height - 0.5) * -14;
+      gsap.to(card, { rotateY: x, rotateX: y, scale: 1.04, duration: 0.3, ease: "power2.out", transformPerspective: 800 });
+    });
+  }
+
+  function onLeave() {
+    const card = cardRef.current;
+    if (!card) return;
+    import("gsap").then(({ gsap }) => {
+      gsap.to(card, { rotateY: 0, rotateX: 0, scale: 1, duration: 0.5, ease: "expo.out" });
+    });
+  }
+
+  const levelColor = t.level === "Beginner" ? "#34C759" : t.level === "Intermediate" ? "#0071E3" : "#FF453A";
+
+  return (
+    <Link
+      ref={cardRef}
+      href={`/modules/${slugFromTitle(t.title)}`}
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
+      className="topic-card w-[220px] sm:w-[240px] h-[200px] rounded-[20px] p-6 shrink-0 block relative overflow-hidden cursor-pointer"
+      style={{
+        background: `linear-gradient(145deg, ${t.color}22, ${t.color}08)`,
+        border: `1px solid ${t.color}30`,
+        transformStyle: "preserve-3d",
+      }}>
+      {/* Big decorative number in background */}
+      <span className="absolute right-2 bottom-[-16px] font-display font-bold select-none pointer-events-none leading-none"
+        style={{ fontSize: "96px", color: t.color, opacity: 0.12 }}>
+        {t.n}
+      </span>
+
+      {/* Content */}
+      <div className="relative z-10 flex flex-col h-full justify-between">
+        {/* Top: small colored badge */}
+        <div className="flex items-center justify-between">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-[12px] font-bold"
+            style={{ backgroundColor: t.color }}>
+            {t.n}
+          </div>
+          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+            style={{ backgroundColor: levelColor + "20", color: levelColor }}>
+            {t.level}
+          </span>
+        </div>
+
+        {/* Bottom: title + lessons */}
+        <div>
+          <p className="font-semibold text-[16px] text-foreground leading-tight mb-1.5">
+            {t.title}
+          </p>
+          <div className="flex items-center gap-2">
+            <span className="text-[#86868B] text-[12px]">{t.lessons} lessons</span>
+            <span className="w-1 h-1 rounded-full bg-[#D2D2D7]" />
+            <span className="text-[12px] font-medium" style={{ color: t.color }}>→</span>
+          </div>
+        </div>
+      </div>
+    </Link>
   );
 }
 

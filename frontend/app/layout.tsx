@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="id" suppressHydrationWarning data-scroll-behavior="smooth">
       <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange={false}>
           <AuthProvider>
