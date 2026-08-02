@@ -388,7 +388,7 @@ func worker(id int, wg *sync.WaitGroup) {
           </div>
 
           {/* Bento 2×2 — stat font menggunakan fluid size */}
-          <div className="why-grid grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div className="why-grid grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
             {WHY_GO.map((w) => (
               <div key={w.label}
                 className="why-card bg-background dark:bg-[#1C1C1E] rounded-[20px] p-6 sm:p-8 min-h-[180px] sm:min-h-[210px] flex flex-col justify-between group hover:scale-[1.01] transition-transform duration-300 overflow-hidden">
