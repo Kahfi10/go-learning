@@ -815,20 +815,21 @@ function TopicCard({ topic: t, index: i }: { topic: typeof TOPICS[0]; index: num
       href={`/modules/${slugFromTitle(t.title)}`}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
-      className="topic-card w-[220px] sm:w-[240px] h-[200px] rounded-[20px] p-6 shrink-0 block relative overflow-hidden cursor-pointer"
+      className="topic-card w-[220px] sm:w-[248px] h-[204px] rounded-[20px] p-6 shrink-0 block relative overflow-hidden cursor-pointer"
       style={{
         background: `linear-gradient(145deg, ${t.color}22, ${t.color}08)`,
         border: `1px solid ${t.color}30`,
         transformStyle: "preserve-3d",
       }}>
       {/* Big decorative number in background */}
-      <span className="absolute right-2 bottom-[-16px] font-display font-bold select-none pointer-events-none leading-none"
-        style={{ fontSize: "96px", color: t.color, opacity: 0.12 }}>
+      <span
+        className="absolute right-[-4px] bottom-[-10px] font-display font-bold select-none pointer-events-none leading-none"
+        style={{ fontSize: "84px", color: t.color, opacity: 0.08 }}>
         {t.n}
       </span>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col h-full justify-between">
+      <div className="relative z-10 flex flex-col h-full justify-between pr-10 sm:pr-12">
         {/* Top: small colored badge */}
         <div className="flex items-center justify-between">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-[12px] font-bold"
@@ -843,7 +844,7 @@ function TopicCard({ topic: t, index: i }: { topic: typeof TOPICS[0]; index: num
 
         {/* Bottom: title + lessons */}
         <div>
-          <p className="font-semibold text-[16px] text-foreground leading-tight mb-1.5">
+          <p className="font-semibold text-[16px] text-foreground leading-tight mb-1.5 text-balance">
             {t.title}
           </p>
           <div className="flex items-center gap-2">
