@@ -7,6 +7,7 @@ import {
   Terminal, Cpu, Globe,
 } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
+import { cn } from "@/lib/utils";
 
 /* ─── Static Data ───────────────────────────────────────── */
 const TOPICS = [
@@ -146,6 +147,7 @@ const FAQS = [
 /* ─── Page ──────────────────────────────────────────────── */
 export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [topicCardMode, setTopicCardMode] = useState<"apple" | "product" | "showcase">("product");
 
   useEffect(() => {
     let ctx: any;
@@ -483,7 +485,7 @@ func worker(id int, wg *sync.WaitGroup) {
       ══════════════════════════════════════════ */}
       <section className="py-16 sm:py-20 bg-[#F5F5F7] dark:bg-[#0A0A0A] overflow-hidden">
         {/* Header — left aligned */}
-        <div className="px-4 sm:px-6 max-w-6xl mx-auto mb-8 flex items-end justify-between gap-4">
+        <div className="px-4 sm:px-6 max-w-6xl mx-auto mb-8 flex items-end justify-between gap-4 flex-wrap">
           <div>
             <p className="text-[#86868B] text-[11px] font-semibold uppercase tracking-[0.18em] mb-1.5">Kurikulum</p>
             <h2 className="font-display font-semibold tracking-[-0.03em] text-foreground"
@@ -491,17 +493,39 @@ func worker(id int, wg *sync.WaitGroup) {
               15 topik · 76 lessons
             </h2>
           </div>
-          <Link href="/modules"
-            className="flex items-center gap-1.5 text-[#0071E3] text-[13px] font-medium hover:gap-2.5 transition-all shrink-0 mb-1">
-            Lihat semua <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-1 bg-white dark:bg-[#111214] border border-[#D2D2D7]/60 dark:border-white/10 rounded-full p-1">
+              {[
+                { key: "apple", label: "Apple Clean" },
+                { key: "product", label: "Product" },
+                { key: "showcase", label: "Showcase" },
+              ].map((opt) => (
+                <button
+                  key={opt.key}
+                  onClick={() => setTopicCardMode(opt.key as typeof topicCardMode)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-full text-[11px] sm:text-[12px] font-medium transition-colors",
+                    topicCardMode === opt.key
+                      ? "bg-[#0071E3] text-white"
+                      : "text-[#86868B] hover:text-foreground"
+                  )}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+            <Link href="/modules"
+              className="flex items-center gap-1.5 text-[#0071E3] text-[13px] font-medium hover:gap-2.5 transition-all shrink-0 mb-1">
+              Lihat semua <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
         </div>
 
         {/* Drag-to-scroll track */}
         <DragScroll>
           <div id="topics-track" className="flex gap-3 sm:gap-4 px-4 sm:px-6 pb-4" style={{ width: "max-content" }}>
             {TOPICS.map((t, i) => (
-              <TopicCard key={t.n} topic={t} index={i} />
+              <TopicCard key={t.n} topic={t} index={i} mode={topicCardMode} />
             ))}
             {/* CTA card */}
             <div
@@ -787,7 +811,15 @@ function DragScroll({ children }: { children: React.ReactNode }) {
 }
 
 
-function TopicCard({ topic: t, index: i }: { topic: typeof TOPICS[0]; index: number }) {
+function TopicCard({
+  topic: t,
+  index: i,
+  mode,
+}: {
+  topic: typeof TOPICS[0];
+  index: number;
+  mode: "apple" | "product" | "showcase";
+}) {
   const cardRef = useRef<HTMLAnchorElement>(null);
 
   function onEnter(e: React.MouseEvent<HTMLAnchorElement>) {
@@ -820,6 +852,78 @@ function TopicCard({ topic: t, index: i }: { topic: typeof TOPICS[0]; index: num
 
   const levelColor = t.level === "Beginner" ? "#34C759" : t.level === "Intermediate" ? "#0071E3" : "#FF453A";
 
+  const levelBadge = (
+    <span
+      className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0"
+      style={{ backgroundColor: levelColor + "20", color: levelColor }}>
+      {t.level}
+    </span>
+  );
+
+  if (mode === "apple") {
+    return (
+      <Link
+        ref={cardRef}
+        href={`/modules/${slugFromTitle(t.title)}`}
+        onMouseEnter={onEnter}
+        onMouseLeave={onLeave}
+        className="topic-card w-[220px] sm:w-[248px] h-[204px] rounded-[22px] p-6 shrink-0 block relative overflow-hidden cursor-pointer bg-white dark:bg-[#111214]"
+        style={{ border: "1px solid rgba(210,210,215,0.55)" }}>
+        <div className="relative z-10 flex flex-col h-full justify-between">
+          <div className="flex items-start justify-between gap-3">
+            <span className="text-[11px] font-semibold text-[#86868B] tracking-[0.16em] uppercase">{t.n}</span>
+            {levelBadge}
+          </div>
+          <div>
+            <p className="font-display font-semibold text-[22px] tracking-[-0.03em] text-foreground leading-tight mb-2 text-balance">
+              {t.title}
+            </p>
+            <p className="text-[#86868B] text-[13px] leading-relaxed">{t.lessons} lessons</p>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-[12px] text-[#86868B]">Start topic</span>
+            <ArrowRight className="w-4 h-4 text-[#0071E3]" />
+          </div>
+        </div>
+        </Link>
+    );
+  }
+
+  if (mode === "showcase") {
+    return (
+      <Link
+        ref={cardRef}
+        href={`/modules/${slugFromTitle(t.title)}`}
+        onMouseEnter={onEnter}
+        onMouseLeave={onLeave}
+        className="topic-card w-[220px] sm:w-[248px] h-[204px] rounded-[22px] p-6 shrink-0 block relative overflow-hidden cursor-pointer"
+        style={{
+          background: `linear-gradient(160deg, ${t.color}22 0%, ${t.color}10 45%, #ffffff 100%)`,
+          border: `1px solid ${t.color}28`,
+        }}>
+        <div className="absolute right-3 top-3 w-20 h-20 rounded-full blur-2xl pointer-events-none" style={{ backgroundColor: `${t.color}18` }} />
+        <div className="absolute right-3 bottom-1 font-display font-bold text-[62px] leading-none select-none pointer-events-none" style={{ color: t.color, opacity: 0.12 }}>
+          {t.n}
+        </div>
+        <div className="relative z-10 flex flex-col h-full justify-between">
+          <div className="flex items-start justify-between gap-3">
+            <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-white text-[12px] font-bold shrink-0" style={{ backgroundColor: t.color }}>
+              {t.n}
+            </div>
+            {levelBadge}
+          </div>
+          <div>
+            <p className="font-semibold text-[17px] text-foreground leading-tight mb-1.5 text-balance">{t.title}</p>
+            <p className="text-[#86868B] text-[12px]">{t.lessons} lessons</p>
+          </div>
+          <div className="flex items-center gap-2 text-[12px] font-medium" style={{ color: t.color }}>
+            Explore topic <ArrowRight className="w-3.5 h-3.5" />
+          </div>
+        </div>
+      </Link>
+    );
+  }
+
   return (
     <Link
       ref={cardRef}
@@ -844,10 +948,7 @@ function TopicCard({ topic: t, index: i }: { topic: typeof TOPICS[0]; index: num
             style={{ backgroundColor: t.color }}>
             {t.n}
           </div>
-          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0"
-            style={{ backgroundColor: levelColor + "20", color: levelColor }}>
-            {t.level}
-          </span>
+          {levelBadge}
         </div>
 
         {/* Middle */}

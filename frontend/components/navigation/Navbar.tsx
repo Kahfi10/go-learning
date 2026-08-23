@@ -28,11 +28,16 @@ export default function Navbar({ lang = "id" }: { lang?: "id" | "en" }) {
   const { state, logout }    = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled]     = useState(false);
+  const [mounted, setMounted]       = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    setMounted(true);
   }, []);
 
   const lbl = (l: { label_id: string; label_en: string }) =>
@@ -92,8 +97,8 @@ export default function Navbar({ lang = "id" }: { lang?: "id" | "en" }) {
             title="Toggle theme"
             className="w-8 h-8 flex items-center justify-center rounded-full text-[#86868B] hover:text-foreground hover:bg-[#F5F5F7] dark:hover:bg-white/8 transition-colors"
           >
-            {resolvedTheme === "dark"
-              ? <Sun  className="w-[15px] h-[15px]" />
+            {mounted && resolvedTheme === "dark"
+              ? <Sun className="w-[15px] h-[15px]" />
               : <Moon className="w-[15px] h-[15px]" />}
           </button>
 
@@ -158,7 +163,7 @@ export default function Navbar({ lang = "id" }: { lang?: "id" | "en" }) {
               </button>
               <button onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
                 className="w-8 h-8 flex items-center justify-center rounded-full text-[#86868B] hover:bg-[#F5F5F7] dark:hover:bg-white/8 transition-colors">
-                {resolvedTheme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                {mounted && resolvedTheme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </button>
             </div>
 
