@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import { cn } from "@/lib/utils";
+import { api, type ExecuteResult } from "@/lib/api";
 
 /* ─── Static Data ───────────────────────────────────────── */
 const TOPICS = [
@@ -315,67 +316,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* RIGHT — code window (hidden on small, visible md+) */}
-            <div className="hero-code-window hidden md:block lg:ml-4">
-              <div className="bg-[#1C1C1E] rounded-[18px] overflow-hidden shadow-2xl ring-1 ring-white/10">
-                <div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.06]">
-                  <div className="flex gap-1.5 shrink-0">
-                    <div className="w-3 h-3 rounded-full bg-[#FF5F57]" />
-                    <div className="w-3 h-3 rounded-full bg-[#FFBD2E]" />
-                    <div className="w-3 h-3 rounded-full bg-[#28C840]" />
-                  </div>
-                  <span className="ml-2 text-white/30 text-[12px] font-mono truncate">topic-10 · goroutines.go</span>
-                  <div className="ml-auto flex items-center gap-1 bg-[#0071E3] hover:bg-[#0077ED] transition-colors px-2.5 py-1 rounded-md cursor-pointer shrink-0">
-                    <Play className="w-3 h-3 text-white" />
-                    <span className="text-white text-[11px] font-medium">Run</span>
-                  </div>
-                </div>
-                <div className="flex">
-                  <div className="select-none px-3 py-4 text-white/20 text-[12px] font-mono leading-[1.75] text-right border-r border-white/[0.05] w-9 shrink-0">
-                    {Array.from({ length: 11 }, (_, i) => <div key={i}>{i + 1}</div>)}
-                  </div>
-                  <pre className="flex-1 px-4 py-4 text-[12.5px] font-mono leading-[1.75] overflow-x-auto text-[#E5E5EA] min-w-0">
-{`package main
-
-import (
-    "fmt"
-    "sync"
-)
-
-func worker(id int, wg *sync.WaitGroup) {
-    defer wg.Done()
-    fmt.Printf("Worker %d ✓\\n", id)
-}`}
-                  </pre>
-                </div>
-                <div className="border-t border-white/[0.06] px-4 py-2.5 flex items-center gap-3">
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <div className="w-2 h-2 rounded-full bg-[#30D158]" />
-                    <span className="text-[#30D158] text-[11px] font-mono font-medium">Output</span>
-                  </div>
-                  <span className="text-white/40 text-[12px] font-mono truncate">Worker 1 ✓  Worker 3 ✓  Worker 2 ✓</span>
-                  <span className="ml-auto text-white/25 text-[11px] font-mono shrink-0">2ms</span>
-                </div>
-                <div className="border-t border-white/[0.06] px-4 py-2 flex items-center gap-2">
-                  <span className="text-[11px] text-white/30 font-mono">Lesson 10 selesai</span>
-                  <span className="ml-auto bg-[#34C759]/15 text-[#30D158] text-[11px] font-medium px-2 py-0.5 rounded-full">+50 XP</span>
-                </div>
-              </div>
-
-              {/* Mini stats below code window */}
-              <div className="grid grid-cols-3 gap-2 mt-3">
-                {[
-                  { v: "15", l: "Topik" },
-                  { v: "76", l: "Lessons" },
-                  { v: "0ms", l: "Setup" },
-                ].map((s) => (
-                  <div key={s.l} className="bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[10px] py-2.5 text-center">
-                    <p className="font-display font-semibold text-[18px] text-foreground">{s.v}</p>
-                    <p className="text-[#86868B] text-[11px]">{s.l}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <HeroCodePreview />
           </div>
         </div>
       </section>
@@ -887,6 +828,116 @@ function FeatureBentoCard({ item, large = false }: { item: typeof FEATURES[numbe
           <div key={s.l} className="rounded-[14px] bg-white dark:bg-[#2C2C2E] px-4 py-3 border border-[#D2D2D7]/50 dark:border-white/8">
             <p className="font-display font-semibold text-[24px] text-foreground">{s.v}</p>
             <p className="text-[#86868B] text-[11px] mt-0.5">{s.l}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function HeroCodePreview() {
+	const CODE = `package main
+
+import "fmt"
+
+func main() {
+    topics := []string{"Variables", "Functions", "Goroutines"}
+    for i, topic := range topics {
+        fmt.Printf("%d. %s\\n", i+1, topic)
+    }
+}`;
+
+	const [result, setResult] = useState<ExecuteResult | null>({
+		stdout: "1. Variables\n2. Functions\n3. Goroutines\n",
+		stderr: "",
+		executionTimeMs: 2,
+		timedOut: false,
+	});
+	const [running, setRunning] = useState(false);
+	const [flash, setFlash] = useState(false);
+	const [hovered, setHovered] = useState(false);
+
+	async function handleRun() {
+		setRunning(true);
+		try {
+			import("gsap").then(({ gsap }) => {
+				gsap.to(".hero-run-btn", { scale: 0.96, duration: 0.08, yoyo: true, repeat: 1 });
+			});
+			const res = await api.execute(CODE);
+			setResult(res);
+			setFlash(true);
+			setTimeout(() => setFlash(false), 600);
+			import("gsap").then(({ gsap }) => {
+				gsap.fromTo(
+					".hero-output-line",
+					{ y: 10, opacity: 0.35 },
+					{ y: 0, opacity: 1, duration: 0.4, ease: "expo.out" }
+				);
+				gsap.fromTo(
+					".hero-output-panel",
+					{ boxShadow: "0 0 0 rgba(48,209,88,0)" },
+					{ boxShadow: "0 0 0 1px rgba(48,209,88,0.25), 0 0 18px rgba(48,209,88,0.12)", duration: 0.35, yoyo: true, repeat: 1 }
+				);
+			});
+		} catch {
+			setResult({ stdout: "", stderr: "Run gagal", executionTimeMs: 0, timedOut: false });
+		} finally {
+			setRunning(false);
+    }
+  }
+
+	return (
+		<div className="hero-code-window hidden md:block lg:ml-4">
+			<div
+				className="bg-[#1C1C1E] rounded-[18px] overflow-hidden shadow-2xl ring-1 ring-white/10 transition-transform duration-500"
+				onMouseEnter={() => setHovered(true)}
+				onMouseLeave={() => setHovered(false)}
+			>
+				<div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.06]">
+          <div className="flex gap-1.5 shrink-0">
+            <div className="w-3 h-3 rounded-full bg-[#FF5F57]" />
+            <div className="w-3 h-3 rounded-full bg-[#FFBD2E]" />
+            <div className="w-3 h-3 rounded-full bg-[#28C840]" />
+          </div>
+          <span className="ml-2 text-white/30 text-[12px] font-mono truncate">topic-10 · goroutines.go</span>
+					<button
+						onClick={handleRun}
+						disabled={running}
+						className="hero-run-btn ml-auto flex items-center gap-1 bg-[#0071E3] hover:bg-[#0077ED] disabled:opacity-60 transition-all px-2.5 py-1 rounded-md shrink-0"
+					>
+						<Play className="w-3 h-3 text-white" />
+						<span className="text-white text-[11px] font-medium">{running ? "Running" : "Run"}</span>
+					</button>
+				</div>
+        <div className="flex">
+          <div className="select-none px-3 py-4 text-white/20 text-[12px] font-mono leading-[1.75] text-right border-r border-white/[0.05] w-9 shrink-0">
+            {Array.from({ length: 17 }, (_, i) => <div key={i}>{i + 1}</div>)}
+          </div>
+					<pre className="flex-1 px-4 py-4 text-[12.5px] font-mono leading-[1.75] overflow-x-auto text-[#E5E5EA] min-w-0">{CODE}</pre>
+				</div>
+				<div className={cn("hero-output-panel border-t border-white/[0.06] px-4 py-2.5 flex items-center gap-3 transition-colors", flash && "bg-[#30D158]/10") }>
+					<div className="flex items-center gap-1.5 shrink-0">
+						<div className={cn("w-2 h-2 rounded-full", result?.stderr ? "bg-[#FF453A]" : "bg-[#30D158]")} />
+						<span className={cn("text-[11px] font-mono font-medium", result?.stderr ? "text-[#FF453A]" : "text-[#30D158]")}>Output</span>
+					</div>
+					<span className="hero-output-line text-white/50 text-[12px] font-mono truncate">{(result?.stderr || result?.stdout || "").trim().replace(/\n/g, " · ")}</span>
+					<span className="ml-auto text-white/25 text-[11px] font-mono shrink-0">{result?.executionTimeMs ?? 0}ms</span>
+				</div>
+        <div className="border-t border-white/[0.06] px-4 py-2 flex items-center gap-2">
+          <span className="text-[11px] text-white/30 font-mono">Lesson 10 selesai</span>
+          <span className="ml-auto bg-[#34C759]/15 text-[#30D158] text-[11px] font-medium px-2 py-0.5 rounded-full">+50 XP</span>
+        </div>
+      </div>
+
+			<div className="grid grid-cols-3 gap-2 mt-3">
+				{[
+					{ v: "15", l: "Topik" },
+					{ v: "76", l: "Lessons" },
+					{ v: running ? "..." : `${result?.executionTimeMs ?? 0}ms`, l: "Run" },
+				].map((s) => (
+					<div key={s.l} className="bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[10px] py-2.5 text-center">
+            <p className="font-display font-semibold text-[18px] text-foreground">{s.v}</p>
+            <p className="text-[#86868B] text-[11px]">{s.l}</p>
           </div>
         ))}
       </div>

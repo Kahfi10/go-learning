@@ -40,7 +40,8 @@ func Run(code string) Result {
 		return Result{Stderr: "internal error: cannot write source"}
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	// Give `go run` a bit more room on cold start while still preventing abuse.
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 	defer cancel()
 
 	var stdout, stderr bytes.Buffer
