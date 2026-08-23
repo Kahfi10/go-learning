@@ -836,7 +836,7 @@ function FeatureBentoCard({ item, large = false }: { item: typeof FEATURES[numbe
 }
 
 function HeroCodePreview() {
-	const CODE = `package main
+	const INITIAL_CODE = `package main
 
 import "fmt"
 
@@ -846,6 +846,7 @@ func main() {
         fmt.Printf("%d. %s\\n", i+1, topic)
     }
 }`;
+	const [code, setCode] = useState(INITIAL_CODE);
 
 	const [result, setResult] = useState<ExecuteResult | null>({
 		stdout: "1. Variables\n2. Functions\n3. Goroutines\n",
@@ -855,7 +856,7 @@ func main() {
 	});
 	const [running, setRunning] = useState(false);
 	const [flash, setFlash] = useState(false);
-	const [hovered, setHovered] = useState(false);
+	const lineCount = code.split("\n").length;
 
 	async function handleRun() {
 		setRunning(true);
@@ -863,7 +864,7 @@ func main() {
 			import("gsap").then(({ gsap }) => {
 				gsap.to(".hero-run-btn", { scale: 0.96, duration: 0.08, yoyo: true, repeat: 1 });
 			});
-			const res = await api.execute(CODE);
+			const res = await api.execute(code);
 			setResult(res);
 			setFlash(true);
 			setTimeout(() => setFlash(false), 600);
@@ -890,8 +891,6 @@ func main() {
 		<div className="hero-code-window hidden md:block lg:ml-4">
 			<div
 				className="bg-[#1C1C1E] rounded-[18px] overflow-hidden shadow-2xl ring-1 ring-white/10 transition-transform duration-500"
-				onMouseEnter={() => setHovered(true)}
-				onMouseLeave={() => setHovered(false)}
 			>
 				<div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.06]">
           <div className="flex gap-1.5 shrink-0">
@@ -909,11 +908,16 @@ func main() {
 						<span className="text-white text-[11px] font-medium">{running ? "Running" : "Run"}</span>
 					</button>
 				</div>
-        <div className="flex">
-          <div className="select-none px-3 py-4 text-white/20 text-[12px] font-mono leading-[1.75] text-right border-r border-white/[0.05] w-9 shrink-0">
-            {Array.from({ length: 17 }, (_, i) => <div key={i}>{i + 1}</div>)}
-          </div>
-					<pre className="flex-1 px-4 py-4 text-[12.5px] font-mono leading-[1.75] overflow-x-auto text-[#E5E5EA] min-w-0">{CODE}</pre>
+				<div className="flex">
+					<div className="select-none px-3 py-4 text-white/20 text-[12px] font-mono leading-[1.75] text-right border-r border-white/[0.05] w-9 shrink-0">
+						{Array.from({ length: lineCount }, (_, i) => <div key={i}>{i + 1}</div>)}
+					</div>
+					<textarea
+						value={code}
+						onChange={(e) => setCode(e.target.value)}
+						spellCheck={false}
+						className="flex-1 px-4 py-4 text-[12.5px] font-mono leading-[1.75] overflow-x-auto text-[#E5E5EA] min-w-0 bg-transparent outline-none resize-none min-h-[300px]"
+					/>
 				</div>
 				<div className={cn("hero-output-panel border-t border-white/[0.06] px-4 py-2.5 flex items-center gap-3 transition-colors", flash && "bg-[#30D158]/10") }>
 					<div className="flex items-center gap-1.5 shrink-0">
@@ -932,7 +936,7 @@ func main() {
 			<div className="grid grid-cols-3 gap-2 mt-3">
 				{[
 					{ v: "15", l: "Topik" },
-					{ v: "76", l: "Lessons" },
+					{ v: `${lineCount}`, l: "Lines" },
 					{ v: running ? "..." : `${result?.executionTimeMs ?? 0}ms`, l: "Run" },
 				].map((s) => (
 					<div key={s.l} className="bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[10px] py-2.5 text-center">
