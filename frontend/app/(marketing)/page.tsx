@@ -147,7 +147,6 @@ const FAQS = [
 /* ─── Page ──────────────────────────────────────────────── */
 export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [topicCardMode, setTopicCardMode] = useState<"apple" | "product" | "showcase">("product");
 
   useEffect(() => {
     let ctx: any;
@@ -484,58 +483,42 @@ func worker(id int, wg *sync.WaitGroup) {
           TOPICS — rich cards + GSAP stagger + hover tilt
       ══════════════════════════════════════════ */}
       <section className="py-16 sm:py-20 bg-[#F5F5F7] dark:bg-[#0A0A0A] overflow-hidden">
-        {/* Header — left aligned */}
-        <div className="px-4 sm:px-6 max-w-6xl mx-auto mb-8 flex items-end justify-between gap-4 flex-wrap">
-          <div>
-            <p className="text-[#86868B] text-[11px] font-semibold uppercase tracking-[0.18em] mb-1.5">Kurikulum</p>
-            <h2 className="font-display font-semibold tracking-[-0.03em] text-foreground"
-              style={{ fontSize: "clamp(22px, 3.5vw, 44px)" }}>
-              15 topik · 76 lessons
-            </h2>
-          </div>
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-1 bg-white dark:bg-[#111214] border border-[#D2D2D7]/60 dark:border-white/10 rounded-full p-1">
-              {[
-                { key: "apple", label: "Apple Clean" },
-                { key: "product", label: "Product" },
-                { key: "showcase", label: "Showcase" },
-              ].map((opt) => (
-                <button
-                  key={opt.key}
-                  onClick={() => setTopicCardMode(opt.key as typeof topicCardMode)}
-                  className={cn(
-                    "px-3 py-1.5 rounded-full text-[11px] sm:text-[12px] font-medium transition-colors",
-                    topicCardMode === opt.key
-                      ? "bg-[#0071E3] text-white"
-                      : "text-[#86868B] hover:text-foreground"
-                  )}
-                >
-                  {opt.label}
-                </button>
-              ))}
+        {/* Header — split into 2 stable rows to avoid overlap */}
+        <div className="px-4 sm:px-6 max-w-6xl mx-auto mb-10 sm:mb-12">
+          <div className="flex items-end justify-between gap-4 flex-wrap mb-4">
+            <div>
+              <p className="text-[#86868B] text-[11px] font-semibold uppercase tracking-[0.18em] mb-1.5">Kurikulum</p>
+              <h2
+                className="font-display font-semibold tracking-[-0.03em] text-foreground"
+                style={{ fontSize: "clamp(22px, 3.5vw, 44px)" }}
+              >
+                15 topik · 76 lessons
+              </h2>
             </div>
-            <Link href="/modules"
-              className="flex items-center gap-1.5 text-[#0071E3] text-[13px] font-medium hover:gap-2.5 transition-all shrink-0 mb-1">
+            <Link
+              href="/modules"
+              className="flex items-center gap-1.5 text-[#0071E3] text-[13px] font-medium hover:gap-2.5 transition-all shrink-0"
+            >
               Lihat semua <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
+
         </div>
 
         {/* Drag-to-scroll track */}
         <DragScroll>
-          <div id="topics-track" className="flex gap-3 sm:gap-4 px-4 sm:px-6 pb-4" style={{ width: "max-content" }}>
+          <div id="topics-track" className="flex gap-3 sm:gap-4 px-4 sm:px-6 pb-4 pt-1" style={{ width: "max-content" }}>
             {TOPICS.map((t, i) => (
-              <TopicCard key={t.n} topic={t} index={i} mode={topicCardMode} />
+              <TopicCard key={t.n} topic={t} index={i} />
             ))}
             {/* CTA card */}
             <div
-              className="w-[220px] sm:w-[240px] rounded-[20px] p-6 shrink-0 flex flex-col justify-between relative overflow-hidden border border-[#0071E3]/20 bg-white dark:bg-[#111214]"
+              className="w-[220px] sm:w-[240px] rounded-[22px] p-6 shrink-0 flex flex-col justify-between relative overflow-hidden border border-[#D2D2D7]/60 dark:border-white/8 bg-white dark:bg-[#111214]"
             >
-              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#0071E3] to-[#5AC8FA]" />
               <div>
-                <p className="text-[#0071E3] text-[11px] font-semibold uppercase tracking-[0.14em] mb-3">Start Here</p>
+                <p className="text-[#86868B] text-[11px] font-semibold uppercase tracking-[0.16em] mb-3">Start Here</p>
                 <p className="font-display font-semibold text-[22px] text-foreground mb-2 leading-tight">Mulai perjalanan Go kamu.</p>
-                <p className="text-[#86868B] text-[13px] leading-relaxed">Masuk ke semua topik, pilih lesson pertama, lalu mulai ngoding langsung di browser.</p>
+                <p className="text-[#86868B] text-[13px] leading-relaxed">Masuk ke semua topik, pilih lesson pertama, lalu mulai coding langsung di browser.</p>
               </div>
               <Link href="/modules"
                 className="inline-flex items-center gap-1.5 text-[#0071E3] text-[13px] font-semibold hover:gap-2.5 transition-all mt-6 self-start">
@@ -814,11 +797,9 @@ function DragScroll({ children }: { children: React.ReactNode }) {
 function TopicCard({
   topic: t,
   index: i,
-  mode,
 }: {
   topic: typeof TOPICS[0];
   index: number;
-  mode: "apple" | "product" | "showcase";
 }) {
   const cardRef = useRef<HTMLAnchorElement>(null);
 
@@ -860,115 +841,30 @@ function TopicCard({
     </span>
   );
 
-  if (mode === "apple") {
-    return (
-      <Link
-        ref={cardRef}
-        href={`/modules/${slugFromTitle(t.title)}`}
-        onMouseEnter={onEnter}
-        onMouseLeave={onLeave}
-        className="topic-card w-[220px] sm:w-[248px] h-[204px] rounded-[22px] p-6 shrink-0 block relative overflow-hidden cursor-pointer bg-white dark:bg-[#111214]"
-        style={{ border: "1px solid rgba(210,210,215,0.55)" }}>
-        <div className="relative z-10 flex flex-col h-full justify-between">
-          <div className="flex items-start justify-between gap-3">
-            <span className="text-[11px] font-semibold text-[#86868B] tracking-[0.16em] uppercase">{t.n}</span>
-            {levelBadge}
-          </div>
-          <div>
-            <p className="font-display font-semibold text-[22px] tracking-[-0.03em] text-foreground leading-tight mb-2 text-balance">
-              {t.title}
-            </p>
-            <p className="text-[#86868B] text-[13px] leading-relaxed">{t.lessons} lessons</p>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-[12px] text-[#86868B]">Start topic</span>
-            <ArrowRight className="w-4 h-4 text-[#0071E3]" />
-          </div>
-        </div>
-        </Link>
-    );
-  }
-
-  if (mode === "showcase") {
-    return (
-      <Link
-        ref={cardRef}
-        href={`/modules/${slugFromTitle(t.title)}`}
-        onMouseEnter={onEnter}
-        onMouseLeave={onLeave}
-        className="topic-card w-[220px] sm:w-[248px] h-[204px] rounded-[22px] p-6 shrink-0 block relative overflow-hidden cursor-pointer"
-        style={{
-          background: `linear-gradient(160deg, ${t.color}22 0%, ${t.color}10 45%, #ffffff 100%)`,
-          border: `1px solid ${t.color}28`,
-        }}>
-        <div className="absolute right-3 top-3 w-20 h-20 rounded-full blur-2xl pointer-events-none" style={{ backgroundColor: `${t.color}18` }} />
-        <div className="absolute right-3 bottom-1 font-display font-bold text-[62px] leading-none select-none pointer-events-none" style={{ color: t.color, opacity: 0.12 }}>
-          {t.n}
-        </div>
-        <div className="relative z-10 flex flex-col h-full justify-between">
-          <div className="flex items-start justify-between gap-3">
-            <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-white text-[12px] font-bold shrink-0" style={{ backgroundColor: t.color }}>
-              {t.n}
-            </div>
-            {levelBadge}
-          </div>
-          <div>
-            <p className="font-semibold text-[17px] text-foreground leading-tight mb-1.5 text-balance">{t.title}</p>
-            <p className="text-[#86868B] text-[12px]">{t.lessons} lessons</p>
-          </div>
-          <div className="flex items-center gap-2 text-[12px] font-medium" style={{ color: t.color }}>
-            Explore topic <ArrowRight className="w-3.5 h-3.5" />
-          </div>
-        </div>
-      </Link>
-    );
-  }
-
   return (
     <Link
       ref={cardRef}
       href={`/modules/${slugFromTitle(t.title)}`}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
-      className="topic-card w-[220px] sm:w-[248px] h-[204px] rounded-[20px] p-6 shrink-0 block relative overflow-hidden cursor-pointer bg-white dark:bg-[#111214]"
+      className="topic-card w-[220px] sm:w-[248px] h-[204px] rounded-[22px] p-6 shrink-0 block relative overflow-hidden cursor-pointer bg-white dark:bg-[#111214]"
       style={{
-        border: `1px solid ${t.color}30`,
+        border: "1px solid rgba(210,210,215,0.55)",
       }}>
-      <div className="absolute inset-x-0 top-0 h-1" style={{ backgroundColor: t.color }} />
-      <div
-        className="absolute right-4 top-4 w-24 h-24 rounded-full pointer-events-none blur-2xl"
-        style={{ backgroundColor: `${t.color}12` }}
-      />
-
-      {/* Content */}
       <div className="relative z-10 flex flex-col h-full justify-between">
-        {/* Top */}
         <div className="flex items-start justify-between gap-3">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-[12px] font-bold shrink-0"
-            style={{ backgroundColor: t.color }}>
-            {t.n}
-          </div>
+          <span className="text-[11px] font-semibold text-[#86868B] tracking-[0.16em] uppercase">{t.n}</span>
           {levelBadge}
         </div>
-
-        {/* Middle */}
         <div>
-          <p className="font-semibold text-[17px] text-foreground leading-tight mb-2 text-balance">
+          <p className="font-display font-semibold text-[22px] tracking-[-0.03em] text-foreground leading-tight mb-2 text-balance">
             {t.title}
           </p>
-          <p className="text-[#86868B] text-[12px] leading-relaxed">
-            {t.lessons} lessons
-          </p>
+          <p className="text-[#86868B] text-[13px] leading-relaxed">{t.lessons} lessons</p>
         </div>
-
-        {/* Bottom */}
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-[11px] font-medium" style={{ color: levelColor }}>
-            {t.level}
-          </span>
-          <span className="inline-flex items-center gap-1 text-[12px] font-medium text-[#86868B] group-hover:text-foreground transition-colors">
-            Buka topik <ArrowRight className="w-3.5 h-3.5" />
-          </span>
+        <div className="flex items-center justify-between">
+          <span className="text-[12px] text-[#86868B]">Start topic</span>
+          <ArrowRight className="w-4 h-4 text-[#0071E3]" />
         </div>
       </div>
     </Link>
