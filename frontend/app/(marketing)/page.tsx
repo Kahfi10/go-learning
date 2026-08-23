@@ -65,7 +65,7 @@ const FEATURES = [
     tag: "Komunitas",
     title: "Belajar bersama, bukan sendirian.",
     desc: "Kolom diskusi threaded di tiap lesson. Tanya, jawab, dan upvote pertanyaan yang paling membantu. Belajar dari kesulitan sesama Go learners.",
-    stats: [{ v: "∞", l: "Komentar" }, { v: "↑", l: "Upvote" }, { v: "🧵", l: "Threaded" }],
+    stats: [{ v: "24/7", l: "Diskusi" }, { v: "Top", l: "Jawaban" }, { v: "Live", l: "Komunitas" }],
   },
 ];
 
@@ -174,7 +174,6 @@ const FAQS = [
 /* ─── Page ──────────────────────────────────────────────── */
 export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [featureMode, setFeatureMode] = useState<"story" | "bento" | "compact">("story");
 
   useEffect(() => {
     let ctx: any;
@@ -572,34 +571,16 @@ func worker(id int, wg *sync.WaitGroup) {
       ══════════════════════════════════════════ */}
       <section className="py-16 sm:py-20 px-4 sm:px-6">
         <div className="mx-auto max-w-5xl">
-          <div className="mb-10 sm:mb-12 flex items-end justify-between gap-4 flex-wrap">
+          <div className="mb-10 sm:mb-12">
             <div>
               <p className="text-[#86868B] text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">Fitur</p>
               <h2 className="font-display font-semibold text-[36px] sm:text-[48px] tracking-[-0.03em] text-foreground">
                 Dirancang untuk belajar<br className="hidden sm:block" /> yang sesungguhnya.
               </h2>
             </div>
-            <div className="flex items-center gap-1 bg-[#F5F5F7] dark:bg-[#111214] border border-[#D2D2D7]/60 dark:border-white/10 rounded-full p-1 shadow-sm">
-              {[
-                { key: "story", label: "Story Panels" },
-                { key: "bento", label: "Bento Grid" },
-                { key: "compact", label: "Compact" },
-              ].map((opt) => (
-                <button
-                  key={opt.key}
-                  onClick={() => setFeatureMode(opt.key as typeof featureMode)}
-                  className={cn(
-                    "px-3 py-1.5 rounded-full text-[11px] sm:text-[12px] font-medium transition-colors whitespace-nowrap",
-                    featureMode === opt.key ? "bg-[#0071E3] text-white" : "text-[#86868B] hover:text-foreground"
-                  )}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
           </div>
 
-          <FeatureSection mode={featureMode} items={FEATURES} />
+          <FeatureSection items={FEATURES} />
         </div>
       </section>
 
@@ -869,76 +850,21 @@ function TopicCard({
 }
 
 function FeatureSection({
-  mode,
   items,
 }: {
-  mode: "story" | "bento" | "compact";
   items: typeof FEATURES;
 }) {
-  if (mode === "bento") {
-    return (
-      <div className="grid md:grid-cols-2 gap-4">
-        <div className="feature-panel md:col-span-2 rounded-[24px] p-8 sm:p-10 bg-[#F5F5F7] dark:bg-[#1C1C1E] border border-[#D2D2D7]/60 dark:border-white/8">
-          <FeatureBentoCard item={items[0]} large />
-        </div>
-        <div className="feature-panel rounded-[24px] p-8 bg-background border border-[#D2D2D7]/60 dark:border-white/8">
-          <FeatureBentoCard item={items[1]} />
-        </div>
-        <div className="feature-panel rounded-[24px] p-8 bg-background border border-[#D2D2D7]/60 dark:border-white/8">
-          <FeatureBentoCard item={items[2]} />
-        </div>
-      </div>
-    );
-  }
-
-  if (mode === "compact") {
-    return (
-      <div className="grid lg:grid-cols-3 gap-4">
-        {items.map((item) => (
-          <div key={item.tag} className="feature-panel rounded-[22px] p-6 bg-background border border-[#D2D2D7]/60 dark:border-white/8">
-            <FeatureCompactCard item={item} />
-          </div>
-        ))}
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-4">
-      {items.map((item, i) => (
-        <div
-          key={item.tag}
-          className={cn(
-            "feature-panel rounded-[22px] p-8 sm:p-10 flex flex-col sm:flex-row items-start gap-8 min-h-[180px]",
-            i % 2 === 1
-              ? "bg-[#F5F5F7] dark:bg-[#1C1C1E]"
-              : "bg-background border border-[#D2D2D7]/60 dark:border-white/8"
-          )}
-        >
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2.5 mb-5">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: item.color + "18" }}>
-                <item.icon className="w-5 h-5" style={{ color: item.color }} />
-              </div>
-              <span className="text-[12px] font-semibold uppercase tracking-widest" style={{ color: item.color }}>
-                {item.tag}
-              </span>
-            </div>
-            <h3 className="font-display font-semibold text-[26px] sm:text-[34px] tracking-tight text-foreground mb-4 leading-snug">
-              {item.title}
-            </h3>
-            <p className="text-[#86868B] text-[16px] leading-relaxed">{item.desc}</p>
-          </div>
-          <div className="flex sm:flex-col gap-3 shrink-0">
-            {item.stats.map((s) => (
-              <div key={s.l} className="bg-background dark:bg-[#2C2C2E] rounded-[14px] px-5 py-4 text-center min-w-[90px]">
-                <p className="font-display font-semibold text-[26px] tracking-tight text-foreground">{s.v}</p>
-                <p className="text-[#86868B] text-[12px] mt-0.5">{s.l}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
+    <div className="grid md:grid-cols-2 gap-4">
+      <div className="feature-panel md:col-span-2 rounded-[24px] p-8 sm:p-10 bg-[#F5F5F7] dark:bg-[#1C1C1E] border border-[#D2D2D7]/60 dark:border-white/8">
+        <FeatureBentoCard item={items[0]} large />
+      </div>
+      <div className="feature-panel rounded-[24px] p-8 bg-background border border-[#D2D2D7]/60 dark:border-white/8">
+        <FeatureBentoCard item={items[1]} />
+      </div>
+      <div className="feature-panel rounded-[24px] p-8 bg-background border border-[#D2D2D7]/60 dark:border-white/8">
+        <FeatureBentoCard item={items[2]} />
+      </div>
     </div>
   );
 }
@@ -961,31 +887,6 @@ function FeatureBentoCard({ item, large = false }: { item: typeof FEATURES[numbe
           <div key={s.l} className="rounded-[14px] bg-white dark:bg-[#2C2C2E] px-4 py-3 border border-[#D2D2D7]/50 dark:border-white/8">
             <p className="font-display font-semibold text-[24px] text-foreground">{s.v}</p>
             <p className="text-[#86868B] text-[11px] mt-0.5">{s.l}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function FeatureCompactCard({ item }: { item: typeof FEATURES[number] }) {
-  return (
-    <div className="flex flex-col h-full gap-5">
-      <div className="flex items-center gap-2.5">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: item.color + "18" }}>
-          <item.icon className="w-5 h-5" style={{ color: item.color }} />
-        </div>
-        <span className="text-[12px] font-semibold uppercase tracking-widest" style={{ color: item.color }}>{item.tag}</span>
-      </div>
-      <div>
-        <h3 className="font-display font-semibold text-[24px] tracking-tight text-foreground mb-3 leading-snug">{item.title}</h3>
-        <p className="text-[#86868B] text-[14px] leading-relaxed">{item.desc}</p>
-      </div>
-      <div className="grid grid-cols-3 gap-2 mt-auto">
-        {item.stats.map((s) => (
-          <div key={s.l} className="rounded-[12px] bg-[#F5F5F7] dark:bg-[#1C1C1E] px-3 py-3 text-center">
-            <p className="font-display font-semibold text-[22px] text-foreground">{s.v}</p>
-            <p className="text-[#86868B] text-[10px] mt-0.5">{s.l}</p>
           </div>
         ))}
       </div>
