@@ -504,16 +504,18 @@ func worker(id int, wg *sync.WaitGroup) {
               <TopicCard key={t.n} topic={t} index={i} />
             ))}
             {/* CTA card */}
-            <div className="w-[220px] sm:w-[240px] rounded-[20px] p-6 shrink-0 flex flex-col justify-between relative overflow-hidden"
-              style={{ background: "linear-gradient(135deg, #0071E3, #0A84FF)" }}>
-              <div className="absolute right-[-20px] top-[-20px] text-[120px] font-bold text-white/5 leading-none select-none">→</div>
+            <div
+              className="w-[220px] sm:w-[240px] rounded-[20px] p-6 shrink-0 flex flex-col justify-between relative overflow-hidden border border-[#0071E3]/20 bg-white dark:bg-[#111214]"
+            >
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#0071E3] to-[#5AC8FA]" />
               <div>
-                <p className="font-display font-semibold text-[22px] text-white mb-2 leading-tight">Mulai<br />sekarang.</p>
-                <p className="text-white/65 text-[13px] leading-relaxed">Gratis. Tanpa install. Langsung coding.</p>
+                <p className="text-[#0071E3] text-[11px] font-semibold uppercase tracking-[0.14em] mb-3">Start Here</p>
+                <p className="font-display font-semibold text-[22px] text-foreground mb-2 leading-tight">Mulai perjalanan Go kamu.</p>
+                <p className="text-[#86868B] text-[13px] leading-relaxed">Masuk ke semua topik, pilih lesson pertama, lalu mulai ngoding langsung di browser.</p>
               </div>
               <Link href="/modules"
-                className="inline-flex items-center gap-2 bg-white text-[#0071E3] text-[13px] font-semibold px-4 py-2 rounded-full hover:bg-white/90 transition-colors mt-6 self-start">
-                Mulai Belajar <ArrowRight className="w-3.5 h-3.5" />
+                className="inline-flex items-center gap-1.5 text-[#0071E3] text-[13px] font-semibold hover:gap-2.5 transition-all mt-6 self-start">
+                Buka semua topik <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           </div>
@@ -792,10 +794,13 @@ function TopicCard({ topic: t, index: i }: { topic: typeof TOPICS[0]; index: num
     const card = cardRef.current;
     if (!card) return;
     import("gsap").then(({ gsap }) => {
-      const rect = card.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 14;
-      const y = ((e.clientY - rect.top) / rect.height - 0.5) * -14;
-      gsap.to(card, { rotateY: x, rotateX: y, scale: 1.04, duration: 0.3, ease: "power2.out", transformPerspective: 800 });
+      gsap.to(card, {
+        y: -6,
+        scale: 1.015,
+        boxShadow: `0 20px 40px ${t.color}18`,
+        duration: 0.28,
+        ease: "power2.out",
+      });
     });
   }
 
@@ -803,7 +808,13 @@ function TopicCard({ topic: t, index: i }: { topic: typeof TOPICS[0]; index: num
     const card = cardRef.current;
     if (!card) return;
     import("gsap").then(({ gsap }) => {
-      gsap.to(card, { rotateY: 0, rotateX: 0, scale: 1, duration: 0.5, ease: "expo.out" });
+      gsap.to(card, {
+        y: 0,
+        scale: 1,
+        boxShadow: "0 0 0 rgba(0,0,0,0)",
+        duration: 0.4,
+        ease: "expo.out",
+      });
     });
   }
 
@@ -815,43 +826,48 @@ function TopicCard({ topic: t, index: i }: { topic: typeof TOPICS[0]; index: num
       href={`/modules/${slugFromTitle(t.title)}`}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
-      className="topic-card w-[220px] sm:w-[248px] h-[204px] rounded-[20px] p-6 shrink-0 block relative overflow-hidden cursor-pointer"
+      className="topic-card w-[220px] sm:w-[248px] h-[204px] rounded-[20px] p-6 shrink-0 block relative overflow-hidden cursor-pointer bg-white dark:bg-[#111214]"
       style={{
-        background: `linear-gradient(145deg, ${t.color}22, ${t.color}08)`,
         border: `1px solid ${t.color}30`,
-        transformStyle: "preserve-3d",
       }}>
-      {/* Big decorative number in background */}
-      <span
-        className="absolute right-[-4px] bottom-[-10px] font-display font-bold select-none pointer-events-none leading-none"
-        style={{ fontSize: "84px", color: t.color, opacity: 0.08 }}>
-        {t.n}
-      </span>
+      <div className="absolute inset-x-0 top-0 h-1" style={{ backgroundColor: t.color }} />
+      <div
+        className="absolute right-4 top-4 w-24 h-24 rounded-full pointer-events-none blur-2xl"
+        style={{ backgroundColor: `${t.color}12` }}
+      />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col h-full justify-between pr-10 sm:pr-12">
-        {/* Top: small colored badge */}
-        <div className="flex items-center justify-between">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-[12px] font-bold"
+      <div className="relative z-10 flex flex-col h-full justify-between">
+        {/* Top */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-[12px] font-bold shrink-0"
             style={{ backgroundColor: t.color }}>
             {t.n}
           </div>
-          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0"
             style={{ backgroundColor: levelColor + "20", color: levelColor }}>
             {t.level}
           </span>
         </div>
 
-        {/* Bottom: title + lessons */}
+        {/* Middle */}
         <div>
-          <p className="font-semibold text-[16px] text-foreground leading-tight mb-1.5 text-balance">
+          <p className="font-semibold text-[17px] text-foreground leading-tight mb-2 text-balance">
             {t.title}
           </p>
-          <div className="flex items-center gap-2">
-            <span className="text-[#86868B] text-[12px]">{t.lessons} lessons</span>
-            <span className="w-1 h-1 rounded-full bg-[#D2D2D7]" />
-            <span className="text-[12px] font-medium" style={{ color: t.color }}>→</span>
-          </div>
+          <p className="text-[#86868B] text-[12px] leading-relaxed">
+            {t.lessons} lessons
+          </p>
+        </div>
+
+        {/* Bottom */}
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-[11px] font-medium" style={{ color: levelColor }}>
+            {t.level}
+          </span>
+          <span className="inline-flex items-center gap-1 text-[12px] font-medium text-[#86868B] group-hover:text-foreground transition-colors">
+            Buka topik <ArrowRight className="w-3.5 h-3.5" />
+          </span>
         </div>
       </div>
     </Link>
