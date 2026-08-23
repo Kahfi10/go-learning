@@ -185,18 +185,34 @@ export default function LandingPage() {
 
       ctx = gsap.context(() => {
 
-        /* Hero left col — y-only, NO opacity (prevents invisible flash) */
-        gsap.from(".hero-badge",   { y: 20, duration: 0.6, ease: "expo.out", delay: 0.1  });
-        gsap.from(".hero-title",   { y: 36, duration: 0.8, ease: "expo.out", delay: 0.22 });
-        gsap.from(".hero-sub",     { y: 24, duration: 0.7, ease: "expo.out", delay: 0.38 });
-        gsap.from(".hero-cta-row", { y: 18, duration: 0.6, ease: "expo.out", delay: 0.5  });
-        gsap.from(".hero-trust",   { y: 12, duration: 0.5, ease: "expo.out", delay: 0.62 });
+        /* Hero timeline — smoother, more premium */
+        const heroTl = gsap.timeline({ delay: 0.08 });
+        heroTl
+          .from(".hero-badge", { y: 16, opacity: 0.001, duration: 0.55, ease: "power3.out" })
+          .from(".hero-title-line", { y: 42, opacity: 0.001, duration: 0.85, ease: "expo.out", stagger: 0.08 }, "-=0.25")
+          .from(".hero-sub", { y: 22, opacity: 0.001, duration: 0.7, ease: "power3.out" }, "-=0.35")
+          .from(".hero-cta-row > *", { y: 16, opacity: 0.001, duration: 0.55, ease: "power3.out", stagger: 0.06 }, "-=0.28")
+          .from(".hero-trust > *", { y: 10, opacity: 0.001, duration: 0.45, ease: "power2.out", stagger: 0.04 }, "-=0.25")
+          .from(".hero-code-window", { x: 34, y: 12, opacity: 0.001, duration: 0.95, ease: "expo.out" }, "-=0.65");
 
-        /* Hero right col — slide in from right, no opacity */
-        gsap.from(".hero-code-window", { x: 40, duration: 0.9, ease: "expo.out", delay: 0.28 });
-        /* Subtle float loop — start after entrance */
+        /* Breathing float after entrance */
         gsap.to(".hero-code-window", {
-          y: -8, duration: 4, ease: "sine.inOut", yoyo: true, repeat: -1, delay: 1.4,
+          y: -10,
+          duration: 4.8,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+          delay: 1.3,
+        });
+
+        /* Subtle shimmer on run button */
+        gsap.to(".hero-run-btn", {
+          boxShadow: "0 0 0 1px rgba(0,113,227,0.35), 0 8px 28px rgba(0,113,227,0.22)",
+          duration: 1.8,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+          delay: 1.8,
         });
 
         /* Stats count-up */
@@ -284,9 +300,9 @@ export default function LandingPage() {
 
               <h1 className="hero-title font-display font-semibold leading-[1.05] tracking-[-0.03em] text-foreground mb-4 sm:mb-5"
                 style={{ fontSize: "clamp(32px, 5vw, 60px)" }}>
-                Kuasai Go.<br />
-                <span className="text-[#0071E3]">Dengan Cara</span><br />
-                yang Elegan.
+                <span className="hero-title-line block">Kuasai Go.</span>
+                <span className="hero-title-line block text-[#0071E3]">Dengan Cara</span>
+                <span className="hero-title-line block">yang Elegan.</span>
               </h1>
 
               <p className="hero-sub text-[15px] sm:text-[17px] text-[#86868B] leading-relaxed mb-6 sm:mb-8 max-w-md">
@@ -857,12 +873,15 @@ func main() {
 	const [running, setRunning] = useState(false);
 	const [flash, setFlash] = useState(false);
 	const lineCount = code.split("\n").length;
+	const frameRef = useRef<HTMLDivElement>(null);
 
 	async function handleRun() {
 		setRunning(true);
 		try {
 			import("gsap").then(({ gsap }) => {
-				gsap.to(".hero-run-btn", { scale: 0.96, duration: 0.08, yoyo: true, repeat: 1 });
+				gsap.timeline()
+					.to(".hero-run-btn", { scale: 0.96, duration: 0.08, ease: "power2.out" })
+					.to(".hero-run-btn", { scale: 1, duration: 0.18, ease: "back.out(2)" });
 			});
 			const res = await api.execute(code);
 			setResult(res);
@@ -871,26 +890,62 @@ func main() {
 			import("gsap").then(({ gsap }) => {
 				gsap.fromTo(
 					".hero-output-line",
-					{ y: 10, opacity: 0.35 },
-					{ y: 0, opacity: 1, duration: 0.4, ease: "expo.out" }
+					{ y: 10, opacity: 0.35, filter: "blur(3px)" },
+					{ y: 0, opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }
 				);
 				gsap.fromTo(
 					".hero-output-panel",
 					{ boxShadow: "0 0 0 rgba(48,209,88,0)" },
 					{ boxShadow: "0 0 0 1px rgba(48,209,88,0.25), 0 0 18px rgba(48,209,88,0.12)", duration: 0.35, yoyo: true, repeat: 1 }
 				);
+				gsap.fromTo(
+					".hero-stats-card",
+					{ y: 4 },
+					{ y: 0, duration: 0.35, stagger: 0.05, ease: "power2.out" }
+				);
 			});
 		} catch {
 			setResult({ stdout: "", stderr: "Run gagal", executionTimeMs: 0, timedOut: false });
 		} finally {
 			setRunning(false);
-    }
-  }
+		}
+	}
+
+	function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+		if (!frameRef.current) return;
+		const rect = frameRef.current.getBoundingClientRect();
+		const x = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
+		const y = ((e.clientY - rect.top) / rect.height - 0.5) * -8;
+		import("gsap").then(({ gsap }) => {
+			gsap.to(frameRef.current, {
+				rotateY: x,
+				rotateX: y,
+				transformPerspective: 1200,
+				duration: 0.35,
+				ease: "power2.out",
+			});
+		});
+	}
+
+	function handleMouseLeave() {
+		if (!frameRef.current) return;
+		import("gsap").then(({ gsap }) => {
+			gsap.to(frameRef.current, {
+				rotateX: 0,
+				rotateY: 0,
+				duration: 0.6,
+				ease: "expo.out",
+			});
+		});
+	}
 
 	return (
 		<div className="hero-code-window hidden md:block lg:ml-4">
 			<div
+				ref={frameRef}
 				className="bg-[#1C1C1E] rounded-[18px] overflow-hidden shadow-2xl ring-1 ring-white/10 transition-transform duration-500"
+				onMouseMove={handleMouseMove}
+				onMouseLeave={handleMouseLeave}
 			>
 				<div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.06]">
           <div className="flex gap-1.5 shrink-0">
@@ -916,7 +971,7 @@ func main() {
 						value={code}
 						onChange={(e) => setCode(e.target.value)}
 						spellCheck={false}
-						className="flex-1 px-4 py-4 text-[12.5px] font-mono leading-[1.75] overflow-x-auto text-[#E5E5EA] min-w-0 bg-transparent outline-none resize-none min-h-[300px]"
+						className="flex-1 px-4 py-4 text-[12.5px] font-mono leading-[1.75] overflow-x-auto text-[#E5E5EA] min-w-0 bg-transparent outline-none resize-none min-h-[300px] caret-[#0071E3]"
 					/>
 				</div>
 				<div className={cn("hero-output-panel border-t border-white/[0.06] px-4 py-2.5 flex items-center gap-3 transition-colors", flash && "bg-[#30D158]/10") }>
@@ -939,7 +994,7 @@ func main() {
 					{ v: `${lineCount}`, l: "Lines" },
 					{ v: running ? "..." : `${result?.executionTimeMs ?? 0}ms`, l: "Run" },
 				].map((s) => (
-					<div key={s.l} className="bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[10px] py-2.5 text-center">
+					<div key={s.l} className="hero-stats-card bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[10px] py-2.5 text-center">
             <p className="font-display font-semibold text-[18px] text-foreground">{s.v}</p>
             <p className="text-[#86868B] text-[11px]">{s.l}</p>
           </div>
