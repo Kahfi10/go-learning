@@ -418,7 +418,7 @@ func worker(id int, wg *sync.WaitGroup) {
           </div>
 
           {/* Companies */}
-          <div className="mt-8 pb-2 text-center">
+          <div className="mt-12 sm:mt-14 pb-2 text-center">
             <p className="text-[#86868B] text-[12px] sm:text-[13px] mb-3">Dipercaya oleh</p>
             <div className="flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-8 gap-y-2">
               {["Google", "Docker", "Kubernetes", "Cloudflare", "Uber", "Dropbox"].map((c) => (
