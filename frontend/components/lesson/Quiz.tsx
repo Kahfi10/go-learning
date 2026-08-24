@@ -37,7 +37,18 @@ export default function Quiz({ questions, lang, topicSlug, lessonId, onComplete 
       if (idx === q.correct) {
         gsap.fromTo(feedbackRef.current, { scale: 0.97, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(2)" });
       } else {
-        gsap.to(`[data-option="${idx}"]`, { x: [0, -8, 8, -6, 6, 0], duration: 0.4, ease: "power2.inOut" });
+        gsap.to(`[data-option="${idx}"]`, {
+          keyframes: [
+            { x: 0 },
+            { x: -8 },
+            { x: 8 },
+            { x: -6 },
+            { x: 6 },
+            { x: 0 },
+          ],
+          duration: 0.4,
+          ease: "power2.inOut",
+        });
       }
     });
   }

@@ -1,7 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { User, Globe, Lock, Trash2, ChevronRight, Moon, Sun } from "lucide-react";
+import { Globe, Lock, Moon, Sun, User } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
@@ -12,21 +13,25 @@ import { cn } from "@/lib/utils";
 export default function SettingsPage() {
   const router = useRouter();
   const { state, logout, refresh } = useAuth();
-  const { resolvedTheme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme, theme } = useTheme();
   const [name, setName] = useState("");
   const [lang, setLang] = useState<"id" | "en">("id");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!state.loading && !state.user) router.push("/login");
+    if (!state.loading && !state.user) {
+      router.push("/login");
+    }
+
     if (state.user) {
       setName(state.user.name);
       setLang(state.user.lang_pref ?? "id");
     }
-  }, [state]);
+  }, [router, state.loading, state.user]);
 
   async function saveProfile() {
     setSaving(true);
+
     try {
       await api.auth.updateMe({ name, lang_pref: lang });
       await refresh();
@@ -44,89 +49,258 @@ export default function SettingsPage() {
     toast.success("Berhasil keluar");
   }
 
-  const SECTION_CLS = "bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[18px] overflow-hidden";
-  const ROW_CLS = "flex items-center justify-between px-5 py-4 border-b border-[#D2D2D7]/40 last:border-0";
+  const currentTheme = theme ?? resolvedTheme ?? "system";
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="pt-24 pb-20 px-6 mx-auto max-w-lg">
-        <div className="mb-8">
-          <p className="text-[#86868B] text-[13px] uppercase tracking-widest mb-2">Pengaturan</p>
-          <h1 className="font-display font-semibold text-[32px] tracking-tight text-foreground">Settings</h1>
-        </div>
 
-        {/* Profile */}
-        <div className="mb-5">
-          <p className="text-[11px] font-semibold text-[#86868B] uppercase tracking-widest px-1 mb-2">Profil</p>
-          <div className={SECTION_CLS}>
-            <div className={ROW_CLS}>
-              <div className="flex items-center gap-3">
-                <User className="w-4 h-4 text-[#86868B]" />
-                <span className="text-[14px] text-foreground">Nama</span>
+      <main className="mx-auto max-w-5xl px-6 pb-24 pt-24">
+        <section className="relative overflow-hidden rounded-[32px] border border-black/[0.06] bg-[#FBFBFD] p-8 shadow-[0_28px_80px_rgba(15,23,42,0.08)] dark:border-white/[0.08] dark:bg-[#0F0F11] dark:shadow-[0_28px_80px_rgba(0,0,0,0.32)] sm:p-10">
+          <div className="pointer-events-none absolute -left-10 top-0 h-48 w-48 rounded-full bg-[#0071E3]/14 blur-3xl" />
+          <div className="pointer-events-none absolute right-0 top-8 h-40 w-40 rounded-full bg-[#34C759]/10 blur-3xl" />
+
+          <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_340px] lg:items-start">
+            <div className="max-w-2xl">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#86868B]">
+                Pengaturan
+              </p>
+              <h1 className="mt-4 font-display text-[40px] font-semibold tracking-tight text-foreground sm:text-[48px]">
+                Kelola profil, tampilan, dan preferensi akun dengan lebih rapi.
+              </h1>
+              <p className="mt-3 max-w-xl text-[16px] leading-7 text-[#86868B] sm:text-[17px]">
+                Semua kontrol utama dikelompokkan ke panel yang lebih jelas supaya perubahan terasa cepat dan aman.
+              </p>
+
+              <div className="mt-8 flex flex-wrap gap-3">
+                <div className="rounded-full border border-black/[0.06] bg-white/80 px-4 py-2 text-[13px] font-medium text-foreground shadow-[0_10px_30px_rgba(15,23,42,0.05)] dark:border-white/[0.08] dark:bg-white/[0.04] dark:shadow-none">
+                  {state.user?.email ?? "Akun GoLearn"}
+                </div>
+                <div className="rounded-full border border-black/[0.06] bg-white/80 px-4 py-2 text-[13px] font-medium text-foreground shadow-[0_10px_30px_rgba(15,23,42,0.05)] dark:border-white/[0.08] dark:bg-white/[0.04] dark:shadow-none">
+                  Bahasa {lang.toUpperCase()}
+                </div>
+                <div className="rounded-full border border-black/[0.06] bg-white/80 px-4 py-2 text-[13px] font-medium text-foreground shadow-[0_10px_30px_rgba(15,23,42,0.05)] dark:border-white/[0.08] dark:bg-white/[0.04] dark:shadow-none">
+                  Tema {currentTheme}
+                </div>
               </div>
-              <input value={name} onChange={e => setName(e.target.value)}
-                className="bg-transparent text-[14px] text-right text-[#0071E3] outline-none max-w-[160px]" />
             </div>
-            <div className={ROW_CLS}>
-              <div className="flex items-center gap-3">
-                <Globe className="w-4 h-4 text-[#86868B]" />
-                <span className="text-[14px] text-foreground">Bahasa</span>
+
+            <aside className="rounded-[28px] border border-black/[0.06] bg-white/80 p-6 shadow-[0_20px_50px_rgba(15,23,42,0.06)] backdrop-blur-sm dark:border-white/[0.08] dark:bg-white/[0.04] dark:shadow-[0_20px_50px_rgba(0,0,0,0.24)]">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B]">
+                Quick Summary
+              </p>
+              <h2 className="mt-3 font-display text-[28px] font-semibold tracking-tight text-foreground">
+                Akun aktif
+              </h2>
+              <p className="mt-2 text-[14px] leading-6 text-[#86868B]">
+                Simpan perubahan profil, ganti bahasa antarmuka, dan atur tema dari satu tempat.
+              </p>
+
+              <div className="mt-6 grid gap-3">
+                <div className="rounded-[20px] bg-black/[0.03] p-4 dark:bg-white/[0.05]">
+                  <p className="text-[11px] uppercase tracking-[0.16em] text-[#86868B]">Nama profil</p>
+                  <p className="mt-2 font-display text-[22px] font-semibold tracking-tight text-foreground">
+                    {name || "-"}
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-[20px] bg-black/[0.03] p-4 dark:bg-white/[0.05]">
+                    <p className="text-[11px] uppercase tracking-[0.16em] text-[#86868B]">Bahasa</p>
+                    <p className="mt-2 font-display text-[20px] font-semibold tracking-tight text-foreground">
+                      {lang.toUpperCase()}
+                    </p>
+                  </div>
+                  <div className="rounded-[20px] bg-black/[0.03] p-4 dark:bg-white/[0.05]">
+                    <p className="text-[11px] uppercase tracking-[0.16em] text-[#86868B]">Tema</p>
+                    <p className="mt-2 font-display text-[20px] font-semibold tracking-tight capitalize text-foreground">
+                      {currentTheme}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="flex gap-2">
-                {(["id", "en"] as const).map(l => (
-                  <button key={l} onClick={() => setLang(l)}
-                    className={cn("text-[12px] font-medium px-3 py-1 rounded-full transition-colors",
-                      lang === l ? "bg-[#0071E3] text-white" : "bg-background border border-[#D2D2D7] text-[#86868B]")}>
-                    {l.toUpperCase()}
+            </aside>
+          </div>
+        </section>
+
+        <section className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+          <div className="space-y-6">
+            <article className="rounded-[30px] border border-black/[0.06] bg-[#FBFBFD] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.07)] dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_24px_60px_rgba(0,0,0,0.28)] sm:p-7">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0071E3]/10 text-[#0071E3]">
+                  <User className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B]">
+                    Profil
+                  </p>
+                  <h2 className="mt-1 font-display text-[26px] font-semibold tracking-tight text-foreground">
+                    Informasi akun
+                  </h2>
+                </div>
+              </div>
+
+              <div className="mt-6 space-y-4">
+                <div className="rounded-[24px] border border-black/[0.06] bg-white/80 p-4 dark:border-white/[0.08] dark:bg-white/[0.04]">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-[14px] font-medium text-foreground">Nama</p>
+                      <p className="mt-1 text-[12px] text-[#86868B]">Nama yang tampil di seluruh pengalaman belajar.</p>
+                    </div>
+                    <User className="h-4 w-4 text-[#86868B]" />
+                  </div>
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="mt-4 h-12 w-full rounded-[16px] border border-black/[0.08] bg-background px-4 text-[14px] text-foreground outline-none transition focus:border-[#0071E3] focus:ring-4 focus:ring-[#0071E3]/10 dark:border-white/[0.08]"
+                  />
+                </div>
+
+                <div className="rounded-[24px] border border-black/[0.06] bg-white/80 p-4 dark:border-white/[0.08] dark:bg-white/[0.04]">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-[14px] font-medium text-foreground">Bahasa</p>
+                      <p className="mt-1 text-[12px] text-[#86868B]">Pilih bahasa utama untuk antarmuka.</p>
+                    </div>
+                    <Globe className="h-4 w-4 text-[#86868B]" />
+                  </div>
+
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    {([
+                      { value: "id", label: "Bahasa Indonesia", short: "ID" },
+                      { value: "en", label: "English", short: "EN" },
+                    ] as const).map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setLang(option.value)}
+                        className={cn(
+                          "flex items-center justify-between rounded-[18px] border px-4 py-3 text-left transition-all",
+                          lang === option.value
+                            ? "border-[#0071E3]/20 bg-[#0071E3]/8 shadow-[0_14px_34px_rgba(0,113,227,0.12)]"
+                            : "border-black/[0.06] bg-background hover:border-black/[0.1] dark:border-white/[0.08] dark:hover:border-white/[0.12]",
+                        )}
+                      >
+                        <div>
+                          <span className="block text-[14px] font-medium text-foreground">{option.label}</span>
+                          <span className="mt-1 block text-[12px] text-[#86868B]">{option.short}</span>
+                        </div>
+                        <div
+                          className={cn(
+                            "h-5 w-9 rounded-full p-0.5 transition-colors",
+                            lang === option.value ? "bg-[#0071E3]" : "bg-black/[0.08] dark:bg-white/[0.12]",
+                          )}
+                        >
+                          <div
+                            className={cn(
+                              "h-4 w-4 rounded-full bg-white transition-transform",
+                              lang === option.value ? "translate-x-4" : "translate-x-0",
+                            )}
+                          />
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={saveProfile}
+                disabled={saving}
+                className="mt-5 w-full rounded-full bg-[#0071E3] px-5 py-3 text-[14px] font-medium text-white shadow-[0_18px_40px_rgba(0,113,227,0.24)] transition-colors hover:bg-[#0077ED] disabled:opacity-60"
+              >
+                {saving ? "Menyimpan..." : "Simpan Perubahan"}
+              </button>
+            </article>
+          </div>
+
+          <div className="space-y-6">
+            <article className="rounded-[30px] border border-black/[0.06] bg-[#FBFBFD] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.07)] dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_24px_60px_rgba(0,0,0,0.28)] sm:p-7">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#AF52DE]/10 text-[#AF52DE]">
+                  {resolvedTheme === "dark" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+                </div>
+                <div>
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B]">
+                    Tampilan
+                  </p>
+                  <h2 className="mt-1 font-display text-[26px] font-semibold tracking-tight text-foreground">
+                    Tema aplikasi
+                  </h2>
+                </div>
+              </div>
+
+              <div className="mt-6 space-y-3">
+                {([
+                  { value: "light", label: "Light", note: "Tampilan terang dan bersih." },
+                  { value: "dark", label: "Dark", note: "Kontras lebih lembut untuk malam hari." },
+                  { value: "system", label: "System", note: "Ikuti pengaturan perangkat otomatis." },
+                ] as const).map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => setTheme(option.value)}
+                    className={cn(
+                      "flex w-full items-center justify-between rounded-[22px] border px-4 py-4 text-left transition-all",
+                      currentTheme === option.value
+                        ? "border-[#0071E3]/20 bg-[#0071E3]/8 shadow-[0_14px_34px_rgba(0,113,227,0.12)]"
+                        : "border-black/[0.06] bg-white/80 hover:border-black/[0.1] dark:border-white/[0.08] dark:bg-white/[0.04] dark:hover:border-white/[0.12]",
+                    )}
+                  >
+                    <div>
+                      <span className="block text-[14px] font-medium text-foreground">{option.label}</span>
+                      <span className="mt-1 block text-[12px] text-[#86868B]">{option.note}</span>
+                    </div>
+                    <div
+                      className={cn(
+                        "h-5 w-9 rounded-full p-0.5 transition-colors",
+                        currentTheme === option.value ? "bg-[#0071E3]" : "bg-black/[0.08] dark:bg-white/[0.12]",
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "h-4 w-4 rounded-full bg-white transition-transform",
+                          currentTheme === option.value ? "translate-x-4" : "translate-x-0",
+                        )}
+                      />
+                    </div>
                   </button>
                 ))}
               </div>
-            </div>
-          </div>
-          <button onClick={saveProfile} disabled={saving}
-            className="mt-3 w-full bg-[#0071E3] text-white text-[14px] font-medium py-2.5 rounded-full hover:bg-[#0077ED] transition-colors disabled:opacity-60">
-            {saving ? "Menyimpan..." : "Simpan Perubahan"}
-          </button>
-        </div>
+            </article>
 
-        {/* Appearance */}
-        <div className="mb-5">
-          <p className="text-[11px] font-semibold text-[#86868B] uppercase tracking-widest px-1 mb-2">Tampilan</p>
-          <div className={SECTION_CLS}>
-            <div className={ROW_CLS}>
+            <article className="rounded-[30px] border border-black/[0.06] bg-[#FBFBFD] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.07)] dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_24px_60px_rgba(0,0,0,0.28)] sm:p-7">
               <div className="flex items-center gap-3">
-                {resolvedTheme === "dark" ? <Moon className="w-4 h-4 text-[#86868B]" /> : <Sun className="w-4 h-4 text-[#86868B]" />}
-                <span className="text-[14px] text-foreground">Tema</span>
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#FF453A]/10 text-[#FF453A]">
+                  <Lock className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B]">
+                    Akun
+                  </p>
+                  <h2 className="mt-1 font-display text-[26px] font-semibold tracking-tight text-foreground">
+                    Sesi login
+                  </h2>
+                </div>
               </div>
-              <div className="flex gap-2">
-                {["light", "dark", "system"].map(t => (
-                  <button key={t} onClick={() => setTheme(t)}
-                    className={cn("text-[12px] font-medium px-3 py-1 rounded-full capitalize transition-colors",
-                      resolvedTheme === t || (t === "system" && !["light", "dark"].includes(resolvedTheme ?? ""))
-                        ? "bg-[#0071E3] text-white" : "bg-background border border-[#D2D2D7] text-[#86868B]")}>
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Account */}
-        <div className="mb-5">
-          <p className="text-[11px] font-semibold text-[#86868B] uppercase tracking-widest px-1 mb-2">Akun</p>
-          <div className={SECTION_CLS}>
-            <button onClick={handleLogout} className={cn(ROW_CLS, "w-full text-left hover:bg-[#FF453A]/5 transition-colors")}>
-              <div className="flex items-center gap-3">
-                <Lock className="w-4 h-4 text-[#FF453A]" />
-                <span className="text-[14px] text-[#FF453A]">Keluar</span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-[#FF453A]" />
-            </button>
+              <p className="mt-4 text-[14px] leading-6 text-[#86868B]">
+                Keluar dari sesi saat ini jika kamu ingin mengakhiri akses pada perangkat ini.
+              </p>
+
+              <button
+                onClick={handleLogout}
+                className="mt-6 flex w-full items-center justify-between rounded-[22px] border border-[#FF453A]/15 bg-[#FF453A]/6 px-4 py-4 text-left transition-colors hover:bg-[#FF453A]/10"
+              >
+                <div>
+                  <span className="block text-[14px] font-medium text-[#FF453A]">Keluar</span>
+                  <span className="mt-1 block text-[12px] text-[#86868B]">Kembali ke halaman utama setelah logout.</span>
+                </div>
+                <div className="h-5 w-9 rounded-full bg-[#FF453A] p-0.5">
+                  <div className="h-4 w-4 translate-x-4 rounded-full bg-white" />
+                </div>
+              </button>
+            </article>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
 }
