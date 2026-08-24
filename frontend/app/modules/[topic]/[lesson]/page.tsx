@@ -39,6 +39,32 @@ export default function LessonPage() {
     if (saved === "id" || saved === "en") setLang(saved as "id" | "en");
   }, [topic, lesson]);
 
+  useEffect(() => {
+    if (!data) return;
+    import("gsap").then(({ gsap }) => {
+      gsap.fromTo(
+        ".lesson-hero",
+        { y: 12, opacity: 0.001 },
+        { y: 0, opacity: 1, duration: 0.45, ease: "expo.out" }
+      );
+      gsap.fromTo(
+        ".lesson-sidebar-item",
+        { x: -8, opacity: 0.001 },
+        { x: 0, opacity: 1, duration: 0.35, ease: "power2.out", stagger: 0.03 }
+      );
+    });
+  }, [data, topic, lesson]);
+
+  useEffect(() => {
+    import("gsap").then(({ gsap }) => {
+      gsap.fromTo(
+        ".lesson-tab-panel",
+        { y: 10, opacity: 0.001 },
+        { y: 0, opacity: 1, duration: 0.35, ease: "expo.out" }
+      );
+    });
+  }, [activeTab]);
+
   function toggleLang() {
     const next = lang === "id" ? "en" : "id";
     setLang(next);
@@ -163,7 +189,7 @@ export default function LessonPage() {
                   <Link key={l.id} href={`/modules/${topic}/${l.id}`}
                     onClick={() => setSidebarOpen(false)}
                     className={cn(
-                      "flex items-center gap-2.5 px-4 py-2.5 text-[13px] transition-colors group",
+                      "lesson-sidebar-item flex items-center gap-2.5 px-4 py-2.5 text-[13px] transition-colors group",
                       isCurrent
                         ? "bg-[#0071E3]/8 text-[#0071E3] font-medium border-r-2 border-[#0071E3]"
                         : "text-foreground hover:bg-[#F5F5F7] dark:hover:bg-white/4"
@@ -230,7 +256,7 @@ export default function LessonPage() {
               onComplete={handleComplete} done={done}
               onQuizComplete={handleQuizComplete}
             />
-            <div>
+      <div className="lesson-hero">
               <p className="text-[11px] font-semibold text-[#86868B] uppercase tracking-widest mb-3">Editor Go</p>
               <CodeEditor
                 defaultCode={getLastCode(topic, lesson) ?? data.starterCode}
@@ -267,7 +293,7 @@ function LessonContent({ data, lang, title, content, topic, lesson, activeTab, o
       </h1>
 
       {/* Tabs: Materi | Diskusi */}
-      <div className="flex items-center gap-1 mb-6 border-b border-[#D2D2D7]/40">
+      <div className="relative flex items-center gap-1 mb-6 border-b border-[#D2D2D7]/40">
         {[
           { key: "content", label: lang === "id" ? "Materi" : "Content" },
           { key: "discussion", label: lang === "id" ? "Diskusi" : "Discussion", icon: MessageCircle },
@@ -288,11 +314,11 @@ function LessonContent({ data, lang, title, content, topic, lesson, activeTab, o
       {/* Tab content */}
       {activeTab === "content" ? (
         <>
-          <div className="prose-golearn" dangerouslySetInnerHTML={{ __html: mdToHtml(content) }} />
+          <div className="lesson-tab-panel prose-golearn" dangerouslySetInnerHTML={{ __html: mdToHtml(content) }} />
 
           {/* Quiz */}
           {data.quiz?.length > 0 && (
-            <div className="mt-10">
+            <div className="lesson-tab-panel mt-10">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-1 h-5 bg-[#0071E3] rounded-full" />
                 <p className="font-semibold text-[15px] text-foreground">
@@ -306,7 +332,7 @@ function LessonContent({ data, lang, title, content, topic, lesson, activeTab, o
 
           {/* Mark complete CTA (bottom) */}
           {!done && (
-            <div className="mt-10 p-5 bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[16px] flex items-center justify-between gap-4">
+            <div className="lesson-tab-panel mt-10 p-5 bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[16px] flex items-center justify-between gap-4 border border-[#D2D2D7]/40 dark:border-white/8">
               <div>
                 <p className="font-medium text-[14px] text-foreground">Sudah paham materi ini?</p>
                 <p className="text-[#86868B] text-[12px] mt-0.5">Tandai selesai dan dapatkan +50 XP</p>
@@ -318,7 +344,9 @@ function LessonContent({ data, lang, title, content, topic, lesson, activeTab, o
           )}
         </>
       ) : (
-        <CommentThread topicSlug={topic} lessonId={lesson} lang={lang} />
+        <div className="lesson-tab-panel">
+          <CommentThread topicSlug={topic} lessonId={lesson} lang={lang} />
+        </div>
       )}
     </div>
   );

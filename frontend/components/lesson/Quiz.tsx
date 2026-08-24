@@ -64,7 +64,7 @@ export default function Quiz({ questions, lang, topicSlug, lessonId, onComplete 
     const score = answers.filter((a, i) => a === questions[i].correct).length;
     const pct = Math.round((score / questions.length) * 100);
     return (
-      <div className="bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[18px] p-6 text-center">
+      <div className="bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[18px] p-6 text-center border border-[#D2D2D7]/40 dark:border-white/8 shadow-sm">
         <div className={cn("text-[48px] font-display font-semibold mb-2", pct === 100 ? "text-[#34C759]" : pct >= 60 ? "text-[#0071E3]" : "text-[#FF453A]")}>
           {pct}%
         </div>
@@ -81,7 +81,7 @@ export default function Quiz({ questions, lang, topicSlug, lessonId, onComplete 
   }
 
   return (
-    <div className="bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[18px] p-6">
+    <div className="bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[18px] p-6 border border-[#D2D2D7]/40 dark:border-white/8 shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <p className="text-[12px] text-[#86868B] font-medium">

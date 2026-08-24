@@ -30,6 +30,17 @@ export default function CommentThread({ topicSlug, lessonId, lang = "id" }: Prop
       .finally(() => setLoading(false));
   }, [topicSlug, lessonId, sort]);
 
+  useEffect(() => {
+    if (!comments.length) return;
+    import("gsap").then(({ gsap }) => {
+      gsap.fromTo(
+        ".comment-thread-item",
+        { y: 10, opacity: 0.001 },
+        { y: 0, opacity: 1, duration: 0.35, ease: "expo.out", stagger: 0.04 }
+      );
+    });
+  }, [comments]);
+
   async function submitComment(parentId?: string) {
     const text = parentId ? replyContent : content;
     if (!text.trim()) return;
@@ -127,7 +138,7 @@ export default function CommentThread({ topicSlug, lessonId, lang = "id" }: Prop
 function CommentItem({ comment: c, replies, onUpvote, onDelete, onReply, replyTo, replyContent, onReplyChange, onReplySubmit, isMe, submitting, lang }: any) {
   const [expanded, setExpanded] = useState(true);
   return (
-    <div className="bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[14px] p-4">
+    <div className="comment-thread-item bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[14px] p-4 border border-[#D2D2D7]/40 dark:border-white/8">
       <div className="flex items-start gap-3">
         <div className="w-8 h-8 rounded-full bg-[#0071E3] flex items-center justify-center text-white text-[12px] font-semibold flex-shrink-0">
           {c.user_name?.charAt(0).toUpperCase()}
