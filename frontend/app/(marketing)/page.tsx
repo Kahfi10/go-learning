@@ -289,10 +289,10 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 mx-auto max-w-6xl">
-          <div className="grid gap-8 xl:grid-cols-2 xl:gap-12 items-center">
+          <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_460px] 2xl:grid-cols-2 xl:gap-12 items-center">
 
             {/* LEFT */}
-            <div className="flex flex-col items-start">
+            <div className="flex max-w-[560px] flex-col items-start">
               <div className="hero-badge inline-flex items-center gap-2 bg-[#0071E3]/10 border border-[#0071E3]/20 text-[#0071E3] text-[12px] sm:text-[13px] font-medium px-3 sm:px-4 py-1.5 rounded-full mb-5 sm:mb-6">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#0071E3] animate-pulse shrink-0" />
                 Platform Belajar Go #1 Bahasa Indonesia
@@ -311,7 +311,7 @@ export default function LandingPage() {
                 <span className="text-foreground font-medium">production patterns</span>.
               </p>
 
-              <div className="hero-cta-row flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 mb-6 sm:mb-8 w-full sm:w-auto max-w-[320px] sm:max-w-none">
+              <div className="hero-cta-row flex flex-col md:flex-row items-stretch md:items-center gap-2 sm:gap-3 mb-6 sm:mb-8 w-full md:w-auto max-w-[360px] md:max-w-none">
                 <Link href="/modules"
                   className="group inline-flex items-center justify-center gap-2 h-11 sm:h-auto bg-[#0071E3] text-white text-[14px] sm:text-[15px] leading-none font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full hover:bg-[#0077ED] transition-all shadow-lg shadow-[#0071E3]/20 hover:-translate-y-0.5 active:translate-y-0 whitespace-nowrap">
                   Mulai Belajar Gratis
@@ -944,7 +944,7 @@ func main() {
 	}
 
 	return (
-		<div className="hero-code-window hidden md:block lg:ml-4">
+		<div className="hero-code-window hidden lg:block xl:ml-2 2xl:ml-4 max-w-[460px]">
 			<div
 				ref={frameRef}
 				className="bg-[#1C1C1E] rounded-[18px] overflow-hidden shadow-2xl ring-1 ring-white/10 transition-transform duration-500"
@@ -992,7 +992,7 @@ func main() {
         </div>
       </div>
 
-			<div className="grid grid-cols-3 gap-2 mt-3">
+			<div className="hidden xl:grid grid-cols-3 gap-2 mt-3">
 				{[
 					{ v: "15", l: "Topik" },
 					{ v: `${lineCount}`, l: "Lines" },
