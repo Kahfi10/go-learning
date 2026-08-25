@@ -289,47 +289,45 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 mx-auto max-w-6xl">
-          <div className="grid gap-8 2xl:grid-cols-[minmax(0,1.1fr)_460px] 2xl:gap-12 items-center">
+          <div className="flex flex-col items-center text-center">
+            <div className="hero-badge inline-flex items-center gap-2 bg-[#0071E3]/10 border border-[#0071E3]/20 text-[#0071E3] text-[12px] sm:text-[13px] font-medium px-3 sm:px-4 py-1.5 rounded-full mb-5 sm:mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#0071E3] animate-pulse shrink-0" />
+              Platform Belajar Go #1 Bahasa Indonesia
+            </div>
 
-            {/* LEFT */}
-            <div className="flex max-w-[760px] flex-col items-start">
-              <div className="hero-badge inline-flex items-center gap-2 bg-[#0071E3]/10 border border-[#0071E3]/20 text-[#0071E3] text-[12px] sm:text-[13px] font-medium px-3 sm:px-4 py-1.5 rounded-full mb-5 sm:mb-6">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#0071E3] animate-pulse shrink-0" />
-                Platform Belajar Go #1 Bahasa Indonesia
-              </div>
-
-              <h1 className="hero-title font-display font-semibold leading-[1.05] tracking-[-0.03em] text-foreground mb-4 sm:mb-5"
-                style={{ fontSize: "clamp(32px, 5vw, 60px)" }}>
-                <span className="hero-title-line block 2xl:whitespace-nowrap">Kuasai Go.</span>
-                <span className="hero-title-line block text-[#0071E3] 2xl:whitespace-nowrap">Dengan Cara</span>
-                <span className="hero-title-line block 2xl:whitespace-nowrap">yang Elegan.</span>
+            <div className="max-w-3xl">
+              <h1 className="hero-title font-display font-semibold leading-[1.05] tracking-[-0.04em] text-foreground mb-4 sm:mb-5"
+                style={{ fontSize: "clamp(34px, 6vw, 72px)" }}>
+                <span className="hero-title-line block">Kuasai Go.</span>
+                <span className="hero-title-line block text-[#0071E3]">Dengan Cara</span>
+                <span className="hero-title-line block">yang Elegan.</span>
               </h1>
 
-              <p className="hero-sub text-[15px] sm:text-[17px] text-[#86868B] leading-relaxed mb-6 sm:mb-8 max-w-[560px]">
+              <p className="hero-sub mx-auto text-[15px] sm:text-[18px] text-[#86868B] leading-relaxed mb-6 sm:mb-8 max-w-2xl">
                 76 lessons interaktif, bilingual ID/EN, dengan editor Go langsung di browser.
                 Dari <span className="text-foreground font-medium">Hello World</span> hingga{" "}
                 <span className="text-foreground font-medium">production patterns</span>.
               </p>
+            </div>
 
-              <div className="hero-cta-row flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 mb-6 sm:mb-8 w-full sm:w-auto max-w-[420px] sm:max-w-none">
-                <Link href="/modules"
-                  className="group inline-flex items-center justify-center gap-2 h-11 sm:h-auto bg-[#0071E3] text-white text-[14px] sm:text-[15px] leading-none font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full hover:bg-[#0077ED] transition-all shadow-lg shadow-[#0071E3]/20 hover:-translate-y-0.5 active:translate-y-0 whitespace-nowrap">
-                  Mulai Belajar Gratis
-                  <ArrowRight className="w-4 h-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
-                </Link>
-                <Link href="/playground"
-                  className="inline-flex items-center justify-center gap-2 h-11 sm:h-auto text-foreground text-[14px] sm:text-[15px] leading-none font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full border border-[#D2D2D7] dark:border-white/15 hover:bg-[#F5F5F7] dark:hover:bg-[#1C1C1E] transition-colors whitespace-nowrap">
-                  <Play className="w-4 h-4 shrink-0 text-[#0071E3]" /> Coba Playground
-                </Link>
-              </div>
+            <div className="hero-cta-row flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 sm:gap-3 mb-6 sm:mb-8 w-full max-w-[420px] sm:max-w-none">
+              <Link href="/modules"
+                className="group inline-flex items-center justify-center gap-2 h-11 sm:h-auto bg-[#0071E3] text-white text-[14px] sm:text-[15px] leading-none font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full hover:bg-[#0077ED] transition-all shadow-lg shadow-[#0071E3]/20 hover:-translate-y-0.5 active:translate-y-0 whitespace-nowrap">
+                Mulai Belajar Gratis
+                <ArrowRight className="w-4 h-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+              <Link href="/playground"
+                className="inline-flex items-center justify-center gap-2 h-11 sm:h-auto text-foreground text-[14px] sm:text-[15px] leading-none font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full border border-[#D2D2D7] dark:border-white/15 hover:bg-[#F5F5F7] dark:hover:bg-[#1C1C1E] transition-colors whitespace-nowrap">
+                <Play className="w-4 h-4 shrink-0 text-[#0071E3]" /> Coba Playground
+              </Link>
+            </div>
 
-              <div className="hero-trust flex flex-wrap gap-x-4 sm:gap-x-5 gap-y-2 text-[12px] sm:text-[13px] text-[#86868B]">
-                {["Gratis selamanya", "Tanpa install", "Bilingual ID/EN", "76 lessons"].map((t) => (
-                  <span key={t} className="flex items-center gap-1.5">
-                    <CheckCircle className="w-3.5 h-3.5 text-[#34C759] shrink-0" />{t}
-                  </span>
-                ))}
-              </div>
+            <div className="hero-trust flex flex-wrap justify-center gap-x-4 sm:gap-x-5 gap-y-2 text-[12px] sm:text-[13px] text-[#86868B] mb-8 sm:mb-10">
+              {["Gratis selamanya", "Tanpa install", "Bilingual ID/EN", "76 lessons"].map((t) => (
+                <span key={t} className="flex items-center gap-1.5">
+                  <CheckCircle className="w-3.5 h-3.5 text-[#34C759] shrink-0" />{t}
+                </span>
+              ))}
             </div>
 
             <HeroCodePreview />
@@ -944,7 +942,7 @@ func main() {
 	}
 
 	return (
-		<div className="hero-code-window hidden lg:block mx-auto 2xl:mx-0 2xl:ml-auto max-w-[400px] 2xl:max-w-[460px] w-full">
+		<div className="hero-code-window hidden lg:block w-full max-w-[520px] mx-auto">
 			<div
 				ref={frameRef}
 				className="bg-[#1C1C1E] rounded-[18px] overflow-hidden shadow-2xl ring-1 ring-white/10 transition-transform duration-500"
