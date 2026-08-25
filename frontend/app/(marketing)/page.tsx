@@ -189,11 +189,11 @@ export default function LandingPage() {
         const heroTl = gsap.timeline({ delay: 0.04 });
         heroTl
           .from(".hero-badge", { y: 14, duration: 0.5, ease: "power3.out" })
-          .from(".hero-title-line", { y: 32, duration: 0.8, ease: "expo.out", stagger: 0.07 }, "-=0.18")
-          .from(".hero-sub", { y: 16, duration: 0.6, ease: "power3.out" }, "-=0.3")
-          .from(".hero-cta-row > *", { y: 12, duration: 0.5, ease: "power3.out", stagger: 0.05 }, "-=0.22")
-          .from(".hero-trust > *", { y: 8, duration: 0.42, ease: "power2.out", stagger: 0.03 }, "-=0.2")
-          .from(".hero-code-window", { x: 24, y: 8, duration: 0.85, ease: "expo.out" }, "-=0.55");
+          .from(".hero-title-line", { y: 24, duration: 0.7, ease: "expo.out", stagger: 0.06 }, "-=0.16")
+          .from(".hero-sub", { y: 14, duration: 0.55, ease: "power3.out" }, "-=0.24")
+          .from(".hero-cta-row > *", { y: 10, duration: 0.45, ease: "power3.out", stagger: 0.05 }, "-=0.18")
+          .from(".hero-trust > *", { y: 6, duration: 0.38, ease: "power2.out", stagger: 0.03 }, "-=0.16")
+          .from(".hero-code-window", { x: 18, y: 6, duration: 0.75, ease: "expo.out" }, "-=0.42");
 
         /* Breathing float after entrance */
         gsap.to(".hero-code-window", {
@@ -289,10 +289,10 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 mx-auto max-w-6xl">
-          <div className="grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_420px] 2xl:grid-cols-[minmax(0,1.1fr)_460px] xl:gap-12 items-center">
+          <div className="grid gap-8 2xl:grid-cols-[minmax(0,1.1fr)_460px] 2xl:gap-12 items-center">
 
             {/* LEFT */}
-            <div className="flex max-w-[620px] flex-col items-start">
+            <div className="flex max-w-[760px] flex-col items-start">
               <div className="hero-badge inline-flex items-center gap-2 bg-[#0071E3]/10 border border-[#0071E3]/20 text-[#0071E3] text-[12px] sm:text-[13px] font-medium px-3 sm:px-4 py-1.5 rounded-full mb-5 sm:mb-6">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#0071E3] animate-pulse shrink-0" />
                 Platform Belajar Go #1 Bahasa Indonesia
@@ -300,9 +300,9 @@ export default function LandingPage() {
 
               <h1 className="hero-title font-display font-semibold leading-[1.05] tracking-[-0.03em] text-foreground mb-4 sm:mb-5"
                 style={{ fontSize: "clamp(32px, 5vw, 60px)" }}>
-                <span className="hero-title-line block">Kuasai Go.</span>
-                <span className="hero-title-line block text-[#0071E3]">Dengan Cara</span>
-                <span className="hero-title-line block">yang Elegan.</span>
+                <span className="hero-title-line block 2xl:whitespace-nowrap">Kuasai Go.</span>
+                <span className="hero-title-line block text-[#0071E3] 2xl:whitespace-nowrap">Dengan Cara</span>
+                <span className="hero-title-line block 2xl:whitespace-nowrap">yang Elegan.</span>
               </h1>
 
               <p className="hero-sub text-[15px] sm:text-[17px] text-[#86868B] leading-relaxed mb-6 sm:mb-8 max-w-[560px]">
@@ -944,7 +944,7 @@ func main() {
 	}
 
 	return (
-		<div className="hero-code-window hidden lg:block xl:ml-auto max-w-[400px] 2xl:max-w-[460px] w-full">
+		<div className="hero-code-window hidden lg:block mx-auto 2xl:mx-0 2xl:ml-auto max-w-[400px] 2xl:max-w-[460px] w-full">
 			<div
 				ref={frameRef}
 				className="bg-[#1C1C1E] rounded-[18px] overflow-hidden shadow-2xl ring-1 ring-white/10 transition-transform duration-500"
