@@ -175,6 +175,7 @@ const FAQS = [
 /* ─── Page ──────────────────────────────────────────────── */
 export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [heroMode, setHeroMode] = useState<"apple" | "editorial" | "showcase">("editorial");
 
   useLayoutEffect(() => {
     let ctx: any;
@@ -289,53 +290,34 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 mx-auto max-w-6xl min-h-[calc(100vh-100px)] flex flex-col justify-between">
-          <div className="flex justify-center pt-2 sm:pt-4">
-            <div className="hero-badge inline-flex items-center gap-2 bg-[#0071E3]/10 border border-[#0071E3]/20 text-[#0071E3] text-[12px] sm:text-[13px] font-medium px-3 sm:px-4 py-1.5 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#0071E3] animate-pulse shrink-0" />
-              Platform Belajar Go #1 Bahasa Indonesia
+          <div className="flex justify-end pt-2 sm:pt-4">
+            <div className="flex items-center gap-1 bg-white/85 dark:bg-[#111214]/85 border border-[#D2D2D7]/60 dark:border-white/10 rounded-full p-1 shadow-sm backdrop-blur-sm">
+              {[
+                { key: "apple", label: "Apple Cinematic" },
+                { key: "editorial", label: "Editorial Split" },
+                { key: "showcase", label: "Product Showcase" },
+              ].map((opt) => (
+                <button
+                  key={opt.key}
+                  onClick={() => setHeroMode(opt.key as typeof heroMode)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-full text-[11px] sm:text-[12px] font-medium transition-colors whitespace-nowrap",
+                    heroMode === opt.key ? "bg-[#0071E3] text-white" : "text-[#86868B] hover:text-foreground"
+                  )}
+                >
+                  {opt.label}
+                </button>
+              ))}
             </div>
           </div>
 
-          <div className="flex flex-1 items-center justify-center py-10 sm:py-12">
-            <div className="w-full max-w-4xl text-center">
-              <h1
-                className="hero-title font-display font-semibold leading-[0.98] tracking-[-0.05em] text-foreground mb-5 sm:mb-6"
-                style={{ fontSize: "clamp(38px, 7vw, 88px)" }}
-              >
-                <span className="hero-title-line block whitespace-nowrap">Kuasai Go.</span>
-                <span className="hero-title-line block text-[#0071E3]">Belajar Lebih Rapi.</span>
-              </h1>
-
-              <p className="hero-sub mx-auto text-[15px] sm:text-[18px] text-[#86868B] leading-relaxed mb-6 sm:mb-8 max-w-2xl">
-                76 lesson interaktif, bilingual ID/EN, dengan editor Go langsung di browser.
-                Dari <span className="text-foreground font-medium">Hello World</span> sampai <span className="text-foreground font-medium">production patterns</span>.
-              </p>
-
-              <div className="hero-cta-row flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 sm:gap-3 mb-6 sm:mb-7 w-full max-w-[420px] mx-auto">
-                <Link href="/modules"
-                  className="group inline-flex items-center justify-center gap-2 h-11 sm:h-auto bg-[#0071E3] text-white text-[14px] sm:text-[15px] leading-none font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full hover:bg-[#0077ED] transition-all shadow-lg shadow-[#0071E3]/20 hover:-translate-y-0.5 active:translate-y-0 whitespace-nowrap">
-                  Mulai Belajar Gratis
-                  <ArrowRight className="w-4 h-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
-                </Link>
-                <Link href="/playground"
-                  className="inline-flex items-center justify-center gap-2 h-11 sm:h-auto text-foreground text-[14px] sm:text-[15px] leading-none font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full border border-[#D2D2D7] dark:border-white/15 hover:bg-[#F5F5F7] dark:hover:bg-[#1C1C1E] transition-colors whitespace-nowrap">
-                  <Play className="w-4 h-4 shrink-0 text-[#0071E3]" /> Coba Playground
-                </Link>
-              </div>
-
-              <div className="hero-trust flex flex-wrap justify-center gap-x-4 sm:gap-x-5 gap-y-2 text-[12px] sm:text-[13px] text-[#86868B]">
-                {["Gratis selamanya", "Tanpa install", "Bilingual ID/EN", "76 lessons"].map((t) => (
-                  <span key={t} className="flex items-center gap-1.5">
-                    <CheckCircle className="w-3.5 h-3.5 text-[#34C759] shrink-0" />{t}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-center pb-2 sm:pb-4">
-            <HeroCodePreview />
-          </div>
+          {heroMode === "apple" ? (
+            <HeroApple />
+          ) : heroMode === "showcase" ? (
+            <HeroShowcase />
+          ) : (
+            <HeroEditorial />
+          )}
         </div>
       </section>
 
@@ -854,6 +836,108 @@ function FeatureBentoCard({ item, large = false }: { item: typeof FEATURES[numbe
         ))}
       </div>
     </div>
+  );
+}
+
+function HeroApple() {
+  return (
+    <>
+      <div className="flex flex-1 items-center justify-center py-10 sm:py-12">
+        <div className="w-full max-w-4xl text-center">
+          <div className="hero-badge inline-flex items-center gap-2 bg-[#0071E3]/10 border border-[#0071E3]/20 text-[#0071E3] text-[12px] sm:text-[13px] font-medium px-3 sm:px-4 py-1.5 rounded-full mb-5 sm:mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#0071E3] animate-pulse shrink-0" />
+            Platform Belajar Go #1 Bahasa Indonesia
+          </div>
+          <h1 className="hero-title font-display font-semibold leading-[0.98] tracking-[-0.05em] text-foreground mb-5 sm:mb-6" style={{ fontSize: "clamp(38px, 7vw, 88px)" }}>
+            <span className="hero-title-line block whitespace-nowrap">Kuasai Go.</span>
+            <span className="hero-title-line block text-[#0071E3]">Belajar Lebih Rapi.</span>
+          </h1>
+          <p className="hero-sub mx-auto text-[15px] sm:text-[18px] text-[#86868B] leading-relaxed mb-6 sm:mb-8 max-w-2xl">
+            76 lesson interaktif, bilingual ID/EN, dengan editor Go langsung di browser. Dari <span className="text-foreground font-medium">Hello World</span> sampai <span className="text-foreground font-medium">production patterns</span>.
+          </p>
+          <HeroActions centered />
+        </div>
+      </div>
+      <div className="flex justify-center pb-2 sm:pb-4"><HeroCodePreview /></div>
+    </>
+  );
+}
+
+function HeroEditorial() {
+  return (
+    <div className="flex flex-1 items-center py-10 sm:py-12">
+      <div className="grid gap-10 xl:grid-cols-[minmax(0,1.05fr)_520px] xl:gap-12 items-center w-full">
+        <div className="max-w-[640px]">
+          <div className="hero-badge inline-flex items-center gap-2 bg-[#0071E3]/10 border border-[#0071E3]/20 text-[#0071E3] text-[12px] sm:text-[13px] font-medium px-3 sm:px-4 py-1.5 rounded-full mb-5 sm:mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#0071E3] animate-pulse shrink-0" />
+            Platform Belajar Go #1 Bahasa Indonesia
+          </div>
+          <h1 className="hero-title font-display font-semibold leading-[1.02] tracking-[-0.05em] text-foreground mb-5 sm:mb-6" style={{ fontSize: "clamp(34px, 6vw, 72px)" }}>
+            <span className="hero-title-line block">Kuasai Go.</span>
+            <span className="hero-title-line block text-[#0071E3]">Dengan Cara</span>
+            <span className="hero-title-line block">yang Elegan.</span>
+          </h1>
+          <p className="hero-sub text-[15px] sm:text-[18px] text-[#86868B] leading-relaxed mb-6 sm:mb-8 max-w-[560px] text-justify">
+            76 lesson interaktif, bilingual ID/EN, dengan editor Go langsung di browser. Dari <span className="text-foreground font-medium">Hello World</span> sampai <span className="text-foreground font-medium">production patterns</span>.
+          </p>
+          <HeroActions />
+        </div>
+        <div className="flex justify-center xl:justify-end">
+          <HeroCodePreview />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function HeroShowcase() {
+  return (
+    <div className="flex flex-1 items-center py-10 sm:py-12">
+      <div className="grid gap-8 w-full xl:grid-cols-[520px_minmax(0,1fr)] xl:gap-12 items-center">
+        <div className="flex justify-center xl:justify-start order-2 xl:order-1">
+          <HeroCodePreview />
+        </div>
+        <div className="max-w-[620px] text-center xl:text-left order-1 xl:order-2 xl:justify-self-end">
+          <div className="hero-badge inline-flex items-center gap-2 bg-[#0071E3]/10 border border-[#0071E3]/20 text-[#0071E3] text-[12px] sm:text-[13px] font-medium px-3 sm:px-4 py-1.5 rounded-full mb-5 sm:mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#0071E3] animate-pulse shrink-0" />
+            Jalankan kode Go langsung sekarang
+          </div>
+          <h1 className="hero-title font-display font-semibold leading-[1.02] tracking-[-0.05em] text-foreground mb-5 sm:mb-6" style={{ fontSize: "clamp(34px, 6vw, 68px)" }}>
+            <span className="hero-title-line block">Code first.</span>
+            <span className="hero-title-line block text-[#0071E3]">Learn faster.</span>
+          </h1>
+          <p className="hero-sub text-[15px] sm:text-[18px] text-[#86868B] leading-relaxed mb-6 sm:mb-8 max-w-[520px] xl:ml-0 mx-auto xl:mx-0 text-justify">
+            Ubah kode, tekan run, dan pahami konsep Go langsung dari hasilnya. Dibuat untuk belajar aktif, bukan hanya membaca teori.
+          </p>
+          <HeroActions centered={false} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function HeroActions({ centered = true }: { centered?: boolean }) {
+  return (
+    <>
+      <div className={cn("hero-cta-row flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 mb-6 sm:mb-7 w-full max-w-[420px]", centered ? "mx-auto justify-center" : "justify-start") }>
+        <Link href="/modules"
+          className="group inline-flex items-center justify-center gap-2 h-11 sm:h-auto bg-[#0071E3] text-white text-[14px] sm:text-[15px] leading-none font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full hover:bg-[#0077ED] transition-all shadow-lg shadow-[#0071E3]/20 hover:-translate-y-0.5 active:translate-y-0 whitespace-nowrap">
+          Mulai Belajar Gratis
+          <ArrowRight className="w-4 h-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+        </Link>
+        <Link href="/playground"
+          className="inline-flex items-center justify-center gap-2 h-11 sm:h-auto text-foreground text-[14px] sm:text-[15px] leading-none font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full border border-[#D2D2D7] dark:border-white/15 hover:bg-[#F5F5F7] dark:hover:bg-[#1C1C1E] transition-colors whitespace-nowrap">
+          <Play className="w-4 h-4 shrink-0 text-[#0071E3]" /> Coba Playground
+        </Link>
+      </div>
+      <div className={cn("hero-trust flex flex-wrap gap-x-4 sm:gap-x-5 gap-y-2 text-[12px] sm:text-[13px] text-[#86868B]", centered ? "justify-center" : "justify-start") }>
+        {["Gratis selamanya", "Tanpa install", "Bilingual ID/EN", "76 lessons"].map((t) => (
+          <span key={t} className="flex items-center gap-1.5">
+            <CheckCircle className="w-3.5 h-3.5 text-[#34C759] shrink-0" />{t}
+          </span>
+        ))}
+      </div>
+    </>
   );
 }
 
