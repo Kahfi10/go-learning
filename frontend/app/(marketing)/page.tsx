@@ -283,13 +283,13 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           HERO  — two-column grid
       ══════════════════════════════════════════ */}
-      <section className="relative pt-20 sm:pt-24 pb-12 sm:pb-16 px-4 sm:px-6 overflow-x-hidden">
+      <section className="relative min-h-screen pt-20 sm:pt-24 pb-6 sm:pb-8 px-4 sm:px-6 overflow-x-hidden">
         <div aria-hidden className="pointer-events-none absolute inset-0 flex items-start justify-center overflow-hidden">
           <div className="mt-[-80px] w-[600px] sm:w-[900px] h-[400px] sm:h-[500px] rounded-full bg-[#0071E3]/6 blur-[100px] sm:blur-[120px]" />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-6xl">
-          <div className="flex flex-col items-center text-center">
+        <div className="relative z-10 mx-auto max-w-6xl min-h-[calc(100vh-100px)] flex flex-col justify-between">
+          <div className="flex flex-col items-center text-center pt-2 sm:pt-4">
             <div className="hero-badge inline-flex items-center gap-2 bg-[#0071E3]/10 border border-[#0071E3]/20 text-[#0071E3] text-[12px] sm:text-[13px] font-medium px-3 sm:px-4 py-1.5 rounded-full mb-5 sm:mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-[#0071E3] animate-pulse shrink-0" />
               Platform Belajar Go #1 Bahasa Indonesia
@@ -322,14 +322,16 @@ export default function LandingPage() {
               </Link>
             </div>
 
-            <div className="hero-trust flex flex-wrap justify-center gap-x-4 sm:gap-x-5 gap-y-2 text-[12px] sm:text-[13px] text-[#86868B] mb-8 sm:mb-10">
+            <div className="hero-trust flex flex-wrap justify-center gap-x-4 sm:gap-x-5 gap-y-2 text-[12px] sm:text-[13px] text-[#86868B]">
               {["Gratis selamanya", "Tanpa install", "Bilingual ID/EN", "76 lessons"].map((t) => (
                 <span key={t} className="flex items-center gap-1.5">
                   <CheckCircle className="w-3.5 h-3.5 text-[#34C759] shrink-0" />{t}
                 </span>
               ))}
             </div>
+          </div>
 
+          <div className="flex justify-center pt-8 sm:pt-10">
             <HeroCodePreview />
           </div>
         </div>
@@ -942,7 +944,7 @@ func main() {
 	}
 
 	return (
-		<div className="hero-code-window hidden lg:block w-full max-w-[520px] mx-auto">
+		<div className="hero-code-window hidden md:block w-full max-w-[560px] mx-auto">
 			<div
 				ref={frameRef}
 				className="bg-[#1C1C1E] rounded-[18px] overflow-hidden shadow-2xl ring-1 ring-white/10 transition-transform duration-500"
