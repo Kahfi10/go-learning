@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight, Code2, BookOpen, Trophy, Users,
@@ -176,7 +176,7 @@ const FAQS = [
 export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     let ctx: any;
     const init = async () => {
       const { gsap }        = await import("gsap");
@@ -186,14 +186,14 @@ export default function LandingPage() {
       ctx = gsap.context(() => {
 
         /* Hero timeline — smoother, more premium */
-        const heroTl = gsap.timeline({ delay: 0.08 });
+        const heroTl = gsap.timeline({ delay: 0.04 });
         heroTl
-          .from(".hero-badge", { y: 16, opacity: 0.001, duration: 0.55, ease: "power3.out" })
-          .from(".hero-title-line", { y: 42, opacity: 0.001, duration: 0.85, ease: "expo.out", stagger: 0.08 }, "-=0.25")
-          .from(".hero-sub", { y: 22, opacity: 0.001, duration: 0.7, ease: "power3.out" }, "-=0.35")
-          .from(".hero-cta-row > *", { y: 16, opacity: 0.001, duration: 0.55, ease: "power3.out", stagger: 0.06 }, "-=0.28")
-          .from(".hero-trust > *", { y: 10, opacity: 0.001, duration: 0.45, ease: "power2.out", stagger: 0.04 }, "-=0.25")
-          .from(".hero-code-window", { x: 34, y: 12, opacity: 0.001, duration: 0.95, ease: "expo.out" }, "-=0.65");
+          .from(".hero-badge", { y: 14, duration: 0.5, ease: "power3.out" })
+          .from(".hero-title-line", { y: 32, duration: 0.8, ease: "expo.out", stagger: 0.07 }, "-=0.18")
+          .from(".hero-sub", { y: 16, duration: 0.6, ease: "power3.out" }, "-=0.3")
+          .from(".hero-cta-row > *", { y: 12, duration: 0.5, ease: "power3.out", stagger: 0.05 }, "-=0.22")
+          .from(".hero-trust > *", { y: 8, duration: 0.42, ease: "power2.out", stagger: 0.03 }, "-=0.2")
+          .from(".hero-code-window", { x: 24, y: 8, duration: 0.85, ease: "expo.out" }, "-=0.55");
 
         /* Breathing float after entrance */
         gsap.to(".hero-code-window", {
@@ -383,7 +383,7 @@ export default function LandingPage() {
                     style={{ backgroundColor: w.color + "18" }}>
                     <w.icon className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: w.color }} />
                   </div>
-                  <span className="text-[#86868B] text-[12px] sm:text-[13px] leading-relaxed text-right max-w-[160px]">
+                  <span className="text-[#86868B] text-[12px] sm:text-[13px] leading-relaxed text-right max-w-[160px] text-justify">
                     {w.sub}
                   </span>
                 </div>
@@ -403,7 +403,7 @@ export default function LandingPage() {
           </div>
 
           {/* Companies */}
-          <div className="mt-12 sm:mt-14 pb-2 text-center">
+          <div className="mt-16 sm:mt-20 pb-2 text-center">
             <p className="text-[#86868B] text-[12px] sm:text-[13px] mb-3">Dipercaya oleh</p>
             <div className="flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-8 gap-y-2">
               {["Google", "Docker", "Kubernetes", "Cloudflare", "Uber", "Dropbox"].map((c) => (
@@ -419,7 +419,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           HOW IT WORKS — 2×2 grid
       ══════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6">
+      <section className="py-16 sm:py-20 px-4 sm:px-6 overflow-visible">
         <div className="mx-auto max-w-5xl">
           <div className="mb-10">
             <p className="text-[#86868B] text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">Cara Kerja</p>
@@ -441,7 +441,7 @@ export default function LandingPage() {
                   </div>
                   <h3 className="font-semibold text-[17px] sm:text-[18px] text-foreground">{s.title}</h3>
                 </div>
-                <p className="text-[#86868B] text-[14px] sm:text-[15px] leading-relaxed">{s.desc}</p>
+                <p className="text-[#86868B] text-[14px] sm:text-[15px] leading-relaxed text-justify">{s.desc}</p>
               </div>
             ))}
           </div>
@@ -812,14 +812,14 @@ function FeatureSection({
   items: typeof FEATURES;
 }) {
   return (
-    <div className="grid md:grid-cols-2 gap-4">
-      <div className="feature-panel md:col-span-2 rounded-[24px] p-8 sm:p-10 bg-[#F5F5F7] dark:bg-[#1C1C1E] border border-[#D2D2D7]/60 dark:border-white/8">
+    <div className="grid md:grid-cols-2 gap-4 overflow-visible">
+      <div className="feature-panel md:col-span-2 rounded-[24px] p-8 sm:p-10 bg-[#F5F5F7] dark:bg-[#1C1C1E] border border-[#D2D2D7]/60 dark:border-white/8 overflow-visible">
         <FeatureBentoCard item={items[0]} large />
       </div>
-      <div className="feature-panel rounded-[24px] p-8 bg-background border border-[#D2D2D7]/60 dark:border-white/8">
+      <div className="feature-panel rounded-[24px] p-8 bg-background border border-[#D2D2D7]/60 dark:border-white/8 overflow-visible">
         <FeatureBentoCard item={items[1]} />
       </div>
-      <div className="feature-panel rounded-[24px] p-8 bg-background border border-[#D2D2D7]/60 dark:border-white/8">
+      <div className="feature-panel rounded-[24px] p-8 bg-background border border-[#D2D2D7]/60 dark:border-white/8 overflow-visible">
         <FeatureBentoCard item={items[2]} />
       </div>
     </div>
@@ -828,18 +828,22 @@ function FeatureSection({
 
 function FeatureBentoCard({ item, large = false }: { item: typeof FEATURES[number]; large?: boolean }) {
   return (
-    <div className="flex flex-col gap-6 h-full justify-between">
+    <div className="relative flex flex-col gap-6 h-full justify-between overflow-visible">
+      <div
+        className="pointer-events-none absolute right-0 top-0 h-32 w-32 rounded-full blur-3xl"
+        style={{ backgroundColor: `${item.color}10` }}
+      />
       <div className="flex items-center gap-2.5">
         <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: item.color + "18" }}>
           <item.icon className="w-5 h-5" style={{ color: item.color }} />
         </div>
         <span className="text-[12px] font-semibold uppercase tracking-widest" style={{ color: item.color }}>{item.tag}</span>
       </div>
-      <div>
+      <div className="relative z-10">
         <h3 className={cn("font-display font-semibold tracking-tight text-foreground mb-3 leading-snug", large ? "text-[34px] sm:text-[40px]" : "text-[26px]")}>{item.title}</h3>
-        <p className="text-[#86868B] text-[15px] leading-relaxed max-w-2xl">{item.desc}</p>
+        <p className="text-[#86868B] text-[15px] leading-relaxed max-w-2xl text-justify">{item.desc}</p>
       </div>
-      <div className="grid grid-cols-3 gap-3 max-w-md">
+      <div className="relative z-10 grid grid-cols-3 gap-3 max-w-md">
         {item.stats.map((s) => (
           <div key={s.l} className="rounded-[14px] bg-white dark:bg-[#2C2C2E] px-4 py-3 border border-[#D2D2D7]/50 dark:border-white/8">
             <p className="font-display font-semibold text-[24px] text-foreground">{s.v}</p>
