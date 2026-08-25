@@ -54,7 +54,7 @@ export default function TopicPage() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="mx-auto max-w-5xl px-6 pb-24 pt-24">
+      <main className="mx-auto max-w-5xl px-4 sm:px-6 pb-24 pt-24">
         <section className="relative overflow-hidden rounded-[34px] border border-black/[0.06] bg-[#FBFBFD] p-8 shadow-[0_28px_80px_rgba(15,23,42,0.08)] dark:border-white/[0.08] dark:bg-[#0F0F11] dark:shadow-[0_28px_80px_rgba(0,0,0,0.32)] sm:p-10">
           <div className="pointer-events-none absolute -left-10 top-0 h-48 w-48 rounded-full blur-3xl" style={{ backgroundColor: `${data.color}16` }} />
           <div className="pointer-events-none absolute right-0 top-10 h-40 w-40 rounded-full bg-[#AF52DE]/10 blur-3xl" />
@@ -68,7 +68,7 @@ export default function TopicPage() {
               Semua Topik
             </Link>
 
-            <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_340px] lg:items-start">
+            <div className="mt-6 grid gap-8 xl:grid-cols-[minmax(0,1.15fr)_340px] xl:items-start">
               <div className="max-w-2xl">
                 <div className="flex flex-wrap items-center gap-3">
                   <div
@@ -93,7 +93,7 @@ export default function TopicPage() {
                   </div>
                 </div>
 
-                <h1 className="mt-6 font-display text-[38px] font-semibold tracking-tight text-foreground sm:text-[48px]">
+                <h1 className="mt-6 font-display text-[34px] font-semibold tracking-tight text-foreground sm:text-[42px] xl:text-[48px]">
                   {data.title_id}
                 </h1>
                 <p className="mt-4 max-w-xl text-[16px] leading-7 text-[#86868B] sm:text-[17px]">

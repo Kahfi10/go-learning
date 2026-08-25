@@ -55,17 +55,17 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="mx-auto max-w-5xl px-6 pb-24 pt-24">
+      <main className="mx-auto max-w-5xl px-4 sm:px-6 pb-24 pt-24">
         <section className="relative overflow-hidden rounded-[32px] border border-black/[0.06] bg-[#FBFBFD] p-8 shadow-[0_28px_80px_rgba(15,23,42,0.08)] dark:border-white/[0.08] dark:bg-[#0F0F11] dark:shadow-[0_28px_80px_rgba(0,0,0,0.32)] sm:p-10">
           <div className="pointer-events-none absolute -left-10 top-0 h-48 w-48 rounded-full bg-[#0071E3]/14 blur-3xl" />
           <div className="pointer-events-none absolute right-0 top-8 h-40 w-40 rounded-full bg-[#34C759]/10 blur-3xl" />
 
-          <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_340px] lg:items-start">
+          <div className="relative grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_340px] xl:items-start">
             <div className="max-w-2xl">
               <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#86868B]">
                 Pengaturan
               </p>
-              <h1 className="mt-4 font-display text-[40px] font-semibold tracking-tight text-foreground sm:text-[48px]">
+              <h1 className="mt-4 font-display text-[34px] font-semibold tracking-tight text-foreground sm:text-[42px] xl:text-[48px]">
                 Kelola profil, tampilan, dan preferensi akun dengan lebih rapi.
               </h1>
               <p className="mt-3 max-w-xl text-[16px] leading-7 text-[#86868B] sm:text-[17px]">
@@ -122,7 +122,7 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        <section className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <section className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
           <div className="space-y-6">
             <article className="rounded-[30px] border border-black/[0.06] bg-[#FBFBFD] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.07)] dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_24px_60px_rgba(0,0,0,0.28)] sm:p-7">
               <div className="flex items-center gap-3">

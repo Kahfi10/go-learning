@@ -60,12 +60,12 @@ export default function PlaygroundPage() {
           <div className="pointer-events-none absolute -left-10 top-0 h-44 w-44 rounded-full bg-[#0071E3]/14 blur-3xl" />
           <div className="pointer-events-none absolute right-0 top-8 h-40 w-40 rounded-full bg-[#34C759]/10 blur-3xl" />
 
-          <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_360px] lg:items-start">
+          <div className="relative grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_360px] xl:items-start">
             <div className="max-w-2xl">
               <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#86868B]">
                 Playground
               </p>
-              <h1 className="mt-4 font-display text-[38px] font-semibold tracking-tight text-foreground sm:text-[48px]">
+              <h1 className="mt-4 font-display text-[34px] font-semibold tracking-tight text-foreground sm:text-[42px] xl:text-[48px]">
                 Jalankan, ubah, dan bagikan snippet Go tanpa setup lokal.
               </h1>
               <p className="mt-3 max-w-xl text-[16px] leading-7 text-[#86868B] sm:text-[17px]">
