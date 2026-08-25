@@ -745,7 +745,7 @@ function TopicCard({
       gsap.to(card, {
         y: -6,
         scale: 1.015,
-        boxShadow: `0 20px 40px ${t.color}18`,
+        boxShadow: "0 20px 40px rgba(15,23,42,0.10)",
         duration: 0.28,
         ease: "power2.out",
       });
@@ -759,7 +759,7 @@ function TopicCard({
       gsap.to(card, {
         y: 0,
         scale: 1,
-        boxShadow: "0 0 0 rgba(0,0,0,0)",
+        boxShadow: "0 12px 30px rgba(15,23,42,0.04)",
         duration: 0.4,
         ease: "expo.out",
       });
