@@ -289,49 +289,51 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 mx-auto max-w-6xl min-h-[calc(100vh-100px)] flex flex-col justify-between">
-          <div className="flex flex-col items-center text-center pt-2 sm:pt-4">
-            <div className="hero-badge inline-flex items-center gap-2 bg-[#0071E3]/10 border border-[#0071E3]/20 text-[#0071E3] text-[12px] sm:text-[13px] font-medium px-3 sm:px-4 py-1.5 rounded-full mb-5 sm:mb-6">
+          <div className="flex justify-center pt-2 sm:pt-4">
+            <div className="hero-badge inline-flex items-center gap-2 bg-[#0071E3]/10 border border-[#0071E3]/20 text-[#0071E3] text-[12px] sm:text-[13px] font-medium px-3 sm:px-4 py-1.5 rounded-full">
               <span className="w-1.5 h-1.5 rounded-full bg-[#0071E3] animate-pulse shrink-0" />
               Platform Belajar Go #1 Bahasa Indonesia
             </div>
+          </div>
 
-            <div className="max-w-3xl">
-              <h1 className="hero-title font-display font-semibold leading-[1.05] tracking-[-0.04em] text-foreground mb-4 sm:mb-5"
-                style={{ fontSize: "clamp(34px, 6vw, 72px)" }}>
-                <span className="hero-title-line block">Kuasai Go.</span>
-                <span className="hero-title-line block text-[#0071E3]">Dengan Cara</span>
-                <span className="hero-title-line block">yang Elegan.</span>
+          <div className="flex flex-1 items-center justify-center py-10 sm:py-12">
+            <div className="w-full max-w-4xl text-center">
+              <h1
+                className="hero-title font-display font-semibold leading-[0.98] tracking-[-0.05em] text-foreground mb-5 sm:mb-6"
+                style={{ fontSize: "clamp(38px, 7vw, 88px)" }}
+              >
+                <span className="hero-title-line block whitespace-nowrap">Kuasai Go.</span>
+                <span className="hero-title-line block text-[#0071E3]">Belajar Lebih Rapi.</span>
               </h1>
 
               <p className="hero-sub mx-auto text-[15px] sm:text-[18px] text-[#86868B] leading-relaxed mb-6 sm:mb-8 max-w-2xl">
-                76 lessons interaktif, bilingual ID/EN, dengan editor Go langsung di browser.
-                Dari <span className="text-foreground font-medium">Hello World</span> hingga{" "}
-                <span className="text-foreground font-medium">production patterns</span>.
+                76 lesson interaktif, bilingual ID/EN, dengan editor Go langsung di browser.
+                Dari <span className="text-foreground font-medium">Hello World</span> sampai <span className="text-foreground font-medium">production patterns</span>.
               </p>
-            </div>
 
-            <div className="hero-cta-row flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 sm:gap-3 mb-6 sm:mb-8 w-full max-w-[420px] sm:max-w-none">
-              <Link href="/modules"
-                className="group inline-flex items-center justify-center gap-2 h-11 sm:h-auto bg-[#0071E3] text-white text-[14px] sm:text-[15px] leading-none font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full hover:bg-[#0077ED] transition-all shadow-lg shadow-[#0071E3]/20 hover:-translate-y-0.5 active:translate-y-0 whitespace-nowrap">
-                Mulai Belajar Gratis
-                <ArrowRight className="w-4 h-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-              <Link href="/playground"
-                className="inline-flex items-center justify-center gap-2 h-11 sm:h-auto text-foreground text-[14px] sm:text-[15px] leading-none font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full border border-[#D2D2D7] dark:border-white/15 hover:bg-[#F5F5F7] dark:hover:bg-[#1C1C1E] transition-colors whitespace-nowrap">
-                <Play className="w-4 h-4 shrink-0 text-[#0071E3]" /> Coba Playground
-              </Link>
-            </div>
+              <div className="hero-cta-row flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 sm:gap-3 mb-6 sm:mb-7 w-full max-w-[420px] mx-auto">
+                <Link href="/modules"
+                  className="group inline-flex items-center justify-center gap-2 h-11 sm:h-auto bg-[#0071E3] text-white text-[14px] sm:text-[15px] leading-none font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full hover:bg-[#0077ED] transition-all shadow-lg shadow-[#0071E3]/20 hover:-translate-y-0.5 active:translate-y-0 whitespace-nowrap">
+                  Mulai Belajar Gratis
+                  <ArrowRight className="w-4 h-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                </Link>
+                <Link href="/playground"
+                  className="inline-flex items-center justify-center gap-2 h-11 sm:h-auto text-foreground text-[14px] sm:text-[15px] leading-none font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full border border-[#D2D2D7] dark:border-white/15 hover:bg-[#F5F5F7] dark:hover:bg-[#1C1C1E] transition-colors whitespace-nowrap">
+                  <Play className="w-4 h-4 shrink-0 text-[#0071E3]" /> Coba Playground
+                </Link>
+              </div>
 
-            <div className="hero-trust flex flex-wrap justify-center gap-x-4 sm:gap-x-5 gap-y-2 text-[12px] sm:text-[13px] text-[#86868B]">
-              {["Gratis selamanya", "Tanpa install", "Bilingual ID/EN", "76 lessons"].map((t) => (
-                <span key={t} className="flex items-center gap-1.5">
-                  <CheckCircle className="w-3.5 h-3.5 text-[#34C759] shrink-0" />{t}
-                </span>
-              ))}
+              <div className="hero-trust flex flex-wrap justify-center gap-x-4 sm:gap-x-5 gap-y-2 text-[12px] sm:text-[13px] text-[#86868B]">
+                {["Gratis selamanya", "Tanpa install", "Bilingual ID/EN", "76 lessons"].map((t) => (
+                  <span key={t} className="flex items-center gap-1.5">
+                    <CheckCircle className="w-3.5 h-3.5 text-[#34C759] shrink-0" />{t}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
 
-          <div className="flex justify-center pt-8 sm:pt-10">
+          <div className="flex justify-center pb-2 sm:pb-4">
             <HeroCodePreview />
           </div>
         </div>
