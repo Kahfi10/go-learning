@@ -289,7 +289,7 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 mx-auto max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <div className="grid gap-8 xl:grid-cols-2 xl:gap-12 items-center">
 
             {/* LEFT */}
             <div className="flex flex-col items-start">

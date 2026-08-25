@@ -68,7 +68,7 @@ export default function TopicPage() {
               Semua Topik
             </Link>
 
-            <div className="mt-6 grid gap-8 xl:grid-cols-[minmax(0,1.15fr)_340px] xl:items-start">
+            <div className="mt-6 grid gap-8 xl:grid-cols-[minmax(0,1.12fr)_320px] xl:items-start">
               <div className="max-w-2xl">
                 <div className="flex flex-wrap items-center gap-3">
                   <div
@@ -93,7 +93,7 @@ export default function TopicPage() {
                   </div>
                 </div>
 
-                <h1 className="mt-6 font-display text-[34px] font-semibold tracking-tight text-foreground sm:text-[42px] xl:text-[48px]">
+                <h1 className="mt-6 max-w-3xl font-display text-[30px] font-semibold tracking-tight text-foreground sm:text-[38px] xl:text-[46px] leading-[1.06]">
                   {data.title_id}
                 </h1>
                 <p className="mt-4 max-w-xl text-[16px] leading-7 text-[#86868B] sm:text-[17px]">

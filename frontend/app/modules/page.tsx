@@ -86,12 +86,12 @@ export default function ModulesPage() {
           <div className="pointer-events-none absolute -left-10 top-0 h-48 w-48 rounded-full bg-[#0071E3]/15 blur-3xl" />
           <div className="pointer-events-none absolute right-0 top-10 h-40 w-40 rounded-full bg-[#AF52DE]/12 blur-3xl" />
 
-          <div className="relative grid gap-8 xl:grid-cols-[minmax(0,1.15fr)_360px] xl:items-start">
+          <div className="relative grid gap-8 xl:grid-cols-[minmax(0,1.12fr)_320px] xl:items-start">
             <div className="max-w-2xl">
               <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#86868B]">
                 GoLearn Modules
               </p>
-              <h1 className="mt-4 font-display text-[34px] font-semibold tracking-tight text-foreground sm:text-[42px] xl:text-[48px]">
+              <h1 className="mt-4 max-w-3xl font-display text-[30px] font-semibold tracking-tight text-foreground sm:text-[38px] xl:text-[46px] leading-[1.06]">
                 Semua topik Go, dirancang lebih rapi untuk fokus belajar.
               </h1>
               <p className="mt-3 max-w-xl text-[16px] leading-7 text-[#86868B] sm:text-[17px]">

@@ -48,7 +48,7 @@ export default function RegisterPage() {
       </div>
 
       <div className="relative mx-auto flex min-h-screen w-full max-w-7xl items-center px-5 py-8 sm:px-8 lg:px-10">
-        <div className="grid w-full gap-6 lg:grid-cols-[1.08fr_0.92fr] xl:gap-10">
+        <div className="grid w-full gap-6 xl:grid-cols-[1.08fr_0.92fr] xl:gap-10">
           <section className="relative overflow-hidden rounded-[32px] border border-white/70 bg-white/72 p-7 shadow-[0_32px_100px_rgba(15,23,42,0.08)] backdrop-blur-2xl dark:border-white/10 dark:bg-white/5 dark:shadow-[0_32px_100px_rgba(0,0,0,0.3)] sm:p-10 lg:min-h-[720px] lg:p-12">
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#0071E3]/45 to-transparent" />
             <div className="absolute -right-16 top-24 h-48 w-48 rounded-full bg-[#0071E3]/10 blur-3xl" />
@@ -72,7 +72,7 @@ export default function RegisterPage() {
                   <Sparkles className="h-3.5 w-3.5" />
                   Pengalaman onboarding yang lebih bersih dan fokus
                 </div>
-                <h1 className="mt-5 max-w-lg font-display text-[34px] font-semibold leading-[1.05] tracking-[-0.04em] text-[#1D1D1F] dark:text-white sm:text-[46px]">
+                <h1 className="mt-5 max-w-xl font-display text-[30px] font-semibold leading-[1.06] tracking-[-0.04em] text-[#1D1D1F] dark:text-white sm:text-[40px] xl:text-[46px]">
                   Buat akun dan mulai jalur belajar Go yang terasa rapi.
                 </h1>
                 <p className="mt-5 max-w-lg text-[15px] leading-7 text-[#6E6E73] dark:text-[#A1A1AA] sm:text-[17px]">
