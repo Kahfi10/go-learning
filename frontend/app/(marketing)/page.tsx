@@ -466,7 +466,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           TOPICS — rich cards + GSAP stagger + hover tilt
       ══════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 bg-[#F5F5F7] dark:bg-[#0A0A0A] overflow-hidden">
+      <section className="py-16 sm:py-20 bg-[#F5F5F7] dark:bg-[#0A0A0A] overflow-visible">
         {/* Header — split into 2 stable rows to avoid overlap */}
         <div className="px-4 sm:px-6 max-w-6xl mx-auto mb-10 sm:mb-12">
           <div className="flex items-end justify-between gap-4 flex-wrap mb-4">
@@ -491,13 +491,13 @@ export default function LandingPage() {
 
         {/* Drag-to-scroll track */}
         <DragScroll>
-          <div id="topics-track" className="flex gap-3 sm:gap-4 px-4 sm:px-6 pb-4 pt-1" style={{ width: "max-content" }}>
+          <div id="topics-track" className="flex items-stretch gap-3 sm:gap-4 px-4 sm:px-6 py-4" style={{ width: "max-content" }}>
             {TOPICS.map((t, i) => (
               <TopicCard key={t.n} topic={t} index={i} />
             ))}
             {/* CTA card */}
             <div
-              className="w-[220px] sm:w-[240px] rounded-[22px] p-6 shrink-0 flex flex-col justify-between relative overflow-hidden border border-[#D2D2D7]/60 dark:border-white/8 bg-white dark:bg-[#111214]"
+              className="w-[220px] sm:w-[240px] rounded-[22px] p-6 shrink-0 flex flex-col justify-between relative overflow-hidden border border-[#D2D2D7]/60 dark:border-white/8 bg-white dark:bg-[#111214] shadow-[0_12px_30px_rgba(15,23,42,0.04)]"
             >
               <div>
                 <p className="text-[#86868B] text-[11px] font-semibold uppercase tracking-[0.16em] mb-3">Start Here</p>
@@ -721,7 +721,7 @@ function DragScroll({ children }: { children: React.ReactNode }) {
       onMouseMove={onMouseMove}
       onMouseUp={onEnd}
       onMouseLeave={onEnd}
-      className="overflow-x-auto"
+      className="overflow-x-auto overflow-y-visible"
       style={{ scrollbarWidth: "none", msOverflowStyle: "none", cursor: "grab" }}>
       {children}
     </div>
@@ -782,7 +782,7 @@ function TopicCard({
       href={`/modules/${slugFromTitle(t.title)}`}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
-      className="topic-card w-[220px] sm:w-[248px] h-[204px] rounded-[22px] p-6 shrink-0 block relative overflow-hidden cursor-pointer bg-white dark:bg-[#111214]"
+      className="topic-card w-[220px] sm:w-[248px] h-[204px] rounded-[22px] p-6 shrink-0 block relative overflow-hidden cursor-pointer bg-white dark:bg-[#111214] shadow-[0_12px_30px_rgba(15,23,42,0.04)]"
       style={{
         border: "1px solid rgba(210,210,215,0.55)",
       }}>
