@@ -311,15 +311,15 @@ export default function LandingPage() {
                 <span className="text-foreground font-medium">production patterns</span>.
               </p>
 
-              <div className="hero-cta-row flex flex-wrap gap-2 sm:gap-3 mb-6 sm:mb-8">
+              <div className="hero-cta-row flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 mb-6 sm:mb-8 w-full sm:w-auto max-w-[320px] sm:max-w-none">
                 <Link href="/modules"
-                  className="group inline-flex items-center gap-2 bg-[#0071E3] text-white text-[14px] sm:text-[15px] font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full hover:bg-[#0077ED] transition-all shadow-lg shadow-[#0071E3]/20 hover:-translate-y-0.5 active:translate-y-0">
+                  className="group inline-flex items-center justify-center gap-2 h-11 sm:h-auto bg-[#0071E3] text-white text-[14px] sm:text-[15px] leading-none font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full hover:bg-[#0077ED] transition-all shadow-lg shadow-[#0071E3]/20 hover:-translate-y-0.5 active:translate-y-0 whitespace-nowrap">
                   Mulai Belajar Gratis
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                  <ArrowRight className="w-4 h-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
                 </Link>
                 <Link href="/playground"
-                  className="inline-flex items-center gap-2 text-foreground text-[14px] sm:text-[15px] font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full border border-[#D2D2D7] dark:border-white/15 hover:bg-[#F5F5F7] dark:hover:bg-[#1C1C1E] transition-colors">
-                  <Play className="w-4 h-4 text-[#0071E3]" /> Coba Playground
+                  className="inline-flex items-center justify-center gap-2 h-11 sm:h-auto text-foreground text-[14px] sm:text-[15px] leading-none font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full border border-[#D2D2D7] dark:border-white/15 hover:bg-[#F5F5F7] dark:hover:bg-[#1C1C1E] transition-colors whitespace-nowrap">
+                  <Play className="w-4 h-4 shrink-0 text-[#0071E3]" /> Coba Playground
                 </Link>
               </div>
 
