@@ -466,7 +466,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           TOPICS — rich cards + GSAP stagger + hover tilt
       ══════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 bg-[#F5F5F7] dark:bg-[#0A0A0A] overflow-visible">
+      <section className="pt-16 sm:pt-20 pb-24 sm:pb-28 bg-[#F5F5F7] dark:bg-[#0A0A0A] overflow-visible relative z-10">
         {/* Header — split into 2 stable rows to avoid overlap */}
         <div className="px-4 sm:px-6 max-w-6xl mx-auto mb-10 sm:mb-12">
           <div className="flex items-end justify-between gap-4 flex-wrap mb-4">
@@ -491,7 +491,7 @@ export default function LandingPage() {
 
         {/* Drag-to-scroll track */}
         <DragScroll>
-          <div id="topics-track" className="flex items-stretch gap-3 sm:gap-4 px-4 sm:px-6 py-4" style={{ width: "max-content" }}>
+          <div id="topics-track" className="flex items-stretch gap-3 sm:gap-4 px-4 sm:px-6 pt-4 pb-8 sm:pb-10" style={{ width: "max-content" }}>
             {TOPICS.map((t, i) => (
               <TopicCard key={t.n} topic={t} index={i} />
             ))}
@@ -513,7 +513,7 @@ export default function LandingPage() {
         </DragScroll>
 
         {/* Level legend */}
-        <div className="flex items-center gap-5 px-4 sm:px-6 mt-5">
+        <div className="flex items-center gap-5 px-4 sm:px-6 mt-2">
           {[["#34C759","Beginner"],["#0071E3","Intermediate"],["#FF453A","Advanced"]].map(([c,l]) => (
             <div key={l} className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full" style={{ backgroundColor: c }} />
@@ -526,7 +526,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           FEATURES DEEP DIVE
       ══════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6">
+      <section className="py-16 sm:py-20 px-4 sm:px-6 relative z-0">
         <div className="mx-auto max-w-5xl">
           <div className="mb-10 sm:mb-12">
             <div>
