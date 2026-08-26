@@ -1,6 +1,7 @@
 "use client";
-import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, ReactNode, useRef } from "react";
 import { api, type UserProfile, UNAUTHORIZED_EVENT } from "@/lib/api";
+import { clearLearningClientState } from "@/lib/clientState";
 import { toast } from "sonner";
 
 interface AuthState { user: UserProfile | null; loading: boolean; }
@@ -27,6 +28,7 @@ const AuthContext = createContext<{
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, { user: null, loading: true });
+  const lastUnauthorizedToastRef = useRef(0);
 
   const refresh = useCallback(async () => {
     try {
@@ -51,6 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     await api.auth.logout();
+    clearLearningClientState();
     dispatch({ type: "CLEAR" });
   }, []);
 
@@ -64,8 +67,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
+      clearLearningClientState();
       dispatch({ type: "CLEAR" });
-      toast.error("Sesi login berakhir. Silakan masuk kembali.");
+      const now = Date.now();
+      if (now - lastUnauthorizedToastRef.current > 1500) {
+        toast.error("Sesi login berakhir. Silakan masuk kembali.");
+        lastUnauthorizedToastRef.current = now;
+      }
     }
 
     if (typeof window !== "undefined") {

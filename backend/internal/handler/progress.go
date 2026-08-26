@@ -104,6 +104,10 @@ func (h *ProgressHandler) UpdateProgress(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	if req.TopicBookmarked != nil {
+		_, _ = h.db.Exec(r.Context(), `UPDATE lesson_progress SET topic_bookmarked = $1 WHERE user_id = $2 AND topic_slug = $3`, *req.TopicBookmarked, userID, topic)
+	}
+
 	// Award XP if completed
 	if req.Completed && !wasCompleted {
 		h.db.Exec(r.Context(), `UPDATE users SET xp = xp + 50 WHERE id = $1`, userID)
