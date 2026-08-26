@@ -55,6 +55,7 @@ func main() {
 
 	// Auth routes
 	r.Route("/api/auth", func(r chi.Router) {
+		r.Get("/providers", authH.Providers)
 		r.Post("/register", authH.Register)
 		r.Post("/login", authH.Login)
 		r.Post("/logout", authH.Logout)

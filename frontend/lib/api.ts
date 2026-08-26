@@ -19,6 +19,7 @@ async function request<T>(
 // ── Auth ──────────────────────────────────────────────────
 export const api = {
   auth: {
+    providers: () => request<AuthProviders>("/api/auth/providers"),
     register: (data: { name: string; email: string; password: string }) =>
       request("/api/auth/register", { method: "POST", body: JSON.stringify(data) }),
     login: (data: { email: string; password: string }) =>
@@ -68,6 +69,11 @@ export interface UserProfile {
   id: string; name: string; email: string;
   avatar_url?: string; lang_pref: "id" | "en";
   xp: number; streak: number; token?: string;
+}
+export interface AuthProviders {
+  local: boolean;
+  google: boolean;
+  github: boolean;
 }
 export interface UserStats {
   xp: number; level: number; streak_days: number; lessons_completed: number;

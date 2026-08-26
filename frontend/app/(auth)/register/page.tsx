@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { BookOpen, CheckCircle2, Eye, EyeOff, Github, Sparkles } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { api, type AuthProviders } from "@/lib/api";
 import { toast } from "sonner";
 
 const benefits = [
@@ -21,7 +22,15 @@ function RegisterPageInner() {
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
-  const nextPath = useMemo(() => searchParams.get("next") || "/modules", [searchParams]);
+  const [providers, setProviders] = useState<AuthProviders>({ local: true, google: false, github: false });
+  const nextPath = useMemo(() => {
+    const raw = searchParams.get("next");
+    return raw && raw.startsWith("/") && !raw.startsWith("//") ? raw : "/modules";
+  }, [searchParams]);
+
+  useEffect(() => {
+    api.auth.providers().then(setProviders).catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!state.loading && state.user) {
@@ -135,8 +144,14 @@ function RegisterPageInner() {
 
               <div className="space-y-3">
                 <a
-                  href={`${process.env.NEXT_PUBLIC_API_URL}/api/auth/google`}
-                  className="group flex w-full items-center justify-center gap-3 rounded-2xl border border-[#D2D2D7] bg-white px-4 py-3 text-[14px] font-medium text-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#C7C7CC] hover:bg-[#FAFAFB] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.06]"
+                  href={providers.google ? `${process.env.NEXT_PUBLIC_API_URL}/api/auth/google` : undefined}
+                  aria-disabled={!providers.google}
+                  onClick={(e) => {
+                    if (providers.google) return;
+                    e.preventDefault();
+                    toast.error("Registrasi Google belum dikonfigurasi");
+                  }}
+                  className={`group flex w-full items-center justify-center gap-3 rounded-2xl border border-[#D2D2D7] bg-white px-4 py-3 text-[14px] font-medium text-foreground shadow-sm transition-all dark:border-white/10 dark:bg-white/[0.04] ${providers.google ? "hover:-translate-y-0.5 hover:border-[#C7C7CC] hover:bg-[#FAFAFB] dark:hover:bg-white/[0.06]" : "opacity-55 cursor-not-allowed"}`}
                 >
                   <svg className="h-4 w-4" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -147,8 +162,14 @@ function RegisterPageInner() {
                   Daftar dengan Google
                 </a>
                 <a
-                  href={`${process.env.NEXT_PUBLIC_API_URL}/api/auth/github`}
-                  className="group flex w-full items-center justify-center gap-3 rounded-2xl border border-[#D2D2D7] bg-white px-4 py-3 text-[14px] font-medium text-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#C7C7CC] hover:bg-[#FAFAFB] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.06]"
+                  href={providers.github ? `${process.env.NEXT_PUBLIC_API_URL}/api/auth/github` : undefined}
+                  aria-disabled={!providers.github}
+                  onClick={(e) => {
+                    if (providers.github) return;
+                    e.preventDefault();
+                    toast.error("Registrasi GitHub belum dikonfigurasi");
+                  }}
+                  className={`group flex w-full items-center justify-center gap-3 rounded-2xl border border-[#D2D2D7] bg-white px-4 py-3 text-[14px] font-medium text-foreground shadow-sm transition-all dark:border-white/10 dark:bg-white/[0.04] ${providers.github ? "hover:-translate-y-0.5 hover:border-[#C7C7CC] hover:bg-[#FAFAFB] dark:hover:bg-white/[0.06]" : "opacity-55 cursor-not-allowed"}`}
                 >
                   <Github className="h-4 w-4" />
                   Daftar dengan GitHub

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ThumbsUp, Reply, Trash2, Pin, ChevronDown, ChevronUp } from "lucide-react";
 import { api, type Comment } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function CommentThread({ topicSlug, lessonId, lang = "id" }: Props) {
+  const router = useRouter();
   const { state } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
   const [sort, setSort] = useState<"newest" | "upvotes">("newest");
@@ -41,10 +43,17 @@ export default function CommentThread({ topicSlug, lessonId, lang = "id" }: Prop
     });
   }, [comments]);
 
+  const loginHref = `/login?next=${encodeURIComponent(`/modules/${topicSlug}/${lessonId}?tab=discussion`)}`;
+
+  function redirectToLogin(message: string) {
+    toast.error(message);
+    router.push(loginHref);
+  }
+
   async function submitComment(parentId?: string) {
     const text = parentId ? replyContent : content;
     if (!text.trim()) return;
-    if (!state.user) { toast.error("Login untuk berkomentar"); return; }
+    if (!state.user) { redirectToLogin("Login untuk berkomentar"); return; }
     setSubmitting(true);
     try {
       await api.discussions.create({ topic_slug: topicSlug, lesson_id: lessonId, content: text, parent_id: parentId });
@@ -61,7 +70,7 @@ export default function CommentThread({ topicSlug, lessonId, lang = "id" }: Prop
   }
 
   async function toggleUpvote(id: string) {
-    if (!state.user) { toast.error("Login untuk upvote"); return; }
+    if (!state.user) { redirectToLogin("Login untuk upvote"); return; }
     try {
       const res = await api.discussions.upvote(id) as any;
       setComments(prev => prev.map(c => {
@@ -132,7 +141,7 @@ export default function CommentThread({ topicSlug, lessonId, lang = "id" }: Prop
       ) : (
         <div className="mb-6 rounded-[18px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white dark:bg-[#17181A] p-4 sm:p-5">
           <p className="text-[#86868B] text-[13px]">
-            <a href="/login" className="text-[#0071E3] hover:underline">Login</a> untuk berkomentar.
+            <a href={loginHref} className="text-[#0071E3] hover:underline">Login</a> untuk berkomentar.
           </p>
         </div>
       )}
