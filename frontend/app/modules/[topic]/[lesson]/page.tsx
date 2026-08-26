@@ -389,9 +389,18 @@ function LessonNav({ prev, next, topic, lang }: any) {
 /* ── Minimal markdown parser ─────────────────────── */
 function mdToHtml(md: string): string {
   if (!md) return "";
-  return md
-    .replace(/```go\n([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
-    .replace(/```\n?([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+  
+  // Amankan blok kode (pre/code) terlebih dahulu agar tidak terpengaruh parsing berikutnya
+  let blockId = 0;
+  const blocks: Record<string, string> = {};
+  
+  md = md.replace(/```(.*?)\n([\s\S]*?)```/g, (_, lang, code) => {
+    const id = `__CODE_BLOCK_${blockId++}__`;
+    blocks[id] = `<pre><code class="language-${lang.trim()}">${code}</code></pre>`;
+    return id;
+  });
+
+  md = md
     .replace(/`([^`\n]+)`/g, '<code>$1</code>')
     .replace(/^### (.+)$/gm, '<h3>$1</h3>')
     .replace(/^## (.+)$/gm, '<h2>$1</h2>')
@@ -406,6 +415,14 @@ function mdToHtml(md: string): string {
     .replace(/(<tr>[\s\S]+?<\/tr>)/g, (match) => `<table>${match}</table>`)
     .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
     .replace(/(<li>[\s\S]+?<\/li>)/g, '<ul>$1</ul>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/^([^<\n].+)$/gm, (line) => line.trim() && !line.startsWith('<') ? `<p>${line}</p>` : line);
+    .replace(/\n\n/g, '</p><p>');
+
+  md = `<p>${md}</p>`;
+
+  // Kembalikan blok kode yang sudah diamankan
+  Object.keys(blocks).forEach(id => {
+    md = md.replace(id, `</p>${blocks[id]}<p>`);
+  });
+
+  return md.replace(/<p>\s*<\/p>/g, '');
 }
