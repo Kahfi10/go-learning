@@ -6,7 +6,7 @@ import {
   Bookmark,
   BookmarkCheck,
   ChevronLeft, ChevronRight, CheckCircle2, Clock,
-  Languages, Menu, X, MessageCircle, Zap,
+  Languages, Menu, X, MessageCircle, TriangleAlert, Zap,
 } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import CodeEditor from "@/components/editor/CodeEditor";
@@ -172,6 +172,7 @@ export default function LessonPage() {
   const currentIdx = lessons.findIndex(l => l.id === lesson);
   const prevLesson = lessons[currentIdx - 1];
   const nextLesson = lessons[currentIdx + 1];
+  const previousLessonIncomplete = currentIdx > 0 ? !isCompleted(topic, lessons[currentIdx - 1].id) : false;
   const done = isCompleted(topic, lesson);
   const prog = topicProgress(topic, lessons.length);
   const resume = getResumeState(topic, lesson);
@@ -184,6 +185,9 @@ export default function LessonPage() {
       : resume.hasRunCode
         ? "Editor sudah digunakan. Kamu bisa tandai selesai kapan saja."
         : undefined;
+  const prerequisiteHint = previousLessonIncomplete
+    ? `Sebaiknya selesaikan lesson sebelumnya: ${lessons[currentIdx - 1]?.title_id}`
+    : null;
 
   if (!data) return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -328,6 +332,7 @@ export default function LessonPage() {
                     onComplete={handleComplete} done={done}
                     completionEnabled={Boolean(resume.hasRunCode || resume.hasOpenedQuiz)}
                     completionHint={completionHint}
+                    prerequisiteHint={prerequisiteHint}
                     onQuizOpen={() => saveResumeState(topic, lesson, { hasOpenedQuiz: true, viewedAt: new Date().toISOString() })}
                     onQuizComplete={handleQuizComplete}
                   />
@@ -375,6 +380,7 @@ export default function LessonPage() {
               onComplete={handleComplete} done={done}
               completionEnabled={Boolean(resume.hasRunCode || resume.hasOpenedQuiz)}
               completionHint={completionHint}
+              prerequisiteHint={prerequisiteHint}
               onQuizOpen={() => saveResumeState(topic, lesson, { hasOpenedQuiz: true, viewedAt: new Date().toISOString() })}
               onQuizComplete={handleQuizComplete}
             />
@@ -481,6 +487,7 @@ function LessonContent({
   onQuizOpen,
   completionEnabled,
   completionHint,
+  prerequisiteHint,
 }: any) {
   const proseRef = useRef<HTMLDivElement>(null);
   const lessonSections = useMemo(() => extractSectionTitles(content), [content]);
@@ -594,6 +601,11 @@ function LessonContent({
               <CheckCircle2 className="w-3.5 h-3.5" /> Selesai
             </span>
           )}
+          {prerequisiteHint && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FF9500]/10 px-3 py-1.5 text-[12px] font-medium text-[#FF9500]">
+              <TriangleAlert className="w-3.5 h-3.5" /> Urutan direkomendasikan
+            </span>
+          )}
         </div>
 
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_240px] lg:items-start">
@@ -607,6 +619,9 @@ function LessonContent({
             <p className="text-[14px] sm:text-[15px] leading-relaxed text-[#86868B] max-w-2xl text-balance">
               {introText || "Pelajari konsep utama lesson ini, pahami contoh kodenya, lalu uji pemahamanmu lewat quiz dan editor interaktif."}
             </p>
+            {prerequisiteHint && (
+              <p className="mt-3 text-[13px] leading-relaxed text-[#FF9500]">{prerequisiteHint}</p>
+            )}
           </div>
 
           <div className="rounded-[16px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white/65 dark:bg-[#17181A] p-4">

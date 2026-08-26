@@ -37,8 +37,10 @@ export default function ModulesPage() {
   const {
     topicProgress,
     getContinueLearning,
+    getRecommendedTopic,
     getRecentlyViewed,
     getRecentActivity,
+    bookmarks,
     isTopicBookmarked,
     toggleTopicBookmark,
   } = useProgress();
@@ -121,6 +123,10 @@ export default function ModulesPage() {
   const continueLearning = getContinueLearning();
   const continueTopic = continueLearning
     ? topics.find((topic) => topic.slug === continueLearning.topic)
+    : undefined;
+  const recommendedTopicMeta = getRecommendedTopic(topics.map((topic) => topic.slug));
+  const recommendedTopic = recommendedTopicMeta
+    ? topics.find((topic) => topic.slug === recommendedTopicMeta.topic)
     : undefined;
   const recentlyViewed = getRecentlyViewed(3);
   const recentActivity = getRecentActivity(4);
@@ -220,6 +226,22 @@ export default function ModulesPage() {
           </section>
         )}
 
+        {recommendedTopic && (!continueTopic || recommendedTopic.slug !== continueTopic.slug) && (
+          <section className="mx-auto max-w-7xl px-4 sm:px-6 mb-10 sm:mb-12">
+            <div className="rounded-[24px] border border-[#D2D2D7]/50 dark:border-white/8 bg-[#F7FAFF] dark:bg-[#101722] p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#0071E3] mb-2">Rekomendasi Berikutnya</p>
+                <h2 className="font-display text-[22px] font-semibold tracking-tight text-foreground mb-2">{recommendedTopic.title_id}</h2>
+                <p className="text-[14px] leading-relaxed text-[#86868B] max-w-2xl">{recommendedTopicMeta?.reason}. Cocok untuk progres belajar kamu saat ini.</p>
+              </div>
+              <Link href={`/modules/${recommendedTopic.slug}`} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0071E3] px-5 py-3 text-[14px] font-medium text-white shadow-sm transition-colors hover:bg-[#0077ED]">
+                Lihat topik
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </section>
+        )}
+
         {recentActivity.length > 0 && (
           <section className="mx-auto max-w-7xl px-4 sm:px-6 mb-10 sm:mb-12">
             <div className="rounded-[24px] border border-[#D2D2D7]/50 dark:border-white/8 bg-[#FAFAFB] dark:bg-[#111214] p-5 sm:p-6">
@@ -228,6 +250,11 @@ export default function ModulesPage() {
                   <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#86868B] mb-1">Aktivitas Terbaru</p>
                   <h2 className="font-display text-[22px] font-semibold tracking-tight text-foreground">Kembali ke titik terakhir belajarmu</h2>
                 </div>
+                {bookmarks.topics.length + bookmarks.lessons.length > 0 && (
+                  <span className="rounded-full bg-[#F5F5F7] dark:bg-[#1C1C1E] px-3 py-1.5 text-[12px] font-medium text-[#86868B]">
+                    {bookmarks.topics.length + bookmarks.lessons.length} bookmark
+                  </span>
+                )}
               </div>
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 {recentActivity.map((item) => (

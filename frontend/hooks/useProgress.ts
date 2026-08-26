@@ -13,6 +13,11 @@ interface ContinueLearningItem {
   viewedAt?: string;
 }
 
+interface TopicRecommendationItem {
+  topic: string;
+  reason: string;
+}
+
 interface BookmarkState {
 	topics: string[];
 	lessons: string[];
@@ -306,6 +311,29 @@ export function useProgress() {
     return { topic, lesson, viewedAt: value?.viewedAt };
   }, [progress, resume]);
 
+  const getRecommendedTopic = useCallback((orderedTopics: string[]): TopicRecommendationItem | null => {
+    const continueItem = getContinueLearning();
+    if (continueItem) {
+      return { topic: continueItem.topic, reason: "Lanjutkan dari progress terakhir" };
+    }
+
+    const bookmarkedTopic = orderedTopics.find((topic) => bookmarks.topics.includes(topic));
+    if (bookmarkedTopic) {
+      return { topic: bookmarkedTopic, reason: "Topik yang sudah kamu simpan" };
+    }
+
+    const firstUntouched = orderedTopics.find((topic) => {
+      const entries = Object.entries(progress).filter(([key]) => key.startsWith(`${topic}/`));
+      return entries.length === 0 || entries.some(([, value]) => !value.completed);
+    });
+
+    if (firstUntouched) {
+      return { topic: firstUntouched, reason: "Langkah berikutnya di kurikulum" };
+    }
+
+    return orderedTopics[0] ? { topic: orderedTopics[0], reason: "Ulangi dari topik awal" } : null;
+  }, [bookmarks.topics, getContinueLearning, progress]);
+
   const getRecentlyViewed = useCallback((limit = 5): ContinueLearningItem[] => {
     return Object.entries(resume)
       .filter(([, value]) => Boolean(value?.viewedAt))
@@ -341,6 +369,7 @@ export function useProgress() {
     toggleLessonBookmark,
     getRecentActivity,
     getContinueLearning,
+    getRecommendedTopic,
     getRecentlyViewed,
   };
 }

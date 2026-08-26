@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
+  BookmarkCheck,
   BookOpen,
   Flame,
   Trophy,
@@ -94,6 +95,7 @@ export default function DashboardPage() {
     topicCards.find(({ progress }) => progress.done > 0 && progress.pct < 100) ??
     topicCards[0];
   const recentActivity = getRecentActivity(4);
+  const bookmarkedCount = bookmarks.topics.length + bookmarks.lessons.length;
 
   const statCards = [
     {
@@ -493,7 +495,10 @@ export default function DashboardPage() {
                 )}
               </div>
               <div className="mt-4 pt-4 border-t border-[#D2D2D7]/40 dark:border-white/8">
-                <p className="text-[12px] text-[#86868B]">Bookmarks tersimpan: <span className="text-foreground font-medium">{bookmarks.topics.length + bookmarks.lessons.length}</span></p>
+                <div className="flex items-center gap-2 text-[12px] text-[#86868B]">
+                  <BookmarkCheck className="h-3.5 w-3.5 text-[#0071E3]" />
+                  <p>Bookmarks tersimpan: <span className="text-foreground font-medium">{bookmarkedCount}</span></p>
+                </div>
               </div>
             </article>
           </div>

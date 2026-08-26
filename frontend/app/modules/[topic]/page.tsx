@@ -51,6 +51,7 @@ export default function TopicPage() {
   const progressColor = prog.done === lessonCount && lessonCount > 0 ? "#34C759" : data.color;
   const topicBookmarked = isTopicBookmarked(topic);
   const prerequisiteNotice = topic !== "getting-started" && prog.done === 0;
+  const previousLessonId = data.lessons?.[0]?.id;
 
   return (
     <div className="min-h-screen bg-background">
@@ -117,7 +118,7 @@ export default function TopicPage() {
               {prerequisiteNotice && (
                 <div className="mt-5 inline-flex items-start gap-2 rounded-[16px] border border-[#FF9500]/15 bg-[#FF9500]/8 px-4 py-3 text-[13px] leading-relaxed text-[#8A5800] dark:text-[#FFCC80]">
                   <TriangleAlert className="h-4 w-4 mt-0.5 shrink-0" />
-                  <span>Disarankan menuntaskan topik sebelumnya terlebih dahulu agar materi ini lebih mudah diikuti.</span>
+                  <span>Disarankan menuntaskan topik sebelumnya terlebih dahulu agar materi ini lebih mudah diikuti dan tidak terasa lompat konsep.</span>
                 </div>
               )}
             </div>
@@ -208,6 +209,7 @@ export default function TopicPage() {
             {data.lessons?.map((lesson, idx) => {
               const done = isCompleted(topic, lesson.id);
               const isNext = !done && lesson.id === nextLesson?.id;
+              const needsPreviousLesson = idx > 0 && !isCompleted(topic, data.lessons[idx - 1].id);
 
               return (
                 <Link
@@ -246,6 +248,9 @@ export default function TopicPage() {
                       <p className="mt-1 text-[14px] text-[#86868B] leading-relaxed">
                         {lesson.title_id} {/* Gunakan title_id karena deskripsi di LessonMeta mungkin belum tersedia secara global */}
                       </p>
+                      {needsPreviousLesson && !done && (
+                        <p className="mt-2 text-[12px] text-[#FF9500]">Direkomendasikan menyelesaikan lesson sebelumnya dulu.</p>
+                      )}
                     </div>
                   </div>
 
