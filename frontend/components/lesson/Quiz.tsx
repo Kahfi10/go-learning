@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, XCircle, ChevronRight, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { type QuizOption } from "@/lib/api";
@@ -9,10 +9,11 @@ interface Props {
   lang: "id" | "en";
   topicSlug: string;
   lessonId: string;
-  onComplete?: (score: number) => void;
+  onComplete?: (score: number, total: number) => void;
+  onOpen?: () => void;
 }
 
-export default function Quiz({ questions, lang, topicSlug, lessonId, onComplete }: Props) {
+export default function Quiz({ questions, lang, topicSlug, lessonId, onComplete, onOpen }: Props) {
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [answers, setAnswers] = useState<(number | null)[]>(Array(questions.length).fill(null));
@@ -24,6 +25,10 @@ export default function Quiz({ questions, lang, topicSlug, lessonId, onComplete 
   const options = lang === "id" ? q.options_id : q.options_en;
   const isAnswered = answers[current] !== null;
   const isCorrect = answers[current] === q.correct;
+
+  useEffect(() => {
+    onOpen?.();
+  }, [onOpen]);
 
   function handleSelect(idx: number) {
     if (isAnswered) return;
@@ -60,7 +65,7 @@ export default function Quiz({ questions, lang, topicSlug, lessonId, onComplete 
     } else {
       const score = answers.filter((a, i) => a === questions[i].correct).length;
       setShowResult(true);
-      onComplete?.(score);
+      onComplete?.(score, questions.length);
     }
   }
 

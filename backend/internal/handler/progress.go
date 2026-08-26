@@ -23,7 +23,7 @@ func NewProgressHandler(db *pgxpool.Pool) *ProgressHandler {
 func (h *ProgressHandler) GetProgress(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 	rows, err := h.db.Query(r.Context(),
-		`SELECT topic_slug, lesson_id, completed, best_quiz_score, completed_at FROM lesson_progress WHERE user_id = $1`,
+		`SELECT topic_slug, lesson_id, completed, best_quiz_score, last_code, completed_at FROM lesson_progress WHERE user_id = $1`,
 		userID,
 	)
 	if err != nil {
@@ -37,14 +37,16 @@ func (h *ProgressHandler) GetProgress(w http.ResponseWriter, r *http.Request) {
 		var topicSlug, lessonID string
 		var completed bool
 		var bestScore *int
+		var lastCode *string
 		var completedAt *time.Time
-		if err := rows.Scan(&topicSlug, &lessonID, &completed, &bestScore, &completedAt); err != nil {
+		if err := rows.Scan(&topicSlug, &lessonID, &completed, &bestScore, &lastCode, &completedAt); err != nil {
 			continue
 		}
 		key := topicSlug + "/" + lessonID
 		progress[key] = map[string]interface{}{
 			"completed":       completed,
 			"best_quiz_score": bestScore,
+			"last_code":       lastCode,
 			"completed_at":    completedAt,
 		}
 	}
@@ -68,6 +70,9 @@ func (h *ProgressHandler) UpdateProgress(w http.ResponseWriter, r *http.Request)
 	}
 
 	now := time.Now()
+	var wasCompleted bool
+	_ = h.db.QueryRow(r.Context(), `SELECT completed FROM lesson_progress WHERE user_id = $1 AND topic_slug = $2 AND lesson_id = $3`, userID, topic, lesson).Scan(&wasCompleted)
+
 	_, err := h.db.Exec(r.Context(), `
 		INSERT INTO lesson_progress (id, user_id, topic_slug, lesson_id, completed, last_code, completed_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -80,7 +85,7 @@ func (h *ProgressHandler) UpdateProgress(w http.ResponseWriter, r *http.Request)
 	}
 
 	// Award XP if completed
-	if req.Completed {
+	if req.Completed && !wasCompleted {
 		h.db.Exec(r.Context(), `UPDATE users SET xp = xp + 50 WHERE id = $1`, userID)
 		h.updateStreak(r, userID)
 	}
@@ -94,13 +99,17 @@ func (h *ProgressHandler) SubmitQuiz(w http.ResponseWriter, r *http.Request) {
 	lessonID := chi.URLParam(r, "lessonID")
 
 	var req struct {
-		Score     int    `json:"score"`
-		TopicSlug string `json:"topic_slug"`
+		Score          int    `json:"score"`
+		TopicSlug      string `json:"topic_slug"`
+		TotalQuestions int    `json:"total_questions"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		jsonError(w, "invalid request", http.StatusBadRequest)
 		return
 	}
+
+	var previousBest *int
+	_ = h.db.QueryRow(r.Context(), `SELECT best_quiz_score FROM lesson_progress WHERE user_id = $1 AND topic_slug = $2 AND lesson_id = $3`, userID, req.TopicSlug, lessonID).Scan(&previousBest)
 
 	_, err := h.db.Exec(r.Context(), `
 		INSERT INTO lesson_progress (id, user_id, topic_slug, lesson_id, best_quiz_score)
@@ -114,15 +123,19 @@ func (h *ProgressHandler) SubmitQuiz(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Award bonus XP for perfect score
-	maxScore := 5
-	if req.Score == maxScore {
+	maxScore := req.TotalQuestions
+	if maxScore == 0 {
+		maxScore = 5
+	}
+	newPerfect := req.Score == maxScore && (previousBest == nil || *previousBest < maxScore)
+	if newPerfect {
 		h.db.Exec(r.Context(), `UPDATE users SET xp = xp + 25 WHERE id = $1`, userID)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"score":    req.Score,
-		"xp_bonus": req.Score == maxScore,
+		"xp_bonus": newPerfect,
 	})
 }
 

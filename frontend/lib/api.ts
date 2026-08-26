@@ -44,7 +44,7 @@ export const api = {
     get: () => request<Record<string, ProgressItem>>("/api/progress"),
     update: (topic: string, lesson: string, data: { completed: boolean; last_code?: string }) =>
       request(`/api/progress/${topic}/${lesson}`, { method: "PUT", body: JSON.stringify(data) }),
-    submitQuiz: (lessonId: string, data: { score: number; topic_slug: string }) =>
+    submitQuiz: (lessonId: string, data: { score: number; topic_slug: string; total_questions?: number }) =>
       request(`/api/quiz/${lessonId}/submit`, { method: "POST", body: JSON.stringify(data) }),
     stats: () => request<UserStats>("/api/me/stats"),
     badges: () => request<Badge[]>("/api/badges"),
@@ -77,6 +77,7 @@ export interface Topic {
   description_id: string; description_en: string;
   level: "Beginner" | "Intermediate" | "Advanced";
   color: string; estimatedMinutes: number;
+  lessons?: LessonMeta[];
 }
 export interface LessonMeta {
   id: string; title_id: string; title_en: string; estimatedMinutes: number;
@@ -89,7 +90,22 @@ export interface Lesson {
 }
 export interface ExecuteResult { stdout: string; stderr: string; executionTimeMs: number; timedOut: boolean; }
 export interface Template { name: string; slug: string; code: string; }
-export interface ProgressItem { completed: boolean; best_quiz_score?: number; completed_at?: string; }
+export interface ProgressItem {
+  completed: boolean;
+  best_quiz_score?: number;
+  last_code?: string;
+  completed_at?: string;
+}
+export interface LessonResumeState {
+  lang?: "id" | "en";
+  activeTab?: "content" | "discussion";
+  hasOpenedQuiz?: boolean;
+  hasRunCode?: boolean;
+  viewedAt?: string;
+  scrollY?: number;
+  lastQuizScore?: number;
+  totalQuestions?: number;
+}
 export interface Badge {
   slug: string; name_id: string; name_en: string;
   description_id: string; description_en: string;
@@ -105,3 +121,13 @@ export interface Comment {
   parent_id?: string; created_at: string;
 }
 export interface SearchResult { type: string; id: string; title_id: string; title_en: string; topic: string; }
+export interface SearchResult {
+  type: string;
+  id: string;
+  title_id: string;
+  title_en: string;
+  topic: string;
+  topic_slug?: string;
+  topic_title_id?: string;
+  topic_title_en?: string;
+}

@@ -30,14 +30,38 @@ export default function LessonPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"content" | "discussion">("content");
   const [xpGained, setXpGained] = useState(0);
-  const { isCompleted, markComplete, saveCode, getLastCode, topicProgress } = useProgress();
+  const [quizScore, setQuizScore] = useState<number | null>(null);
+  const [completionLoading, setCompletionLoading] = useState(false);
+  const {
+    isCompleted,
+    markComplete,
+    saveCode,
+    getLastCode,
+    topicProgress,
+    getResumeState,
+    saveResumeState,
+    markLessonViewed,
+  } = useProgress();
 
   useEffect(() => {
     api.topics.getLesson(topic, lesson).then(setData).catch(() => {});
     api.topics.get(topic).then(setTopicData).catch(() => {});
     const saved = localStorage.getItem("golearn_lang");
-    if (saved === "id" || saved === "en") setLang(saved as "id" | "en");
+    const resume = getResumeState(topic, lesson);
+    if (resume.lang) {
+      setLang(resume.lang);
+    } else if (saved === "id" || saved === "en") {
+      setLang(saved as "id" | "en");
+    }
+    if (resume.activeTab) {
+      setActiveTab(resume.activeTab);
+    }
+    markLessonViewed(topic, lesson);
   }, [topic, lesson]);
+
+  useEffect(() => {
+    saveResumeState(topic, lesson, { lang, activeTab });
+  }, [activeTab, lang, lesson, saveResumeState, topic]);
 
   useEffect(() => {
     if (!data) return;
@@ -69,9 +93,17 @@ export default function LessonPage() {
     const next = lang === "id" ? "en" : "id";
     setLang(next);
     localStorage.setItem("golearn_lang", next);
+    saveResumeState(topic, lesson, { lang: next });
   }
 
   async function handleComplete() {
+    const resume = getResumeState(topic, lesson);
+    if (!resume.hasRunCode && !resume.hasOpenedQuiz) {
+      toast.error("Interaksi dulu dengan editor atau quiz sebelum menandai lesson selesai.");
+      return;
+    }
+
+    setCompletionLoading(true);
     const code = getLastCode(topic, lesson);
     await markComplete(topic, lesson, code);
     setXpGained(50);
@@ -81,11 +113,19 @@ export default function LessonPage() {
       gsap.from(".complete-btn", { scale: 1.2, duration: 0.4, ease: "elastic.out(1,0.5)" });
       gsap.from(".xp-badge", { scale: 0, opacity: 0, duration: 0.5, ease: "back.out(2)", delay: 0.1 });
     });
+    setCompletionLoading(false);
   }
 
   async function handleQuizComplete(score: number, total: number) {
+    setQuizScore(score);
+    saveResumeState(topic, lesson, {
+      hasOpenedQuiz: true,
+      lastQuizScore: score,
+      totalQuestions: total,
+      viewedAt: new Date().toISOString(),
+    });
     if (state.user) {
-      await api.progress.submitQuiz(lesson, { score, topic_slug: topic }).catch(() => {});
+      await api.progress.submitQuiz(lesson, { score, topic_slug: topic, total_questions: total }).catch(() => {});
     }
     if (score === total) {
       toast.success(`Quiz sempurna! +25 XP bonus 🏆`, { duration: 3000 });
@@ -98,6 +138,15 @@ export default function LessonPage() {
   const nextLesson = lessons[currentIdx + 1];
   const done = isCompleted(topic, lesson);
   const prog = topicProgress(topic, lessons.length);
+  const resume = getResumeState(topic, lesson);
+  const totalQuizQuestions = data?.quiz?.length ?? resume.totalQuestions ?? 0;
+  const completionHint = !done && !resume.hasRunCode && !resume.hasOpenedQuiz
+    ? "Jalankan kode atau buka quiz dulu untuk mengaktifkan completion."
+    : quizScore !== null
+      ? `Quiz terakhir: ${quizScore}/${totalQuizQuestions}`
+      : resume.hasRunCode
+        ? "Editor sudah digunakan. Kamu bisa tandai selesai kapan saja."
+        : undefined;
 
   if (!data) return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -159,7 +208,13 @@ export default function LessonPage() {
               <span className="hidden sm:inline">Selesai</span>
             </div>
           ) : (
-            <Button size="sm" onClick={handleComplete} className="complete-btn text-[11px] px-3 py-1">
+            <Button
+              size="sm"
+              onClick={handleComplete}
+              loading={completionLoading}
+              disabled={!resume.hasRunCode && !resume.hasOpenedQuiz}
+              className="complete-btn text-[11px] px-3 py-1"
+            >
               Tandai Selesai
             </Button>
           )}
@@ -223,6 +278,9 @@ export default function LessonPage() {
                     topic={topic} lesson={lesson}
                     activeTab={activeTab} onTabChange={setActiveTab}
                     onComplete={handleComplete} done={done}
+                    completionEnabled={Boolean(resume.hasRunCode || resume.hasOpenedQuiz)}
+                    completionHint={completionHint}
+                    onQuizOpen={() => saveResumeState(topic, lesson, { hasOpenedQuiz: true, viewedAt: new Date().toISOString() })}
                     onQuizComplete={handleQuizComplete}
                   />
                   <LessonNav prev={prevLesson} next={nextLesson} topic={topic} lang={lang} />
@@ -240,8 +298,12 @@ export default function LessonPage() {
                   <CodeEditor
                     defaultCode={getLastCode(topic, lesson) ?? data.starterCode}
                     onCodeChange={(c) => saveCode(topic, lesson, c)}
+                    onRun={() => saveResumeState(topic, lesson, { hasRunCode: true, viewedAt: new Date().toISOString() })}
                     height="calc(100vh - 180px)"
                   />
+                  {completionHint && !done && (
+                    <p className="mt-3 text-[12px] leading-relaxed text-[#86868B]">{completionHint}</p>
+                  )}
                 </div>
               </Panel>
             </PanelGroup>
@@ -254,15 +316,22 @@ export default function LessonPage() {
               topic={topic} lesson={lesson}
               activeTab={activeTab} onTabChange={setActiveTab}
               onComplete={handleComplete} done={done}
+              completionEnabled={Boolean(resume.hasRunCode || resume.hasOpenedQuiz)}
+              completionHint={completionHint}
+              onQuizOpen={() => saveResumeState(topic, lesson, { hasOpenedQuiz: true, viewedAt: new Date().toISOString() })}
               onQuizComplete={handleQuizComplete}
             />
-      <div className="lesson-hero">
+            <div className="lesson-hero">
               <p className="text-[11px] font-semibold text-[#86868B] uppercase tracking-widest mb-3">Editor Go</p>
               <CodeEditor
                 defaultCode={getLastCode(topic, lesson) ?? data.starterCode}
                 onCodeChange={(c) => saveCode(topic, lesson, c)}
+                onRun={() => saveResumeState(topic, lesson, { hasRunCode: true, viewedAt: new Date().toISOString() })}
                 height="320px"
               />
+              {completionHint && !done && (
+                <p className="mt-3 text-[12px] leading-relaxed text-[#86868B]">{completionHint}</p>
+              )}
             </div>
             <LessonNav prev={prevLesson} next={nextLesson} topic={topic} lang={lang} />
           </div>
@@ -273,7 +342,22 @@ export default function LessonPage() {
 }
 
 /* ── Lesson Content ──────────────────────────────── */
-function LessonContent({ data, lang, title, content, topic, lesson, activeTab, onTabChange, onComplete, done, onQuizComplete }: any) {
+function LessonContent({
+  data,
+  lang,
+  title,
+  content,
+  topic,
+  lesson,
+  activeTab,
+  onTabChange,
+  onComplete,
+  done,
+  onQuizComplete,
+  onQuizOpen,
+  completionEnabled,
+  completionHint,
+}: any) {
   return (
     <div>
       {/* Meta */}
@@ -326,7 +410,14 @@ function LessonContent({ data, lang, title, content, topic, lesson, activeTab, o
                 </p>
                 <span className="text-[#86868B] text-[13px]">· {data.quiz.length} soal</span>
               </div>
-              <Quiz questions={data.quiz} lang={lang} topicSlug={topic} lessonId={lesson} onComplete={onQuizComplete} />
+              <Quiz
+                questions={data.quiz}
+                lang={lang}
+                topicSlug={topic}
+                lessonId={lesson}
+                onOpen={onQuizOpen}
+                onComplete={onQuizComplete}
+              />
             </div>
           )}
 
@@ -335,9 +426,11 @@ function LessonContent({ data, lang, title, content, topic, lesson, activeTab, o
             <div className="lesson-tab-panel mt-10 p-5 bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[16px] flex items-center justify-between gap-4 border border-[#D2D2D7]/40 dark:border-white/8">
               <div>
                 <p className="font-medium text-[14px] text-foreground">Sudah paham materi ini?</p>
-                <p className="text-[#86868B] text-[12px] mt-0.5">Tandai selesai dan dapatkan +50 XP</p>
+                <p className="text-[#86868B] text-[12px] mt-0.5">
+                  {completionHint ?? "Tandai selesai dan dapatkan +50 XP"}
+                </p>
               </div>
-              <Button onClick={onComplete} className="shrink-0">
+              <Button onClick={onComplete} disabled={!completionEnabled} className="shrink-0">
                 Selesai +50 XP
               </Button>
             </div>

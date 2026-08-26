@@ -34,7 +34,7 @@ export default function CommandSearch() {
   }, [query]);
 
   function navigate(r: SearchResult) {
-    const topicSlug = r.topic.replace(/^topic-\d+-/, "");
+    const topicSlug = r.topic_slug ?? r.topic.replace(/^topic-\d+-/, "");
     router.push(`/modules/${topicSlug}/${r.id}`);
     setOpen(false);
     setQuery("");
@@ -94,7 +94,7 @@ export default function CommandSearch() {
               <BookOpen className="w-4 h-4 flex-shrink-0 text-[#86868B]" />
               <div className="min-w-0">
                 <p className="text-[13px] font-medium truncate">{r.title_id}</p>
-                <p className="text-[11px] text-[#86868B] truncate">{r.topic.replace(/^topic-\d+-/, "")}</p>
+                <p className="text-[11px] text-[#86868B] truncate">{r.topic_title_id ?? r.topic.replace(/^topic-\d+-/, "")}</p>
               </div>
               <Hash className="w-3.5 h-3.5 text-[#86868B] ml-auto flex-shrink-0" />
             </button>

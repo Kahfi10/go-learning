@@ -1,14 +1,15 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
+  ArrowRight,
+  PlayCircle,
   ChevronRight,
   Clock,
   Search,
-  SlidersHorizontal,
   Sparkles,
   BookOpen,
-  CheckCircle2
+  CheckCircle2,
 } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import { ProgressBar } from "@/components/ui/progress";
@@ -29,8 +30,9 @@ export default function ModulesPage() {
   const [topics, setTopics] = useState<Topic[]>([]);
   const [filter, setFilter] = useState<Level>("All");
   const [search, setSearch] = useState("");
+  const [lessonMatches, setLessonMatches] = useState<Record<string, string[]>>({});
   const [isLoading, setIsLoading] = useState(true);
-  const { topicProgress } = useProgress();
+  const { topicProgress, getContinueLearning, getRecentlyViewed } = useProgress();
 
   useEffect(() => {
     api.topics
@@ -58,14 +60,60 @@ export default function ModulesPage() {
   }, [topics]);
 
   const query = search.trim().toLowerCase();
-  const filtered = topics.filter((topic) => {
+  useEffect(() => {
+    if (!query) {
+      setLessonMatches({});
+      return;
+    }
+
+    let cancelled = false;
+    api.search(query)
+      .then((results) => {
+        if (cancelled) return;
+        const grouped = (results ?? []).reduce<Record<string, string[]>>((acc, item) => {
+          const topicKey = item.topic_slug ?? item.topic.replace(/^topic-\d+-/, "");
+          const label = item.title_id;
+          acc[topicKey] = acc[topicKey] ? Array.from(new Set([...acc[topicKey], label])) : [label];
+          return acc;
+        }, {});
+        setLessonMatches(grouped);
+      })
+      .catch(() => {
+        if (!cancelled) setLessonMatches({});
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [query]);
+
+  const enrichedTopics = useMemo(() => {
+    return topics.map((topic) => {
+      const lessonCount = getLessonCount(topic);
+      const prog = topicProgress(topic.slug, lessonCount);
+      const matchedLessons = lessonMatches[topic.slug] ?? [];
+      const state = prog.pct === 100 ? "completed" : prog.done > 0 ? "in_progress" : "not_started";
+      return { topic, lessonCount, prog, matchedLessons, state };
+    });
+  }, [lessonMatches, topicProgress, topics]);
+
+  const filtered = enrichedTopics.filter(({ topic, matchedLessons }) => {
     const matchLevel = filter === "All" || topic.level === filter;
     const matchSearch =
       !query ||
       topic.title_id.toLowerCase().includes(query) ||
-      topic.title_en.toLowerCase().includes(query);
+      topic.title_en.toLowerCase().includes(query) ||
+      topic.description_id.toLowerCase().includes(query) ||
+      topic.description_en.toLowerCase().includes(query) ||
+      matchedLessons.length > 0;
     return matchLevel && matchSearch;
   });
+
+  const continueLearning = getContinueLearning();
+  const continueTopic = continueLearning
+    ? topics.find((topic) => topic.slug === continueLearning.topic)
+    : undefined;
+  const recentlyViewed = getRecentlyViewed(3);
 
   const totalDone = topics.reduce(
     (acc, topic) => acc + topicProgress(topic.slug, getLessonCount(topic)).done,
@@ -124,6 +172,43 @@ export default function ModulesPage() {
             </div>
           </div>
         </section>
+
+        {continueTopic && continueLearning && (
+          <section className="mx-auto max-w-7xl px-4 sm:px-6 mb-10 sm:mb-12">
+            <div className="rounded-[28px] border border-[#D2D2D7]/60 dark:border-white/10 bg-white dark:bg-[#111214] p-6 sm:p-7 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div>
+                <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#0071E3] mb-2">
+                  Continue Learning
+                </p>
+                <h2 className="font-display text-[24px] sm:text-[28px] font-semibold tracking-tight text-foreground mb-2">
+                  {continueTopic.title_id}
+                </h2>
+                <p className="text-[15px] leading-relaxed text-[#86868B] max-w-2xl">
+                  Lanjutkan dari lesson terakhir yang kamu buka. Draft code dan context lesson tetap tersimpan.
+                </p>
+                {recentlyViewed.length > 0 && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {recentlyViewed.map((item) => (
+                      <span
+                        key={`${item.topic}/${item.lesson}`}
+                        className="rounded-full bg-[#F5F5F7] dark:bg-[#1C1C1E] px-3 py-1.5 text-[12px] font-medium text-[#86868B]"
+                      >
+                        {item.topic}/{item.lesson}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <Link
+                href={`/modules/${continueLearning.topic}/${continueLearning.lesson}`}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0071E3] px-6 py-3 text-[14px] font-medium text-white shadow-sm transition-colors hover:bg-[#0077ED]"
+              >
+                <PlayCircle className="h-4 w-4" />
+                Buka lesson terakhir
+              </Link>
+            </div>
+          </section>
+        )}
 
         {/* ── Tabs & Search Bar ── */}
         <section className="sticky top-[52px] z-30 bg-background/95 backdrop-blur-xl border-b border-[#D2D2D7]/40 dark:border-white/10 shadow-sm transition-all mb-12 sm:mb-16">
@@ -193,12 +278,9 @@ export default function ModulesPage() {
               </div>
             ) : (
               <div className="topic-grid flex flex-col gap-4">
-                  {filtered.map((topic) => {
-                    // Fallback to lessons count if available on the Topic object, else default to 5
-                    const lessonCount = (topic as any).lessons?.length || 5;
-                    const prog = topicProgress(topic.slug, lessonCount);
-                  const isStarted = prog.done > 0;
-                  const isComplete = prog.pct === 100;
+                {filtered.map(({ topic, lessonCount, prog, matchedLessons, state }) => {
+                  const isStarted = state === "in_progress";
+                  const isComplete = state === "completed";
                   const statusLabel = isComplete ? "Selesai" : isStarted ? "Berjalan" : "Mulai";
 
                   return (
@@ -226,6 +308,23 @@ export default function ModulesPage() {
                         <p className="text-[14px] sm:text-[15px] leading-relaxed text-[#86868B] line-clamp-2 mb-4">
                           {topic.description_id}
                         </p>
+                        {matchedLessons.length > 0 && (
+                          <div className="mb-4 flex flex-wrap gap-2">
+                            {matchedLessons.slice(0, 2).map((label) => (
+                              <span
+                                key={label}
+                                className="rounded-full bg-[#0071E3]/8 px-3 py-1 text-[11px] font-medium text-[#0071E3]"
+                              >
+                                Lesson: {label}
+                              </span>
+                            ))}
+                            {matchedLessons.length > 2 && (
+                              <span className="rounded-full bg-[#F5F5F7] dark:bg-[#1C1C1E] px-3 py-1 text-[11px] font-medium text-[#86868B]">
+                                +{matchedLessons.length - 2} match
+                              </span>
+                            )}
+                          </div>
+                        )}
                         
                         {/* Meta info */}
                         <div className="flex flex-wrap items-center gap-4 text-[12px] font-medium text-[#86868B]">
@@ -236,6 +335,10 @@ export default function ModulesPage() {
                           <div className="flex items-center gap-1.5">
                             <Clock className="w-3.5 h-3.5" />
                             {topic.estimatedMinutes} Menit
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <ArrowRight className="w-3.5 h-3.5" />
+                            {prog.done}/{lessonCount} lesson
                           </div>
                           {isStarted && !isComplete && (
                             <div className="flex items-center gap-1.5 text-[#0071E3]">

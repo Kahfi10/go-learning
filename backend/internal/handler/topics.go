@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
@@ -39,7 +40,15 @@ func (h *TopicsHandler) ListTopics(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			continue
 		}
-		topics = append(topics, json.RawMessage(data))
+
+		var meta map[string]interface{}
+		if err := json.Unmarshal(data, &meta); err != nil {
+			continue
+		}
+
+		meta["lessons"] = h.lessonSummaries(filepath.Join(h.contentDir, entry.Name()))
+		b, _ := json.Marshal(meta)
+		topics = append(topics, json.RawMessage(b))
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -60,7 +69,15 @@ func (h *TopicsHandler) GetTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// List lessons
+	var meta map[string]interface{}
+	json.Unmarshal(metaData, &meta)
+	meta["lessons"] = h.lessonSummaries(dir)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(meta)
+}
+
+func (h *TopicsHandler) lessonSummaries(dir string) []json.RawMessage {
 	entries, _ := os.ReadDir(dir)
 	var lessons []json.RawMessage
 	for _, e := range entries {
@@ -74,7 +91,6 @@ func (h *TopicsHandler) GetTopic(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			continue
 		}
-		// Return only lesson metadata (id, title, estimatedMinutes) not full content
 		var lesson map[string]interface{}
 		if err := json.Unmarshal(data, &lesson); err != nil {
 			continue
@@ -89,12 +105,19 @@ func (h *TopicsHandler) GetTopic(w http.ResponseWriter, r *http.Request) {
 		lessons = append(lessons, json.RawMessage(b))
 	}
 
-	var meta map[string]interface{}
-	json.Unmarshal(metaData, &meta)
-	meta["lessons"] = lessons
+	sort.Slice(lessons, func(i, j int) bool {
+		var a, b map[string]interface{}
+		_ = json.Unmarshal(lessons[i], &a)
+		_ = json.Unmarshal(lessons[j], &b)
+		return toString(a["id"]) < toString(b["id"])
+	})
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(meta)
+	return lessons
+}
+
+func toString(v interface{}) string {
+	s, _ := v.(string)
+	return s
 }
 
 func (h *TopicsHandler) GetLesson(w http.ResponseWriter, r *http.Request) {
@@ -132,13 +155,25 @@ func (h *TopicsHandler) Search(w http.ResponseWriter, r *http.Request) {
 		if !entry.IsDir() {
 			continue
 		}
-		dir := filepath.Join(h.contentDir, entry.Name())
-		lessons, _ := os.ReadDir(dir)
+		topicDir := filepath.Join(h.contentDir, entry.Name())
+		metaPath := filepath.Join(topicDir, "meta.json")
+		metaData, err := os.ReadFile(metaPath)
+		if err != nil {
+			continue
+		}
+		var meta map[string]interface{}
+		if err := json.Unmarshal(metaData, &meta); err != nil {
+			continue
+		}
+		topicTitleID, _ := meta["title_id"].(string)
+		topicTitleEN, _ := meta["title_en"].(string)
+		topicSlug, _ := meta["slug"].(string)
+		lessons, _ := os.ReadDir(topicDir)
 		for _, le := range lessons {
 			if le.IsDir() || le.Name() == "meta.json" {
 				continue
 			}
-			data, err := os.ReadFile(filepath.Join(dir, le.Name()))
+			data, err := os.ReadFile(filepath.Join(topicDir, le.Name()))
 			if err != nil {
 				continue
 			}
@@ -156,6 +191,9 @@ func (h *TopicsHandler) Search(w http.ResponseWriter, r *http.Request) {
 					"title_id": titleID,
 					"title_en": titleEN,
 					"topic":    entry.Name(),
+					"topic_slug": topicSlug,
+					"topic_title_id": topicTitleID,
+					"topic_title_en": topicTitleEN,
 				})
 			}
 		}

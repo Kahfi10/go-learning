@@ -16,9 +16,10 @@ interface Props {
   defaultCode: string;
   onCodeChange?: (code: string) => void;
   height?: string;
+  onRun?: (result: ExecuteResult) => void;
 }
 
-export default function CodeEditor({ defaultCode, onCodeChange, height = "320px" }: Props) {
+export default function CodeEditor({ defaultCode, onCodeChange, height = "320px", onRun }: Props) {
   const [code, setCode] = useState(defaultCode);
   const [result, setResult] = useState<ExecuteResult | null>(null);
   const [running, setRunning] = useState(false);
@@ -36,6 +37,7 @@ export default function CodeEditor({ defaultCode, onCodeChange, height = "320px"
     try {
       const r = await api.execute(code);
       setResult(r);
+      onRun?.(r);
     } catch (e: any) {
       toast.error(e.message ?? "Gagal menjalankan kode");
     } finally {
