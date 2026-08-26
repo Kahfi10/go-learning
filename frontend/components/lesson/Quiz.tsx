@@ -25,10 +25,14 @@ export default function Quiz({ questions, lang, topicSlug, lessonId, onComplete,
   const options = lang === "id" ? q.options_id : q.options_en;
   const isAnswered = answers[current] !== null;
   const isCorrect = answers[current] === q.correct;
+  const openedKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
+    const key = `${topicSlug}/${lessonId}`;
+    if (openedKeyRef.current === key) return;
+    openedKeyRef.current = key;
     onOpen?.();
-  }, [onOpen]);
+  }, [lessonId, onOpen, topicSlug]);
 
   function handleSelect(idx: number) {
     if (isAnswered) return;

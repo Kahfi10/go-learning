@@ -58,7 +58,7 @@ export default function LessonPage() {
       setActiveTab(resume.activeTab);
     }
     markLessonViewed(topic, lesson);
-  }, [topic, lesson]);
+  }, [getResumeState, lesson, markLessonViewed, topic]);
 
   useEffect(() => {
     saveResumeState(topic, lesson, { lang, activeTab });

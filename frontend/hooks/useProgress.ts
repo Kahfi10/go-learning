@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { api, type LessonResumeState, type ProgressItem } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 
@@ -13,6 +13,16 @@ interface ContinueLearningItem {
 }
 
 type ResumeMap = Record<string, LessonResumeState>;
+
+function isSameResumeState(a: LessonResumeState, b: LessonResumeState) {
+  const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
+  for (const key of keys) {
+    if (a[key as keyof LessonResumeState] !== b[key as keyof LessonResumeState]) {
+      return false;
+    }
+  }
+  return true;
+}
 
 function loadLocal(): Record<string, ProgressItem> {
   if (typeof window === "undefined") return {};
@@ -29,12 +39,16 @@ export function useProgress() {
   const [progress, setProgress] = useState<Record<string, ProgressItem>>(loadLocal);
   const [resume, setResume] = useState<ResumeMap>(loadResume);
 
-  function persistResume(next: ResumeMap) {
-    setResume(next);
-    if (typeof window !== "undefined") {
-      localStorage.setItem(RESUME_KEY, JSON.stringify(next));
-    }
-  }
+  const persistResume = useCallback((updater: ResumeMap | ((prev: ResumeMap) => ResumeMap)) => {
+    setResume((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      if (next === prev) return prev;
+      if (typeof window !== "undefined") {
+        localStorage.setItem(RESUME_KEY, JSON.stringify(next));
+      }
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     if (state.user) {
@@ -45,70 +59,88 @@ export function useProgress() {
     }
   }, [state.user]);
 
-  function isCompleted(topic: string, lesson: string) {
+  const isCompleted = useCallback((topic: string, lesson: string) => {
     return progress[`${topic}/${lesson}`]?.completed ?? false;
-  }
+  }, [progress]);
 
-  function getResumeState(topic: string, lesson: string): LessonResumeState {
+  const getResumeState = useCallback((topic: string, lesson: string): LessonResumeState => {
     return resume[`${topic}/${lesson}`] ?? {};
-  }
+  }, [resume]);
 
-  function saveResumeState(topic: string, lesson: string, patch: Partial<LessonResumeState>) {
+  const saveResumeState = useCallback((topic: string, lesson: string, patch: Partial<LessonResumeState>) => {
     const key = `${topic}/${lesson}`;
-    const prev = resume[key] ?? {};
-    persistResume({
-      ...resume,
-      [key]: {
-        ...prev,
+    persistResume((prev) => {
+      const current = prev[key] ?? {};
+      const nextEntry = {
+        ...current,
         ...patch,
-        viewedAt: patch.viewedAt ?? new Date().toISOString(),
-      },
+        viewedAt: patch.viewedAt ?? current.viewedAt ?? new Date().toISOString(),
+      };
+
+      if (isSameResumeState(current, nextEntry)) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        [key]: nextEntry,
+      };
     });
-  }
+  }, [persistResume]);
 
-  function markLessonViewed(topic: string, lesson: string) {
+  const markLessonViewed = useCallback((topic: string, lesson: string) => {
     saveResumeState(topic, lesson, { viewedAt: new Date().toISOString() });
-  }
+  }, [saveResumeState]);
 
-  function topicProgress(topicSlug: string, totalLessons: number) {
+  const topicProgress = useCallback((topicSlug: string, totalLessons: number) => {
     const done = Object.entries(progress).filter(
       ([key, v]) => key.startsWith(`${topicSlug}/`) && v.completed
     ).length;
     return { done, total: totalLessons, pct: totalLessons ? Math.round((done / totalLessons) * 100) : 0 };
-  }
+  }, [progress]);
 
-  function lessonState(topic: string, lesson: string) {
+  const lessonState = useCallback((topic: string, lesson: string) => {
     const completed = isCompleted(topic, lesson);
     const state = getResumeState(topic, lesson);
     if (completed) return "completed" as const;
     if (state.viewedAt || getLastCode(topic, lesson)) return "in_progress" as const;
     return "not_started" as const;
-  }
+  }, [getResumeState, isCompleted]);
 
-  async function markComplete(topic: string, lesson: string, code?: string) {
+  const markComplete = useCallback(async (topic: string, lesson: string, code?: string) => {
     const key = `${topic}/${lesson}`;
-    const updated = { ...progress, [key]: { completed: true, completed_at: new Date().toISOString() } };
-    setProgress(updated);
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(updated));
+    const completedAt = new Date().toISOString();
+    setProgress((prev) => {
+      const updated = {
+        ...prev,
+        [key]: {
+          ...prev[key],
+          completed: true,
+          completed_at: prev[key]?.completed_at ?? completedAt,
+        },
+      };
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(updated));
+      return updated;
+    });
     saveResumeState(topic, lesson, { viewedAt: new Date().toISOString() });
     if (state.user) {
       await api.progress.update(topic, lesson, { completed: true, last_code: code }).catch(() => {});
     }
-  }
+  }, [saveResumeState, state.user]);
 
-  function getLastCode(topic: string, lesson: string): string | undefined {
+  const getLastCode = useCallback((topic: string, lesson: string): string | undefined => {
     const key = `${topic}_${lesson}_code`;
     return typeof window !== "undefined" ? localStorage.getItem(key) ?? undefined : undefined;
-  }
+  }, []);
 
-  function saveCode(topic: string, lesson: string, code: string) {
+  const saveCode = useCallback((topic: string, lesson: string, code: string) => {
     if (typeof window !== "undefined") {
       localStorage.setItem(`${topic}_${lesson}_code`, code);
     }
     saveResumeState(topic, lesson, { viewedAt: new Date().toISOString() });
-  }
+  }, [saveResumeState]);
 
-  function getContinueLearning(): ContinueLearningItem | null {
+  const getContinueLearning = useCallback((): ContinueLearningItem | null => {
     const items = Object.entries(resume)
       .filter(([key]) => !progress[key]?.completed)
       .sort((a, b) => {
@@ -121,9 +153,9 @@ export function useProgress() {
     if (!key) return null;
     const [topic, lesson] = key.split("/");
     return { topic, lesson, viewedAt: value?.viewedAt };
-  }
+  }, [progress, resume]);
 
-  function getRecentlyViewed(limit = 5): ContinueLearningItem[] {
+  const getRecentlyViewed = useCallback((limit = 5): ContinueLearningItem[] => {
     return Object.entries(resume)
       .filter(([, value]) => Boolean(value?.viewedAt))
       .sort((a, b) => {
@@ -136,7 +168,7 @@ export function useProgress() {
         const [topic, lesson] = key.split("/");
         return { topic, lesson, viewedAt: value?.viewedAt };
       });
-  }
+  }, [resume]);
 
   return {
     progress,
