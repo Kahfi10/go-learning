@@ -32,6 +32,7 @@ export default function LessonPage() {
   const [xpGained, setXpGained] = useState(0);
   const [quizScore, setQuizScore] = useState<number | null>(null);
   const [completionLoading, setCompletionLoading] = useState(false);
+  const [showMobileEditor, setShowMobileEditor] = useState(false);
   const {
     isCompleted,
     markComplete,
@@ -222,7 +223,7 @@ export default function LessonPage() {
       </div>
 
       {/* ── Main layout ─────────────────────────────── */}
-      <div className="flex flex-1 pt-[92px]">
+      <div className="flex flex-1 pt-[92px] bg-[#FCFCFD] dark:bg-[#09090A]">
         {/* Sidebar */}
         {sidebarOpen && (
           <aside className="fixed left-0 top-[92px] bottom-0 w-60 bg-background dark:bg-[#0A0A0A] border-r border-[#D2D2D7]/40 z-30 overflow-y-auto">
@@ -266,13 +267,13 @@ export default function LessonPage() {
         )}
 
         {/* Content */}
-        <main className={cn("flex-1 min-w-0 transition-all duration-200", sidebarOpen ? "lg:ml-60" : "")}>
+          <main className={cn("flex-1 min-w-0 transition-all duration-200", sidebarOpen ? "lg:ml-60" : "")}>
 
           {/* Desktop: resizable panels */}
-          <div className="hidden lg:flex h-[calc(100vh-92px)]">
+          <div className="hidden lg:flex h-[calc(100vh-92px)] p-3 gap-3">
             <PanelGroup direction="horizontal">
-              <Panel defaultSize={55} minSize={35} className="overflow-y-auto" style={{ overflowY: 'auto' }}>
-                <div className="max-w-2xl mx-auto px-6 py-8">
+              <Panel defaultSize={54} minSize={35} className="overflow-y-auto rounded-[24px] border border-[#D2D2D7]/40 dark:border-white/8 bg-background shadow-sm" style={{ overflowY: 'auto' }}>
+                <div className="max-w-3xl mx-auto px-8 py-8 xl:px-10">
                   <LessonContent
                     data={data} lang={lang} title={title} content={content}
                     topic={topic} lesson={lesson}
@@ -286,23 +287,32 @@ export default function LessonPage() {
                   <LessonNav prev={prevLesson} next={nextLesson} topic={topic} lang={lang} />
                 </div>
               </Panel>
-              <PanelResizeHandle className="w-[3px] bg-[#D2D2D7]/30 hover:bg-[#0071E3]/40 transition-colors cursor-col-resize mx-0.5" />
-              <Panel defaultSize={45} minSize={30} className="overflow-y-auto bg-[#F5F5F7]/50 dark:bg-[#0A0A0A]">
-                <div className="p-5">
-                  <div className="flex items-center justify-between mb-3">
-                    <p className="text-[11px] font-semibold text-[#86868B] uppercase tracking-widest">Editor Go</p>
-                    <div className="flex items-center gap-1 text-[11px] text-[#86868B]">
+              <PanelResizeHandle className="mx-1 flex items-center justify-center">
+                <div className="h-12 w-[4px] rounded-full bg-[#D2D2D7]/40 hover:bg-[#0071E3]/40 transition-colors cursor-col-resize" />
+              </PanelResizeHandle>
+              <Panel defaultSize={46} minSize={30} className="overflow-y-auto rounded-[24px] border border-[#D2D2D7]/40 dark:border-white/8 bg-[#F7F7F8] dark:bg-[#101113] shadow-sm">
+                <div className="sticky top-0 z-10 border-b border-[#D2D2D7]/35 dark:border-white/6 bg-[#F7F7F8]/95 dark:bg-[#101113]/95 backdrop-blur-sm px-5 py-4">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-[11px] font-semibold text-[#86868B] uppercase tracking-widest">Editor Workspace</p>
+                      <p className="mt-1 text-[14px] font-medium text-foreground">Eksperimen langsung di samping materi</p>
+                    </div>
+                    <div className="flex items-center gap-1 text-[11px] text-[#86868B] shrink-0">
                       <Clock className="w-3 h-3" /> {data.estimatedMinutes} mnt
                     </div>
                   </div>
+                </div>
+                <div className="p-5">
                   <CodeEditor
                     defaultCode={getLastCode(topic, lesson) ?? data.starterCode}
                     onCodeChange={(c) => saveCode(topic, lesson, c)}
                     onRun={() => saveResumeState(topic, lesson, { hasRunCode: true, viewedAt: new Date().toISOString() })}
-                    height="calc(100vh - 180px)"
+                    height="calc(100vh - 220px)"
                   />
                   {completionHint && !done && (
-                    <p className="mt-3 text-[12px] leading-relaxed text-[#86868B]">{completionHint}</p>
+                    <div className="mt-4 rounded-[14px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white/80 dark:bg-[#17181A] px-4 py-3">
+                      <p className="text-[12px] leading-relaxed text-[#86868B]">{completionHint}</p>
+                    </div>
                   )}
                 </div>
               </Panel>
@@ -310,7 +320,7 @@ export default function LessonPage() {
           </div>
 
           {/* Mobile: stacked */}
-          <div className="lg:hidden px-4 py-6 space-y-6">
+          <div className="lg:hidden px-4 py-5 space-y-5">
             <LessonContent
               data={data} lang={lang} title={title} content={content}
               topic={topic} lesson={lesson}
@@ -321,16 +331,35 @@ export default function LessonPage() {
               onQuizOpen={() => saveResumeState(topic, lesson, { hasOpenedQuiz: true, viewedAt: new Date().toISOString() })}
               onQuizComplete={handleQuizComplete}
             />
-            <div className="lesson-hero">
-              <p className="text-[11px] font-semibold text-[#86868B] uppercase tracking-widest mb-3">Editor Go</p>
-              <CodeEditor
-                defaultCode={getLastCode(topic, lesson) ?? data.starterCode}
-                onCodeChange={(c) => saveCode(topic, lesson, c)}
-                onRun={() => saveResumeState(topic, lesson, { hasRunCode: true, viewedAt: new Date().toISOString() })}
-                height="320px"
-              />
-              {completionHint && !done && (
-                <p className="mt-3 text-[12px] leading-relaxed text-[#86868B]">{completionHint}</p>
+            <div className="rounded-[20px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white dark:bg-[#111214] shadow-sm overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setShowMobileEditor((prev) => !prev)}
+                className="w-full flex items-center justify-between gap-4 px-4 py-4 text-left"
+              >
+                <div>
+                  <p className="text-[11px] font-semibold text-[#86868B] uppercase tracking-widest">Editor Go</p>
+                  <p className="mt-1 text-[14px] font-medium text-foreground">
+                    {showMobileEditor ? "Sembunyikan editor" : "Buka editor latihan"}
+                  </p>
+                </div>
+                <ChevronRight className={cn("w-4 h-4 text-[#86868B] transition-transform", showMobileEditor && "rotate-90")} />
+              </button>
+
+              {showMobileEditor && (
+                <div className="border-t border-[#D2D2D7]/35 dark:border-white/6 p-4">
+                  <CodeEditor
+                    defaultCode={getLastCode(topic, lesson) ?? data.starterCode}
+                    onCodeChange={(c) => saveCode(topic, lesson, c)}
+                    onRun={() => saveResumeState(topic, lesson, { hasRunCode: true, viewedAt: new Date().toISOString() })}
+                    height="320px"
+                  />
+                  {completionHint && !done && (
+                    <div className="mt-4 rounded-[14px] border border-[#D2D2D7]/35 dark:border-white/6 bg-[#F7F7F8] dark:bg-[#17181A] px-4 py-3">
+                      <p className="text-[12px] leading-relaxed text-[#86868B]">{completionHint}</p>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
             <LessonNav prev={prevLesson} next={nextLesson} topic={topic} lang={lang} />
@@ -446,7 +475,7 @@ function LessonContent({
       </div>
 
       {/* Tabs: Materi | Diskusi */}
-      <div className="relative flex items-center gap-1 mb-6 border-b border-[#D2D2D7]/40">
+      <div className="relative flex items-center gap-1 mb-6 border-b border-[#D2D2D7]/40 overflow-x-auto no-scrollbar">
         {[
           { key: "content", label: lang === "id" ? "Materi" : "Content" },
           { key: "discussion", label: lang === "id" ? "Diskusi" : "Discussion", icon: MessageCircle },
@@ -529,14 +558,14 @@ function LessonContent({
 
           {/* Mark complete CTA (bottom) */}
           {!done && (
-            <div className="lesson-tab-panel mt-10 p-5 bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[16px] flex items-center justify-between gap-4 border border-[#D2D2D7]/40 dark:border-white/8">
+            <div className="lesson-tab-panel mt-10 p-5 bg-[#FAFAFB] dark:bg-[#17181A] rounded-[18px] flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-[#D2D2D7]/35 dark:border-white/6">
               <div>
                 <p className="font-medium text-[14px] text-foreground">Sudah paham materi ini?</p>
                 <p className="text-[#86868B] text-[12px] mt-0.5">
                   {completionHint ?? "Tandai selesai dan dapatkan +50 XP"}
                 </p>
               </div>
-              <Button onClick={onComplete} disabled={!completionEnabled} className="shrink-0">
+              <Button onClick={onComplete} disabled={!completionEnabled} className="shrink-0 w-full sm:w-auto justify-center">
                 Selesai +50 XP
               </Button>
             </div>
@@ -554,29 +583,33 @@ function LessonContent({
 /* ── Lesson Navigation ───────────────────────────── */
 function LessonNav({ prev, next, topic, lang }: any) {
   return (
-    <div className="flex items-center justify-between pt-8 mt-8 border-t border-[#D2D2D7]/40">
+    <div className="grid gap-3 sm:grid-cols-2 pt-8 mt-8 border-t border-[#D2D2D7]/40">
       {prev ? (
         <Link href={`/modules/${topic}/${prev.id}`}
-          className="flex items-center gap-2 text-[#86868B] hover:text-foreground text-[13px] transition-colors group">
-          <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-          <div>
+          className="flex items-center gap-3 rounded-[18px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white dark:bg-[#111214] px-4 py-4 text-[13px] transition-colors group hover:border-[#0071E3]/25 hover:bg-[#FAFAFB] dark:hover:bg-[#17181A]">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F5F5F7] dark:bg-[#1C1C1E] text-[#86868B] shrink-0">
+            <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+          </div>
+          <div className="min-w-0">
             <p className="text-[10px] uppercase tracking-wide text-[#86868B]">Sebelumnya</p>
-            <p className="font-medium text-foreground">{lang === "id" ? prev.title_id : prev.title_en}</p>
+            <p className="font-medium text-foreground truncate">{lang === "id" ? prev.title_id : prev.title_en}</p>
           </div>
         </Link>
-      ) : <div />}
+      ) : <div className="hidden sm:block" />}
       {next ? (
         <Link href={`/modules/${topic}/${next.id}`}
-          className="flex items-center gap-2 text-[#0071E3] text-[13px] font-medium hover:text-[#0077ED] transition-colors group">
-          <div className="text-right">
+          className="flex items-center justify-between gap-3 rounded-[18px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white dark:bg-[#111214] px-4 py-4 text-[13px] font-medium transition-colors group hover:border-[#0071E3]/25 hover:bg-[#FAFAFB] dark:hover:bg-[#17181A]">
+          <div className="min-w-0 text-right sm:text-left ml-auto sm:ml-0 order-2 sm:order-1">
             <p className="text-[10px] uppercase tracking-wide text-[#86868B]">Berikutnya</p>
-            <p>{lang === "id" ? next.title_id : next.title_en}</p>
+            <p className="text-[#0071E3] truncate">{lang === "id" ? next.title_id : next.title_en}</p>
           </div>
-          <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0071E3]/10 text-[#0071E3] shrink-0 order-1 sm:order-2">
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+          </div>
         </Link>
       ) : (
         <Link href={`/modules/${topic}`}
-          className="flex items-center gap-2 text-[#34C759] text-[13px] font-medium">
+          className="flex items-center justify-center gap-2 rounded-[18px] border border-[#34C759]/20 bg-[#34C759]/8 px-4 py-4 text-[#34C759] text-[13px] font-medium sm:col-start-2">
           <CheckCircle2 className="w-4 h-4" />
           Selesai semua!
         </Link>
