@@ -491,7 +491,9 @@ export default function DashboardPage() {
                     <span className="text-[12px] text-[#86868B]">{item.completed ? "Done" : "Open"}</span>
                   </Link>
                 )) : (
-                  <p className="text-[13px] text-[#86868B]">Belum ada aktivitas terbaru.</p>
+                  <div className="rounded-[14px] bg-[#F5F5F7] dark:bg-[#1C1C1E] px-4 py-4">
+                    <p className="text-[13px] text-[#86868B]">Belum ada aktivitas terbaru. Mulai lesson pertama untuk melihat riwayatmu di sini.</p>
+                  </div>
                 )}
               </div>
               <div className="mt-4 pt-4 border-t border-[#D2D2D7]/40 dark:border-white/8">

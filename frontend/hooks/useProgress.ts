@@ -58,6 +58,30 @@ function loadBookmarks(): BookmarkState {
   }
 }
 
+function mergeProgressState(local: Record<string, ProgressItem>, remote: Record<string, ProgressItem>) {
+  const merged: Record<string, ProgressItem> = { ...remote };
+
+  Object.entries(local).forEach(([key, localItem]) => {
+    const remoteItem = remote[key];
+    if (!remoteItem) {
+      merged[key] = localItem;
+      return;
+    }
+
+    merged[key] = {
+      completed: remoteItem.completed || localItem.completed,
+      best_quiz_score: Math.max(remoteItem.best_quiz_score ?? 0, localItem.best_quiz_score ?? 0) || undefined,
+      last_code: localItem.last_code || remoteItem.last_code,
+      completed_at: remoteItem.completed_at || localItem.completed_at,
+      last_viewed_at: remoteItem.last_viewed_at || localItem.last_viewed_at,
+      topic_bookmarked: Boolean(remoteItem.topic_bookmarked || localItem.topic_bookmarked),
+      lesson_bookmarked: Boolean(remoteItem.lesson_bookmarked || localItem.lesson_bookmarked),
+    };
+  });
+
+  return merged;
+}
+
 export function useProgress() {
   const { state } = useAuth();
   const [progress, setProgress] = useState<Record<string, ProgressItem>>(loadLocal);
@@ -100,17 +124,39 @@ export function useProgress() {
   useEffect(() => {
     if (state.user) {
       api.progress.get().then((data) => {
-        setProgress(data);
-        localStorage.setItem(LOCAL_KEY, JSON.stringify(data));
-        syncBookmarksFromProgress(data);
+        const local = loadLocal();
+        const merged = mergeProgressState(local, data ?? {});
+        setProgress(merged);
+        localStorage.setItem(LOCAL_KEY, JSON.stringify(merged));
+        syncBookmarksFromProgress(merged);
         if (typeof window !== "undefined") {
-          Object.entries(data).forEach(([key, value]) => {
+          Object.entries(merged).forEach(([key, value]) => {
             if (value.last_code) {
               const [topic, lesson] = key.split("/");
               const localKey = `${topic}_${lesson}_code`;
               if (!localStorage.getItem(localKey)) {
                 localStorage.setItem(localKey, value.last_code);
               }
+            }
+          });
+        }
+
+        if (state.user) {
+          Object.entries(merged).forEach(([key, value]) => {
+            const [topic, lesson] = key.split("/");
+            const remoteItem = (data ?? {})[key];
+            const shouldSyncBack = !remoteItem ||
+              value.last_code !== remoteItem.last_code ||
+              value.topic_bookmarked !== remoteItem.topic_bookmarked ||
+              value.lesson_bookmarked !== remoteItem.lesson_bookmarked ||
+              value.completed !== remoteItem.completed;
+            if (shouldSyncBack) {
+              api.progress.update(topic, lesson, {
+                completed: value.completed,
+                last_code: value.last_code,
+                topic_bookmarked: value.topic_bookmarked,
+                lesson_bookmarked: value.lesson_bookmarked,
+              }).catch(() => {});
             }
           });
         }

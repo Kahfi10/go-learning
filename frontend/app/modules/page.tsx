@@ -340,6 +340,18 @@ export default function ModulesPage() {
                 <p className="text-[15px] text-[#86868B] max-w-md">
                   Coba sesuaikan kata kunci pencarian atau ganti filter level.
                 </p>
+                {hasActiveFilters && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearch("");
+                      setFilter("All");
+                    }}
+                    className="mt-5 rounded-full bg-[#0071E3] px-5 py-2.5 text-[13px] font-medium text-white hover:bg-[#0077ED] transition-colors"
+                  >
+                    Reset pencarian
+                  </button>
+                )}
               </div>
             ) : (
               <div className="topic-grid flex flex-col gap-4">
