@@ -175,7 +175,6 @@ const FAQS = [
 /* ─── Page ──────────────────────────────────────────────── */
 export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [heroMode, setHeroMode] = useState<"apple" | "editorial" | "showcase">("editorial");
 
   useLayoutEffect(() => {
     let ctx: any;
@@ -189,39 +188,36 @@ export default function LandingPage() {
         /* Hero timeline — smoother, more premium */
         const heroTl = gsap.timeline({ delay: 0.04 });
         heroTl
-          .from(".hero-badge", { y: 14, duration: 0.5, ease: "power3.out" })
-          .from(".hero-title-line", { y: 24, duration: 0.7, ease: "expo.out", stagger: 0.06 }, "-=0.16")
+          .from(".hero-title-line", { y: 24, duration: 0.7, ease: "expo.out", stagger: 0.06 })
           .from(".hero-sub", { y: 14, duration: 0.55, ease: "power3.out" }, "-=0.24")
-          .from(".hero-cta-row > *", { y: 10, duration: 0.45, ease: "power3.out", stagger: 0.05 }, "-=0.18")
+          .from(".hero-cta-row", { y: 10, duration: 0.45, ease: "power3.out" }, "-=0.18")
           .from(".hero-trust > *", { y: 6, duration: 0.38, ease: "power2.out", stagger: 0.03 }, "-=0.16")
           .from(".hero-code-window", { x: 18, y: 6, duration: 0.75, ease: "expo.out" }, "-=0.42");
 
         /* Breathing float after entrance */
         gsap.to(".hero-code-window", {
-          y: -10,
-          duration: 4.8,
+          y: -12,
+          duration: 5,
           ease: "sine.inOut",
           yoyo: true,
           repeat: -1,
           delay: 1.3,
         });
 
-        /* Subtle shimmer on run button */
-        gsap.to(".hero-run-btn", {
-          boxShadow: "0 0 0 1px rgba(0,113,227,0.35), 0 8px 28px rgba(0,113,227,0.22)",
-          duration: 1.8,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-          delay: 1.8,
-        });
+        /* Stats count-up & Entrance */
+        gsap.fromTo(".stat-col",
+          { y: 40, opacity: 0 },
+          {
+            y: 0, opacity: 1, stagger: 0.1, duration: 0.8, ease: "expo.out",
+            scrollTrigger: { trigger: "#stats-section", start: "top 85%", once: true }
+          }
+        );
 
-        /* Stats count-up */
         document.querySelectorAll<HTMLElement>(".stat-num").forEach((el) => {
           const target = parseInt(el.getAttribute("data-target") ?? "0");
           const obj = { val: 0 };
           ScrollTrigger.create({
-            trigger: el, start: "top 88%", once: true,
+            trigger: el, start: "top 85%", once: true,
             onEnter: () => gsap.to(obj, {
               val: target, duration: 1.8, ease: "power3.out",
               snap: { val: 1 },
@@ -230,45 +226,81 @@ export default function LandingPage() {
           });
         });
 
+        /* Why-go Section Entrance */
+        gsap.fromTo(".why-header > *",
+          { y: 30, opacity: 0 },
+          {
+            y: 0, opacity: 1, stagger: 0.1, duration: 0.8, ease: "expo.out",
+            scrollTrigger: { trigger: "#why-go-section", start: "top 80%", once: true }
+          }
+        );
+
         /* Why-go cards stagger */
-        gsap.from(".why-card", {
-          y: 40, scale: 0.97, stagger: 0.09, duration: 0.65, ease: "expo.out",
-          scrollTrigger: { trigger: ".why-grid", start: "top 80%", once: true },
-        });
+        gsap.fromTo(".why-card",
+          { y: 60, opacity: 0, scale: 0.95 },
+          {
+            y: 0, opacity: 1, scale: 1, stagger: 0.12, duration: 0.8, ease: "expo.out",
+            scrollTrigger: { trigger: ".why-grid", start: "top 85%", once: true },
+          }
+        );
+
+        /* Trust Banner */
+        gsap.fromTo(".trust-banner-item",
+          { y: 20, opacity: 0 },
+          {
+            y: 0, opacity: 1, stagger: 0.05, duration: 0.6, ease: "expo.out",
+            scrollTrigger: { trigger: ".trust-banner", start: "top 95%", once: true }
+          }
+        );
 
         /* How-steps alternating */
         document.querySelectorAll<HTMLElement>(".how-step").forEach((el, i) => {
-          gsap.from(el, {
-            x: i % 2 === 0 ? -36 : 36, duration: 0.7, ease: "expo.out",
-            scrollTrigger: { trigger: el, start: "top 82%", once: true },
-          });
+          gsap.fromTo(el,
+            { x: i % 2 === 0 ? -40 : 40, opacity: 0 },
+            {
+              x: 0, opacity: 1, duration: 0.8, ease: "expo.out",
+              scrollTrigger: { trigger: el, start: "top 85%", once: true },
+            }
+          );
         });
 
-          /* Topics cards stagger reveal */
-          gsap.from(".topic-card", {
-            y: 30, scale: 0.94, stagger: 0.05, duration: 0.6, ease: "expo.out",
+        /* Topics cards stagger reveal */
+        gsap.fromTo(".topic-card",
+          { y: 30, scale: 0.94, opacity: 0 },
+          {
+            y: 0, scale: 1, opacity: 1, stagger: 0.05, duration: 0.6, ease: "expo.out",
             scrollTrigger: { trigger: "#topics-track", start: "top 85%", once: true },
-          });
+          }
+        );
 
         /* Feature panels */
         document.querySelectorAll<HTMLElement>(".feature-panel").forEach((el) => {
-          gsap.from(el, {
-            y: 32, scale: 0.98, duration: 0.8, ease: "expo.out",
-            scrollTrigger: { trigger: el, start: "top 82%", once: true },
-          });
+          gsap.fromTo(el,
+            { y: 32, scale: 0.98, opacity: 0 },
+            {
+              y: 0, scale: 1, opacity: 1, duration: 0.8, ease: "expo.out",
+              scrollTrigger: { trigger: el, start: "top 85%", once: true },
+            }
+          );
         });
 
         /* FAQ items */
-        gsap.from(".faq-item", {
-          y: 16, stagger: 0.06, duration: 0.5, ease: "expo.out",
-          scrollTrigger: { trigger: ".faq-list", start: "top 82%", once: true },
-        });
+        gsap.fromTo(".faq-item",
+          { y: 16, opacity: 0 },
+          {
+            y: 0, opacity: 1, stagger: 0.06, duration: 0.5, ease: "expo.out",
+            scrollTrigger: { trigger: ".faq-list", start: "top 85%", once: true },
+          }
+        );
 
         /* Final CTA */
-        gsap.from(".final-cta", {
-          y: 28, duration: 0.8, ease: "expo.out",
-          scrollTrigger: { trigger: ".final-cta", start: "top 85%", once: true },
-        });
+        gsap.fromTo(".final-cta",
+          { y: 28, opacity: 0 },
+          {
+            y: 0, opacity: 1, duration: 0.8, ease: "expo.out",
+            scrollTrigger: { trigger: ".final-cta", start: "top 85%", once: true },
+          }
+        );
 
       }, containerRef);
     };
@@ -282,150 +314,150 @@ export default function LandingPage() {
       <Navbar />
 
       {/* ══════════════════════════════════════════
-          HERO  — two-column grid
+          HERO  — Full Screen Split
       ══════════════════════════════════════════ */}
-      <section className="relative min-h-screen pt-20 sm:pt-24 pb-6 sm:pb-8 px-4 sm:px-6 overflow-x-hidden">
-        <div aria-hidden className="pointer-events-none absolute inset-0 flex items-start justify-center overflow-hidden">
-          <div className="mt-[-80px] w-[600px] sm:w-[900px] h-[400px] sm:h-[500px] rounded-full bg-[#0071E3]/6 blur-[100px] sm:blur-[120px]" />
+      <section className="relative min-h-[100svh] w-full flex flex-col lg:flex-row overflow-hidden border-b border-[#D2D2D7]/40 dark:border-white/10">
+        <div aria-hidden className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
+          <div className="w-[600px] sm:w-[900px] h-[400px] sm:h-[500px] rounded-full bg-[#0071E3]/6 blur-[100px] sm:blur-[120px]" />
+        </div>
+        
+        {/* ── Left Half: Text Content ── */}
+        <div className="relative z-10 flex-1 flex flex-col justify-center px-6 sm:px-12 xl:px-20 pt-32 pb-12 lg:py-24 max-w-[45%]">
+          <div className="w-full max-w-[580px] mx-auto lg:ml-auto lg:mr-8 xl:mr-12 text-center lg:text-left">
+            
+            <h1 className="hero-title font-display font-semibold leading-[1.05] tracking-[-0.04em] text-foreground mb-6 sm:mb-8" style={{ fontSize: "clamp(42px, 5.5vw, 76px)" }}>
+              <span className="hero-title-line block">Kuasai Go.</span>
+              <span className="hero-title-line block text-[#0071E3]">Dengan Cara</span>
+              <span className="hero-title-line block">yang Elegan.</span>
+            </h1>
+            
+            <p className="hero-sub text-[16px] sm:text-[18px] text-[#86868B] leading-relaxed mb-8 sm:mb-10 max-w-[520px] mx-auto lg:mx-0 text-balance">
+              76 lesson interaktif, bilingual ID/EN, dengan editor Go langsung di browser. Dari <span className="text-foreground font-medium">Hello World</span> sampai <span className="text-foreground font-medium">production patterns</span>.
+            </p>
+            
+            <HeroActions />
+          </div>
         </div>
 
-        <div className="relative z-10 mx-auto max-w-6xl min-h-[calc(100vh-100px)] flex flex-col justify-between">
-          <div className="flex justify-end pt-2 sm:pt-4">
-            <div className="flex items-center gap-1 bg-white/85 dark:bg-[#111214]/85 border border-[#D2D2D7]/60 dark:border-white/10 rounded-full p-1 shadow-sm backdrop-blur-sm">
-              {[
-                { key: "apple", label: "Apple Cinematic" },
-                { key: "editorial", label: "Editorial Split" },
-                { key: "showcase", label: "Product Showcase" },
-              ].map((opt) => (
-                <button
-                  key={opt.key}
-                  onClick={() => setHeroMode(opt.key as typeof heroMode)}
-                  className={cn(
-                    "px-3 py-1.5 rounded-full text-[11px] sm:text-[12px] font-medium transition-colors whitespace-nowrap",
-                    heroMode === opt.key ? "bg-[#0071E3] text-white" : "text-[#86868B] hover:text-foreground"
-                  )}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+        {/* ── Right Half: Code Preview ── */}
+        <div className="relative z-10 flex-1 flex flex-col justify-center px-6 sm:px-12 xl:px-20 pb-20 pt-10 lg:py-24 max-w-[55%]">
+          <div className="w-full max-w-[720px] mx-auto lg:mr-auto lg:ml-8 xl:ml-12 relative z-10 flex justify-center lg:justify-start">
+            <HeroCodePreview />
           </div>
-
-          {heroMode === "apple" ? (
-            <HeroApple />
-          ) : heroMode === "showcase" ? (
-            <HeroShowcase />
-          ) : (
-            <HeroEditorial />
-          )}
         </div>
       </section>
 
       {/* ══════════════════════════════════════════
           STATS
       ══════════════════════════════════════════ */}
-      <section className="py-12 sm:py-16 px-4 sm:px-6 border-t border-[#D2D2D7]/40">
-        <div className="mx-auto max-w-4xl grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8">
-          {[
-            { target: 15,  suffix: "",  label: "Topik Go"         },
-            { target: 76,  suffix: "+", label: "Lessons"          },
-            { target: 300, suffix: "+", label: "Soal Quiz"        },
-            { target: 0,   suffix: "",  label: "Install Required" },
-          ].map((s) => (
-            <div key={s.label} className="text-center">
-              <div className="font-display font-semibold tracking-[-0.05em] text-foreground leading-none"
-                style={{ fontSize: "clamp(36px, 5vw, 68px)" }}>
-                <span className="stat-num" data-target={s.target}>0</span>
-                <span className="text-[#0071E3]">{s.suffix}</span>
+      <section id="stats-section" className="py-16 sm:py-24 border-t border-[#D2D2D7]/40">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-6 md:gap-x-0 divide-x-0 md:divide-x divide-[#D2D2D7]/40 dark:divide-white/10">
+            {[
+              { target: 15,  suffix: "",  label: "Topik Go"         },
+              { target: 76,  suffix: "+", label: "Lessons"          },
+              { target: 300, suffix: "+", label: "Soal Quiz"        },
+              { target: 0,   suffix: "",  label: "Install Required" },
+            ].map((s) => (
+              <div key={s.label} className="stat-col text-center px-4">
+                <div className="font-display font-semibold tracking-[-0.04em] text-foreground leading-none mb-3"
+                  style={{ fontSize: "clamp(48px, 6vw, 72px)" }}>
+                  <span className="stat-num" data-target={s.target}>0</span>
+                  <span className="text-[#0071E3]">{s.suffix}</span>
+                </div>
+                <p className="text-[#86868B] text-[15px] sm:text-[16px] font-medium">{s.label}</p>
               </div>
-              <p className="text-[#86868B] text-[13px] sm:text-[15px] mt-2 sm:mt-3">{s.label}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ══════════════════════════════════════════
-          WHY GO — bento grid, big cards
+          WHY GO — Premium Bento (Fullscreen)
       ══════════════════════════════════════════ */}
-      <section className="py-20 px-4 sm:px-6 bg-[#F5F5F7] dark:bg-[#0A0A0A]">
-        <div className="mx-auto max-w-5xl">
-          <div className="mb-10">
-            <p className="text-[#86868B] text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">Mengapa Go?</p>
-            <h2 className="font-display font-semibold text-[28px] sm:text-[40px] lg:text-[48px] tracking-[-0.03em] text-foreground leading-[1.07]">
+      <section id="why-go-section" className="py-24 sm:py-32 px-4 sm:px-6 bg-[#F5F5F7] dark:bg-[#0A0A0A] min-h-[100svh] flex flex-col justify-center">
+        <div className="mx-auto max-w-7xl w-full">
+          
+          <div className="why-header text-center mb-16 sm:mb-20 max-w-3xl mx-auto">
+            <p className="text-[#86868B] text-[12px] sm:text-[14px] font-semibold uppercase tracking-[0.2em] mb-4 sm:mb-5">Mengapa Go?</p>
+            <h2 className="font-display font-semibold tracking-[-0.03em] text-foreground leading-[1.1] text-balance"
+              style={{ fontSize: "clamp(40px, 6vw, 64px)" }}>
               Bahasa yang dibangun untuk masa depan.
             </h2>
           </div>
 
-          {/* Bento 2×2 — stat font menggunakan fluid size */}
-          <div className="why-grid grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+          {/* Bento Grid */}
+          <div className="why-grid grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
             {WHY_GO.map((w) => (
               <div key={w.label}
-                className="why-card bg-background dark:bg-[#1C1C1E] rounded-[20px] p-6 sm:p-8 min-h-[180px] sm:min-h-[210px] flex flex-col justify-between group hover:scale-[1.01] transition-transform duration-300 overflow-hidden">
-                {/* Top */}
-                <div className="flex items-start justify-between gap-3">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: w.color + "18" }}>
-                    <w.icon className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: w.color }} />
-                  </div>
-                  <span className="text-[#86868B] text-[12px] sm:text-[13px] leading-relaxed text-right max-w-[160px] text-justify">
-                    {w.sub}
-                  </span>
+                className="why-card relative bg-white dark:bg-[#1C1C1E] rounded-[32px] p-10 sm:p-14 flex flex-col justify-between group hover:-translate-y-1.5 transition-all duration-500 overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] ring-1 ring-[#D2D2D7]/50 dark:ring-white/10 min-h-[280px] sm:min-h-[340px]"
+              >
+                {/* Background subtle glow */}
+                <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-[100px] opacity-30 group-hover:opacity-60 transition-opacity duration-700 pointer-events-none" style={{ backgroundColor: w.color }} />
+                
+                {/* Icon */}
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl flex items-center justify-center shrink-0 mb-10 relative z-10"
+                  style={{ backgroundColor: w.color + "15" }}>
+                  <w.icon className="w-8 h-8 sm:w-10 sm:h-10" style={{ color: w.color }} />
                 </div>
-                {/* Bottom */}
-                <div>
-                  <p className="font-display font-semibold tracking-[-0.04em] leading-none mb-2"
+
+                {/* Content */}
+                <div className="relative z-10">
+                  <p className="font-display font-bold tracking-[-0.03em] leading-none mb-5"
                     style={{
                       color: w.color,
-                      fontSize: "clamp(36px, 5vw, 60px)",
+                      fontSize: "clamp(56px, 8vw, 88px)",
                     }}>
                     {w.stat}
                   </p>
-                  <p className="font-semibold text-[14px] sm:text-[16px] text-foreground">{w.label}</p>
+                  <h3 className="font-semibold text-[20px] sm:text-[24px] text-foreground mb-3">{w.label}</h3>
+                  <p className="text-[#86868B] text-[16px] sm:text-[18px] leading-relaxed max-w-[85%]">{w.sub}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Companies */}
-          <div className="mt-16 sm:mt-20 pb-2 text-center">
-            <p className="text-[#86868B] text-[12px] sm:text-[13px] mb-3">Dipercaya oleh</p>
-            <div className="flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-8 gap-y-2">
+          {/* Trust Banner */}
+          <div className="trust-banner mt-24 sm:mt-32 pt-12 border-t border-[#D2D2D7]/60 dark:border-white/10 text-center">
+            <p className="trust-banner-item text-[#86868B] text-[13px] sm:text-[14px] font-medium tracking-widest uppercase mb-8">Infrastruktur dunia dibangun dengan Go</p>
+            <div className="flex flex-wrap items-center justify-center gap-x-10 sm:gap-x-16 gap-y-8 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
               {["Google", "Docker", "Kubernetes", "Cloudflare", "Uber", "Dropbox"].map((c) => (
-                <span key={c} className="text-[#86868B] text-[13px] sm:text-[14px] font-medium hover:text-foreground transition-colors">
+                <span key={c} className="trust-banner-item font-display font-bold text-[24px] sm:text-[32px] tracking-tight text-foreground/80 hover:text-foreground transition-colors">
                   {c}
                 </span>
               ))}
             </div>
           </div>
+
         </div>
       </section>
 
       {/* ══════════════════════════════════════════
-          HOW IT WORKS — 2×2 grid
+          HOW IT WORKS — Fullscreen 2x2 Layout
       ══════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6 overflow-visible">
-        <div className="mx-auto max-w-5xl">
-          <div className="mb-10">
-            <p className="text-[#86868B] text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.15em] mb-3">Cara Kerja</p>
-            <h2 className="font-display font-semibold tracking-[-0.03em] text-foreground"
-              style={{ fontSize: "clamp(26px, 4vw, 48px)" }}>
+      <section className="py-24 sm:py-32 px-4 sm:px-6 flex flex-col justify-center overflow-visible border-t border-[#D2D2D7]/40 dark:border-white/10">
+        <div className="mx-auto max-w-7xl w-full">
+          <div className="mb-16 sm:mb-20 text-center">
+            <p className="text-[#86868B] text-[12px] sm:text-[14px] font-semibold uppercase tracking-[0.2em] mb-4 sm:mb-5">Cara Kerja</p>
+            <h2 className="font-display font-semibold tracking-[-0.03em] text-foreground text-balance"
+              style={{ fontSize: "clamp(40px, 6vw, 64px)" }}>
               Belajar yang benar-benar efektif.
             </h2>
           </div>
 
           {/* 2×2 grid desktop, 1 col mobile */}
-          <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid lg:grid-cols-2 gap-5 sm:gap-8">
             {HOW_STEPS.map((s, i) => (
               <div key={s.n}
-                className="how-step bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[20px] p-6 sm:p-7 group hover:bg-[#EBEBED] dark:hover:bg-[#242424] transition-colors">
+                className="how-step bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[32px] p-8 sm:p-12 group hover:bg-[#EBEBED] dark:hover:bg-[#242424] transition-colors border border-transparent dark:border-white/5">
                 {/* Step number badge */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-[#0071E3]/10 flex items-center justify-center shrink-0 group-hover:bg-[#0071E3]/20 transition-colors">
-                    <span className="font-display font-semibold text-[15px] text-[#0071E3]">{s.n}</span>
+                <div className="flex items-center gap-4 sm:gap-5 mb-6 sm:mb-8">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-[#0071E3]/10 flex items-center justify-center shrink-0 group-hover:bg-[#0071E3]/20 transition-colors">
+                    <span className="font-display font-semibold text-[18px] sm:text-[22px] text-[#0071E3]">{s.n}</span>
                   </div>
-                  <h3 className="font-semibold text-[17px] sm:text-[18px] text-foreground">{s.title}</h3>
+                  <h3 className="font-semibold text-[22px] sm:text-[28px] text-foreground tracking-tight">{s.title}</h3>
                 </div>
-                <p className="text-[#86868B] text-[14px] sm:text-[15px] leading-relaxed text-justify">{s.desc}</p>
+                <p className="text-[#86868B] text-[16px] sm:text-[18px] leading-relaxed max-w-[90%]">{s.desc}</p>
               </div>
             ))}
           </div>
@@ -839,98 +871,21 @@ function FeatureBentoCard({ item, large = false }: { item: typeof FEATURES[numbe
   );
 }
 
-function HeroApple() {
+function HeroActions() {
   return (
     <>
-      <div className="flex flex-1 items-center justify-center py-10 sm:py-12">
-        <div className="w-full max-w-4xl text-center">
-          <div className="hero-badge inline-flex items-center gap-2 bg-[#0071E3]/10 border border-[#0071E3]/20 text-[#0071E3] text-[12px] sm:text-[13px] font-medium px-3 sm:px-4 py-1.5 rounded-full mb-5 sm:mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#0071E3] animate-pulse shrink-0" />
-            Platform Belajar Go #1 Bahasa Indonesia
-          </div>
-          <h1 className="hero-title font-display font-semibold leading-[0.98] tracking-[-0.05em] text-foreground mb-5 sm:mb-6" style={{ fontSize: "clamp(38px, 7vw, 88px)" }}>
-            <span className="hero-title-line block whitespace-nowrap">Kuasai Go.</span>
-            <span className="hero-title-line block text-[#0071E3]">Belajar Lebih Rapi.</span>
-          </h1>
-          <p className="hero-sub mx-auto text-[15px] sm:text-[18px] text-[#86868B] leading-relaxed mb-6 sm:mb-8 max-w-2xl">
-            76 lesson interaktif, bilingual ID/EN, dengan editor Go langsung di browser. Dari <span className="text-foreground font-medium">Hello World</span> sampai <span className="text-foreground font-medium">production patterns</span>.
-          </p>
-          <HeroActions centered />
-        </div>
-      </div>
-      <div className="flex justify-center pb-2 sm:pb-4"><HeroCodePreview /></div>
-    </>
-  );
-}
-
-function HeroEditorial() {
-  return (
-    <div className="flex flex-1 items-center py-10 sm:py-12">
-      <div className="grid gap-10 xl:grid-cols-[minmax(0,1.05fr)_520px] xl:gap-12 items-center w-full">
-        <div className="max-w-[640px]">
-          <div className="hero-badge inline-flex items-center gap-2 bg-[#0071E3]/10 border border-[#0071E3]/20 text-[#0071E3] text-[12px] sm:text-[13px] font-medium px-3 sm:px-4 py-1.5 rounded-full mb-5 sm:mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#0071E3] animate-pulse shrink-0" />
-            Platform Belajar Go #1 Bahasa Indonesia
-          </div>
-          <h1 className="hero-title font-display font-semibold leading-[1.02] tracking-[-0.05em] text-foreground mb-5 sm:mb-6" style={{ fontSize: "clamp(34px, 6vw, 72px)" }}>
-            <span className="hero-title-line block">Kuasai Go.</span>
-            <span className="hero-title-line block text-[#0071E3]">Dengan Cara</span>
-            <span className="hero-title-line block">yang Elegan.</span>
-          </h1>
-          <p className="hero-sub text-[15px] sm:text-[18px] text-[#86868B] leading-relaxed mb-6 sm:mb-8 max-w-[560px] text-justify">
-            76 lesson interaktif, bilingual ID/EN, dengan editor Go langsung di browser. Dari <span className="text-foreground font-medium">Hello World</span> sampai <span className="text-foreground font-medium">production patterns</span>.
-          </p>
-          <HeroActions />
-        </div>
-        <div className="flex justify-center xl:justify-end">
-          <HeroCodePreview />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function HeroShowcase() {
-  return (
-    <div className="flex flex-1 items-center py-10 sm:py-12">
-      <div className="grid gap-8 w-full xl:grid-cols-[520px_minmax(0,1fr)] xl:gap-12 items-center">
-        <div className="flex justify-center xl:justify-start order-2 xl:order-1">
-          <HeroCodePreview />
-        </div>
-        <div className="max-w-[620px] text-center xl:text-left order-1 xl:order-2 xl:justify-self-end">
-          <div className="hero-badge inline-flex items-center gap-2 bg-[#0071E3]/10 border border-[#0071E3]/20 text-[#0071E3] text-[12px] sm:text-[13px] font-medium px-3 sm:px-4 py-1.5 rounded-full mb-5 sm:mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#0071E3] animate-pulse shrink-0" />
-            Jalankan kode Go langsung sekarang
-          </div>
-          <h1 className="hero-title font-display font-semibold leading-[1.02] tracking-[-0.05em] text-foreground mb-5 sm:mb-6" style={{ fontSize: "clamp(34px, 6vw, 68px)" }}>
-            <span className="hero-title-line block">Code first.</span>
-            <span className="hero-title-line block text-[#0071E3]">Learn faster.</span>
-          </h1>
-          <p className="hero-sub text-[15px] sm:text-[18px] text-[#86868B] leading-relaxed mb-6 sm:mb-8 max-w-[520px] xl:ml-0 mx-auto xl:mx-0 text-justify">
-            Ubah kode, tekan run, dan pahami konsep Go langsung dari hasilnya. Dibuat untuk belajar aktif, bukan hanya membaca teori.
-          </p>
-          <HeroActions centered={false} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function HeroActions({ centered = true }: { centered?: boolean }) {
-  return (
-    <>
-      <div className={cn("hero-cta-row flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 mb-6 sm:mb-7 w-full max-w-[420px]", centered ? "mx-auto justify-center" : "justify-start") }>
+      <div className="hero-cta-row flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 mb-7 w-full max-w-[420px] mx-auto lg:mx-0">
         <Link href="/modules"
-          className="group inline-flex items-center justify-center gap-2 h-11 sm:h-auto bg-[#0071E3] text-white text-[14px] sm:text-[15px] leading-none font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full hover:bg-[#0077ED] transition-all shadow-lg shadow-[#0071E3]/20 hover:-translate-y-0.5 active:translate-y-0 whitespace-nowrap">
+          className="hero-cta-btn group w-full sm:w-auto flex items-center justify-center gap-2 h-[46px] bg-[#0071E3] text-white text-[15px] font-medium px-7 rounded-full border border-transparent hover:bg-[#0077ED] transition-all shadow-sm hover:shadow-md shadow-[#0071E3]/20 whitespace-nowrap">
           Mulai Belajar Gratis
-          <ArrowRight className="w-4 h-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+          <ArrowRight className="w-4 h-4 shrink-0 group-hover:translate-x-1 transition-transform" />
         </Link>
         <Link href="/playground"
-          className="inline-flex items-center justify-center gap-2 h-11 sm:h-auto text-foreground text-[14px] sm:text-[15px] leading-none font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-full border border-[#D2D2D7] dark:border-white/15 hover:bg-[#F5F5F7] dark:hover:bg-[#1C1C1E] transition-colors whitespace-nowrap">
+          className="hero-cta-btn w-full sm:w-auto flex items-center justify-center gap-2 h-[46px] text-foreground text-[15px] font-medium px-7 rounded-full border border-[#D2D2D7] dark:border-white/15 hover:bg-[#F5F5F7] dark:hover:bg-[#1C1C1E] transition-colors whitespace-nowrap">
           <Play className="w-4 h-4 shrink-0 text-[#0071E3]" /> Coba Playground
         </Link>
       </div>
-      <div className={cn("hero-trust flex flex-wrap gap-x-4 sm:gap-x-5 gap-y-2 text-[12px] sm:text-[13px] text-[#86868B]", centered ? "justify-center" : "justify-start") }>
+      <div className="hero-trust flex flex-wrap justify-center lg:justify-start gap-x-5 gap-y-2 text-[13px] text-[#86868B]">
         {["Gratis selamanya", "Tanpa install", "Bilingual ID/EN", "76 lessons"].map((t) => (
           <span key={t} className="flex items-center gap-1.5">
             <CheckCircle className="w-3.5 h-3.5 text-[#34C759] shrink-0" />{t}
@@ -942,154 +897,112 @@ function HeroActions({ centered = true }: { centered?: boolean }) {
 }
 
 function HeroCodePreview() {
-	const INITIAL_CODE = `package main
+  const containerRef = useRef<HTMLDivElement>(null);
 
-import "fmt"
+  useLayoutEffect(() => {
+    let ctx: any;
+    import("gsap").then(({ gsap }) => {
+      ctx = gsap.context(() => {
+        // Timeline for initial entrance
+        const tl = gsap.timeline({ delay: 1.2 });
+        
+        // Element 1: Main GIF Frame
+        tl.from(".parallax-main", {
+          y: 40,
+          opacity: 0,
+          scale: 0.95,
+          duration: 1,
+          ease: "expo.out"
+        });
 
-func main() {
-    topics := []string{"Variables", "Functions", "Goroutines"}
-    for i, topic := range topics {
-        fmt.Printf("%d. %s\\n", i+1, topic)
-    }
-}`;
-	const [code, setCode] = useState(INITIAL_CODE);
+        // Element 2: Small badge (Top Right)
+        tl.from(".parallax-badge-1", {
+          y: 20,
+          x: -10,
+          opacity: 0,
+          scale: 0.5,
+          duration: 0.8,
+          ease: "back.out(1.7)"
+        }, "-=0.6");
 
-	const [result, setResult] = useState<ExecuteResult | null>({
-		stdout: "1. Variables\n2. Functions\n3. Goroutines\n",
-		stderr: "",
-		executionTimeMs: 2,
-		timedOut: false,
-	});
-	const [running, setRunning] = useState(false);
-	const [flash, setFlash] = useState(false);
-	const lineCount = code.split("\n").length;
-	const frameRef = useRef<HTMLDivElement>(null);
+        // Element 3: Small badge (Bottom Left)
+        tl.from(".parallax-badge-2", {
+          y: -20,
+          x: 10,
+          opacity: 0,
+          scale: 0.5,
+          duration: 0.8,
+          ease: "back.out(1.7)"
+        }, "-=0.6");
 
-	async function handleRun() {
-		setRunning(true);
-		try {
-			import("gsap").then(({ gsap }) => {
-				gsap.timeline()
-					.to(".hero-run-btn", { scale: 0.96, duration: 0.08, ease: "power2.out" })
-					.to(".hero-run-btn", { scale: 1, duration: 0.18, ease: "back.out(2)" });
-			});
-			const res = await api.execute(code);
-			setResult(res);
-			setFlash(true);
-			setTimeout(() => setFlash(false), 600);
-			import("gsap").then(({ gsap }) => {
-				gsap.fromTo(
-					".hero-output-line",
-					{ y: 10, opacity: 0.35, filter: "blur(3px)" },
-					{ y: 0, opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }
-				);
-				gsap.fromTo(
-					".hero-output-panel",
-					{ boxShadow: "0 0 0 rgba(48,209,88,0)" },
-					{ boxShadow: "0 0 0 1px rgba(48,209,88,0.25), 0 0 18px rgba(48,209,88,0.12)", duration: 0.35, yoyo: true, repeat: 1 }
-				);
-				gsap.fromTo(
-					".hero-stats-card",
-					{ y: 4 },
-					{ y: 0, duration: 0.35, stagger: 0.05, ease: "power2.out" }
-				);
-			});
-		} catch {
-			setResult({ stdout: "", stderr: "Run gagal", executionTimeMs: 0, timedOut: false });
-		} finally {
-			setRunning(false);
-		}
-	}
+        // Continuous floating animation (different speeds for depth)
+        gsap.to(".parallax-main", {
+          y: -10,
+          duration: 4,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+        });
 
-	function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-		if (!frameRef.current) return;
-		const rect = frameRef.current.getBoundingClientRect();
-		const x = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
-		const y = ((e.clientY - rect.top) / rect.height - 0.5) * -8;
-		import("gsap").then(({ gsap }) => {
-			gsap.to(frameRef.current, {
-				rotateY: x,
-				rotateX: y,
-				transformPerspective: 1200,
-				duration: 0.35,
-				ease: "power2.out",
-			});
-		});
-	}
+        gsap.to(".parallax-badge-1", {
+          y: -15,
+          duration: 3.5,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+          delay: 0.2
+        });
 
-	function handleMouseLeave() {
-		if (!frameRef.current) return;
-		import("gsap").then(({ gsap }) => {
-			gsap.to(frameRef.current, {
-				rotateX: 0,
-				rotateY: 0,
-				duration: 0.6,
-				ease: "expo.out",
-			});
-		});
-	}
+        gsap.to(".parallax-badge-2", {
+          y: 12,
+          duration: 4.5,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+          delay: 0.5
+        });
 
-	return (
-		<div className="hero-code-window hidden md:block w-full max-w-[560px] mx-auto">
-			<div
-				ref={frameRef}
-				className="bg-[#1C1C1E] rounded-[18px] overflow-hidden shadow-2xl ring-1 ring-white/10 transition-transform duration-500"
-				onMouseMove={handleMouseMove}
-				onMouseLeave={handleMouseLeave}
-			>
-				<div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.06]">
-          <div className="flex gap-1.5 shrink-0">
-            <div className="w-3 h-3 rounded-full bg-[#FF5F57]" />
-            <div className="w-3 h-3 rounded-full bg-[#FFBD2E]" />
-            <div className="w-3 h-3 rounded-full bg-[#28C840]" />
-          </div>
-          <span className="ml-2 text-white/30 text-[12px] font-mono truncate">topic-10 · goroutines.go</span>
-					<button
-						onClick={handleRun}
-						disabled={running}
-						className="hero-run-btn ml-auto flex items-center gap-1 bg-[#0071E3] hover:bg-[#0077ED] disabled:opacity-60 transition-all px-2.5 py-1 rounded-md shrink-0"
-					>
-						<Play className="w-3 h-3 text-white" />
-						<span className="text-white text-[11px] font-medium">{running ? "Running" : "Run"}</span>
-					</button>
-				</div>
-				<div className="flex">
-					<div className="select-none px-3 py-4 text-white/20 text-[12px] font-mono leading-[1.75] text-right border-r border-white/[0.05] w-9 shrink-0">
-						{Array.from({ length: lineCount }, (_, i) => <div key={i}>{i + 1}</div>)}
-					</div>
-					<textarea
-						value={code}
-						onChange={(e) => setCode(e.target.value)}
-						spellCheck={false}
-						className="flex-1 px-4 py-4 text-[12.5px] font-mono leading-[1.75] overflow-x-auto text-[#E5E5EA] min-w-0 bg-transparent outline-none resize-none min-h-[300px] caret-[#0071E3]"
-					/>
-				</div>
-				<div className={cn("hero-output-panel border-t border-white/[0.06] px-4 py-2.5 flex items-center gap-3 transition-colors", flash && "bg-[#30D158]/10") }>
-					<div className="flex items-center gap-1.5 shrink-0">
-						<div className={cn("w-2 h-2 rounded-full", result?.stderr ? "bg-[#FF453A]" : "bg-[#30D158]")} />
-						<span className={cn("text-[11px] font-mono font-medium", result?.stderr ? "text-[#FF453A]" : "text-[#30D158]")}>Output</span>
-					</div>
-					<span className="hero-output-line text-white/50 text-[12px] font-mono truncate">{(result?.stderr || result?.stdout || "").trim().replace(/\n/g, " · ")}</span>
-					<span className="ml-auto text-white/25 text-[11px] font-mono shrink-0">{result?.executionTimeMs ?? 0}ms</span>
-				</div>
-        <div className="border-t border-white/[0.06] px-4 py-2 flex items-center gap-2">
-          <span className="text-[11px] text-white/30 font-mono">Lesson 10 selesai</span>
-          <span className="ml-auto bg-[#34C759]/15 text-[#30D158] text-[11px] font-medium px-2 py-0.5 rounded-full">+50 XP</span>
+      }, containerRef);
+    });
+    return () => ctx?.revert();
+  }, []);
+
+  return (
+    <div ref={containerRef} className="hero-code-window relative w-full max-w-[640px] mx-auto perspective-[1200px]">
+      
+      {/* ── Main Frame ── */}
+      <div className="parallax-main relative z-10 bg-white dark:bg-[#1C1C1E] p-2 sm:p-2.5 rounded-[24px] shadow-2xl ring-1 ring-[#D2D2D7]/50 dark:ring-white/10">
+        <div className="bg-[#F5F5F7] dark:bg-[#0A0A0A] rounded-[16px] overflow-hidden">
+          <img
+            src="/hero-gif.gif"
+            alt="GoLearn Platform"
+            className="w-full h-auto object-cover block"
+          />
         </div>
       </div>
 
-			<div className="hidden xl:grid grid-cols-3 gap-2 mt-3">
-				{[
-					{ v: "15", l: "Topik" },
-					{ v: `${lineCount}`, l: "Lines" },
-					{ v: running ? "..." : `${result?.executionTimeMs ?? 0}ms`, l: "Run" },
-				].map((s) => (
-					<div key={s.l} className="hero-stats-card bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[10px] py-2.5 text-center">
-            <p className="font-display font-semibold text-[18px] text-foreground">{s.v}</p>
-            <p className="text-[#86868B] text-[11px]">{s.l}</p>
-          </div>
-        ))}
+      {/* ── Floating Badge 1 (Top Right) ── */}
+      <div className="parallax-badge-1 absolute -top-4 -right-4 sm:-top-6 sm:-right-6 z-20 bg-white/90 dark:bg-[#2C2C2E]/90 backdrop-blur-md px-3.5 py-2.5 rounded-2xl shadow-xl ring-1 ring-[#D2D2D7]/60 dark:ring-white/10 flex items-center gap-2.5">
+        <div className="w-7 h-7 rounded-full bg-[#34C759]/15 flex items-center justify-center">
+          <Trophy className="w-3.5 h-3.5 text-[#30D158]" />
+        </div>
+        <div>
+          <p className="text-[10px] font-semibold text-[#86868B] uppercase tracking-wider mb-0.5">Lesson Selesai</p>
+          <p className="text-[13px] font-display font-semibold text-foreground leading-none">+50 XP</p>
+        </div>
       </div>
+
+      {/* ── Floating Badge 2 (Bottom Left) ── */}
+      <div className="parallax-badge-2 absolute -bottom-3 -left-3 sm:-bottom-5 sm:-left-5 z-20 bg-white/90 dark:bg-[#2C2C2E]/90 backdrop-blur-md px-3.5 py-2.5 rounded-2xl shadow-xl ring-1 ring-[#D2D2D7]/60 dark:ring-white/10 flex items-center gap-2.5">
+        <div className="w-7 h-7 rounded-full bg-[#0071E3]/15 flex items-center justify-center">
+          <Terminal className="w-3.5 h-3.5 text-[#0071E3]" />
+        </div>
+        <div>
+          <p className="text-[10px] font-semibold text-[#86868B] uppercase tracking-wider mb-0.5">Executor</p>
+          <p className="text-[13px] font-mono font-medium text-foreground leading-none">0.002s</p>
+        </div>
+      </div>
+      
     </div>
   );
 }

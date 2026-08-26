@@ -110,22 +110,18 @@ export default function LeaderboardPage() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="mx-auto max-w-6xl px-4 sm:px-6 pb-24 pt-24">
-        <section className="relative mb-6 overflow-hidden rounded-[32px] border border-black/[0.06] bg-[#FBFBFD] p-8 shadow-[0_28px_80px_rgba(15,23,42,0.08)] dark:border-white/[0.08] dark:bg-[#0F0F11] dark:shadow-[0_28px_80px_rgba(0,0,0,0.32)] sm:p-10">
-          <div className="pointer-events-none absolute -left-12 top-0 h-48 w-48 rounded-full bg-[#0071E3]/14 blur-3xl" />
-          <div className="pointer-events-none absolute right-0 top-6 h-40 w-40 rounded-full bg-[#F5B400]/10 blur-3xl" />
-
-          <div className="relative grid gap-8 xl:grid-cols-[minmax(0,1.18fr)_320px] xl:items-start">
+      <main className="mx-auto max-w-6xl px-4 sm:px-6 pb-24 pt-32">
+        <section className="relative w-full mb-12 sm:mb-16">
+          <div className="grid xl:grid-cols-[1fr_auto] gap-8 xl:gap-16 items-end">
             <div className="max-w-2xl">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#86868B]">
+              <p className="text-[#0071E3] text-[13px] font-semibold uppercase tracking-[0.2em] mb-3">
                 Kompetisi
               </p>
-              <h1 className="mt-4 max-w-3xl font-display text-[30px] font-semibold tracking-tight text-foreground sm:text-[38px] xl:text-[46px] leading-[1.06]">
+              <h1 className="font-display text-[40px] sm:text-[48px] xl:text-[56px] font-semibold tracking-[-0.04em] text-foreground leading-[1.05] mb-5">
                 Leaderboard GoLearn
               </h1>
-              <p className="mt-3 max-w-xl text-[16px] leading-7 text-[#86868B] sm:text-[17px]">
-                Papan peringkat untuk melihat siapa yang paling konsisten, paling cepat
-                bertumbuh, dan bagaimana posisimu di antara learner lain.
+              <p className="text-[17px] sm:text-[19px] leading-relaxed text-[#86868B] max-w-xl text-balance">
+                Papan peringkat untuk melihat siapa yang paling konsisten, paling cepat bertumbuh, dan bagaimana posisimu di antara learner lain.
               </p>
 
               <div className="mt-8 flex flex-wrap gap-2">
@@ -134,10 +130,10 @@ export default function LeaderboardPage() {
                     key={item.key}
                     onClick={() => setPeriod(item.key)}
                     className={cn(
-                      "rounded-full px-4 py-2 text-[13px] font-medium transition-all",
+                      "rounded-full px-5 py-2.5 text-[13px] font-medium transition-colors whitespace-nowrap",
                       period === item.key
-                        ? "bg-[#0071E3] text-white shadow-[0_14px_34px_rgba(0,113,227,0.22)]"
-                        : "border border-black/[0.06] bg-white/80 text-[#86868B] hover:text-foreground dark:border-white/[0.08] dark:bg-white/[0.04] dark:hover:bg-white/[0.08]",
+                        ? "bg-[#0071E3] text-white"
+                        : "bg-[#F5F5F7] dark:bg-[#1C1C1E] text-[#86868B] hover:text-foreground border border-transparent dark:border-white/5",
                     )}
                   >
                     {item.label}
@@ -146,19 +142,21 @@ export default function LeaderboardPage() {
               </div>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+            <div className="w-full xl:w-[360px] grid grid-cols-1 gap-3">
               {summaryCards.map((card) => (
                 <article
                   key={card.label}
-                  className="rounded-[24px] border border-black/[0.06] bg-white/80 p-4 shadow-[0_14px_35px_rgba(15,23,42,0.05)] backdrop-blur-sm dark:border-white/[0.08] dark:bg-white/[0.04] dark:shadow-none"
+                  className="bg-white dark:bg-[#111214] rounded-[20px] p-5 sm:p-6 border border-[#D2D2D7]/60 dark:border-white/10 shadow-sm flex items-center justify-between gap-4"
                 >
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#86868B]">
-                    {card.label}
-                  </p>
-                  <p className="mt-3 font-display text-[28px] font-semibold tracking-tight text-foreground">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#86868B] mb-1">
+                      {card.label}
+                    </p>
+                    <p className="text-[13px] text-[#86868B] line-clamp-1">{card.note}</p>
+                  </div>
+                  <p className="font-display text-[26px] font-semibold tracking-tight text-foreground text-right">
                     {card.value}
                   </p>
-                  <p className="mt-1 text-[13px] leading-6 text-[#86868B]">{card.note}</p>
                 </article>
               ))}
             </div>
@@ -167,30 +165,22 @@ export default function LeaderboardPage() {
 
         {loading ? (
           <>
-            <section className="mb-6 grid gap-4 lg:grid-cols-3">
+            <section className="mb-8 grid gap-5 lg:grid-cols-3">
               {Array.from({ length: 3 }).map((_, index) => (
                 <div
                   key={index}
                   className={cn(
-                    "overflow-hidden rounded-[28px] border border-black/[0.06] bg-[#FBFBFD] p-6 shadow-[0_20px_50px_rgba(15,23,42,0.06)] animate-pulse dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_20px_50px_rgba(0,0,0,0.24)]",
+                    "rounded-[24px] border border-[#D2D2D7]/60 dark:border-white/10 bg-[#F5F5F7]/50 dark:bg-[#1C1C1E]/50 p-6 sm:p-8 animate-pulse",
                     index === 1 ? "lg:-translate-y-4" : "",
                   )}
                 >
-                  <div className="h-6 w-28 rounded-full bg-black/[0.06] dark:bg-white/[0.08]" />
-                  <div className="mt-6 flex items-center gap-4">
-                    <div className="h-14 w-14 rounded-full bg-black/[0.06] dark:bg-white/[0.08]" />
-                    <div className="space-y-2">
-                      <div className="h-4 w-32 rounded-full bg-black/[0.06] dark:bg-white/[0.08]" />
-                      <div className="h-3 w-24 rounded-full bg-black/[0.05] dark:bg-white/[0.06]" />
+                  <div className="h-6 w-28 rounded-full bg-[#D2D2D7]/50 dark:bg-white/10" />
+                  <div className="mt-8 flex items-center gap-4">
+                    <div className="h-16 w-16 rounded-full bg-[#D2D2D7]/50 dark:bg-white/10" />
+                    <div className="space-y-3">
+                      <div className="h-5 w-32 rounded-full bg-[#D2D2D7]/50 dark:bg-white/10" />
+                      <div className="h-3 w-24 rounded-full bg-[#D2D2D7]/40 dark:bg-white/5" />
                     </div>
-                  </div>
-                  <div className="mt-8 grid grid-cols-3 gap-3">
-                    {Array.from({ length: 3 }).map((__, metricIndex) => (
-                      <div
-                        key={metricIndex}
-                        className="h-20 rounded-[20px] bg-black/[0.04] dark:bg-white/[0.05]"
-                      />
-                    ))}
                   </div>
                 </div>
               ))}
@@ -417,9 +407,6 @@ export default function LeaderboardPage() {
                         <div className="flex items-center justify-between sm:block">
                           <span className="text-[12px] text-[#86868B] sm:hidden">Lesson</span>
                           <p className="text-[14px] text-foreground sm:text-right">{entry.lessons_done}</p>
-                          <p className="mt-1 hidden text-[11px] text-[#86868B] sm:block sm:text-right">
-                            {entry.streak_days} hari streak
-                          </p>
                         </div>
                       </article>
                     );

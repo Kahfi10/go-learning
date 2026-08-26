@@ -54,342 +54,211 @@ export default function TopicPage() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="mx-auto max-w-5xl px-4 sm:px-6 pb-24 pt-24">
-        <section className="relative overflow-hidden rounded-[34px] border border-black/[0.06] bg-[#FBFBFD] p-8 shadow-[0_28px_80px_rgba(15,23,42,0.08)] dark:border-white/[0.08] dark:bg-[#0F0F11] dark:shadow-[0_28px_80px_rgba(0,0,0,0.32)] sm:p-10">
-          <div className="pointer-events-none absolute -left-10 top-0 h-48 w-48 rounded-full blur-3xl" style={{ backgroundColor: `${data.color}16` }} />
-          <div className="pointer-events-none absolute right-0 top-10 h-40 w-40 rounded-full bg-[#AF52DE]/10 blur-3xl" />
+      <main className="mx-auto max-w-6xl px-4 sm:px-6 pb-24 pt-32">
+        <div className="mb-8">
+          <Link
+            href="/modules"
+            className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#86868B] transition-colors hover:text-[#0071E3]"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Kembali ke Katalog
+          </Link>
+        </div>
 
-          <div className="relative">
-            <Link
-              href="/modules"
-              className="inline-flex items-center gap-2 rounded-full border border-black/[0.06] bg-white/80 px-4 py-2 text-[13px] font-medium text-[#86868B] shadow-[0_10px_26px_rgba(15,23,42,0.04)] transition-colors hover:text-foreground dark:border-white/[0.08] dark:bg-white/[0.04] dark:shadow-none"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Semua Topik
-            </Link>
-
-            <div className="mt-6 grid gap-8 xl:grid-cols-[minmax(0,1.12fr)_320px] xl:items-start">
-              <div className="max-w-2xl">
-                <div className="flex flex-wrap items-center gap-3">
-                  <div
-                    className="flex h-14 w-14 items-center justify-center rounded-[20px] text-[15px] font-semibold text-white shadow-[0_18px_36px_rgba(15,23,42,0.18)]"
-                    style={{ backgroundColor: data.color }}
-                  >
-                    {String(data.number).padStart(2, "0")}
-                  </div>
-
-                  <span
-                    className="rounded-full px-3 py-1.5 text-[12px] font-medium"
-                    style={{
-                      backgroundColor: `${LEVEL_COLOR[data.level] ?? "#86868B"}18`,
-                      color: LEVEL_COLOR[data.level] ?? "#86868B",
-                    }}
-                  >
-                    {data.level}
-                  </span>
-
-                  <div className="rounded-full border border-black/[0.06] bg-white/80 px-4 py-2 text-[13px] font-medium text-foreground shadow-[0_10px_26px_rgba(15,23,42,0.04)] dark:border-white/[0.08] dark:bg-white/[0.04] dark:shadow-none">
-                    {lessonCount} lesson
-                  </div>
+        <section className="relative w-full mb-12 sm:mb-16">
+          <div className="grid xl:grid-cols-[1fr_auto] gap-8 xl:gap-16 items-end">
+            <div className="max-w-2xl">
+              <div className="flex flex-wrap items-center gap-3 mb-4">
+                <div
+                  className="flex h-10 w-10 items-center justify-center rounded-[12px] text-[15px] font-semibold text-white shadow-sm"
+                  style={{ backgroundColor: data.color }}
+                >
+                  {String(data.number).padStart(2, "0")}
                 </div>
+                <span
+                  className="rounded-full px-3 py-1 text-[12px] font-semibold uppercase tracking-wider"
+                  style={{
+                    backgroundColor: `${LEVEL_COLOR[data.level] ?? "#86868B"}18`,
+                    color: LEVEL_COLOR[data.level] ?? "#86868B",
+                  }}
+                >
+                  {data.level}
+                </span>
+              </div>
 
-                <h1 className="mt-6 max-w-3xl font-display text-[30px] font-semibold tracking-tight text-foreground sm:text-[38px] xl:text-[46px] leading-[1.06]">
-                  {data.title_id}
-                </h1>
-                <p className="mt-4 max-w-xl text-[16px] leading-7 text-[#86868B] sm:text-[17px]">
-                  {data.description_id}
-                </p>
+              <h1 className="font-display text-[40px] sm:text-[48px] xl:text-[56px] font-semibold tracking-[-0.04em] text-foreground leading-[1.05] mb-5">
+                {data.title_id}
+              </h1>
+              <p className="text-[17px] sm:text-[19px] leading-relaxed text-[#86868B] max-w-xl text-balance">
+                {data.description_id}
+              </p>
 
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-black/[0.06] bg-white/80 px-4 py-2 text-[13px] font-medium text-foreground shadow-[0_10px_26px_rgba(15,23,42,0.04)] dark:border-white/[0.08] dark:bg-white/[0.04] dark:shadow-none">
-                    <Clock className="h-4 w-4 text-[#86868B]" />
-                    {data.estimatedMinutes} mnt total
-                  </div>
-                  <div className="rounded-full border border-black/[0.06] bg-white/80 px-4 py-2 text-[13px] font-medium text-foreground shadow-[0_10px_26px_rgba(15,23,42,0.04)] dark:border-white/[0.08] dark:bg-white/[0.04] dark:shadow-none">
-                    {remainingLessons} lesson tersisa
-                  </div>
-                  <div
-                    className={cn(
-                      "rounded-full px-4 py-2 text-[13px] font-medium",
-                      prog.done === 0
-                        ? "bg-black/[0.04] text-[#86868B] dark:bg-white/[0.05]"
-                        : prog.done < lessonCount
-                          ? "bg-[#0071E3]/10 text-[#0071E3]"
-                          : "bg-[#34C759]/12 text-[#34C759]",
-                    )}
-                  >
-                    {prog.done === 0
-                      ? "Belum dimulai"
-                      : prog.done < lessonCount
-                        ? `${prog.done}/${lessonCount} lesson selesai`
-                        : "Topik selesai"}
-                  </div>
+              <div className="mt-8 flex flex-wrap gap-2">
+                <div className="inline-flex items-center gap-1.5 rounded-full border border-transparent bg-[#F5F5F7] dark:bg-[#1C1C1E] px-4 py-2 text-[13px] font-medium text-[#86868B]">
+                  <Clock className="h-4 w-4" />
+                  {data.estimatedMinutes} mnt total
+                </div>
+                <div className="inline-flex items-center gap-1.5 rounded-full border border-transparent bg-[#F5F5F7] dark:bg-[#1C1C1E] px-4 py-2 text-[13px] font-medium text-[#86868B]">
+                  <BookOpen className="h-4 w-4" />
+                  {lessonCount} lesson
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full xl:w-[340px] bg-white dark:bg-[#111214] rounded-[24px] p-6 sm:p-7 border border-[#D2D2D7]/60 dark:border-white/10 shadow-sm">
+              <div className="flex items-start justify-between gap-4 mb-5">
+                <div>
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.15em] text-[#86868B]">
+                    Progress Topik
+                  </p>
+                  <h2 className="mt-2 font-display text-[36px] font-semibold tracking-tight text-foreground leading-none">
+                    {prog.pct}%
+                  </h2>
+                </div>
+                <div
+                  className="flex h-10 w-10 items-center justify-center rounded-full"
+                  style={{ backgroundColor: `${progressColor}14` }}
+                >
+                  {prog.done === lessonCount && lessonCount > 0 ? (
+                    <CheckCircle2 className="h-5 w-5" style={{ color: progressColor }} />
+                  ) : (
+                    <BookOpen className="h-5 w-5" style={{ color: progressColor }} />
+                  )}
                 </div>
               </div>
 
-              <div className="rounded-[28px] border border-black/[0.06] bg-white/80 p-6 shadow-[0_20px_50px_rgba(15,23,42,0.06)] backdrop-blur-sm dark:border-white/[0.08] dark:bg-white/[0.04] dark:shadow-[0_20px_50px_rgba(0,0,0,0.24)]">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B]">
-                      Progress
-                    </p>
-                    <h2 className="mt-3 font-display text-[36px] font-semibold tracking-tight text-foreground">
-                      {prog.pct}%
-                    </h2>
-                    <p className="mt-1 text-[14px] text-[#86868B]">
-                      {lessonCount
-                        ? `${prog.done} dari ${lessonCount} lesson selesai`
-                        : "Belum ada lesson pada topik ini"}
-                    </p>
-                  </div>
+              <ProgressBar
+                value={prog.pct}
+                color={progressColor}
+                label={lessonCount ? `${prog.done} dari ${lessonCount} lesson selesai` : "Topik belum memiliki lesson"}
+              />
 
-                  <div
-                    className="flex h-12 w-12 items-center justify-center rounded-2xl"
-                    style={{ backgroundColor: `${progressColor}14` }}
-                  >
-                    {prog.done === lessonCount && lessonCount > 0 ? (
-                      <CheckCircle2 className="h-6 w-6 text-[#34C759]" />
-                    ) : (
-                      <BookOpen className="h-6 w-6" style={{ color: progressColor }} />
-                    )}
+              {lessonCount > 0 && (
+                <div className="mt-5">
+                  <div className="flex gap-1.5">
+                    {data.lessons.map((lesson) => {
+                      const done = isCompleted(topic, lesson.id);
+                      const isNext = !done && lesson.id === nextLesson?.id;
+                      return (
+                        <div
+                          key={lesson.id}
+                          className={cn(
+                            "h-1.5 flex-1 rounded-full transition-colors",
+                            done
+                              ? "bg-[#34C759]"
+                              : isNext
+                                ? "bg-[#0071E3]/55"
+                                : "bg-[#D2D2D7]/60 dark:bg-white/10",
+                          )}
+                          style={isNext ? { backgroundColor: data.color } : done ? { backgroundColor: progressColor } : undefined}
+                        />
+                      );
+                    })}
                   </div>
+                  <p className="mt-3 text-[12px] leading-relaxed text-[#86868B]">
+                    {prog.done === lessonCount
+                      ? "Topik sudah selesai."
+                      : `Berikutnya: ${nextLessonLabel}`}
+                  </p>
                 </div>
+              )}
 
-                <ProgressBar
-                  className="mt-6"
-                  value={prog.pct}
-                  color={progressColor}
-                  label={
-                    lessonCount
-                      ? `${prog.done} dari ${lessonCount} lesson selesai`
-                      : "Topik ini belum memiliki lesson"
-                  }
-                />
-
-                {lessonCount > 0 && (
-                  <>
-                    <div className="mt-5 flex gap-2">
-                      {data.lessons.map((lesson) => {
-                        const done = isCompleted(topic, lesson.id);
-                        const isNext = !done && lesson.id === nextLesson?.id;
-
-                        return (
-                          <div
-                            key={lesson.id}
-                            className={cn(
-                              "h-2 flex-1 rounded-full transition-colors",
-                              done
-                                ? "bg-[#34C759]"
-                                : isNext
-                                  ? "bg-[#0071E3]/55"
-                                  : "bg-black/[0.08] dark:bg-white/[0.08]",
-                            )}
-                            style={isNext ? { backgroundColor: data.color } : undefined}
-                          />
-                        );
-                      })}
-                    </div>
-                    <p className="mt-3 text-[13px] leading-6 text-[#86868B]">
-                      {prog.done === lessonCount
-                        ? "Semua lesson di topik ini sudah selesai. Kamu bisa review kapan saja."
-                        : `Berikutnya: ${nextLessonLabel}`}
-                    </p>
-                  </>
-                )}
-
-                <div className="mt-6 grid grid-cols-2 gap-3">
-                  <div className="rounded-[20px] bg-black/[0.03] p-4 dark:bg-white/[0.05]">
-                    <p className="text-[11px] uppercase tracking-[0.16em] text-[#86868B]">Tersisa</p>
-                    <p className="mt-2 font-display text-[24px] font-semibold tracking-tight text-foreground">
-                      {remainingLessons}
-                    </p>
-                  </div>
-                  <div className="rounded-[20px] bg-black/[0.03] p-4 dark:bg-white/[0.05]">
-                    <p className="text-[11px] uppercase tracking-[0.16em] text-[#86868B]">Estimasi</p>
-                    <p className="mt-2 font-display text-[24px] font-semibold tracking-tight text-foreground">
-                      {remainingMinutes} mnt
-                    </p>
-                  </div>
+              <div className="mt-6 pt-5 border-t border-[#D2D2D7]/40 dark:border-white/10 grid grid-cols-2 gap-2 text-center">
+                <div>
+                  <p className="text-[11px] uppercase tracking-wider text-[#86868B] mb-1">Selesai</p>
+                  <p className="font-semibold text-[17px] text-foreground">{prog.done}</p>
                 </div>
-
-                <div className="mt-6">
-                  {prog.done === 0 ? (
-                    <>
-                      <Link
-                        href={nextLessonHref}
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#0071E3] px-6 py-4 text-[15px] font-medium text-white shadow-[0_20px_40px_rgba(0,113,227,0.24)] transition-colors hover:bg-[#0077ED]"
-                      >
-                        Mulai topik
-                        <ChevronRight className="h-4 w-4" />
-                      </Link>
-                      <p className="mt-3 text-center text-[12px] text-[#86868B]">
-                        Mulai dari lesson pertama dan bangun fondasi topik ini.
-                      </p>
-                    </>
-                  ) : prog.done < lessonCount ? (
-                    <>
-                      <Link
-                        href={nextLessonHref}
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#0071E3] px-6 py-4 text-[15px] font-medium text-white shadow-[0_20px_40px_rgba(0,113,227,0.24)] transition-colors hover:bg-[#0077ED]"
-                      >
-                        Lanjutkan belajar
-                        <ChevronRight className="h-4 w-4" />
-                      </Link>
-                      <p className="mt-3 text-center text-[12px] text-[#86868B]">
-                        Berikutnya: {nextLessonLabel}
-                      </p>
-                    </>
-                  ) : (
-                    <div className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#34C759]/10 px-6 py-4 text-[15px] font-medium text-[#34C759]">
-                      <CheckCircle2 className="h-4 w-4" />
-                      Topik selesai!
-                    </div>
-                  )}
+                <div>
+                  <p className="text-[11px] uppercase tracking-wider text-[#86868B] mb-1">Tersisa</p>
+                  <p className="font-semibold text-[17px] text-foreground">{remainingLessons}</p>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="mt-8">
-          <div className="mb-4 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B]">
-                Lessons
-              </p>
-              <h2 className="mt-2 font-display text-[28px] font-semibold tracking-tight text-foreground sm:text-[32px]">
-                Urutan belajar topik ini
-              </h2>
-              <p className="mt-2 text-[14px] leading-6 text-[#86868B] sm:text-[15px]">
-                Buka lesson mana saja, atau lanjutkan dari titik progress terakhirmu.
-              </p>
-            </div>
-
-            <div className="rounded-full border border-black/[0.06] bg-white/80 px-4 py-2 text-[13px] font-medium text-[#86868B] shadow-[0_10px_26px_rgba(15,23,42,0.04)] dark:border-white/[0.08] dark:bg-white/[0.04] dark:shadow-none">
-              {lessonCount} lesson
-            </div>
+        <section className="mb-24">
+          <div className="mb-8 flex items-center justify-between border-b border-[#D2D2D7]/40 dark:border-white/10 pb-4">
+            <h2 className="font-display text-[24px] font-semibold tracking-tight text-foreground">
+              Daftar Lesson
+            </h2>
+            <span className="text-[13px] font-medium text-[#86868B]">
+              {lessonCount} {lessonCount === 1 ? "lesson" : "lessons"}
+            </span>
           </div>
 
-          {lessonCount === 0 ? (
-            <section className="rounded-[30px] border border-black/[0.06] bg-[#FBFBFD] p-10 text-center shadow-[0_24px_60px_rgba(15,23,42,0.07)] dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_24px_60px_rgba(0,0,0,0.28)]">
-              <div className="flex flex-col items-center justify-center rounded-[26px] border border-dashed border-black/[0.08] bg-black/[0.02] px-6 py-16 text-center dark:border-white/[0.1] dark:bg-white/[0.03]">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0071E3]/10 text-[#0071E3]">
-                  <BookOpen className="h-7 w-7" />
-                </div>
-                <h3 className="mt-5 font-display text-[28px] font-semibold tracking-tight text-foreground">
-                  Lesson belum tersedia
-                </h3>
-                <p className="mt-2 max-w-md text-[14px] leading-7 text-[#86868B]">
-                  Konten lesson untuk topik ini akan muncul di sini setelah data tersedia.
-                </p>
-              </div>
-            </section>
-          ) : (
-            <div className="space-y-3">
-              {data.lessons.map((lesson, index) => {
-                const done = isCompleted(topic, lesson.id);
-                const isNext = !done && lesson.id === nextLesson?.id;
+          <div className="grid gap-4">
+            {data.lessons?.map((lesson, idx) => {
+              const done = isCompleted(topic, lesson.id);
+              const isNext = !done && lesson.id === nextLesson?.id;
 
-                return (
-                  <Link
-                    key={lesson.id}
-                    href={`/modules/${topic}/${lesson.id}`}
-                    className={cn(
-                      "group relative block overflow-hidden rounded-[28px] border p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_54px_rgba(15,23,42,0.08)] dark:shadow-[0_18px_45px_rgba(0,0,0,0.24)] dark:hover:shadow-[0_22px_54px_rgba(0,0,0,0.28)]",
-                      done
-                        ? "border-[#34C759]/20 bg-[#F7FFF9] dark:border-[#34C759]/20 dark:bg-[#0F1712]"
-                        : "border-black/[0.06] bg-[#FBFBFD] dark:border-white/[0.08] dark:bg-[#101012]",
-                    )}
-                    style={isNext ? { boxShadow: `0 22px 54px ${data.color}12` } : undefined}
-                  >
+              return (
+                <Link
+                  key={lesson.id}
+                  href={`/modules/${topic}/${lesson.id}`}
+                  className={cn(
+                    "group relative flex flex-col sm:flex-row sm:items-center justify-between gap-5 rounded-[24px] p-6 transition-all duration-300",
+                    isNext
+                      ? "bg-white dark:bg-[#1C1C1E] border border-[#D2D2D7]/60 dark:border-white/10 shadow-[0_12px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_12px_30px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_16px_40px_rgba(0,0,0,0.3)] ring-1 ring-[#D2D2D7]/50 dark:ring-white/10"
+                      : "bg-[#F5F5F7]/50 dark:bg-[#111214]/50 hover:bg-white dark:hover:bg-[#1C1C1E] border border-transparent dark:border-white/5 hover:border-[#D2D2D7]/60 dark:hover:border-white/10",
+                  )}
+                >
+                  <div className="flex items-start sm:items-center gap-5">
                     <div
-                      className="pointer-events-none absolute inset-x-0 top-0 h-20 opacity-80"
-                      style={{
-                        background: `linear-gradient(180deg, ${(done ? "#34C759" : isNext ? data.color : "#FFFFFF")}12 0%, transparent 100%)`,
-                      }}
-                    />
-
-                    <div className="relative flex flex-col gap-4 sm:grid sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center sm:gap-4">
-                      <div
-                        className={cn(
-                          "flex h-12 w-12 items-center justify-center rounded-2xl border text-[14px] font-semibold",
-                          done
-                            ? "border-[#34C759]/20 bg-[#34C759]/12 text-[#34C759]"
-                            : isNext
-                              ? "border-transparent text-white"
-                              : "border-black/[0.06] bg-white/90 text-foreground dark:border-white/[0.08] dark:bg-white/[0.05]",
-                        )}
-                        style={!done && isNext ? { backgroundColor: data.color } : undefined}
-                      >
-                        {done ? <CheckCircle2 className="h-5 w-5" /> : String(index + 1).padStart(2, "0")}
-                      </div>
-
-                      <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#86868B]">
-                            Lesson {String(index + 1).padStart(2, "0")}
-                          </span>
-                          <span
-                            className={cn(
-                              "rounded-full px-2.5 py-1 text-[11px] font-medium",
-                              done
-                                ? "bg-[#34C759]/12 text-[#34C759]"
-                                : isNext
-                                  ? "bg-[#0071E3]/10 text-[#0071E3]"
-                                  : "bg-black/[0.04] text-[#86868B] dark:bg-white/[0.05]",
-                            )}
-                          >
-                            {done ? "Selesai" : isNext ? "Berikutnya" : "Siap dipelajari"}
-                          </span>
-                        </div>
-
-                        <h3 className="mt-3 truncate text-[17px] font-semibold tracking-tight text-foreground transition-colors group-hover:text-[#0071E3]">
-                          {lesson.title_id}
-                        </h3>
-
-                        <div className="mt-2 flex flex-wrap items-center gap-3 text-[13px] text-[#86868B]">
-                          <span className="flex items-center gap-1.5">
-                            <Clock className="h-3.5 w-3.5" />
-                            {lesson.estimatedMinutes} mnt
-                          </span>
-                          <span>
-                            {done
-                              ? "Sudah selesai"
-                              : isNext
-                                ? "Lanjutkan dari sini"
-                                : "Tersedia untuk dibuka kapan saja"}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="mt-1 flex items-center justify-between gap-3 sm:mt-0 sm:flex-col sm:items-end">
-                        <span
-                          className={cn(
-                            "rounded-full px-3 py-1.5 text-[12px] font-medium",
-                            done
-                              ? "bg-[#34C759]/12 text-[#34C759]"
-                              : isNext
-                                ? "text-white"
-                                : "border border-black/[0.06] bg-white/85 text-[#86868B] dark:border-white/[0.08] dark:bg-white/[0.04]",
-                          )}
-                          style={!done && isNext ? { backgroundColor: data.color } : undefined}
-                        >
-                          {done ? "Completed" : isNext ? "Continue" : "Open"}
-                        </span>
-
-                        <ChevronRight
-                          className={cn(
-                            "h-4 w-4 transition-colors",
-                            done ? "text-[#34C759]" : "text-[#86868B] group-hover:text-[#0071E3]",
-                          )}
-                        />
-                      </div>
+                      className={cn(
+                        "flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] text-[16px] font-display font-semibold transition-colors",
+                        done
+                          ? "bg-[#34C759]/15 text-[#30D158]"
+                          : isNext
+                            ? "bg-[#0071E3] text-white shadow-md shadow-[#0071E3]/20"
+                            : "bg-[#D2D2D7]/30 dark:bg-white/10 text-[#86868B]",
+                      )}
+                    >
+                      {done ? <CheckCircle2 className="h-5 w-5" /> : idx + 1}
                     </div>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
+
+                    <div>
+                      <h3
+                        className={cn(
+                          "font-display text-[19px] font-semibold tracking-tight transition-colors",
+                          done ? "text-foreground" : isNext ? "text-[#0071E3]" : "text-foreground",
+                        )}
+                      >
+                        {lesson.title_id}
+                      </h3>
+                      <p className="mt-1 text-[14px] text-[#86868B] leading-relaxed">
+                        {lesson.title_id} {/* Gunakan title_id karena deskripsi di LessonMeta mungkin belum tersedia secara global */}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 sm:ml-auto">
+                    <div className="flex items-center gap-1.5 text-[13px] font-medium text-[#86868B]">
+                      <Clock className="h-4 w-4" />
+                      {lesson.estimatedMinutes} mnt
+                    </div>
+
+                    <div
+                      className={cn(
+                        "flex h-9 w-9 items-center justify-center rounded-full transition-transform",
+                        isNext
+                          ? "bg-[#0071E3]/10 text-[#0071E3] group-hover:translate-x-1"
+                          : "text-[#86868B] group-hover:text-foreground group-hover:translate-x-1",
+                      )}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+            
+            {lessonCount === 0 && (
+              <div className="py-12 text-center text-[#86868B]">
+                Belum ada lesson pada topik ini.
+              </div>
+            )}
+          </div>
         </section>
       </main>
     </div>

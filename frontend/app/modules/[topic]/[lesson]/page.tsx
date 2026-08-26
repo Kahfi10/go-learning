@@ -216,7 +216,7 @@ export default function LessonPage() {
           {/* Desktop: resizable panels */}
           <div className="hidden lg:flex h-[calc(100vh-92px)]">
             <PanelGroup direction="horizontal">
-              <Panel defaultSize={55} minSize={35} className="overflow-y-auto">
+              <Panel defaultSize={55} minSize={35} className="overflow-y-auto" style={{ overflowY: 'auto' }}>
                 <div className="max-w-2xl mx-auto px-6 py-8">
                   <LessonContent
                     data={data} lang={lang} title={title} content={content}

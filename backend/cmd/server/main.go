@@ -32,7 +32,7 @@ func main() {
 	r.Use(chimiddleware.Recoverer)
 	r.Use(chimiddleware.Timeout(30 * time.Second))
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{getEnv("FRONTEND_URL", "http://localhost:3000")},
+		AllowedOrigins:   []string{getEnv("FRONTEND_URL", "http://localhost:3006")},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 		AllowCredentials: true,
@@ -98,7 +98,7 @@ func main() {
 		r.With(authMiddleware.Authenticate).Delete("/{id}", discussionH.DeleteComment)
 	})
 
-	port := getEnv("PORT", "8080")
+	port := getEnv("PORT", "8081")
 	log.Printf("GoLearn API running on :%s", port)
 	if err := http.ListenAndServe(":"+port, r); err != nil {
 		log.Fatalf("server error: %v", err)

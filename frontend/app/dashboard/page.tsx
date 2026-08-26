@@ -238,27 +238,27 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        <section className="mb-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <section className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {statCards.map((card) => {
             const Icon = card.icon;
 
             return (
               <article
                 key={card.label}
-                className="group relative overflow-hidden rounded-[26px] border border-black/[0.06] bg-[#FBFBFD] p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)] transition-transform duration-300 hover:-translate-y-1 dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_18px_45px_rgba(0,0,0,0.24)]"
+                className="group relative overflow-hidden rounded-[24px] border border-[#D2D2D7]/60 bg-white p-6 shadow-sm transition-transform duration-300 hover:-translate-y-1 dark:border-white/10 dark:bg-[#111214]"
               >
                 <div
                   className="pointer-events-none absolute inset-x-0 top-0 h-24 opacity-80"
                   style={{
-                    background: `linear-gradient(180deg, ${card.accent}1F 0%, transparent 100%)`,
+                    background: `linear-gradient(180deg, ${card.accent}15 0%, transparent 100%)`,
                   }}
                 />
 
                 <div className="relative flex h-full flex-col">
                   <div className="flex items-center justify-between gap-3">
                     <div
-                      className="flex h-11 w-11 items-center justify-center rounded-2xl"
-                      style={{ backgroundColor: `${card.accent}16` }}
+                      className="flex h-11 w-11 items-center justify-center rounded-[14px]"
+                      style={{ backgroundColor: `${card.accent}14` }}
                     >
                       <Icon className="h-5 w-5" style={{ color: card.accent }} />
                     </div>
@@ -267,10 +267,10 @@ export default function DashboardPage() {
                     </span>
                   </div>
 
-                  <p className="mt-8 font-display text-[34px] font-semibold tracking-tight text-foreground">
+                  <p className="mt-8 font-display text-[32px] font-semibold tracking-tight text-foreground">
                     {card.value}
                   </p>
-                  <p className="mt-2 text-[13px] leading-6 text-[#86868B]">{card.note}</p>
+                  <p className="mt-1 text-[13px] leading-6 text-[#86868B] line-clamp-2">{card.note}</p>
                 </div>
               </article>
             );
@@ -278,28 +278,26 @@ export default function DashboardPage() {
         </section>
 
         <section className="grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(320px,1fr)] lg:items-stretch">
-          <article className="relative overflow-hidden rounded-[30px] border border-black/[0.06] bg-[#FBFBFD] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.07)] dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_24px_60px_rgba(0,0,0,0.28)] sm:p-7">
-            <div className="pointer-events-none absolute -right-16 top-0 h-40 w-40 rounded-full bg-[#0071E3]/10 blur-3xl" />
-
+          <article className="relative overflow-hidden rounded-[28px] border border-[#D2D2D7]/60 bg-white p-6 sm:p-8 shadow-sm dark:border-white/10 dark:bg-[#111214]">
             <div className="relative flex h-full flex-col">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div className="max-w-lg">
-                  <div className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#0071E3]">
+              <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+                <div className="max-w-md">
+                  <div className="flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#0071E3] mb-2">
                     <TrendingUp className="h-4 w-4" />
                     Progress Insights
                   </div>
-                  <h2 className="mt-3 font-display text-[24px] font-semibold tracking-tight text-foreground sm:text-[28px]">
+                  <h2 className="font-display text-[22px] font-semibold tracking-tight text-foreground sm:text-[26px] mb-2">
                     Progress per topik terlihat lebih jelas
                   </h2>
-                  <p className="mt-2 text-[14px] leading-6 text-[#86868B]">
+                  <p className="text-[14px] leading-relaxed text-[#86868B]">
                     Lihat distribusi progres untuk mengetahui topik mana yang sedang aktif,
                     tertinggal, atau siap dituntaskan.
                   </p>
                 </div>
 
-                <div className="rounded-[22px] border border-black/[0.06] bg-white/80 px-4 py-3 text-right shadow-[0_12px_30px_rgba(15,23,42,0.05)] dark:border-white/[0.08] dark:bg-white/[0.04] dark:shadow-none">
+                <div className="rounded-[20px] bg-[#F5F5F7] dark:bg-[#1C1C1E] px-5 py-4 text-right">
                   <p className="text-[11px] uppercase tracking-[0.16em] text-[#86868B]">
-                    Rata-rata progres
+                    Rata-rata
                   </p>
                   <p className="mt-1 font-display text-[26px] font-semibold tracking-tight text-foreground">
                     {avgTopicProgress}%
@@ -307,7 +305,7 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="mt-8 h-[280px]">
+              <div className="mt-6 h-[260px] w-full">
                 {chartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={chartData} barSize={16}>
@@ -362,46 +360,44 @@ export default function DashboardPage() {
 
           <div className="flex h-full flex-col gap-5">
             {continueTopic ? (
-              <article className="relative flex-1 overflow-hidden rounded-[30px] border border-black/[0.06] bg-[#FBFBFD] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.07)] dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_24px_60px_rgba(0,0,0,0.28)] sm:p-7">
+              <article className="relative flex-1 overflow-hidden rounded-[28px] border border-[#D2D2D7]/60 bg-white p-6 sm:p-8 shadow-sm dark:border-white/10 dark:bg-[#111214]">
                 <div
-                  className="pointer-events-none absolute inset-x-0 top-0 h-28"
-                  style={{
-                    background: `linear-gradient(180deg, ${continueTopic.topic.color}24 0%, transparent 100%)`,
-                  }}
+                  className="pointer-events-none absolute inset-x-0 top-0 h-28 blur-[40px] opacity-20"
+                  style={{ backgroundColor: continueTopic.topic.color }}
                 />
 
                 <div className="relative flex h-full flex-col">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B]">
-                        {continueTopic.progress.done > 0 ? "Lanjutkan" : "Mulai"}
+                      <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B] mb-2">
+                        {continueTopic.progress.done > 0 ? "Lanjutkan Belajar" : "Mulai Belajar"}
                       </p>
-                      <h2 className="mt-3 font-display text-[28px] font-semibold tracking-tight text-foreground">
-                        {continueTopic.progress.done > 0 ? "Satu langkah lagi" : "Topik berikut untukmu"}
+                      <h2 className="font-display text-[26px] font-semibold tracking-tight text-foreground leading-snug">
+                        {continueTopic.progress.done > 0 ? "Satu langkah lagi" : "Topik rekomendasi"}
                       </h2>
                     </div>
                     <div
-                      className="flex h-11 w-11 items-center justify-center rounded-2xl text-[13px] font-semibold text-white"
+                      className="flex h-12 w-12 items-center justify-center rounded-[16px] text-[15px] font-bold text-white shadow-sm"
                       style={{ backgroundColor: continueTopic.topic.color }}
                     >
                       {String(continueTopic.topic.number).padStart(2, "0")}
                     </div>
                   </div>
 
-                  <div className="mt-6 rounded-[24px] border border-black/[0.06] bg-white/80 p-5 shadow-[0_12px_30px_rgba(15,23,42,0.05)] dark:border-white/[0.08] dark:bg-white/[0.04] dark:shadow-none">
-                    <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[#86868B]">
+                  <div className="mt-8 rounded-[20px] bg-[#F5F5F7]/60 dark:bg-[#1C1C1E]/60 p-5 border border-transparent dark:border-white/5">
+                    <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[#86868B] mb-1">
                       {continueTopic.topic.title_id}
                     </p>
-                    <p className="mt-2 text-[14px] leading-6 text-[#86868B]">
+                    <p className="text-[14px] leading-relaxed text-[#86868B] mb-4">
                       {continueTopic.progress.done} dari {continueTopic.progress.total} lesson sudah selesai.
                     </p>
 
-                    <div className="mt-5">
-                      <div className="mb-2 flex items-center justify-between text-[12px] text-[#86868B]">
+                    <div>
+                      <div className="mb-2 flex items-center justify-between text-[12px] font-medium text-[#86868B]">
                         <span>Progress topik</span>
                         <span>{continueTopic.progress.pct}%</span>
                       </div>
-                      <div className="h-2 overflow-hidden rounded-full bg-black/[0.06] dark:bg-white/[0.08]">
+                      <div className="h-2 overflow-hidden rounded-full bg-[#D2D2D7]/40 dark:bg-white/10">
                         <div
                           className="h-full rounded-full transition-all duration-700"
                           style={{
@@ -413,37 +409,37 @@ export default function DashboardPage() {
                     </div>
                   </div>
 
-                  <div className="mt-6 flex flex-wrap gap-3">
+                  <div className="mt-8 flex flex-wrap gap-3">
                     <Link
                       href={`/modules/${continueTopic.topic.slug}`}
-                      className="inline-flex items-center gap-2 rounded-full bg-[#0071E3] px-5 py-2.5 text-[13px] font-medium text-white transition-colors hover:bg-[#0077ED]"
+                      className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0071E3] px-6 py-3 text-[14px] font-medium text-white shadow-sm transition-colors hover:bg-[#0077ED]"
                     >
-                      {continueTopic.progress.done > 0 ? "Lanjutkan belajar" : "Mulai belajar"}
+                      {continueTopic.progress.done > 0 ? "Lanjutkan Belajar" : "Mulai Belajar"}
                       <ArrowRight className="h-4 w-4" />
                     </Link>
-                    <div className="inline-flex items-center rounded-full border border-black/[0.06] bg-white/80 px-4 py-2.5 text-[13px] text-[#86868B] dark:border-white/[0.08] dark:bg-white/[0.04]">
+                    <div className="inline-flex items-center justify-center rounded-full bg-[#F5F5F7] dark:bg-[#1C1C1E] px-5 py-3 text-[13px] font-medium text-[#86868B] border border-transparent dark:border-white/5">
                       Target: {hasNextLevel ? `${xpRemaining} XP lagi` : "Level maksimum"}
                     </div>
                   </div>
                 </div>
               </article>
             ) : (
-              <article className="flex flex-1 flex-col justify-between rounded-[30px] border border-black/[0.06] bg-[#FBFBFD] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.07)] dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_24px_60px_rgba(0,0,0,0.28)] sm:p-7">
+              <article className="flex flex-1 flex-col justify-between rounded-[28px] border border-[#D2D2D7]/60 bg-white p-6 sm:p-8 shadow-sm dark:border-white/10 dark:bg-[#111214]">
                 <div>
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B]">
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B] mb-2">
                     Siap Mulai
                   </p>
-                  <h2 className="mt-3 font-display text-[28px] font-semibold tracking-tight text-foreground">
+                  <h2 className="font-display text-[26px] font-semibold tracking-tight text-foreground leading-snug mb-3">
                     Pilih topik pertamamu
                   </h2>
-                  <p className="mt-2 text-[14px] leading-6 text-[#86868B]">
+                  <p className="text-[15px] leading-relaxed text-[#86868B]">
                     Belum ada topik yang bisa dilanjutkan. Buka modul dan mulai progres pertamamu.
                   </p>
                 </div>
 
                 <Link
                   href="/modules"
-                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#0071E3] px-5 py-2.5 text-[13px] font-medium text-white transition-colors hover:bg-[#0077ED]"
+                  className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-[#0071E3] px-6 py-3 text-[14px] font-medium text-white shadow-sm transition-colors hover:bg-[#0077ED]"
                 >
                   Lihat semua topik
                   <ArrowRight className="h-4 w-4" />
@@ -453,25 +449,25 @@ export default function DashboardPage() {
 
             <Link
               href="/leaderboard"
-              className="group relative overflow-hidden rounded-[26px] border border-black/[0.06] bg-[#FBFBFD] p-5 shadow-[0_20px_50px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_20px_50px_rgba(0,0,0,0.24)]"
+              className="group relative overflow-hidden rounded-[24px] border border-[#D2D2D7]/60 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-white/10 dark:bg-[#111214]"
             >
               <div className="pointer-events-none absolute -right-10 top-0 h-24 w-24 rounded-full bg-[#FF9500]/10 blur-2xl" />
 
-              <div className="relative flex items-center justify-between gap-4">
+              <div className="relative flex items-center justify-between gap-5">
                 <div>
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[#86868B]">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#86868B] mb-1">
                     Leaderboard
                   </p>
-                  <p className="mt-2 text-[16px] font-medium text-foreground">
-                    Bandingkan progres dengan learner lain
+                  <p className="text-[16px] font-semibold text-foreground tracking-tight mb-1">
+                    Bandingkan progresmu
                   </p>
-                  <p className="mt-1 text-[13px] leading-6 text-[#86868B]">
-                    Lihat posisi dan ritme belajarmu di papan peringkat.
+                  <p className="text-[13px] leading-relaxed text-[#86868B]">
+                    Lihat posisimu di papan peringkat.
                   </p>
                 </div>
 
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#FF9500]/12 text-[#FF9500]">
-                  <Trophy className="h-5 w-5" />
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] bg-[#FF9500]/10 text-[#FF9500]">
+                  <Trophy className="h-6 w-6" />
                 </div>
               </div>
             </Link>
