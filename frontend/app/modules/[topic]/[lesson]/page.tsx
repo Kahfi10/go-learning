@@ -33,6 +33,7 @@ export default function LessonPage() {
   const [quizScore, setQuizScore] = useState<number | null>(null);
   const [completionLoading, setCompletionLoading] = useState(false);
   const [showMobileEditor, setShowMobileEditor] = useState(false);
+  const initializedLessonKeyRef = useRef<string | null>(null);
   const {
     isCompleted,
     markComplete,
@@ -47,6 +48,13 @@ export default function LessonPage() {
   useEffect(() => {
     api.topics.getLesson(topic, lesson).then(setData).catch(() => {});
     api.topics.get(topic).then(setTopicData).catch(() => {});
+
+    const lessonKey = `${topic}/${lesson}`;
+    if (initializedLessonKeyRef.current === lessonKey) {
+      return;
+    }
+    initializedLessonKeyRef.current = lessonKey;
+
     const saved = localStorage.getItem("golearn_lang");
     const resume = getResumeState(topic, lesson);
     if (resume.lang) {
