@@ -84,6 +84,7 @@ func main() {
 	r.Group(func(r chi.Router) {
 		r.Use(authMiddleware.Authenticate)
 		r.Get("/api/progress", progressH.GetProgress)
+		r.Get("/api/progress/activity", progressH.GetActivity)
 		r.Put("/api/progress/{topic}/{lesson}", progressH.UpdateProgress)
 		r.Post("/api/quiz/{lessonID}/submit", progressH.SubmitQuiz)
 		r.Get("/api/me/stats", progressH.GetStats)

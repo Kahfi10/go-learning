@@ -3,6 +3,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
+  Bookmark,
+  BookmarkCheck,
   ChevronLeft, ChevronRight, CheckCircle2, Clock,
   Languages, Menu, X, MessageCircle, Zap,
 } from "lucide-react";
@@ -44,6 +46,8 @@ export default function LessonPage() {
     getResumeState,
     saveResumeState,
     markLessonViewed,
+    isLessonBookmarked,
+    toggleLessonBookmark,
   } = useProgress();
 
   useEffect(() => {
@@ -171,6 +175,7 @@ export default function LessonPage() {
   const done = isCompleted(topic, lesson);
   const prog = topicProgress(topic, lessons.length);
   const resume = getResumeState(topic, lesson);
+  const lessonBookmarked = isLessonBookmarked(topic, lesson);
   const totalQuizQuestions = data?.quiz?.length ?? resume.totalQuestions ?? 0;
   const completionHint = !done && !resume.hasRunCode && !resume.hasOpenedQuiz
     ? "Jalankan kode atau buka quiz dulu untuk mengaktifkan completion."
@@ -224,6 +229,14 @@ export default function LessonPage() {
           <button onClick={toggleLang}
             className="flex items-center gap-1 text-[11px] text-[#86868B] hover:text-foreground border border-[#D2D2D7]/60 px-2 py-0.5 rounded-full transition-colors">
             <Languages className="w-3 h-3" /> {lang.toUpperCase()}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => void toggleLessonBookmark(topic, lesson)}
+            className="flex items-center gap-1 text-[11px] text-[#86868B] hover:text-[#0071E3] border border-[#D2D2D7]/60 px-2 py-0.5 rounded-full transition-colors"
+          >
+            {lessonBookmarked ? <BookmarkCheck className="w-3 h-3 text-[#0071E3]" /> : <Bookmark className="w-3 h-3" />} {lessonBookmarked ? "Saved" : "Save"}
           </button>
 
           {/* XP badge (shown after complete) */}

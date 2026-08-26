@@ -4,6 +4,8 @@ import Link from "next/link";
 import {
   ArrowRight,
   PlayCircle,
+  Bookmark,
+  BookmarkCheck,
   ChevronRight,
   Clock,
   Search,
@@ -32,7 +34,14 @@ export default function ModulesPage() {
   const [search, setSearch] = useState("");
   const [lessonMatches, setLessonMatches] = useState<Record<string, string[]>>({});
   const [isLoading, setIsLoading] = useState(true);
-  const { topicProgress, getContinueLearning, getRecentlyViewed } = useProgress();
+  const {
+    topicProgress,
+    getContinueLearning,
+    getRecentlyViewed,
+    getRecentActivity,
+    isTopicBookmarked,
+    toggleTopicBookmark,
+  } = useProgress();
 
   useEffect(() => {
     api.topics
@@ -114,6 +123,7 @@ export default function ModulesPage() {
     ? topics.find((topic) => topic.slug === continueLearning.topic)
     : undefined;
   const recentlyViewed = getRecentlyViewed(3);
+  const recentActivity = getRecentActivity(4);
 
   const totalDone = topics.reduce(
     (acc, topic) => acc + topicProgress(topic.slug, getLessonCount(topic)).done,
@@ -210,6 +220,34 @@ export default function ModulesPage() {
           </section>
         )}
 
+        {recentActivity.length > 0 && (
+          <section className="mx-auto max-w-7xl px-4 sm:px-6 mb-10 sm:mb-12">
+            <div className="rounded-[24px] border border-[#D2D2D7]/50 dark:border-white/8 bg-[#FAFAFB] dark:bg-[#111214] p-5 sm:p-6">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#86868B] mb-1">Aktivitas Terbaru</p>
+                  <h2 className="font-display text-[22px] font-semibold tracking-tight text-foreground">Kembali ke titik terakhir belajarmu</h2>
+                </div>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                {recentActivity.map((item) => (
+                  <Link
+                    key={`${item.topic_slug}/${item.lesson_id}`}
+                    href={`/modules/${item.topic_slug}/${item.lesson_id}`}
+                    className="rounded-[18px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white dark:bg-[#17181A] p-4 hover:border-[#0071E3]/25 transition-colors"
+                  >
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#86868B] mb-1">{item.topic_slug}</p>
+                    <p className="text-[15px] font-semibold text-foreground mb-2">Lesson {item.lesson_id}</p>
+                    <p className="text-[12px] text-[#86868B]">
+                      {item.completed ? "Selesai" : item.last_viewed_at ? "Dilihat baru-baru ini" : "Aktif"}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* ── Tabs & Search Bar ── */}
         <section className="sticky top-[52px] z-30 bg-background/95 backdrop-blur-xl border-b border-[#D2D2D7]/40 dark:border-white/10 shadow-sm transition-all mb-12 sm:mb-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 flex flex-col md:flex-row md:items-center justify-between gap-4 py-4">
@@ -282,6 +320,7 @@ export default function ModulesPage() {
                   const isStarted = state === "in_progress";
                   const isComplete = state === "completed";
                   const statusLabel = isComplete ? "Selesai" : isStarted ? "Berjalan" : "Mulai";
+                  const bookmarked = isTopicBookmarked(topic.slug);
 
                   return (
                     <Link
@@ -298,6 +337,17 @@ export default function ModulesPage() {
                           {String(topic.number).padStart(2, "0")}
                         </div>
                         <LevelBadge level={topic.level} />
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.preventDefault();
+                            void toggleTopicBookmark(topic.slug);
+                          }}
+                          className="inline-flex items-center gap-1 rounded-full bg-[#F5F5F7] dark:bg-[#1C1C1E] px-3 py-1.5 text-[11px] font-medium text-[#86868B] hover:text-[#0071E3] transition-colors"
+                        >
+                          {bookmarked ? <BookmarkCheck className="w-3.5 h-3.5 text-[#0071E3]" /> : <Bookmark className="w-3.5 h-3.5" />}
+                          {bookmarked ? "Tersimpan" : "Simpan"}
+                        </button>
                       </div>
 
                       {/* Middle: Content */}
@@ -348,6 +398,11 @@ export default function ModulesPage() {
                           {isComplete && (
                             <div className="flex items-center gap-1.5 text-[#34C759]">
                               <CheckCircle2 className="w-3.5 h-3.5" /> Selesai
+                            </div>
+                          )}
+                          {bookmarked && (
+                            <div className="flex items-center gap-1.5 text-[#0071E3]">
+                              <BookmarkCheck className="w-3.5 h-3.5" /> Bookmarked
                             </div>
                           )}
                         </div>

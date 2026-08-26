@@ -55,7 +55,14 @@ export const api = {
   },
   progress: {
     get: () => request<Record<string, ProgressItem>>("/api/progress"),
-    update: (topic: string, lesson: string, data: { completed: boolean; last_code?: string }) =>
+    activity: () => request<ActivityItem[]>("/api/progress/activity"),
+    update: (topic: string, lesson: string, data: {
+      completed?: boolean;
+      last_code?: string;
+      mark_viewed?: boolean;
+      topic_bookmarked?: boolean;
+      lesson_bookmarked?: boolean;
+    }) =>
       request(`/api/progress/${topic}/${lesson}`, { method: "PUT", body: JSON.stringify(data) }),
     submitQuiz: (lessonId: string, data: { score: number; topic_slug: string; total_questions?: number }) =>
       request(`/api/quiz/${lessonId}/submit`, { method: "POST", body: JSON.stringify(data) }),
@@ -113,6 +120,9 @@ export interface ProgressItem {
   best_quiz_score?: number;
   last_code?: string;
   completed_at?: string;
+  last_viewed_at?: string;
+  topic_bookmarked?: boolean;
+  lesson_bookmarked?: boolean;
 }
 export interface LessonResumeState {
   lang?: "id" | "en";
@@ -147,4 +157,13 @@ export interface SearchResult {
   topic_slug?: string;
   topic_title_id?: string;
   topic_title_en?: string;
+}
+export interface ActivityItem {
+  topic_slug: string;
+  lesson_id: string;
+  completed: boolean;
+  last_viewed_at?: string;
+  completed_at?: string;
+  topic_bookmarked?: boolean;
+  lesson_bookmarked?: boolean;
 }

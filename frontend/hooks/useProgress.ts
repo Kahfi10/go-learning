@@ -1,15 +1,21 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { api, type LessonResumeState, type ProgressItem } from "@/lib/api";
+import { api, type ActivityItem, type LessonResumeState, type ProgressItem } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 
 const LOCAL_KEY = "golearn_progress";
 const RESUME_KEY = "golearn_resume";
+const BOOKMARKS_KEY = "golearn_bookmarks";
 
 interface ContinueLearningItem {
   topic: string;
   lesson: string;
   viewedAt?: string;
+}
+
+interface BookmarkState {
+	topics: string[];
+	lessons: string[];
 }
 
 type ResumeMap = Record<string, LessonResumeState>;
@@ -34,10 +40,45 @@ function loadResume(): ResumeMap {
   try { return JSON.parse(localStorage.getItem(RESUME_KEY) ?? "{}"); } catch { return {}; }
 }
 
+function loadBookmarks(): BookmarkState {
+  if (typeof window === "undefined") return { topics: [], lessons: [] };
+  try {
+    const parsed = JSON.parse(localStorage.getItem(BOOKMARKS_KEY) ?? "{}");
+    return {
+      topics: Array.isArray(parsed.topics) ? parsed.topics : [],
+      lessons: Array.isArray(parsed.lessons) ? parsed.lessons : [],
+    };
+  } catch {
+    return { topics: [], lessons: [] };
+  }
+}
+
 export function useProgress() {
   const { state } = useAuth();
   const [progress, setProgress] = useState<Record<string, ProgressItem>>(loadLocal);
   const [resume, setResume] = useState<ResumeMap>(loadResume);
+  const [bookmarks, setBookmarks] = useState<BookmarkState>(loadBookmarks);
+  const [activity, setActivity] = useState<ActivityItem[]>([]);
+
+  const persistBookmarks = useCallback((next: BookmarkState) => {
+    setBookmarks(next);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(next));
+    }
+  }, []);
+
+  const syncBookmarksFromProgress = useCallback((source: Record<string, ProgressItem>) => {
+    const nextTopics = new Set<string>();
+    const nextLessons = new Set<string>();
+
+    Object.entries(source).forEach(([key, value]) => {
+      const [topic, lesson] = key.split("/");
+      if (value.topic_bookmarked) nextTopics.add(topic);
+      if (value.lesson_bookmarked) nextLessons.add(`${topic}/${lesson}`);
+    });
+
+    persistBookmarks({ topics: Array.from(nextTopics), lessons: Array.from(nextLessons) });
+  }, [persistBookmarks]);
 
   const persistResume = useCallback((updater: ResumeMap | ((prev: ResumeMap) => ResumeMap)) => {
     setResume((prev) => {
@@ -55,9 +96,16 @@ export function useProgress() {
       api.progress.get().then((data) => {
         setProgress(data);
         localStorage.setItem(LOCAL_KEY, JSON.stringify(data));
+        syncBookmarksFromProgress(data);
       }).catch(() => {});
+
+      api.progress.activity().then((items) => {
+        setActivity(items ?? []);
+      }).catch(() => {
+        setActivity([]);
+      });
     }
-  }, [state.user]);
+  }, [state.user, syncBookmarksFromProgress]);
 
   const isCompleted = useCallback((topic: string, lesson: string) => {
     return progress[`${topic}/${lesson}`]?.completed ?? false;
@@ -90,7 +138,10 @@ export function useProgress() {
 
   const markLessonViewed = useCallback((topic: string, lesson: string) => {
     saveResumeState(topic, lesson, { viewedAt: new Date().toISOString() });
-  }, [saveResumeState]);
+    if (state.user) {
+      api.progress.update(topic, lesson, { mark_viewed: true }).catch(() => {});
+    }
+  }, [saveResumeState, state.user]);
 
   const topicProgress = useCallback((topicSlug: string, totalLessons: number) => {
     const done = Object.entries(progress).filter(
@@ -124,7 +175,7 @@ export function useProgress() {
     });
     saveResumeState(topic, lesson, { viewedAt: new Date().toISOString() });
     if (state.user) {
-      await api.progress.update(topic, lesson, { completed: true, last_code: code }).catch(() => {});
+      await api.progress.update(topic, lesson, { completed: true, last_code: code, mark_viewed: true }).catch(() => {});
     }
   }, [saveResumeState, state.user]);
 
@@ -138,7 +189,77 @@ export function useProgress() {
       localStorage.setItem(`${topic}_${lesson}_code`, code);
     }
     saveResumeState(topic, lesson, { viewedAt: new Date().toISOString() });
-  }, [saveResumeState]);
+    setProgress((prev) => {
+      const key = `${topic}/${lesson}`;
+      const updated = {
+        ...prev,
+        [key]: {
+          ...prev[key],
+          completed: prev[key]?.completed ?? false,
+          last_code: code,
+        },
+      };
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(updated));
+      return updated;
+    });
+    if (state.user) {
+      api.progress.update(topic, lesson, { last_code: code }).catch(() => {});
+    }
+  }, [saveResumeState, state.user]);
+
+  const toggleTopicBookmark = useCallback(async (topic: string) => {
+    const isBookmarked = bookmarks.topics.includes(topic);
+    const next = isBookmarked
+      ? { ...bookmarks, topics: bookmarks.topics.filter((item) => item !== topic) }
+      : { ...bookmarks, topics: [...bookmarks.topics, topic] };
+    persistBookmarks(next);
+
+    setProgress((prev) => {
+      const entries = Object.entries(prev).filter(([key]) => key.startsWith(`${topic}/`));
+      if (entries.length === 0) return prev;
+      const updated = { ...prev };
+      entries.forEach(([key, value]) => {
+        updated[key] = { ...value, topic_bookmarked: !isBookmarked };
+      });
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(updated));
+      return updated;
+    });
+
+    if (state.user) {
+      await api.progress.update(topic, "01", { topic_bookmarked: !isBookmarked }).catch(() => {});
+    }
+  }, [bookmarks, persistBookmarks, state.user]);
+
+  const toggleLessonBookmark = useCallback(async (topic: string, lesson: string) => {
+    const key = `${topic}/${lesson}`;
+    const isBookmarked = bookmarks.lessons.includes(key);
+    const next = isBookmarked
+      ? { ...bookmarks, lessons: bookmarks.lessons.filter((item) => item !== key) }
+      : { ...bookmarks, lessons: [...bookmarks.lessons, key] };
+    persistBookmarks(next);
+
+    setProgress((prev) => {
+      const updated = {
+        ...prev,
+        [key]: {
+          ...prev[key],
+          completed: prev[key]?.completed ?? false,
+          lesson_bookmarked: !isBookmarked,
+        },
+      };
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(updated));
+      return updated;
+    });
+
+    if (state.user) {
+      await api.progress.update(topic, lesson, { lesson_bookmarked: !isBookmarked }).catch(() => {});
+    }
+  }, [bookmarks, persistBookmarks, state.user]);
+
+  const isTopicBookmarked = useCallback((topic: string) => bookmarks.topics.includes(topic), [bookmarks.topics]);
+  const isLessonBookmarked = useCallback((topic: string, lesson: string) => bookmarks.lessons.includes(`${topic}/${lesson}`), [bookmarks.lessons]);
+
+  const getRecentActivity = useCallback((limit = 5) => activity.slice(0, limit), [activity]);
 
   const getContinueLearning = useCallback((): ContinueLearningItem | null => {
     const items = Object.entries(resume)
@@ -173,6 +294,8 @@ export function useProgress() {
   return {
     progress,
     resume,
+    bookmarks,
+    activity,
     isCompleted,
     topicProgress,
     lessonState,
@@ -182,6 +305,11 @@ export function useProgress() {
     getResumeState,
     saveResumeState,
     markLessonViewed,
+    isTopicBookmarked,
+    isLessonBookmarked,
+    toggleTopicBookmark,
+    toggleLessonBookmark,
+    getRecentActivity,
     getContinueLearning,
     getRecentlyViewed,
   };

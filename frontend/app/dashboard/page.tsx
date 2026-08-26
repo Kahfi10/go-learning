@@ -30,7 +30,7 @@ const XP_LEVELS = [0, 100, 300, 600, 1000, 1500, 2100, 2800, 3600, 5000];
 export default function DashboardPage() {
   const router = useRouter();
   const { state } = useAuth();
-  const { topicProgress } = useProgress();
+  const { topicProgress, getRecentActivity, bookmarks } = useProgress();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [topics, setTopics] = useState<Topic[]>([]);
 
@@ -89,6 +89,7 @@ export default function DashboardPage() {
   const continueTopic =
     topicCards.find(({ progress }) => progress.done > 0 && progress.pct < 100) ??
     topicCards[0];
+  const recentActivity = getRecentActivity(4);
 
   const statCards = [
     {
@@ -471,6 +472,26 @@ export default function DashboardPage() {
                 </div>
               </div>
             </Link>
+
+            <article className="rounded-[24px] border border-[#D2D2D7]/60 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#111214]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#86868B] mb-3">Recent Activity</p>
+              <div className="space-y-3">
+                {recentActivity.length > 0 ? recentActivity.map((item) => (
+                  <Link key={`${item.topic_slug}/${item.lesson_id}`} href={`/modules/${item.topic_slug}/${item.lesson_id}`} className="flex items-center justify-between gap-3 rounded-[14px] bg-[#F5F5F7] dark:bg-[#1C1C1E] px-3 py-3">
+                    <div>
+                      <p className="text-[13px] font-medium text-foreground">{item.topic_slug}</p>
+                      <p className="text-[12px] text-[#86868B]">Lesson {item.lesson_id}</p>
+                    </div>
+                    <span className="text-[12px] text-[#86868B]">{item.completed ? "Done" : "Open"}</span>
+                  </Link>
+                )) : (
+                  <p className="text-[13px] text-[#86868B]">Belum ada aktivitas terbaru.</p>
+                )}
+              </div>
+              <div className="mt-4 pt-4 border-t border-[#D2D2D7]/40 dark:border-white/8">
+                <p className="text-[12px] text-[#86868B]">Bookmarks tersimpan: <span className="text-foreground font-medium">{bookmarks.topics.length + bookmarks.lessons.length}</span></p>
+              </div>
+            </article>
           </div>
         </section>
       </main>

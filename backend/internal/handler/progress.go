@@ -16,6 +16,14 @@ type ProgressHandler struct {
 	db *pgxpool.Pool
 }
 
+type progressUpdateRequest struct {
+	Completed       bool   `json:"completed"`
+	LastCode        string `json:"last_code"`
+	MarkViewed      bool   `json:"mark_viewed"`
+	TopicBookmarked *bool  `json:"topic_bookmarked"`
+	LessonBookmarked *bool `json:"lesson_bookmarked"`
+}
+
 func NewProgressHandler(db *pgxpool.Pool) *ProgressHandler {
 	return &ProgressHandler{db: db}
 }
@@ -23,7 +31,7 @@ func NewProgressHandler(db *pgxpool.Pool) *ProgressHandler {
 func (h *ProgressHandler) GetProgress(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 	rows, err := h.db.Query(r.Context(),
-		`SELECT topic_slug, lesson_id, completed, best_quiz_score, last_code, completed_at FROM lesson_progress WHERE user_id = $1`,
+		`SELECT topic_slug, lesson_id, completed, best_quiz_score, last_code, completed_at, last_viewed_at, topic_bookmarked, lesson_bookmarked FROM lesson_progress WHERE user_id = $1`,
 		userID,
 	)
 	if err != nil {
@@ -39,7 +47,9 @@ func (h *ProgressHandler) GetProgress(w http.ResponseWriter, r *http.Request) {
 		var bestScore *int
 		var lastCode *string
 		var completedAt *time.Time
-		if err := rows.Scan(&topicSlug, &lessonID, &completed, &bestScore, &lastCode, &completedAt); err != nil {
+		var lastViewedAt *time.Time
+		var topicBookmarked, lessonBookmarked bool
+		if err := rows.Scan(&topicSlug, &lessonID, &completed, &bestScore, &lastCode, &completedAt, &lastViewedAt, &topicBookmarked, &lessonBookmarked); err != nil {
 			continue
 		}
 		key := topicSlug + "/" + lessonID
@@ -48,6 +58,9 @@ func (h *ProgressHandler) GetProgress(w http.ResponseWriter, r *http.Request) {
 			"best_quiz_score": bestScore,
 			"last_code":       lastCode,
 			"completed_at":    completedAt,
+			"last_viewed_at":  lastViewedAt,
+			"topic_bookmarked": topicBookmarked,
+			"lesson_bookmarked": lessonBookmarked,
 		}
 	}
 
@@ -60,10 +73,7 @@ func (h *ProgressHandler) UpdateProgress(w http.ResponseWriter, r *http.Request)
 	topic := chi.URLParam(r, "topic")
 	lesson := chi.URLParam(r, "lesson")
 
-	var req struct {
-		Completed bool   `json:"completed"`
-		LastCode  string `json:"last_code"`
-	}
+	var req progressUpdateRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		jsonError(w, "invalid request", http.StatusBadRequest)
 		return
@@ -72,13 +82,23 @@ func (h *ProgressHandler) UpdateProgress(w http.ResponseWriter, r *http.Request)
 	now := time.Now()
 	var wasCompleted bool
 	_ = h.db.QueryRow(r.Context(), `SELECT completed FROM lesson_progress WHERE user_id = $1 AND topic_slug = $2 AND lesson_id = $3`, userID, topic, lesson).Scan(&wasCompleted)
+	lastViewedAt := any(nil)
+	if req.MarkViewed {
+		lastViewedAt = now
+	}
 
 	_, err := h.db.Exec(r.Context(), `
-		INSERT INTO lesson_progress (id, user_id, topic_slug, lesson_id, completed, last_code, completed_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		INSERT INTO lesson_progress (id, user_id, topic_slug, lesson_id, completed, last_code, completed_at, last_viewed_at, topic_bookmarked, lesson_bookmarked)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9, false), COALESCE($10, false))
 		ON CONFLICT (user_id, topic_slug, lesson_id)
-		DO UPDATE SET completed = $5, last_code = $6, completed_at = CASE WHEN $5 THEN $7 ELSE lesson_progress.completed_at END
-	`, uuid.New().String(), userID, topic, lesson, req.Completed, req.LastCode, now)
+		DO UPDATE SET
+			completed = CASE WHEN $5 THEN $5 ELSE lesson_progress.completed END,
+			last_code = CASE WHEN $6 <> '' THEN $6 ELSE lesson_progress.last_code END,
+			completed_at = CASE WHEN $5 AND NOT lesson_progress.completed THEN $7 ELSE lesson_progress.completed_at END,
+			last_viewed_at = COALESCE($8, lesson_progress.last_viewed_at),
+			topic_bookmarked = COALESCE($9, lesson_progress.topic_bookmarked),
+			lesson_bookmarked = COALESCE($10, lesson_progress.lesson_bookmarked)
+	`, uuid.New().String(), userID, topic, lesson, req.Completed, req.LastCode, now, lastViewedAt, req.TopicBookmarked, req.LessonBookmarked)
 	if err != nil {
 		jsonError(w, "failed to update progress", http.StatusInternalServerError)
 		return
@@ -92,6 +112,44 @@ func (h *ProgressHandler) UpdateProgress(w http.ResponseWriter, r *http.Request)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"message": "progress updated"})
+}
+
+func (h *ProgressHandler) GetActivity(w http.ResponseWriter, r *http.Request) {
+	userID := middleware.GetUserID(r)
+	rows, err := h.db.Query(r.Context(), `
+		SELECT topic_slug, lesson_id, completed, last_viewed_at, completed_at, topic_bookmarked, lesson_bookmarked
+		FROM lesson_progress
+		WHERE user_id = $1 AND (last_viewed_at IS NOT NULL OR completed_at IS NOT NULL OR topic_bookmarked = true OR lesson_bookmarked = true)
+		ORDER BY GREATEST(COALESCE(last_viewed_at, to_timestamp(0)), COALESCE(completed_at, to_timestamp(0))) DESC
+		LIMIT 20
+	`, userID)
+	if err != nil {
+		jsonError(w, "failed to fetch activity", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var items []map[string]interface{}
+	for rows.Next() {
+		var topicSlug, lessonID string
+		var completed, topicBookmarked, lessonBookmarked bool
+		var lastViewedAt, completedAt *time.Time
+		if err := rows.Scan(&topicSlug, &lessonID, &completed, &lastViewedAt, &completedAt, &topicBookmarked, &lessonBookmarked); err != nil {
+			continue
+		}
+		items = append(items, map[string]interface{}{
+			"topic_slug":       topicSlug,
+			"lesson_id":        lessonID,
+			"completed":        completed,
+			"last_viewed_at":   lastViewedAt,
+			"completed_at":     completedAt,
+			"topic_bookmarked": topicBookmarked,
+			"lesson_bookmarked": lessonBookmarked,
+		})
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(items)
 }
 
 func (h *ProgressHandler) SubmitQuiz(w http.ResponseWriter, r *http.Request) {

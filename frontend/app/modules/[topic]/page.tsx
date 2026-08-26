@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Clock } from "lucide-react";
+import { ArrowLeft, BookOpen, Bookmark, BookmarkCheck, CheckCircle2, ChevronRight, Clock, TriangleAlert } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import { ProgressBar } from "@/components/ui/progress";
 import { api, type TopicDetail } from "@/lib/api";
@@ -18,7 +18,7 @@ const LEVEL_COLOR: Record<string, string> = {
 export default function TopicPage() {
   const { topic } = useParams<{ topic: string }>();
   const [data, setData] = useState<TopicDetail | null>(null);
-  const { isCompleted, topicProgress } = useProgress();
+  const { isCompleted, topicProgress, isTopicBookmarked, toggleTopicBookmark } = useProgress();
 
   useEffect(() => {
     api.topics.get(topic).then(setData).catch(() => {});
@@ -49,6 +49,8 @@ export default function TopicPage() {
   const nextLessonHref = `/modules/${topic}/${nextLesson?.id ?? "01"}`;
   const nextLessonLabel = nextLesson?.title_id ?? "Lesson pertama";
   const progressColor = prog.done === lessonCount && lessonCount > 0 ? "#34C759" : data.color;
+  const topicBookmarked = isTopicBookmarked(topic);
+  const prerequisiteNotice = topic !== "getting-started" && prog.done === 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -102,7 +104,22 @@ export default function TopicPage() {
                   <BookOpen className="h-4 w-4" />
                   {lessonCount} lesson
                 </div>
+                <button
+                  type="button"
+                  onClick={() => void toggleTopicBookmark(topic)}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-transparent bg-[#F5F5F7] dark:bg-[#1C1C1E] px-4 py-2 text-[13px] font-medium text-[#86868B] hover:text-[#0071E3] transition-colors"
+                >
+                  {topicBookmarked ? <BookmarkCheck className="h-4 w-4 text-[#0071E3]" /> : <Bookmark className="h-4 w-4" />}
+                  {topicBookmarked ? "Tersimpan" : "Simpan topik"}
+                </button>
               </div>
+
+              {prerequisiteNotice && (
+                <div className="mt-5 inline-flex items-start gap-2 rounded-[16px] border border-[#FF9500]/15 bg-[#FF9500]/8 px-4 py-3 text-[13px] leading-relaxed text-[#8A5800] dark:text-[#FFCC80]">
+                  <TriangleAlert className="h-4 w-4 mt-0.5 shrink-0" />
+                  <span>Disarankan menuntaskan topik sebelumnya terlebih dahulu agar materi ini lebih mudah diikuti.</span>
+                </div>
+              )}
             </div>
 
             <div className="w-full xl:w-[340px] bg-white dark:bg-[#111214] rounded-[24px] p-6 sm:p-7 border border-[#D2D2D7]/60 dark:border-white/10 shadow-sm">
