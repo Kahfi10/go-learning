@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   ChevronLeft, ChevronRight, CheckCircle2, Clock,
   Languages, Menu, X, MessageCircle, Zap,
@@ -23,6 +23,7 @@ import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 export default function LessonPage() {
   const { topic, lesson } = useParams<{ topic: string; lesson: string }>();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { state } = useAuth();
   const [data, setData] = useState<Lesson | null>(null);
   const [topicData, setTopicData] = useState<TopicDetail | null>(null);
@@ -57,20 +58,42 @@ export default function LessonPage() {
 
     const saved = localStorage.getItem("golearn_lang");
     const resume = getResumeState(topic, lesson);
+    const requestedTab = searchParams.get("tab");
     if (resume.lang) {
       setLang(resume.lang);
     } else if (saved === "id" || saved === "en") {
       setLang(saved as "id" | "en");
     }
-    if (resume.activeTab) {
+    if (requestedTab === "discussion" || requestedTab === "content") {
+      setActiveTab(requestedTab);
+    } else if (resume.activeTab) {
       setActiveTab(resume.activeTab);
     }
     markLessonViewed(topic, lesson);
-  }, [getResumeState, lesson, markLessonViewed, topic]);
+  }, [getResumeState, lesson, markLessonViewed, searchParams, topic]);
 
   useEffect(() => {
     saveResumeState(topic, lesson, { lang, activeTab });
   }, [activeTab, lang, lesson, saveResumeState, topic]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    const currentQueryTab = params.get("tab");
+
+    if (activeTab === "discussion") {
+      if (currentQueryTab === "discussion") return;
+      params.set("tab", "discussion");
+    } else {
+      if (currentQueryTab !== null) {
+        params.delete("tab");
+      } else {
+        return;
+      }
+    }
+
+    const nextQuery = params.toString();
+    router.replace(`/modules/${topic}/${lesson}${nextQuery ? `?${nextQuery}` : ""}`, { scroll: false });
+  }, [activeTab, lesson, router, searchParams, topic]);
 
   useEffect(() => {
     if (!data) return;
