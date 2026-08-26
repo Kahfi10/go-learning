@@ -85,11 +85,19 @@ export default function CommentThread({ topicSlug, lessonId, lang = "id" }: Prop
   const replies = (parentId: string) => comments.filter(c => c.parent_id === parentId);
 
   return (
-    <div className="mt-12">
-      <div className="flex items-center justify-between mb-5">
-        <p className="font-semibold text-[17px] text-foreground">
-          {lang === "id" ? "Diskusi" : "Discussion"} · {roots.length}
-        </p>
+    <div className="mt-6 rounded-[22px] border border-[#D2D2D7]/35 dark:border-white/6 bg-[#FAFAFB] dark:bg-[#111214] p-5 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#0071E3] mb-2">
+            Community Notes
+          </p>
+          <p className="font-display font-semibold text-[22px] text-foreground tracking-tight">
+            {lang === "id" ? "Diskusi lesson" : "Lesson discussion"}
+          </p>
+          <p className="mt-1 text-[13px] text-[#86868B]">
+            {roots.length} thread aktif untuk lesson ini.
+          </p>
+        </div>
         <div className="flex gap-2">
           {(["newest", "upvotes"] as const).map(s => (
             <button key={s} onClick={() => setSort(s)}
@@ -103,20 +111,30 @@ export default function CommentThread({ topicSlug, lessonId, lang = "id" }: Prop
 
       {/* New comment form */}
       {state.user ? (
-        <div className="mb-6">
+        <div className="mb-6 rounded-[18px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white dark:bg-[#17181A] p-4 sm:p-5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#86868B] mb-3">
+            Tulis insight atau pertanyaan
+          </p>
           <textarea value={content} onChange={e => setContent(e.target.value)}
             placeholder={lang === "id" ? "Tulis komentar atau pertanyaan..." : "Write a comment or question..."}
             rows={3}
-            className="w-full bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[12px] px-4 py-3 text-[14px] text-foreground outline-none focus:ring-2 focus:ring-[#0071E3]/40 resize-none transition-all" />
-          <button onClick={() => submitComment()} disabled={submitting || !content.trim()}
-            className="mt-2 bg-[#0071E3] text-white text-[13px] font-medium px-4 py-2 rounded-full hover:bg-[#0077ED] transition-colors disabled:opacity-50">
+            className="w-full bg-[#F7F7F8] dark:bg-[#111214] rounded-[14px] border border-[#D2D2D7]/35 dark:border-white/6 px-4 py-3 text-[14px] text-foreground outline-none focus:ring-2 focus:ring-[#0071E3]/20 focus:border-[#0071E3]/30 resize-none transition-all" />
+          <div className="mt-3 flex items-center justify-between gap-3">
+            <p className="text-[12px] text-[#86868B]">
+              {lang === "id" ? "Berbagi konteks akan membantu learner lain lebih cepat paham." : "Sharing context helps other learners faster."}
+            </p>
+            <button onClick={() => submitComment()} disabled={submitting || !content.trim()}
+            className="bg-[#0071E3] text-white text-[13px] font-medium px-4 py-2 rounded-full hover:bg-[#0077ED] transition-colors disabled:opacity-50 shrink-0">
             {submitting ? "Mengirim..." : lang === "id" ? "Kirim" : "Send"}
-          </button>
+            </button>
+          </div>
         </div>
       ) : (
-        <p className="text-[#86868B] text-[13px] mb-6">
-          <a href="/login" className="text-[#0071E3] hover:underline">Login</a> untuk berkomentar.
-        </p>
+        <div className="mb-6 rounded-[18px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white dark:bg-[#17181A] p-4 sm:p-5">
+          <p className="text-[#86868B] text-[13px]">
+            <a href="/login" className="text-[#0071E3] hover:underline">Login</a> untuk berkomentar.
+          </p>
+        </div>
       )}
 
       {/* Comments */}
@@ -138,9 +156,9 @@ export default function CommentThread({ topicSlug, lessonId, lang = "id" }: Prop
 function CommentItem({ comment: c, replies, onUpvote, onDelete, onReply, replyTo, replyContent, onReplyChange, onReplySubmit, isMe, submitting, lang }: any) {
   const [expanded, setExpanded] = useState(true);
   return (
-    <div className="comment-thread-item bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[14px] p-4 border border-[#D2D2D7]/40 dark:border-white/8">
+    <div className="comment-thread-item bg-white dark:bg-[#17181A] rounded-[18px] p-4 sm:p-5 border border-[#D2D2D7]/35 dark:border-white/6 shadow-sm">
       <div className="flex items-start gap-3">
-        <div className="w-8 h-8 rounded-full bg-[#0071E3] flex items-center justify-center text-white text-[12px] font-semibold flex-shrink-0">
+        <div className="w-9 h-9 rounded-full bg-[#0071E3] flex items-center justify-center text-white text-[12px] font-semibold flex-shrink-0 shadow-sm">
           {c.user_name?.charAt(0).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
@@ -149,7 +167,7 @@ function CommentItem({ comment: c, replies, onUpvote, onDelete, onReply, replyTo
             {c.is_pinned && <span className="text-[10px] bg-[#0071E3]/10 text-[#0071E3] px-2 py-0.5 rounded-full flex items-center gap-1"><Pin className="w-2.5 h-2.5" /> Pinned</span>}
             <span className="text-[11px] text-[#86868B]">{timeAgo(c.created_at)}</span>
           </div>
-          <p className="text-[14px] text-foreground leading-relaxed">{c.content}</p>
+          <p className="text-[14px] text-foreground leading-relaxed mt-2">{c.content}</p>
           <div className="flex items-center gap-3 mt-2">
             <button onClick={() => onUpvote(c.id)} className="flex items-center gap-1 text-[12px] text-[#86868B] hover:text-[#0071E3] transition-colors">
               <ThumbsUp className="w-3.5 h-3.5" /> {c.upvotes}
@@ -166,10 +184,10 @@ function CommentItem({ comment: c, replies, onUpvote, onDelete, onReply, replyTo
 
           {/* Reply form */}
           {replyTo === c.id && (
-            <div className="mt-3">
+            <div className="mt-4 rounded-[14px] border border-[#D2D2D7]/30 dark:border-white/5 bg-[#F7F7F8] dark:bg-[#111214] p-3.5">
               <textarea value={replyContent} onChange={e => onReplyChange(e.target.value)}
                 placeholder="Tulis balasan..." rows={2}
-                className="w-full bg-background rounded-[10px] px-3 py-2 text-[13px] text-foreground outline-none focus:ring-2 focus:ring-[#0071E3]/40 resize-none border border-[#D2D2D7]/50" />
+                className="w-full bg-background rounded-[10px] px-3 py-2 text-[13px] text-foreground outline-none focus:ring-2 focus:ring-[#0071E3]/20 resize-none border border-[#D2D2D7]/40 dark:border-white/8" />
               <button onClick={onReplySubmit} disabled={submitting || !replyContent.trim()}
                 className="mt-1.5 bg-[#0071E3] text-white text-[12px] font-medium px-3 py-1.5 rounded-full hover:bg-[#0077ED] transition-colors disabled:opacity-50">
                 Kirim Balasan
@@ -179,13 +197,13 @@ function CommentItem({ comment: c, replies, onUpvote, onDelete, onReply, replyTo
 
           {/* Replies */}
           {replies.length > 0 && (
-            <div className="mt-3 space-y-2 border-l-2 border-[#D2D2D7]/50 pl-3">
+            <div className="mt-4 space-y-3 border-l-2 border-[#D2D2D7]/40 dark:border-white/8 pl-4">
               {replies.map((r: Comment) => (
-                <div key={r.id} className="flex items-start gap-2">
-                  <div className="w-6 h-6 rounded-full bg-[#34C759] flex items-center justify-center text-white text-[10px] font-semibold flex-shrink-0">
+                <div key={r.id} className="flex items-start gap-2.5">
+                  <div className="w-7 h-7 rounded-full bg-[#34C759] flex items-center justify-center text-white text-[10px] font-semibold flex-shrink-0 shadow-sm">
                     {r.user_name?.charAt(0).toUpperCase()}
                   </div>
-                  <div>
+                  <div className="rounded-[12px] bg-[#F7F7F8] dark:bg-[#111214] px-3 py-2 border border-[#D2D2D7]/25 dark:border-white/5">
                     <span className="text-[12px] font-semibold text-foreground">{r.user_name} </span>
                     <span className="text-[11px] text-[#86868B]">{timeAgo(r.created_at)}</span>
                     <p className="text-[13px] text-foreground mt-0.5">{r.content}</p>

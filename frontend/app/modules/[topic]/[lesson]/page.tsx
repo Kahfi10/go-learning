@@ -367,6 +367,54 @@ export default function LessonPage() {
             </div>
             <LessonNav prev={prevLesson} next={nextLesson} topic={topic} lang={lang} />
           </div>
+
+          <div className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-24px)] max-w-md rounded-full border border-[#D2D2D7]/50 dark:border-white/10 bg-white/92 dark:bg-[#111214]/92 backdrop-blur-xl shadow-[0_12px_30px_rgba(0,0,0,0.12)] px-3 py-2">
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => setShowMobileEditor((prev) => !prev)}
+                className={cn(
+                  "flex items-center justify-center gap-1 rounded-full px-3 py-2 text-[12px] font-medium transition-colors",
+                  showMobileEditor
+                    ? "bg-[#0071E3] text-white"
+                    : "bg-[#F5F5F7] dark:bg-[#1C1C1E] text-foreground"
+                )}
+              >
+                Editor
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("discussion")}
+                className={cn(
+                  "flex items-center justify-center gap-1 rounded-full px-3 py-2 text-[12px] font-medium transition-colors",
+                  activeTab === "discussion"
+                    ? "bg-[#0071E3] text-white"
+                    : "bg-[#F5F5F7] dark:bg-[#1C1C1E] text-foreground"
+                )}
+              >
+                Diskusi
+              </button>
+              {done ? (
+                <div className="flex items-center justify-center gap-1 rounded-full px-3 py-2 text-[12px] font-medium bg-[#34C759]/10 text-[#34C759]">
+                  Selesai
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleComplete}
+                  disabled={!resume.hasRunCode && !resume.hasOpenedQuiz}
+                  className={cn(
+                    "flex items-center justify-center gap-1 rounded-full px-3 py-2 text-[12px] font-medium transition-colors",
+                    !resume.hasRunCode && !resume.hasOpenedQuiz
+                      ? "bg-[#F5F5F7] dark:bg-[#1C1C1E] text-[#86868B]"
+                      : "bg-[#34C759] text-white"
+                  )}
+                >
+                  Selesai
+                </button>
+              )}
+            </div>
+          </div>
         </main>
       </div>
     </div>
