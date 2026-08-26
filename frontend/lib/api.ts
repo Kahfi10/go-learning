@@ -120,7 +120,6 @@ export interface Comment {
   content: string; upvotes: number; is_pinned: boolean;
   parent_id?: string; created_at: string;
 }
-export interface SearchResult { type: string; id: string; title_id: string; title_en: string; topic: string; }
 export interface SearchResult {
   type: string;
   id: string;
