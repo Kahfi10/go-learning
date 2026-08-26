@@ -238,6 +238,9 @@ export default function LessonPage() {
 
             {/* Lesson list */}
             <div className="py-2">
+              <div className="px-4 pb-2">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#86868B]">Outline Topic</p>
+              </div>
               {lessons.map((l, i) => {
                 const lDone = isCompleted(topic, l.id);
                 const isCurrent = l.id === lesson;
@@ -390,6 +393,12 @@ function LessonContent({
   const proseRef = useRef<HTMLDivElement>(null);
   const lessonSections = useMemo(() => extractSectionTitles(content), [content]);
   const introText = useMemo(() => extractIntroText(content), [content]);
+  const [activeSection, setActiveSection] = useState<string>(lessonSections[0] ?? "");
+  const [readingProgress, setReadingProgress] = useState(0);
+
+  useEffect(() => {
+    setActiveSection(lessonSections[0] ?? "");
+  }, [lessonSections]);
 
   useEffect(() => {
     const root = proseRef.current;
@@ -416,8 +425,65 @@ function LessonContent({
     };
   }, [content, lang]);
 
+  useEffect(() => {
+    const root = proseRef.current;
+    if (!root) return;
+
+    const headings = Array.from(root.querySelectorAll<HTMLElement>("h2"));
+    if (headings.length === 0) {
+      setReadingProgress(0);
+      return;
+    }
+
+    headings.forEach((heading, index) => {
+      if (!heading.id) {
+        heading.id = `lesson-section-${index + 1}`;
+      }
+    });
+
+    const onScroll = () => {
+      const viewportHeight = window.innerHeight;
+      const doc = document.documentElement;
+      const maxScrollable = Math.max(doc.scrollHeight - viewportHeight, 1);
+      const nextProgress = Math.max(0, Math.min(100, Math.round((window.scrollY / maxScrollable) * 100)));
+      setReadingProgress(nextProgress);
+
+      const current = headings.reduce<{ id: string; label: string; top: number } | null>((closest, heading) => {
+        const rect = heading.getBoundingClientRect();
+        if (rect.top > viewportHeight * 0.3) return closest;
+        return {
+          id: heading.id,
+          label: heading.textContent ?? "",
+          top: rect.top,
+        };
+      }, null);
+
+      if (current?.label) {
+        setActiveSection(current.label);
+      }
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [content]);
+
+  function scrollToSection(index: number) {
+    const root = proseRef.current;
+    if (!root) return;
+    const headings = Array.from(root.querySelectorAll<HTMLElement>("h2"));
+    const target = headings[index];
+    if (!target) return;
+    const y = window.scrollY + target.getBoundingClientRect().top - 112;
+    window.scrollTo({ top: y, behavior: "smooth" });
+  }
+
   return (
     <div>
+      <div className="mb-5 rounded-full bg-[#F1F2F4] dark:bg-[#161719] overflow-hidden h-1.5">
+        <div className="h-full rounded-full bg-[#0071E3] transition-[width] duration-300 ease-out" style={{ width: `${readingProgress}%` }} />
+      </div>
+
       <div className="lesson-hero mb-8 rounded-[22px] border border-[#D2D2D7]/45 dark:border-white/8 bg-[#FAFAFB] dark:bg-[#111214] p-5 sm:p-6">
         <div className="flex flex-wrap items-center gap-2 mb-4">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F7] dark:bg-[#1C1C1E] px-3 py-1.5 text-[12px] font-medium text-[#86868B]">
@@ -452,18 +518,45 @@ function LessonContent({
           </div>
 
           <div className="rounded-[16px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white/65 dark:bg-[#17181A] p-4">
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#86868B]">
+                Progress Membaca
+              </p>
+              <span className="text-[11px] font-medium text-[#0071E3]">{readingProgress}%</span>
+            </div>
+            <div className="h-1.5 rounded-full bg-[#E8E9EC] dark:bg-[#222326] overflow-hidden mb-4">
+              <div className="h-full rounded-full bg-[#0071E3] transition-[width] duration-300 ease-out" style={{ width: `${readingProgress}%` }} />
+            </div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#86868B] mb-2.5">
               Yang Akan Dipelajari
             </p>
-            <div className="space-y-2">
-              {lessonSections.slice(0, 4).map((section, index) => (
-                <div key={section} className="flex items-start gap-3">
-                  <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#F5F5F7] dark:bg-[#111214] text-[10px] font-semibold text-[#0071E3] border border-[#D2D2D7]/35 dark:border-white/6 shrink-0">
-                    {index + 1}
-                  </span>
-                  <p className="text-[12px] leading-relaxed text-foreground">{section}</p>
-                </div>
-              ))}
+            <div className="space-y-1.5">
+              {lessonSections.slice(0, 5).map((section, index) => {
+                const isActive = activeSection === section;
+                return (
+                  <button
+                    key={section}
+                    type="button"
+                    onClick={() => scrollToSection(index)}
+                    className={cn(
+                      "w-full flex items-start gap-3 rounded-[12px] px-2.5 py-2 text-left transition-colors",
+                      isActive
+                        ? "bg-[#0071E3]/8 text-[#0071E3]"
+                        : "hover:bg-[#F5F5F7] dark:hover:bg-[#111214] text-foreground"
+                    )}
+                  >
+                    <span className={cn(
+                      "mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold shrink-0 border",
+                      isActive
+                        ? "bg-white text-[#0071E3] border-[#0071E3]/20 dark:bg-[#111214]"
+                        : "bg-[#F5F5F7] dark:bg-[#111214] text-[#86868B] border-[#D2D2D7]/35 dark:border-white/6"
+                    )}>
+                      {index + 1}
+                    </span>
+                    <p className={cn("text-[12px] leading-relaxed", isActive ? "text-[#0071E3]" : "text-foreground")}>{section}</p>
+                  </button>
+                );
+              })}
               {lessonSections.length === 0 && (
                 <p className="text-[13px] leading-relaxed text-[#86868B]">
                   Materi inti akan muncul terstruktur di bawah ini bersama contoh dan referensi praktis.
