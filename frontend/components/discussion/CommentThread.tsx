@@ -13,6 +13,14 @@ interface Props {
   lang?: "id" | "en";
 }
 
+function draftKey(topicSlug: string, lessonId: string) {
+  return `golearn_discussion_draft_${topicSlug}_${lessonId}`;
+}
+
+function replyDraftKey(topicSlug: string, lessonId: string, parentId: string) {
+  return `golearn_discussion_reply_${topicSlug}_${lessonId}_${parentId}`;
+}
+
 export default function CommentThread({ topicSlug, lessonId, lang = "id" }: Props) {
   const router = useRouter();
   const { state } = useAuth();
@@ -23,6 +31,26 @@ export default function CommentThread({ topicSlug, lessonId, lang = "id" }: Prop
   const [replyContent, setReplyContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setContent(localStorage.getItem(draftKey(topicSlug, lessonId)) ?? "");
+  }, [lessonId, topicSlug]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem(draftKey(topicSlug, lessonId), content);
+  }, [content, lessonId, topicSlug]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !replyTo) return;
+    setReplyContent(localStorage.getItem(replyDraftKey(topicSlug, lessonId, replyTo)) ?? "");
+  }, [lessonId, replyTo, topicSlug]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !replyTo) return;
+    localStorage.setItem(replyDraftKey(topicSlug, lessonId, replyTo), replyContent);
+  }, [lessonId, replyContent, replyTo, topicSlug]);
 
   useEffect(() => {
     setLoading(true);
@@ -57,6 +85,13 @@ export default function CommentThread({ topicSlug, lessonId, lang = "id" }: Prop
     setSubmitting(true);
     try {
       await api.discussions.create({ topic_slug: topicSlug, lesson_id: lessonId, content: text, parent_id: parentId });
+      if (typeof window !== "undefined") {
+        if (parentId) {
+          localStorage.removeItem(replyDraftKey(topicSlug, lessonId, parentId));
+        } else {
+          localStorage.removeItem(draftKey(topicSlug, lessonId));
+        }
+      }
       if (parentId) { setReplyContent(""); setReplyTo(null); }
       else setContent("");
       const updated = await api.discussions.get(topicSlug, lessonId, sort);

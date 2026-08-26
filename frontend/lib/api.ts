@@ -1,5 +1,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8081";
 
+const UNAUTHORIZED_EVENT = "golearn:unauthorized";
+
 async function request<T>(
   path: string,
   options: RequestInit = {}
@@ -11,10 +13,20 @@ async function request<T>(
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }));
+    if (res.status === 401 && typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent(UNAUTHORIZED_EVENT, {
+        detail: {
+          path,
+          message: err.error ?? "unauthorized",
+        },
+      }));
+    }
     throw new Error(err.error ?? "Request failed");
   }
   return res.json();
 }
+
+export { UNAUTHORIZED_EVENT };
 
 // ── Auth ──────────────────────────────────────────────────
 export const api = {

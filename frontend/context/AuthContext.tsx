@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, ReactNode } from "react";
-import { api, type UserProfile } from "@/lib/api";
+import { api, type UserProfile, UNAUTHORIZED_EVENT } from "@/lib/api";
+import { toast } from "sonner";
 
 interface AuthState { user: UserProfile | null; loading: boolean; }
 type Action =
@@ -51,6 +52,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     await api.auth.logout();
     dispatch({ type: "CLEAR" });
+  }, []);
+
+  useEffect(() => {
+    function handleUnauthorized(event: Event) {
+      const customEvent = event as CustomEvent<{ path?: string }>;
+      const path = customEvent.detail?.path ?? "";
+
+      // Ignore expected auth failures on explicit auth endpoints.
+      if (path.includes("/api/auth/login") || path.includes("/api/auth/register") || path.includes("/api/auth/me")) {
+        return;
+      }
+
+      dispatch({ type: "CLEAR" });
+      toast.error("Sesi login berakhir. Silakan masuk kembali.");
+    }
+
+    if (typeof window !== "undefined") {
+      window.addEventListener(UNAUTHORIZED_EVENT, handleUnauthorized as EventListener);
+    }
+
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized as EventListener);
+      }
+    };
   }, []);
 
   const value = useMemo(() => ({ state, login, register, logout, refresh }), [state, login, register, logout, refresh]);
