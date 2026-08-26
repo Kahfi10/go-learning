@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { BookOpen, CheckCircle2, Eye, EyeOff, Github, Sparkles } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
@@ -12,26 +12,40 @@ const benefits = [
   "Daftar dalam hitungan detik lewat Google, GitHub, atau email.",
 ];
 
-export default function RegisterPage() {
+function RegisterPageInner() {
   const router = useRouter();
-  const { register } = useAuth();
+  const searchParams = useSearchParams();
+  const { register, state } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
+  const nextPath = useMemo(() => searchParams.get("next") || "/modules", [searchParams]);
+
+  useEffect(() => {
+    if (!state.loading && state.user) {
+      router.replace(nextPath);
+    }
+  }, [nextPath, router, state.loading, state.user]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const normalizedName = name.trim();
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedName || !normalizedEmail || !password) {
+      toast.error("Nama, email, dan password wajib diisi");
+      return;
+    }
     if (password.length < 8) {
       toast.error("Password minimal 8 karakter");
       return;
     }
     setLoading(true);
     try {
-      await register(name, email, password);
+      await register(normalizedName, normalizedEmail, password);
       toast.success("Akun berhasil dibuat!");
-      router.push("/modules");
+      router.replace(nextPath);
     } catch (err: any) {
       toast.error(err.message ?? "Registrasi gagal");
     } finally {
@@ -210,7 +224,7 @@ export default function RegisterPage() {
 
               <p className="mt-7 text-center text-[13px] text-[#86868B]">
                 Sudah punya akun?{" "}
-                <Link href="/login" className="font-medium text-[#0071E3] transition-colors hover:text-[#0077ED]">
+                <Link href={`/login${nextPath !== "/modules" ? `?next=${encodeURIComponent(nextPath)}` : ""}`} className="font-medium text-[#0071E3] transition-colors hover:text-[#0077ED]">
                   Masuk
                 </Link>
               </p>
@@ -219,5 +233,13 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense>
+      <RegisterPageInner />
+    </Suspense>
   );
 }

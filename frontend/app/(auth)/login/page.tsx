@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { BookOpen, CheckCircle2, Eye, EyeOff, Github, Sparkles } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
@@ -12,21 +12,34 @@ const benefits = [
   "Masuk cepat dengan Google, GitHub, atau email pribadi.",
 ];
 
-export default function LoginPage() {
+function LoginPageInner() {
   const router = useRouter();
-  const { login } = useAuth();
+  const searchParams = useSearchParams();
+  const { login, state } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
+  const nextPath = useMemo(() => searchParams.get("next") || "/dashboard", [searchParams]);
+
+  useEffect(() => {
+    if (!state.loading && state.user) {
+      router.replace(nextPath);
+    }
+  }, [nextPath, router, state.loading, state.user]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail || !password) {
+      toast.error("Email dan password wajib diisi");
+      return;
+    }
     setLoading(true);
     try {
-      await login(email, password);
+      await login(normalizedEmail, password);
       toast.success("Selamat datang kembali!");
-      router.push("/dashboard");
+      router.replace(nextPath);
     } catch (err: any) {
       toast.error(err.message ?? "Login gagal");
     } finally {
@@ -193,7 +206,7 @@ export default function LoginPage() {
 
               <p className="mt-7 text-center text-[13px] text-[#86868B]">
                 Belum punya akun?{" "}
-                <Link href="/register" className="font-medium text-[#0071E3] transition-colors hover:text-[#0077ED]">
+                <Link href={`/register${nextPath !== "/dashboard" ? `?next=${encodeURIComponent(nextPath)}` : ""}`} className="font-medium text-[#0071E3] transition-colors hover:text-[#0077ED]">
                   Daftar gratis
                 </Link>
               </p>
@@ -202,5 +215,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginPageInner />
+    </Suspense>
   );
 }

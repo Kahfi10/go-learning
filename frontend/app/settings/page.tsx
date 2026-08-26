@@ -20,7 +20,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (!state.loading && !state.user) {
-      router.push("/login");
+      router.replace("/login?next=/settings");
     }
 
     if (state.user) {

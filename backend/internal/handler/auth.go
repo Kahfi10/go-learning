@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -39,8 +40,15 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
+	req.Name = strings.TrimSpace(req.Name)
+	req.Email = strings.ToLower(strings.TrimSpace(req.Email))
+
 	if req.Name == "" || req.Email == "" || req.Password == "" {
 		jsonError(w, "name, email and password are required", http.StatusBadRequest)
+		return
+	}
+	if !strings.Contains(req.Email, "@") {
+		jsonError(w, "email is invalid", http.StatusBadRequest)
 		return
 	}
 	if len(req.Password) < 8 {
@@ -88,6 +96,12 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	req.Email = strings.ToLower(strings.TrimSpace(req.Email))
+	if req.Email == "" || req.Password == "" {
+		jsonError(w, "email and password are required", http.StatusBadRequest)
+		return
+	}
+
 	var id, hash, name string
 	var avatarURL *string
 	err := h.db.QueryRow(r.Context(),
@@ -127,14 +141,53 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 		Value:    "",
 		Path:     "/",
 		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
 		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
 	})
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"message": "logged out"})
 }
 
 func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
-	jsonError(w, "not implemented", http.StatusNotImplemented)
+	cookie, err := r.Cookie("access_token")
+	if err != nil || cookie.Value == "" {
+		jsonError(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	token, err := jwt.Parse(cookie.Value, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, jwt.ErrSignatureInvalid
+		}
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+	if err != nil || !token.Valid {
+		jsonError(w, "invalid token", http.StatusUnauthorized)
+		return
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		jsonError(w, "invalid claims", http.StatusUnauthorized)
+		return
+	}
+
+	userID, ok := claims["sub"].(string)
+	if !ok || userID == "" {
+		jsonError(w, "invalid subject", http.StatusUnauthorized)
+		return
+	}
+
+	newToken, err := generateJWT(userID, os.Getenv("JWT_SECRET"), 24*time.Hour)
+	if err != nil {
+		jsonError(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+
+	setTokenCookie(w, newToken)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"token": newToken})
 }
 
 func (h *AuthHandler) GoogleOAuth(w http.ResponseWriter, r *http.Request) {
