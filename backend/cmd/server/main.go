@@ -25,6 +25,10 @@ func main() {
 	}
 	defer database.Close()
 
+	if err := db.RunMigrations(database, getEnv("MIGRATIONS_DIR", "./internal/db/migrations")); err != nil {
+		log.Fatalf("failed to run migrations: %v", err)
+	}
+
 	r := chi.NewRouter()
 
 	// Global middleware

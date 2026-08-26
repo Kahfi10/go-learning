@@ -1,6 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Play, RotateCcw, Copy, Check, Loader2 } from "lucide-react";
 import { api, type ExecuteResult } from "@/lib/api";
 import { toast } from "sonner";
@@ -24,6 +24,14 @@ export default function CodeEditor({ defaultCode, onCodeChange, height = "320px"
   const [result, setResult] = useState<ExecuteResult | null>(null);
   const [running, setRunning] = useState(false);
   const [copied, setCopied] = useState(false);
+  const lastDefaultRef = useRef(defaultCode);
+
+  useEffect(() => {
+    if (defaultCode !== lastDefaultRef.current && code === lastDefaultRef.current) {
+      setCode(defaultCode);
+    }
+    lastDefaultRef.current = defaultCode;
+  }, [code, defaultCode]);
 
   function handleChange(val: string | undefined) {
     const v = val ?? "";

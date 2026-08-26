@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { api, type ActivityItem, type LessonResumeState, type ProgressItem } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 
@@ -59,6 +59,7 @@ export function useProgress() {
   const [resume, setResume] = useState<ResumeMap>(loadResume);
   const [bookmarks, setBookmarks] = useState<BookmarkState>(loadBookmarks);
   const [activity, setActivity] = useState<ActivityItem[]>([]);
+  const draftSyncTimersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   const persistBookmarks = useCallback((next: BookmarkState) => {
     setBookmarks(next);
@@ -97,6 +98,17 @@ export function useProgress() {
         setProgress(data);
         localStorage.setItem(LOCAL_KEY, JSON.stringify(data));
         syncBookmarksFromProgress(data);
+        if (typeof window !== "undefined") {
+          Object.entries(data).forEach(([key, value]) => {
+            if (value.last_code) {
+              const [topic, lesson] = key.split("/");
+              const localKey = `${topic}_${lesson}_code`;
+              if (!localStorage.getItem(localKey)) {
+                localStorage.setItem(localKey, value.last_code);
+              }
+            }
+          });
+        }
       }).catch(() => {});
 
       api.progress.activity().then((items) => {
@@ -181,8 +193,12 @@ export function useProgress() {
 
   const getLastCode = useCallback((topic: string, lesson: string): string | undefined => {
     const key = `${topic}_${lesson}_code`;
-    return typeof window !== "undefined" ? localStorage.getItem(key) ?? undefined : undefined;
-  }, []);
+    if (typeof window !== "undefined") {
+      const local = localStorage.getItem(key);
+      if (local) return local;
+    }
+    return progress[`${topic}/${lesson}`]?.last_code ?? undefined;
+  }, [progress]);
 
   const saveCode = useCallback((topic: string, lesson: string, code: string) => {
     if (typeof window !== "undefined") {
@@ -203,9 +219,23 @@ export function useProgress() {
       return updated;
     });
     if (state.user) {
-      api.progress.update(topic, lesson, { last_code: code }).catch(() => {});
+      const syncKey = `${topic}/${lesson}`;
+      const existingTimer = draftSyncTimersRef.current[syncKey];
+      if (existingTimer) {
+        clearTimeout(existingTimer);
+      }
+      draftSyncTimersRef.current[syncKey] = setTimeout(() => {
+        api.progress.update(topic, lesson, { last_code: code }).catch(() => {});
+        delete draftSyncTimersRef.current[syncKey];
+      }, 700);
     }
   }, [saveResumeState, state.user]);
+
+  useEffect(() => {
+    return () => {
+      Object.values(draftSyncTimersRef.current).forEach((timer) => clearTimeout(timer));
+    };
+  }, []);
 
   const toggleTopicBookmark = useCallback(async (topic: string) => {
     const isBookmarked = bookmarks.topics.includes(topic);

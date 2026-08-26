@@ -27,6 +27,10 @@ import { LEVEL_NAMES, formatXP, xpToLevel } from "@/lib/utils";
 
 const XP_LEVELS = [0, 100, 300, 600, 1000, 1500, 2100, 2800, 3600, 5000];
 
+function getLessonCount(topic: Topic) {
+  return topic.lessons?.length ?? 5;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const { state } = useAuth();
@@ -71,7 +75,7 @@ export default function DashboardPage() {
   const xpRemaining = stats && hasNextLevel ? Math.max(nextLevelXP - stats.xp, 0) : 0;
 
   const topicCards = topics.map((topic) => {
-    const progress = topicProgress(topic.slug, 5);
+    const progress = topicProgress(topic.slug, getLessonCount(topic));
     return { topic, progress };
   });
 
