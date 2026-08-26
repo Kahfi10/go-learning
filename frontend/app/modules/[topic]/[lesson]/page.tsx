@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -358,23 +358,92 @@ function LessonContent({
   completionEnabled,
   completionHint,
 }: any) {
+  const proseRef = useRef<HTMLDivElement>(null);
+  const lessonSections = useMemo(() => extractSectionTitles(content), [content]);
+  const introText = useMemo(() => extractIntroText(content), [content]);
+
+  useEffect(() => {
+    const root = proseRef.current;
+    if (!root) return;
+
+    const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>(".docs-code-copy"));
+    const cleanups = buttons.map((button) => {
+      const handler = async () => {
+        const raw = button.dataset.code ? decodeURIComponent(button.dataset.code) : "";
+        await navigator.clipboard.writeText(raw);
+        const previous = button.textContent;
+        button.textContent = lang === "id" ? "Tersalin" : "Copied";
+        window.setTimeout(() => {
+          button.textContent = previous;
+        }, 1200);
+      };
+
+      button.addEventListener("click", handler);
+      return () => button.removeEventListener("click", handler);
+    });
+
+    return () => {
+      cleanups.forEach((cleanup) => cleanup());
+    };
+  }, [content, lang]);
+
   return (
     <div>
-      {/* Meta */}
-      <div className="flex items-center gap-2.5 mb-4">
-        <div className="flex items-center gap-1 text-[#86868B] text-[12px]">
-          <Clock className="w-3.5 h-3.5" /> {data.estimatedMinutes} mnt
+      <div className="lesson-hero mb-8 rounded-[22px] border border-[#D2D2D7]/45 dark:border-white/8 bg-[#FAFAFB] dark:bg-[#111214] p-5 sm:p-6">
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F7] dark:bg-[#1C1C1E] px-3 py-1.5 text-[12px] font-medium text-[#86868B]">
+            <Clock className="w-3.5 h-3.5" /> {data.estimatedMinutes} mnt
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F7] dark:bg-[#1C1C1E] px-3 py-1.5 text-[12px] font-medium text-[#86868B]">
+            <MessageCircle className="w-3.5 h-3.5" /> {lessonSections.length || 1} section
+          </span>
+          {data.quiz?.length > 0 && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#0071E3]/8 px-3 py-1.5 text-[12px] font-medium text-[#0071E3]">
+              Quiz {data.quiz.length} soal
+            </span>
+          )}
+          {done && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#34C759]/10 px-3 py-1.5 text-[12px] font-medium text-[#34C759]">
+              <CheckCircle2 className="w-3.5 h-3.5" /> Selesai
+            </span>
+          )}
         </div>
-        {done && (
-          <div className="flex items-center gap-1 text-[12px] text-[#34C759]">
-            <CheckCircle2 className="w-3.5 h-3.5" /> Selesai
-          </div>
-        )}
-      </div>
 
-      <h1 className="font-display font-semibold text-[28px] sm:text-[32px] tracking-tight text-foreground mb-6 leading-tight">
-        {title}
-      </h1>
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_240px] lg:items-start">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0071E3] mb-2.5">
+              Developer Guide
+            </p>
+            <h1 className="font-display font-semibold text-[28px] sm:text-[34px] tracking-tight text-foreground mb-3 leading-[1.08]">
+              {title}
+            </h1>
+            <p className="text-[14px] sm:text-[15px] leading-relaxed text-[#86868B] max-w-2xl text-balance">
+              {introText || "Pelajari konsep utama lesson ini, pahami contoh kodenya, lalu uji pemahamanmu lewat quiz dan editor interaktif."}
+            </p>
+          </div>
+
+          <div className="rounded-[16px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white/65 dark:bg-[#17181A] p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#86868B] mb-2.5">
+              Yang Akan Dipelajari
+            </p>
+            <div className="space-y-2">
+              {lessonSections.slice(0, 4).map((section, index) => (
+                <div key={section} className="flex items-start gap-3">
+                  <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#F5F5F7] dark:bg-[#111214] text-[10px] font-semibold text-[#0071E3] border border-[#D2D2D7]/35 dark:border-white/6 shrink-0">
+                    {index + 1}
+                  </span>
+                  <p className="text-[12px] leading-relaxed text-foreground">{section}</p>
+                </div>
+              ))}
+              {lessonSections.length === 0 && (
+                <p className="text-[13px] leading-relaxed text-[#86868B]">
+                  Materi inti akan muncul terstruktur di bawah ini bersama contoh dan referensi praktis.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Tabs: Materi | Diskusi */}
       <div className="relative flex items-center gap-1 mb-6 border-b border-[#D2D2D7]/40">
@@ -398,7 +467,44 @@ function LessonContent({
       {/* Tab content */}
       {activeTab === "content" ? (
         <>
-          <div className="lesson-tab-panel prose-golearn" dangerouslySetInnerHTML={{ __html: mdToHtml(content) }} />
+          <div className="lesson-tab-panel mb-6 rounded-[16px] border border-[#D2D2D7]/35 dark:border-white/6 bg-[#F7F7F8] dark:bg-[#17181A] p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#0071E3] mb-2">
+              Cara Belajar Terbaik
+            </p>
+            <p className="text-[13px] leading-relaxed text-[#86868B]">
+              Baca konsep inti, perhatikan contoh kode, lalu jalankan eksperimen singkat di editor kanan agar pemahamanmu lebih cepat menempel.
+            </p>
+          </div>
+
+          <div ref={proseRef} className="lesson-tab-panel prose-golearn" dangerouslySetInnerHTML={{ __html: mdToHtml(content) }} />
+
+          {lessonSections.length > 0 && (
+            <div className="lesson-tab-panel mt-10 rounded-[20px] border border-[#D2D2D7]/35 dark:border-white/6 bg-[#FAFAFB] dark:bg-[#111214] p-5 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-5">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#86868B] mb-2">
+                    Ringkasan Lesson
+                  </p>
+                  <h3 className="font-display text-[20px] font-semibold tracking-tight text-foreground">
+                    Peta materi yang sudah kamu baca
+                  </h3>
+                </div>
+                <span className="rounded-full bg-[#F5F5F7] dark:bg-[#1C1C1E] px-3 py-1.5 text-[12px] font-medium text-[#86868B]">
+                  {lessonSections.length} bagian
+                </span>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {lessonSections.map((section, index) => (
+                  <div key={section} className="rounded-[14px] border border-[#D2D2D7]/30 dark:border-white/5 bg-white/70 dark:bg-[#17181A] p-3.5">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#86868B] mb-1.5">
+                      Section {index + 1}
+                    </p>
+                    <p className="text-[13px] font-medium text-foreground leading-relaxed">{section}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Quiz */}
           {data.quiz?.length > 0 && (
@@ -482,40 +588,109 @@ function LessonNav({ prev, next, topic, lang }: any) {
 /* ── Minimal markdown parser ─────────────────────── */
 function mdToHtml(md: string): string {
   if (!md) return "";
-  
-  // Amankan blok kode (pre/code) terlebih dahulu agar tidak terpengaruh parsing berikutnya
+
+  const normalized = md.replace(/\r\n/g, "\n").trim();
+
   let blockId = 0;
   const blocks: Record<string, string> = {};
-  
-  md = md.replace(/```(.*?)\n([\s\S]*?)```/g, (_, lang, code) => {
+
+  const withCodePlaceholders = normalized.replace(/```(.*?)\n([\s\S]*?)```/g, (_, lang, code) => {
     const id = `__CODE_BLOCK_${blockId++}__`;
-    blocks[id] = `<pre><code class="language-${lang.trim()}">${code}</code></pre>`;
+    const safeLang = escapeHtml(lang.trim() || "text");
+    const safeClass = safeLang.replace(/[^a-zA-Z0-9-_]/g, "") || "text";
+    const safeCode = escapeHtml(code.replace(/\n$/, ""));
+    blocks[id] = `<div class="docs-code-block"><div class="docs-code-toolbar"><span class="docs-code-lang">${safeLang}</span><button type="button" class="docs-code-copy" data-code="${encodeURIComponent(code)}">Copy</button></div><pre><code class="language-${safeClass}">${safeCode}</code></pre></div>`;
     return id;
   });
 
-  md = md
-    .replace(/`([^`\n]+)`/g, '<code>$1</code>')
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/^\|(.+)\|$/gm, (row) => {
-      const cells = row.split('|').filter(Boolean);
-      if (cells.every(c => /^[-:]+$/.test(c.trim()))) return '';
-      return '<tr>' + cells.map(c => `<td>${c.trim()}</td>`).join('') + '</tr>';
-    })
-    .replace(/(<tr>[\s\S]+?<\/tr>)/g, (match) => `<table>${match}</table>`)
-    .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>[\s\S]+?<\/li>)/g, '<ul>$1</ul>')
-    .replace(/\n\n/g, '</p><p>');
+  const html = withCodePlaceholders
+    .split(/\n{2,}/)
+    .map((block) => renderMarkdownBlock(block.trim()))
+    .filter(Boolean)
+    .join("");
 
-  md = `<p>${md}</p>`;
+  return Object.entries(blocks).reduce((acc, [id, markup]) => acc.split(id).join(markup), html);
+}
 
-  // Kembalikan blok kode yang sudah diamankan
-  Object.keys(blocks).forEach(id => {
-    md = md.replace(id, `</p>${blocks[id]}<p>`);
+function renderMarkdownBlock(block: string): string {
+  if (!block) return "";
+  if (block.startsWith("__CODE_BLOCK_")) return block;
+  if (isMarkdownTable(block)) return renderMarkdownTable(block);
+  if (/^>\s?/.test(block)) return renderMarkdownCallout(block);
+  if (/^[-*]\s+.+/m.test(block) && block.split("\n").every((line) => /^[-*]\s+/.test(line.trim()))) {
+    return `<ul>${block.split("\n").map((line) => `<li>${renderInlineMarkdown(line.replace(/^[-*]\s+/, ""))}</li>`).join("")}</ul>`;
+  }
+  if (/^###\s+/.test(block)) return `<h3>${renderInlineMarkdown(block.replace(/^###\s+/, ""))}</h3>`;
+  if (/^##\s+/.test(block)) return `<h2>${renderInlineMarkdown(block.replace(/^##\s+/, ""))}</h2>`;
+  if (/^#\s+/.test(block)) return `<h1>${renderInlineMarkdown(block.replace(/^#\s+/, ""))}</h1>`;
+  return `<p>${renderInlineMarkdown(block).replace(/\n/g, "<br />")}</p>`;
+}
+
+function renderInlineMarkdown(text: string): string {
+  return escapeHtml(text)
+    .replace(/`([^`\n]+)`/g, "<code>$1</code>")
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>");
+}
+
+function isMarkdownTable(block: string): boolean {
+  const lines = block.split("\n").map((line) => line.trim()).filter(Boolean);
+  if (lines.length < 2) return false;
+  const separator = lines[1].replace(/\|/g, "").trim();
+  return lines[0].startsWith("|") && /^[:\-\s]+$/.test(separator);
+}
+
+function renderMarkdownTable(block: string): string {
+  const lines = block.split("\n").map((line) => line.trim()).filter(Boolean);
+  const headers = parseTableLine(lines[0]);
+  const rows = lines.slice(2).map(parseTableLine);
+
+  return `<div class="docs-table-card"><table><thead><tr>${headers.map((cell) => `<th>${renderInlineMarkdown(cell)}</th>`).join("")}</tr></thead><tbody>${rows.map((row) => `<tr>${row.map((cell) => `<td>${renderInlineMarkdown(cell)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+
+function parseTableLine(line: string): string[] {
+  return line.replace(/^\|/, "").replace(/\|$/, "").split("|").map((cell) => cell.trim());
+}
+
+function renderMarkdownCallout(block: string): string {
+  const content = block.split("\n").map((line) => line.replace(/^>\s?/, "").trim()).join(" ");
+  return `<div class="docs-callout"><p class="docs-callout-label">Catatan</p><p>${renderInlineMarkdown(content)}</p></div>`;
+}
+
+function extractSectionTitles(markdown: string): string[] {
+  return Array.from(markdown.matchAll(/^##\s+(.+)$/gm), (match) => match[1].trim());
+}
+
+function extractIntroText(markdown: string): string {
+  const blocks = markdown.replace(/\r\n/g, "\n").trim().split(/\n{2,}/);
+  const firstParagraph = blocks.find((block) => {
+    const trimmed = block.trim();
+    return trimmed &&
+      !trimmed.startsWith("#") &&
+      !trimmed.startsWith("|") &&
+      !trimmed.startsWith("```") &&
+      !/^[-*]\s+/.test(trimmed) &&
+      !trimmed.startsWith(">");
   });
 
-  return md.replace(/<p>\s*<\/p>/g, '');
+  return firstParagraph ? stripMarkdown(firstParagraph).slice(0, 180) : "";
+}
+
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/\*(.+?)\*/g, "$1")
+    .replace(/\[(.+?)\]\(.+?\)/g, "$1")
+    .replace(/<[^>]+>/g, "")
+    .trim();
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }

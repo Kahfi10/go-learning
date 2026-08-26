@@ -80,7 +80,7 @@ export default function Quiz({ questions, lang, topicSlug, lessonId, onComplete,
     const score = answers.filter((a, i) => a === questions[i].correct).length;
     const pct = Math.round((score / questions.length) * 100);
     return (
-      <div className="bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[18px] p-6 text-center border border-[#D2D2D7]/40 dark:border-white/8 shadow-sm">
+      <div className="bg-[#FAFAFB] dark:bg-[#17181A] rounded-[18px] p-6 text-center border border-[#D2D2D7]/35 dark:border-white/6 shadow-sm">
         <div className={cn("text-[48px] font-display font-semibold mb-2", pct === 100 ? "text-[#34C759]" : pct >= 60 ? "text-[#0071E3]" : "text-[#FF453A]")}>
           {pct}%
         </div>
@@ -97,7 +97,7 @@ export default function Quiz({ questions, lang, topicSlug, lessonId, onComplete,
   }
 
   return (
-    <div className="bg-[#F5F5F7] dark:bg-[#1C1C1E] rounded-[18px] p-6 border border-[#D2D2D7]/40 dark:border-white/8 shadow-sm">
+    <div className="bg-[#FAFAFB] dark:bg-[#17181A] rounded-[18px] p-6 border border-[#D2D2D7]/35 dark:border-white/6 shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <p className="text-[12px] text-[#86868B] font-medium">
@@ -124,7 +124,7 @@ export default function Quiz({ questions, lang, topicSlug, lessonId, onComplete,
             className={cn(
               "w-full text-left px-4 py-3 rounded-[12px] text-[14px] font-medium transition-all border",
               !isAnswered
-                ? "border-[#D2D2D7] dark:border-white/10 hover:border-[#0071E3]/50 hover:bg-[#0071E3]/5 text-foreground"
+                ? "border-[#D2D2D7]/80 dark:border-white/10 hover:border-[#0071E3]/35 hover:bg-[#0071E3]/4 text-foreground bg-white dark:bg-[#111214]"
                 : idx === q.correct
                   ? "border-[#34C759] bg-[#34C759]/10 text-[#34C759]"
                   : idx === answers[current]

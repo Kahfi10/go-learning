@@ -137,16 +137,55 @@ code, pre, kbd {
   font-size: 0.9em;
   border: 1px solid rgba(134, 134, 139, 0.2);
 }
+.prose-golearn .docs-code-block {
+  margin: 1.5rem 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #1C1C1E;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.1);
+}
+.prose-golearn .docs-code-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+.prose-golearn .docs-code-lang {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+.prose-golearn .docs-code-copy {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.86);
+  padding: 0.32rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.68rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.prose-golearn .docs-code-copy:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.18);
+}
 .prose-golearn pre {
   background: #1C1C1E;
   color: #E5E5EA;
-  padding: 1.5rem;
-  border-radius: 14px;
+  padding: 1rem 1.05rem 1.15rem;
+  border-radius: 0;
   overflow-x: auto;
-  margin: 1.5rem 0;
-  font-size: 0.9rem;
-  line-height: 1.6;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  border: 0;
   max-width: 100%;
 }
 .prose-golearn pre code {
@@ -156,10 +195,41 @@ code, pre, kbd {
   padding: 0;
   font-size: inherit;
 }
-.prose-golearn table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.95rem; overflow-x: auto; display: block; }
-.prose-golearn th { background: rgba(134, 134, 139, 0.1); font-weight: 600; text-align: left; padding: 0.75rem 1rem; border: 1px solid hsl(var(--border)); min-width: 120px; }
-.prose-golearn td { padding: 0.75rem 1rem; border: 1px solid hsl(var(--border)); min-width: 120px; }
+.prose-golearn .docs-table-card {
+  margin: 1.5rem 0;
+  padding: 0.25rem;
+  border-radius: 16px;
+  background: rgba(245, 245, 247, 0.72);
+  border: 1px solid rgba(210, 210, 215, 0.5);
+  overflow-x: auto;
+}
+.dark .prose-golearn .docs-table-card {
+  background: rgba(28, 28, 30, 0.72);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.prose-golearn table { width: 100%; border-collapse: collapse; font-size: 0.92rem; min-width: 560px; }
+.prose-golearn th { background: rgba(134, 134, 139, 0.07); font-weight: 600; text-align: left; padding: 0.8rem 0.95rem; border: 1px solid hsl(var(--border)); min-width: 120px; }
+.prose-golearn td { padding: 0.8rem 0.95rem; border: 1px solid hsl(var(--border)); min-width: 120px; vertical-align: top; }
 .prose-golearn blockquote { border-left: 3px solid hsl(var(--border)); padding-left: 1.25rem; color: hsl(var(--muted-foreground)); margin: 1.5rem 0; font-style: italic; }
+.prose-golearn .docs-callout {
+  margin: 1.5rem 0;
+  padding: 0.95rem 1rem 0.95rem 1.05rem;
+  border-radius: 14px;
+  background: rgba(0, 113, 227, 0.045);
+  border: 1px solid rgba(0, 113, 227, 0.09);
+}
+.dark .prose-golearn .docs-callout {
+  background: rgba(0, 113, 227, 0.08);
+  border-color: rgba(0, 113, 227, 0.16);
+}
+.prose-golearn .docs-callout-label {
+  margin-bottom: 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0071E3;
+}
 
 /* ── GSAP will-change hints ─────────────────────────────── */
 .gsap-reveal { will-change: transform, opacity; }
