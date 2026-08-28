@@ -74,8 +74,7 @@ func (h *ProgressHandler) UpdateProgress(w http.ResponseWriter, r *http.Request)
 	lesson := chi.URLParam(r, "lesson")
 
 	var req progressUpdateRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		jsonError(w, "invalid request", http.StatusBadRequest)
+	if !decodeJSONBody(w, r, &req, 128<<10) {
 		return
 	}
 
@@ -165,8 +164,7 @@ func (h *ProgressHandler) SubmitQuiz(w http.ResponseWriter, r *http.Request) {
 		TopicSlug      string `json:"topic_slug"`
 		TotalQuestions int    `json:"total_questions"`
 	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		jsonError(w, "invalid request", http.StatusBadRequest)
+	if !decodeJSONBody(w, r, &req, 32<<10) {
 		return
 	}
 

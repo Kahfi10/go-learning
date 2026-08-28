@@ -17,8 +17,7 @@ type executeRequest struct {
 
 func (h *ExecutorHandler) Execute(w http.ResponseWriter, r *http.Request) {
 	var req executeRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		jsonError(w, "invalid request body", http.StatusBadRequest)
+	if !decodeJSONBody(w, r, &req, 64<<10) {
 		return
 	}
 	if len(req.Code) > 50000 {

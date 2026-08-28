@@ -37,8 +37,7 @@ type loginRequest struct {
 
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var req registerRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		jsonError(w, "invalid request body", http.StatusBadRequest)
+	if !decodeJSONBody(w, r, &req, 32<<10) {
 		return
 	}
 	req.Name = strings.TrimSpace(req.Name)
@@ -81,6 +80,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 	setTokenCookie(w, token)
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", "no-store")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"id":    id,
@@ -92,8 +92,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req loginRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		jsonError(w, "invalid request body", http.StatusBadRequest)
+	if !decodeJSONBody(w, r, &req, 32<<10) {
 		return
 	}
 
@@ -127,6 +126,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	setTokenCookie(w, token)
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", "no-store")
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"id":         id,
 		"name":       name,
@@ -189,6 +189,7 @@ func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 
 	setTokenCookie(w, newToken)
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", "no-store")
 	json.NewEncoder(w).Encode(map[string]string{"token": newToken})
 }
 
@@ -239,8 +240,7 @@ func (h *AuthHandler) UpdateMe(w http.ResponseWriter, r *http.Request) {
 		Name     string `json:"name"`
 		LangPref string `json:"lang_pref"`
 	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		jsonError(w, "invalid request", http.StatusBadRequest)
+	if !decodeJSONBody(w, r, &req, 32<<10) {
 		return
 	}
 	_, err := h.db.Exec(r.Context(),

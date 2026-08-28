@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -31,7 +32,11 @@ func (m *AuthMiddleware) Authenticate(next http.Handler) http.Handler {
 
 		// 2. Try cookie
 		if tokenStr == "" {
-			if cookie, err := r.Cookie("access_token"); err == nil {
+			cookieName := os.Getenv("AUTH_COOKIE_NAME")
+			if cookieName == "" {
+				cookieName = "access_token"
+			}
+			if cookie, err := r.Cookie(cookieName); err == nil {
 				tokenStr = cookie.Value
 			}
 		}

@@ -31,6 +31,13 @@ Platform pembelajaran Go interaktif, bilingual (ID/EN), terinspirasi Apple HIG d
 - **Search** — Global `Ctrl+K` command palette
 - **Playground** — Free sandbox with share via URL
 
+## Security Notes
+
+- Backend now applies baseline security headers.
+- Auth, executor, and discussion endpoints have lightweight rate limiting.
+- JSON API endpoints use stricter request body parsing and body-size limits.
+- Code execution has concurrency throttling and output truncation to reduce abuse.
+
 ## Quick Start
 
 ### Prerequisites

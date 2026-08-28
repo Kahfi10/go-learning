@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sync"
 	"strings"
 	"time"
 
@@ -22,7 +23,23 @@ type Result struct {
 }
 
 // Run executes Go source code in a sandboxed temp environment.
+var semaphore = make(chan struct{}, 2)
+var semaphoreOnce sync.Once
+
 func Run(code string) Result {
+	semaphoreOnce.Do(func() {
+		if cap(semaphore) == 0 {
+			semaphore = make(chan struct{}, 2)
+		}
+	})
+
+	select {
+	case semaphore <- struct{}{}:
+		defer func() { <-semaphore }()
+	default:
+		return Result{Stderr: "error: executor is busy, try again in a moment"}
+	}
+
 	// Sanitize: block dangerous patterns
 	if containsDangerous(code) {
 		return Result{Stderr: "error: forbidden syscall or import detected"}
@@ -58,16 +75,16 @@ func Run(code string) Result {
 
 	if err != nil && !timedOut {
 		return Result{
-			Stdout:          stdout.String(),
-			Stderr:          stderr.String(),
+			Stdout:          capOutput(stdout.String()),
+			Stderr:          capOutput(stderr.String()),
 			ExecutionTimeMs: elapsed,
 			TimedOut:        false,
 		}
 	}
 
 	return Result{
-		Stdout:          stdout.String(),
-		Stderr:          stderr.String(),
+		Stdout:          capOutput(stdout.String()),
+		Stderr:          capOutput(stderr.String()),
 		ExecutionTimeMs: elapsed,
 		TimedOut:        timedOut,
 	}
@@ -79,15 +96,21 @@ var dangerousPatterns = []string{
 }
 
 func containsDangerous(code string) bool {
-	// Allow basic net/http in lesson context — just block exec in playground
 	lower := strings.ToLower(code)
-	_ = lower
-	for _, p := range []string{"os/exec", "syscall.Exec", "plugin."} {
-		if strings.Contains(code, p) {
+	for _, p := range []string{"os/exec", "syscall.exec", "plugin.", "import \"syscall\"", "import \"plugin\"", "import \"unsafe\"", "cgo"} {
+		if strings.Contains(lower, strings.ToLower(p)) {
 			return true
 		}
 	}
 	return false
+}
+
+func capOutput(s string) string {
+	const max = 12000
+	if len(s) <= max {
+		return s
+	}
+	return s[:max] + "\n... output truncated ..."
 }
 
 // Templates returns pre-built code snippet templates.
