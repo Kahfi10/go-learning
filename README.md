@@ -57,6 +57,23 @@ docker compose up -d
 - Backend API: http://localhost:8080
 - PostgreSQL: localhost:5432
 
+## Auth Cookie Config
+
+Untuk production di satu domain yang sama (mis. reverse proxy DuckDNS):
+
+```env
+AUTH_COOKIE_NAME=access_token
+AUTH_COOKIE_PATH=/
+AUTH_COOKIE_DOMAIN=your-subdomain.duckdns.org
+AUTH_COOKIE_SECURE=true
+AUTH_COOKIE_SAMESITE=lax
+```
+
+Catatan:
+- `AUTH_COOKIE_SECURE=true` wajib saat HTTPS aktif.
+- Jika frontend dan backend diproxy lewat domain yang sama, `SameSite=Lax` biasanya cukup dan paling stabil.
+- Biarkan `AUTH_COOKIE_DOMAIN` kosong saat development lokal.
+
 ### 3. Run migrations
 
 ```bash

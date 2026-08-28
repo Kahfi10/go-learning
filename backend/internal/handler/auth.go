@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -136,15 +137,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
-	http.SetCookie(w, &http.Cookie{
-		Name:     "access_token",
-		Value:    "",
-		Path:     "/",
-		Expires:  time.Unix(0, 0),
-		MaxAge:   -1,
-		HttpOnly: true,
-		SameSite: http.SameSiteLaxMode,
-	})
+	setTokenCookieWithConfig(w, "", time.Unix(0, 0), -1)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"message": "logged out"})
 }
@@ -159,7 +152,7 @@ func (h *AuthHandler) Providers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("access_token")
+	cookie, err := r.Cookie(getEnvOrFallback("AUTH_COOKIE_NAME", "access_token"))
 	if err != nil || cookie.Value == "" {
 		jsonError(w, "unauthorized", http.StatusUnauthorized)
 		return
@@ -275,14 +268,52 @@ func generateJWT(userID, secret string, expiry time.Duration) (string, error) {
 }
 
 func setTokenCookie(w http.ResponseWriter, token string) {
+	setTokenCookieWithConfig(w, token, time.Now().Add(24*time.Hour), 0)
+}
+
+func setTokenCookieWithConfig(w http.ResponseWriter, token string, expires time.Time, maxAge int) {
 	http.SetCookie(w, &http.Cookie{
-		Name:     "access_token",
+		Name:     getEnvOrFallback("AUTH_COOKIE_NAME", "access_token"),
 		Value:    token,
-		Path:     "/",
-		Expires:  time.Now().Add(24 * time.Hour),
+		Path:     getEnvOrFallback("AUTH_COOKIE_PATH", "/"),
+		Domain:   getEnvOrFallback("AUTH_COOKIE_DOMAIN", ""),
+		Expires:  expires,
+		MaxAge:   maxAge,
 		HttpOnly: true,
-		SameSite: http.SameSiteLaxMode,
+		Secure:   getEnvBool("AUTH_COOKIE_SECURE", false),
+		SameSite: getSameSiteMode(getEnvOrFallback("AUTH_COOKIE_SAMESITE", "lax")),
 	})
+}
+
+func getEnvOrFallback(key, fallback string) string {
+	v := strings.TrimSpace(os.Getenv(key))
+	if v == "" {
+		return fallback
+	}
+	return v
+}
+
+func getEnvBool(key string, fallback bool) bool {
+	v := strings.TrimSpace(strings.ToLower(os.Getenv(key)))
+	if v == "" {
+		return fallback
+	}
+	parsed, err := strconv.ParseBool(v)
+	if err != nil {
+		return fallback
+	}
+	return parsed
+}
+
+func getSameSiteMode(value string) http.SameSite {
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "strict":
+		return http.SameSiteStrictMode
+	case "none":
+		return http.SameSiteNoneMode
+	default:
+		return http.SameSiteLaxMode
+	}
 }
 
 func jsonError(w http.ResponseWriter, msg string, code int) {
