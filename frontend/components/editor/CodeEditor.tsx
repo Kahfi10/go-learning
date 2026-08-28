@@ -2,15 +2,25 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { Play, RotateCcw, Copy, Check, Loader2 } from "lucide-react";
+import { loader } from "@monaco-editor/react";
 import { api, type ExecuteResult } from "@/lib/api";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-const MonacoEditor = dynamic(() => import("@monaco-editor/react"), { ssr: false, loading: () => (
-  <div className="w-full h-full bg-[#1C1C1E] flex items-center justify-center">
-    <Loader2 className="w-5 h-5 text-white/40 animate-spin" />
-  </div>
-)});
+loader.config({
+  paths: {
+    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs",
+  },
+});
+
+const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-[#1C1C1E] flex items-center justify-center">
+      <Loader2 className="w-5 h-5 text-white/40 animate-spin" />
+    </div>
+  ),
+});
 
 interface Props {
   defaultCode: string;
@@ -78,11 +88,14 @@ export default function CodeEditor({ defaultCode, onCodeChange, height = "320px"
           <button onClick={copyCode} className="p-1.5 rounded-md text-white/40 hover:text-white/80 hover:bg-white/10 transition-colors" title="Copy">
             {copied ? <Check className="w-3.5 h-3.5 text-[#30D158]" /> : <Copy className="w-3.5 h-3.5" />}
           </button>
-          <button onClick={runCode} disabled={running}
+          <button
+            onClick={runCode}
+            disabled={running}
             className={cn(
               "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-medium transition-colors",
               running ? "bg-white/10 text-white/40" : "bg-[#0071E3] text-white hover:bg-[#0077ED]"
-            )}>
+            )}
+          >
             {running ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
             {running ? "Running..." : "Run"}
           </button>
@@ -97,13 +110,17 @@ export default function CodeEditor({ defaultCode, onCodeChange, height = "320px"
         onChange={handleChange}
         theme="vs-dark"
         options={{
-          fontSize: 14, fontFamily: "'JetBrains Mono', monospace", lineHeight: 22,
-          minimap: { enabled: false }, scrollBeyondLastLine: false,
-          padding: { top: 16, bottom: 16 }, renderLineHighlight: "line",
-          suggest: { showKeywords: true }, tabSize: 4,
+          fontSize: 14,
+          fontFamily: "'JetBrains Mono', monospace",
+          lineHeight: 22,
+          minimap: { enabled: false },
+          scrollBeyondLastLine: false,
+          padding: { top: 16, bottom: 16 },
+          renderLineHighlight: "line",
+          suggest: { showKeywords: true },
+          tabSize: 4,
         }}
         onMount={(editor, monaco) => {
-          // Ctrl/Cmd+Enter to run
           editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, runCode);
         }}
       />
