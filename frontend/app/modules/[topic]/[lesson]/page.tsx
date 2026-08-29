@@ -309,7 +309,7 @@ export default function LessonPage() {
               size="sm"
               onClick={handleComplete}
               loading={completionLoading}
-              disabled={!resume.hasRunCode && !resume.hasOpenedQuiz}
+              disabled={!((resume.hasRunCode || resume.hasOpenedQuiz) && (totalQuizQuestions === 0 || quizPct >= PASSING_SCORE))}
               className="complete-btn text-[11px] px-3 py-1"
             >
               Tandai Selesai

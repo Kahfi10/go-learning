@@ -222,6 +222,12 @@ export default function TopicPage() {
                 : passed
                   ? "bg-[#34C759]/10 text-[#34C759]"
                   : "bg-[#FF9500]/10 text-[#FF9500]";
+              const previousResume = idx > 0 ? getResumeState(topic, data.lessons[idx - 1].id) : null;
+              const previousBestQuizScore = idx > 0 ? getBestQuizScore(topic, data.lessons[idx - 1].id) : 0;
+              const previousTotalQuestions = idx > 0 ? (data.lessons[idx - 1].quizCount ?? previousResume?.totalQuestions ?? 0) : 0;
+              const previousQuizPct = idx > 0 && previousTotalQuestions > 0
+                ? Math.round((previousBestQuizScore / previousTotalQuestions) * 100)
+                : 0;
 
               const innerContent = (
                 <>
@@ -262,7 +268,11 @@ export default function TopicPage() {
                         <p className="mt-2 text-[12px] text-[#FF9500]/80">Lulus quiz dulu untuk membuka lesson berikutnya.</p>
                       )}
                       {needsPreviousLesson && !passed && (
-                        <p className="mt-2 text-[12px] text-[#FF9500]/80">Selesaikan dan lulus lesson sebelumnya untuk membuka materi ini.</p>
+                        <p className="mt-2 text-[12px] text-[#FF9500]/80">
+                          {previousTotalQuestions > 0 && previousResume?.hasOpenedQuiz
+                            ? `Terkunci karena skor lesson sebelumnya masih ${previousQuizPct}%. Minimal ${PASSING_SCORE}% untuk lanjut.`
+                            : "Selesaikan dan lulus lesson sebelumnya untuk membuka materi ini."}
+                        </p>
                       )}
                     </div>
                   </div>
