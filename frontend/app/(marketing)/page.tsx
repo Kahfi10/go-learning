@@ -190,11 +190,11 @@ export default function LandingPage() {
         /* Hero timeline — smoother, more premium */
         const heroTl = gsap.timeline({ delay: 0.04 });
         heroTl
-          .from(".hero-title-line", { y: 24, duration: 0.7, ease: "expo.out", stagger: 0.06 })
-          .from(".hero-sub", { y: 14, duration: 0.55, ease: "power3.out" }, "-=0.24")
-          .from(".hero-cta-row", { y: 10, duration: 0.45, ease: "power3.out" }, "-=0.18")
-          .from(".hero-trust > *", { y: 6, duration: 0.38, ease: "power2.out", stagger: 0.03 }, "-=0.16")
-          .from(".hero-code-window", { x: 18, y: 6, duration: 0.75, ease: "expo.out" }, "-=0.42");
+          .fromTo(".hero-title-line", { y: 24, opacity: 0.001 }, { y: 0, opacity: 1, duration: 0.7, ease: "expo.out", stagger: 0.06 })
+          .fromTo(".hero-sub", { y: 14, opacity: 0.001 }, { y: 0, opacity: 1, duration: 0.55, ease: "power3.out" }, "-=0.24")
+          .fromTo(".hero-cta-row", { y: 10, opacity: 0.001 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, "-=0.18")
+          .fromTo(".hero-trust > *", { y: 6, opacity: 0.001 }, { y: 0, opacity: 1, duration: 0.38, ease: "power2.out", stagger: 0.03 }, "-=0.16")
+          .fromTo(".hero-code-window", { x: 18, y: 6, opacity: 0.001 }, { x: 0, y: 0, opacity: 1, duration: 0.75, ease: "expo.out" }, "-=0.42");
 
         /* Breathing float after entrance */
         gsap.to(".hero-code-window", {
@@ -903,36 +903,52 @@ function HeroCodePreview() {
 
   useLayoutEffect(() => {
     let ctx: any;
+    let mounted = true;
     import("gsap").then(({ gsap }) => {
+      if (!mounted) return;
       ctx = gsap.context(() => {
         // Timeline for initial entrance
         const tl = gsap.timeline({ delay: 1.2 });
         
         // Element 1: Main GIF Frame
-        tl.from(".parallax-main", {
+        tl.fromTo(".parallax-main", {
           y: 40,
-          opacity: 0,
-          scale: 0.95,
+          opacity: 0.001,
+          scale: 0.95
+        }, {
+          y: 0,
+          opacity: 1,
+          scale: 1,
           duration: 1,
           ease: "expo.out"
         });
 
         // Element 2: Small badge (Top Right)
-        tl.from(".parallax-badge-1", {
+        tl.fromTo(".parallax-badge-1", {
           y: 20,
           x: -10,
-          opacity: 0,
-          scale: 0.5,
+          opacity: 0.001,
+          scale: 0.5
+        }, {
+          y: 0,
+          x: 0,
+          opacity: 1,
+          scale: 1,
           duration: 0.8,
           ease: "back.out(1.7)"
         }, "-=0.6");
 
         // Element 3: Small badge (Bottom Left)
-        tl.from(".parallax-badge-2", {
+        tl.fromTo(".parallax-badge-2", {
           y: -20,
           x: 10,
-          opacity: 0,
-          scale: 0.5,
+          opacity: 0.001,
+          scale: 0.5
+        }, {
+          y: 0,
+          x: 0,
+          opacity: 1,
+          scale: 1,
           duration: 0.8,
           ease: "back.out(1.7)"
         }, "-=0.6");
@@ -966,7 +982,10 @@ function HeroCodePreview() {
 
       }, containerRef);
     });
-    return () => ctx?.revert();
+    return () => {
+      mounted = false;
+      ctx?.revert();
+    };
   }, []);
 
   return (
