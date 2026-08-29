@@ -60,6 +60,15 @@ export default function ProfilePage() {
   const level = stats ? xpToLevel(stats.xp) : 1;
   const earnedBadges = badges.filter((badge) => badge.earned).length;
   const profileName = user?.name ?? username;
+  
+  if (state.loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+      </div>
+    );
+  }
+
   const statCards = stats
     ? [
         {
