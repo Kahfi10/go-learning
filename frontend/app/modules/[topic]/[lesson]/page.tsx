@@ -22,6 +22,16 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 
+const DEFAULT_CODE_TEMPLATE = `package main
+
+import "fmt"
+
+func main() {
+	// Tulis kode eksperimen kamu di sini
+	
+}
+`;
+
 export default function LessonPage() {
   const { topic, lesson } = useParams<{ topic: string; lesson: string }>();
   const router = useRouter();
@@ -356,7 +366,7 @@ export default function LessonPage() {
                 </div>
                 <div className="p-5">
                   <CodeEditor
-                    defaultCode={getLastCode(topic, lesson) ?? data.starterCode}
+                    defaultCode={getLastCode(topic, lesson) ?? DEFAULT_CODE_TEMPLATE}
                     onCodeChange={(c) => saveCode(topic, lesson, c)}
                     onRun={() => saveResumeState(topic, lesson, { hasRunCode: true, viewedAt: new Date().toISOString() })}
                     height="calc(100vh - 340px)"
@@ -402,7 +412,7 @@ export default function LessonPage() {
               {showMobileEditor && (
                 <div className="border-t border-[#D2D2D7]/35 dark:border-white/6 p-4">
                   <CodeEditor
-                    defaultCode={getLastCode(topic, lesson) ?? data.starterCode}
+                    defaultCode={getLastCode(topic, lesson) ?? DEFAULT_CODE_TEMPLATE}
                     onCodeChange={(c) => saveCode(topic, lesson, c)}
                     onRun={() => saveResumeState(topic, lesson, { hasRunCode: true, viewedAt: new Date().toISOString() })}
                     height="320px"
