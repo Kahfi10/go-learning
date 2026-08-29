@@ -519,7 +519,7 @@ export default function LessonPage() {
             </div>
           )}
 
-          {!isDesktopLayout && <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-24px)] max-w-md rounded-full border border-[#D2D2D7]/50 dark:border-white/10 bg-white/92 dark:bg-[#111214]/92 backdrop-blur-xl shadow-[0_12px_30px_rgba(0,0,0,0.12)] px-3 py-2">
+          {!isDesktopLayout && <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-24px)] max-w-md rounded-full border border-[#D2D2D7]/50 dark:border-white/10 bg-white/92 dark:bg-[#111214]/92 backdrop-blur-xl shadow-[0_12px_30px_rgba(0,0,0,0.12)] px-3 py-2 xl:hidden">
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"

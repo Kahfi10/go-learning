@@ -57,7 +57,7 @@ export default function PlaygroundPage() {
 
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-10 pt-32">
         <section className="relative w-full mb-12 sm:mb-16">
-          <div className="grid 2xl:grid-cols-[1fr_auto] gap-8 2xl:gap-16 items-end">
+          <div className="grid xl:grid-cols-[minmax(0,1fr)_320px] gap-8 xl:gap-12 2xl:grid-cols-[1fr_auto] 2xl:gap-16 items-end">
             <div className="max-w-2xl">
               <p className="text-[#0071E3] text-[13px] font-semibold uppercase tracking-[0.2em] mb-3">
                 Playground
@@ -82,7 +82,7 @@ export default function PlaygroundPage() {
               </div>
             </div>
 
-            <div className="w-full 2xl:w-[340px] bg-white dark:bg-[#111214] rounded-[24px] p-6 sm:p-7 border border-[#D2D2D7]/60 dark:border-white/10 shadow-sm">
+            <div className="w-full xl:w-[320px] 2xl:w-[340px] bg-white dark:bg-[#111214] rounded-[24px] p-6 sm:p-7 border border-[#D2D2D7]/60 dark:border-white/10 shadow-sm">
               <div className="flex items-start justify-between gap-4 mb-5">
                 <div>
                   <p className="text-[12px] font-semibold uppercase tracking-[0.15em] text-[#86868B]">

@@ -337,17 +337,17 @@ export default function LeaderboardPage() {
           <div className="pointer-events-none absolute -left-10 top-0 h-48 w-48 rounded-full bg-[#0071E3]/15 blur-3xl" />
           <div className="pointer-events-none absolute right-0 top-10 h-40 w-40 rounded-full bg-[#AF52DE]/12 blur-3xl" />
 
-          <div className="relative grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-center xl:gap-8 2xl:grid-cols-[minmax(0,1.05fr)_360px]">
-            <div className="max-w-3xl xl:pr-4">
+          <div className="relative grid gap-6 2xl:grid-cols-[minmax(0,1.05fr)_360px] 2xl:items-center 2xl:gap-8">
+            <div className="max-w-3xl 2xl:pr-4">
               <div className="inline-flex items-center gap-2 rounded-full border border-[#0071E3]/15 bg-[#0071E3]/8 px-3 py-1.5 text-[12px] font-medium text-[#0071E3] dark:border-[#4AA3FF]/20 dark:bg-[#0071E3]/10 dark:text-[#75B8FF]">
                 <Sparkles className="h-3.5 w-3.5" />
                 Kompetisi dan progres belajar
               </div>
 
-              <h1 className="mt-5 font-display text-[34px] font-semibold tracking-[-0.04em] text-foreground sm:text-[48px] xl:text-[58px] 2xl:text-[64px] leading-[1.04]">
+              <h1 className="mt-5 font-display text-[34px] font-semibold tracking-[-0.04em] text-foreground sm:text-[48px] xl:text-[56px] 2xl:text-[64px] leading-[1.04] max-w-[12ch] sm:max-w-none">
                 Leaderboard GoLearn
               </h1>
-              <p className="mt-4 max-w-2xl text-[16px] leading-7 text-[#6E6E73] dark:text-[#A1A1AA] sm:text-[18px] xl:max-w-xl 2xl:max-w-2xl">
+              <p className="mt-4 max-w-2xl text-[16px] leading-7 text-[#6E6E73] dark:text-[#A1A1AA] sm:text-[18px] 2xl:max-w-2xl">
                 Lihat siapa yang paling konsisten belajar, siapa yang sedang melesat paling cepat, dan bagaimana posisi kamu di antara learner lain.
               </p>
 
@@ -405,7 +405,7 @@ export default function LeaderboardPage() {
               </div>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1 xl:self-stretch">
+            <div className="grid gap-3 md:grid-cols-3 2xl:grid-cols-1 2xl:self-stretch">
               {summaryCards.map((card) => (
                 <SummaryCard key={card.label} {...card} />
               ))}

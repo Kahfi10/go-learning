@@ -148,7 +148,7 @@ export default function DashboardPage() {
           <div className="pointer-events-none absolute -left-10 top-0 h-48 w-48 rounded-full bg-[#0071E3]/15 blur-3xl" />
           <div className="pointer-events-none absolute right-0 top-10 h-40 w-40 rounded-full bg-[#AF52DE]/12 blur-3xl" />
 
-          <div className="relative grid gap-8 2xl:grid-cols-[minmax(0,1.16fr)_320px] 2xl:items-start">
+          <div className="relative grid gap-8 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start 2xl:grid-cols-[minmax(0,1.16fr)_320px]">
             <div className="max-w-2xl">
               <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#86868B]">
                 Dashboard
@@ -248,7 +248,7 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        <section className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <section className="mb-8 grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
           {statCards.map((card) => {
             const Icon = card.icon;
 

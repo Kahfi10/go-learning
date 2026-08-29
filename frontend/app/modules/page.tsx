@@ -154,7 +154,7 @@ export default function ModulesPage() {
           <div className="absolute top-1/2 right-10 -translate-y-1/2 w-72 h-72 rounded-full bg-[#0071E3]/5 blur-3xl pointer-events-none hidden lg:block" />
           <div className="absolute top-0 right-40 w-56 h-56 rounded-full bg-[#34C759]/5 blur-3xl pointer-events-none hidden lg:block" />
           
-          <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center relative z-10">
+          <div className="grid xl:grid-cols-[1.15fr_0.85fr] gap-10 xl:gap-12 items-center relative z-10">
             <div className="flex flex-col gap-4 text-left max-w-2xl">
               <p className="text-[#0071E3] text-[13px] font-semibold uppercase tracking-[0.2em] mb-1">
                 Katalog Pembelajaran
@@ -168,7 +168,7 @@ export default function ModulesPage() {
               </p>
             </div>
 
-            <div className="hidden lg:grid grid-cols-2 gap-4">
+            <div className="hidden xl:grid grid-cols-2 gap-4">
               <div className="rounded-[24px] border border-[#D2D2D7]/60 dark:border-white/10 bg-white/50 dark:bg-[#111214]/50 p-6 flex flex-col justify-center items-center text-center">
                 <p className="font-display text-[40px] font-bold text-foreground leading-[1.08] mb-1 pb-[0.04em]">{topics.length}</p>
                 <p className="text-[13px] font-medium text-[#86868B]">Topik Tersedia</p>
@@ -193,7 +193,7 @@ export default function ModulesPage() {
 
         {continueTopic && continueLearning && (
           <section className="mx-auto max-w-7xl px-4 sm:px-6 mb-10 sm:mb-12">
-            <div className="rounded-[28px] border border-[#D2D2D7]/60 dark:border-white/10 bg-white dark:bg-[#111214] p-6 sm:p-7 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="rounded-[28px] border border-[#D2D2D7]/60 dark:border-white/10 bg-white dark:bg-[#111214] p-6 sm:p-7 shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-6">
               <div>
                 <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#0071E3] mb-2">
                   Continue Learning
@@ -237,7 +237,7 @@ export default function ModulesPage() {
 
         {recommendedTopic && (!continueTopic || recommendedTopic.slug !== continueTopic.slug) && (
           <section className="mx-auto max-w-7xl px-4 sm:px-6 mb-10 sm:mb-12">
-            <div className="rounded-[24px] border border-[#D2D2D7]/50 dark:border-white/8 bg-[#F7FAFF] dark:bg-[#101722] p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+            <div className="rounded-[24px] border border-[#D2D2D7]/50 dark:border-white/8 bg-[#F7FAFF] dark:bg-[#101722] p-5 sm:p-6 flex flex-col xl:flex-row xl:items-center justify-between gap-5">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#0071E3] mb-2">Rekomendasi Berikutnya</p>
                 <h2 className="font-display text-[22px] font-semibold tracking-tight text-foreground mb-2">{recommendedTopic.title_id}</h2>

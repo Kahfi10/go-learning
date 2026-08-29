@@ -148,7 +148,7 @@ export default function ProfilePage() {
           <div className="pointer-events-none absolute -left-10 top-0 h-48 w-48 rounded-full bg-[#0071E3]/15 blur-3xl" />
           <div className="pointer-events-none absolute right-0 top-8 h-40 w-40 rounded-full bg-[#AF52DE]/10 blur-3xl" />
 
-          <div className="relative grid gap-8 2xl:grid-cols-[minmax(0,1.16fr)_320px] 2xl:items-start">
+          <div className="relative grid gap-8 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start 2xl:grid-cols-[minmax(0,1.16fr)_320px]">
             <div>
               <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#86868B]">
                 Profil
@@ -229,7 +229,7 @@ export default function ProfilePage() {
         </section>
 
         {stats && (
-          <section className="mt-6 grid gap-4 md:grid-cols-3">
+          <section className="mt-6 grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
             {statCards.map((item) => {
               const Icon = item.icon;
 
@@ -269,7 +269,7 @@ export default function ProfilePage() {
           </section>
         )}
 
-        <section className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_0.75fr]">
+        <section className="mt-6 grid gap-6 2xl:grid-cols-[minmax(0,1.25fr)_0.75fr]">
           <article className="rounded-[30px] border border-black/[0.06] bg-[#FBFBFD] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.07)] dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_24px_60px_rgba(0,0,0,0.28)] sm:p-7">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
