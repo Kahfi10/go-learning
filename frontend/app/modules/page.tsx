@@ -365,36 +365,39 @@ export default function ModulesPage() {
                     <Link
                       key={topic.slug}
                       href={`/modules/${topic.slug}`}
-                      className="topic-grid-card group relative flex flex-col sm:flex-row gap-6 p-6 sm:p-7 rounded-[24px] bg-white dark:bg-[#111214] border border-[#D2D2D7]/60 dark:border-white/10 transition-all duration-300 hover:shadow-[0_12px_30px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_12px_30px_rgba(0,0,0,0.2)] hover:border-black/[0.08] dark:hover:border-white/20 hover:-translate-y-0.5 overflow-hidden"
+                      className="topic-grid-card group relative flex flex-col sm:flex-row gap-5 p-5 sm:p-6 rounded-[24px] bg-white dark:bg-[#111214] border border-[#D2D2D7]/60 dark:border-white/10 transition-all duration-300 hover:shadow-[0_12px_30px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_12px_30px_rgba(0,0,0,0.2)] hover:border-black/[0.08] dark:hover:border-white/20 hover:-translate-y-0.5 overflow-hidden"
                     >
-                      {/* Left: Icon & Level */}
-                      <div className="flex flex-row sm:flex-col items-center sm:items-start gap-4 shrink-0">
+                      {/* Left: Icon & Meta Stack */}
+                      <div className="shrink-0 flex sm:flex-col items-center justify-between sm:justify-start gap-4 sm:gap-3 w-full sm:w-[72px]">
                         <div
-                          className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center rounded-[16px] sm:rounded-[20px] text-[18px] sm:text-[22px] font-display font-bold text-white shadow-sm"
+                          className="w-14 h-14 sm:w-[72px] sm:h-[72px] flex items-center justify-center rounded-[16px] sm:rounded-[20px] text-[18px] sm:text-[24px] font-display font-bold text-white shadow-sm"
                           style={{ backgroundColor: topic.color }}
                         >
                           {String(topic.number).padStart(2, "0")}
                         </div>
-                        <LevelBadge level={topic.level} />
-                        <button
-                          type="button"
-                          onClick={(event) => {
-                            event.preventDefault();
-                            void toggleTopicBookmark(topic.slug);
-                          }}
-                          className="inline-flex items-center gap-1 rounded-full bg-[#F5F5F7] dark:bg-[#1C1C1E] px-3 py-1.5 text-[11px] font-medium text-[#86868B] hover:text-[#0071E3] transition-colors"
-                        >
-                          {bookmarked ? <BookmarkCheck className="w-3.5 h-3.5 text-[#0071E3]" /> : <Bookmark className="w-3.5 h-3.5" />}
-                          {bookmarked ? "Tersimpan" : "Simpan"}
-                        </button>
+                        
+                        <div className="flex sm:flex-col items-center gap-2 sm:gap-2">
+                          <LevelBadge level={topic.level} />
+                          <button
+                            type="button"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              void toggleTopicBookmark(topic.slug);
+                            }}
+                            className="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F7] dark:bg-[#1C1C1E] px-3 py-1 text-[11px] font-medium text-[#86868B] hover:text-[#0071E3] transition-colors whitespace-nowrap"
+                          >
+                            {bookmarked ? <BookmarkCheck className="w-3 h-3 text-[#0071E3]" /> : <Bookmark className="w-3 h-3" />}
+                            {bookmarked ? "Tersimpan" : "Simpan"}
+                          </button>
+                        </div>
                       </div>
 
                       {/* Middle: Content */}
-                      <div className="flex-1 flex flex-col justify-center min-w-0">
-                        <h2 className="font-display text-[22px] sm:text-[24px] font-semibold tracking-tight text-foreground mb-2 group-hover:text-[#0071E3] transition-colors leading-snug truncate">
+                      <div className="flex-1 flex flex-col justify-center min-w-0 sm:ml-2">
+                        <h2 className="font-display text-[20px] sm:text-[22px] font-semibold tracking-tight text-foreground group-hover:text-[#0071E3] transition-colors leading-snug truncate mb-2">
                           {topic.title_id}
                         </h2>
-                        <p className="text-[14px] sm:text-[15px] leading-relaxed text-[#86868B] line-clamp-2 mb-4">
+                        <p className="text-[14px] leading-relaxed text-[#86868B] line-clamp-2 mb-4">
                           {topic.description_id}
                         </p>
                         {matchedLessons.length > 0 && (
@@ -416,44 +419,33 @@ export default function ModulesPage() {
                         )}
                         
                         {/* Meta info */}
-                        <div className="flex flex-wrap items-center gap-4 text-[12px] font-medium text-[#86868B]">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] font-medium text-[#86868B]">
                           <div className="flex items-center gap-1.5">
-                            <BookOpen className="w-3.5 h-3.5" />
+                            <BookOpen className="w-4 h-4 text-[#86868B]" />
                             {lessonCount} Lesson
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <Clock className="w-3.5 h-3.5" />
+                            <Clock className="w-4 h-4 text-[#86868B]" />
                             {topic.estimatedMinutes} Menit
                           </div>
-                          <div className="flex items-center gap-1.5">
-                            <ArrowRight className="w-3.5 h-3.5" />
+                          <div className="flex items-center gap-1.5 ml-1">
+                            <ArrowRight className="w-3.5 h-3.5 text-[#86868B]" />
                             {prog.done}/{lessonCount} lesson
                           </div>
                           {isStarted && !isComplete && (
-                            <div className="flex items-center gap-1.5 text-[#0071E3]">
+                            <div className="flex items-center gap-1.5 text-[#0071E3] font-semibold">
                               <span>{prog.pct}% Selesai</span>
                             </div>
                           )}
                           {isComplete && (
-                            <div className="flex items-center gap-1.5 text-[#34C759]">
-                              <CheckCircle2 className="w-3.5 h-3.5" /> Selesai
-                            </div>
-                          )}
-                          {bookmarked && (
-                            <div className="flex items-center gap-1.5 text-[#0071E3]">
-                              <BookmarkCheck className="w-3.5 h-3.5" /> Bookmarked
+                            <div className="flex items-center gap-1.5 text-[#34C759] font-semibold">
+                              <CheckCircle2 className="w-4 h-4" /> Selesai
                             </div>
                           )}
                         </div>
                       </div>
 
-                      {/* Right: Action/CTA */}
-                      <div className="sm:self-center shrink-0 mt-2 sm:mt-0">
-                        <div className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 sm:px-5 sm:py-2.5 text-[13px] font-medium transition-colors bg-[#F5F5F7] dark:bg-[#1C1C1E] text-foreground group-hover:bg-[#0071E3] group-hover:text-white">
-                          {statusLabel}
-                          <ChevronRight className="w-4 h-4" />
-                        </div>
-                      </div>
+                      {/* Right: Action/CTA - Remove for cleaner layout similar to screenshot */}
                     </Link>
                   );
                 })}

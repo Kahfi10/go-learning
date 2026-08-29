@@ -97,16 +97,16 @@ function LoginPageInner() {
                 </p>
               </div>
 
-              <ul className="mt-10 space-y-4 sm:mt-12">
+              <ul className="mt-10 space-y-6 sm:mt-12">
                 {benefits.map((benefit) => (
                   <li
                     key={benefit}
-                    className="flex items-start gap-3 rounded-2xl border border-black/5 bg-white/75 px-4 py-4 shadow-sm backdrop-blur-md dark:border-white/8 dark:bg-white/[0.04]"
+                    className="flex items-start gap-4"
                   >
-                    <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0071E3]/10 text-[#0071E3] dark:bg-[#0071E3]/15 dark:text-[#75B8FF]">
-                      <CheckCircle2 className="h-4 w-4" />
+                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#0071E3]/10 text-[#0071E3] dark:bg-[#0071E3]/15 dark:text-[#75B8FF]">
+                      <CheckCircle2 className="h-3.5 w-3.5" />
                     </span>
-                    <span className="text-[14px] leading-6 text-[#3A3A3C] dark:text-[#D1D1D6] sm:text-[15px]">{benefit}</span>
+                    <span className="text-[15px] leading-relaxed text-[#3A3A3C] dark:text-[#D1D1D6]">{benefit}</span>
                   </li>
                 ))}
               </ul>
