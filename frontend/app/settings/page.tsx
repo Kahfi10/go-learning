@@ -2,304 +2,277 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Globe, Lock, Moon, Sun, User } from "lucide-react";
-import Navbar from "@/components/navigation/Navbar";
 import { useAuth } from "@/context/AuthContext";
+import Navbar from "@/components/navigation/Navbar";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
-import { useTheme } from "next-themes";
-import { cn } from "@/lib/utils";
+import { User, Lock, Mail, Save, Loader2, BookOpen } from "lucide-react";
+import Link from "next/link";
 
 export default function SettingsPage() {
+  const { state, refresh } = useAuth();
   const router = useRouter();
-  const { state, logout, refresh } = useAuth();
-  const { resolvedTheme, setTheme, theme } = useTheme();
+
+  const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
+
+  // Profile Form State
   const [name, setName] = useState("");
-  const [lang, setLang] = useState<"id" | "en">("id");
-  const [saving, setSaving] = useState(false);
+  const [langPref, setLangPref] = useState("id");
+  const [profileLoading, setProfileLoading] = useState(false);
+
+  // Security Form State
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [securityLoading, setSecurityLoading] = useState(false);
 
   useEffect(() => {
     if (!state.loading && !state.user) {
       router.replace("/login?next=/settings");
+    } else if (state.user) {
+      setName(state.user.name || "");
+      setLangPref(state.user.lang_pref || "id");
     }
+  }, [state.loading, state.user, router]);
 
-    if (state.user) {
-      setName(state.user.name);
-      setLang(state.user.lang_pref ?? "id");
-    }
-  }, [router, state.loading, state.user]);
+  async function handleProfileSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!name.trim()) return toast.error("Nama tidak boleh kosong");
 
-  async function saveProfile() {
-    setSaving(true);
-
+    setProfileLoading(true);
     try {
-      await api.auth.updateMe({ name, lang_pref: lang });
+      await api.auth.updateMe({ name: name.trim(), lang_pref: langPref });
       await refresh();
-      toast.success("Profil berhasil disimpan");
-    } catch (e: any) {
-      toast.error(e.message ?? "Gagal menyimpan");
+      toast.success("Profil berhasil diperbarui");
+    } catch (err: any) {
+      toast.error(err.message ?? "Gagal memperbarui profil");
     } finally {
-      setSaving(false);
+      setProfileLoading(false);
     }
   }
 
-  async function handleLogout() {
-    await logout();
-    router.push("/");
-    toast.success("Berhasil keluar");
+  async function handleSecuritySubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      return toast.error("Semua kolom password wajib diisi");
+    }
+    if (newPassword.length < 8) {
+      return toast.error("Password baru minimal 8 karakter");
+    }
+    if (newPassword !== confirmPassword) {
+      return toast.error("Konfirmasi password tidak cocok");
+    }
+
+    setSecurityLoading(true);
+    try {
+      await api.auth.changePassword({ old_password: oldPassword, new_password: newPassword });
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      toast.success("Password berhasil diubah");
+    } catch (err: any) {
+      toast.error(err.message ?? "Gagal mengubah password");
+    } finally {
+      setSecurityLoading(false);
+    }
   }
 
-  const currentTheme = theme ?? resolvedTheme ?? "system";
+  if (state.loading || !state.user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="mx-auto max-w-5xl px-4 sm:px-6 pb-24 pt-24">
-        <section className="relative overflow-hidden rounded-[32px] border border-black/[0.06] bg-[#FBFBFD] p-8 shadow-[0_28px_80px_rgba(15,23,42,0.08)] dark:border-white/[0.08] dark:bg-[#0F0F11] dark:shadow-[0_28px_80px_rgba(0,0,0,0.32)] sm:p-10">
-          <div className="pointer-events-none absolute -left-10 top-0 h-48 w-48 rounded-full bg-[#0071E3]/14 blur-3xl" />
-          <div className="pointer-events-none absolute right-0 top-8 h-40 w-40 rounded-full bg-[#34C759]/10 blur-3xl" />
+      <main className="mx-auto max-w-4xl px-4 sm:px-6 pt-32 pb-24">
+        
+        {/* Header */}
+        <div className="mb-10">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#0071E3] mb-2">
+            Pengaturan
+          </p>
+          <h1 className="font-display text-[32px] sm:text-[40px] font-semibold tracking-tight text-foreground">
+            Akun & Keamanan
+          </h1>
+        </div>
 
-          <div className="relative grid gap-8 xl:grid-cols-[minmax(0,1.16fr)_320px] xl:items-start">
-            <div className="max-w-2xl">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#86868B]">
-                Pengaturan
-              </p>
-              <h1 className="mt-4 max-w-3xl font-display text-[30px] font-semibold tracking-tight text-foreground sm:text-[38px] xl:text-[46px] leading-[1.06]">
-                Kelola profil, tampilan, dan preferensi akun dengan lebih rapi.
-              </h1>
-              <p className="mt-3 max-w-xl text-[16px] leading-7 text-[#86868B] sm:text-[17px]">
-                Semua kontrol utama dikelompokkan ke panel yang lebih jelas supaya perubahan terasa cepat dan aman.
-              </p>
+        <div className="grid md:grid-cols-[240px_1fr] gap-8 md:gap-12">
+          
+          {/* Sidebar Tabs */}
+          <aside className="space-y-1">
+            <button
+              onClick={() => setActiveTab("profile")}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-[14px] font-medium transition-colors ${
+                activeTab === "profile" 
+                  ? "bg-[#F5F5F7] dark:bg-white/10 text-foreground" 
+                  : "text-[#86868B] hover:bg-[#F5F5F7]/50 dark:hover:bg-white/5 hover:text-foreground"
+              }`}
+            >
+              <User className="w-4 h-4" />
+              Profil Umum
+            </button>
+            <button
+              onClick={() => setActiveTab("security")}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-[14px] font-medium transition-colors ${
+                activeTab === "security" 
+                  ? "bg-[#F5F5F7] dark:bg-white/10 text-foreground" 
+                  : "text-[#86868B] hover:bg-[#F5F5F7]/50 dark:hover:bg-white/5 hover:text-foreground"
+              }`}
+            >
+              <Lock className="w-4 h-4" />
+              Keamanan
+            </button>
+            
+            <Link
+              href={`/profile/${state.user.name}`}
+              className="mt-6 w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-[14px] font-medium text-[#0071E3] hover:bg-[#0071E3]/10 transition-colors"
+            >
+              <BookOpen className="w-4 h-4" />
+              Lihat Profil Publik
+            </Link>
+          </aside>
 
-              <div className="mt-8 flex flex-wrap gap-3">
-                <div className="rounded-full border border-black/[0.06] bg-white/80 px-4 py-2 text-[13px] font-medium text-foreground shadow-[0_10px_30px_rgba(15,23,42,0.05)] dark:border-white/[0.08] dark:bg-white/[0.04] dark:shadow-none">
-                  {state.user?.email ?? "Akun GoLearn"}
-                </div>
-                <div className="rounded-full border border-black/[0.06] bg-white/80 px-4 py-2 text-[13px] font-medium text-foreground shadow-[0_10px_30px_rgba(15,23,42,0.05)] dark:border-white/[0.08] dark:bg-white/[0.04] dark:shadow-none">
-                  Bahasa {lang.toUpperCase()}
-                </div>
-                <div className="rounded-full border border-black/[0.06] bg-white/80 px-4 py-2 text-[13px] font-medium text-foreground shadow-[0_10px_30px_rgba(15,23,42,0.05)] dark:border-white/[0.08] dark:bg-white/[0.04] dark:shadow-none">
-                  Tema {currentTheme}
-                </div>
-              </div>
-            </div>
-
-            <aside className="rounded-[28px] border border-black/[0.06] bg-white/80 p-6 shadow-[0_20px_50px_rgba(15,23,42,0.06)] backdrop-blur-sm dark:border-white/[0.08] dark:bg-white/[0.04] dark:shadow-[0_20px_50px_rgba(0,0,0,0.24)]">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B]">
-                Quick Summary
-              </p>
-              <h2 className="mt-3 font-display text-[28px] font-semibold tracking-tight text-foreground">
-                Akun aktif
-              </h2>
-              <p className="mt-2 text-[14px] leading-6 text-[#86868B]">
-                Simpan perubahan profil, ganti bahasa antarmuka, dan atur tema dari satu tempat.
-              </p>
-
-              <div className="mt-6 grid gap-3">
-                <div className="rounded-[20px] bg-black/[0.03] p-4 dark:bg-white/[0.05]">
-                  <p className="text-[11px] uppercase tracking-[0.16em] text-[#86868B]">Nama profil</p>
-                  <p className="mt-2 font-display text-[22px] font-semibold tracking-tight text-foreground">
-                    {name || "-"}
-                  </p>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-[20px] bg-black/[0.03] p-4 dark:bg-white/[0.05]">
-                    <p className="text-[11px] uppercase tracking-[0.16em] text-[#86868B]">Bahasa</p>
-                    <p className="mt-2 font-display text-[20px] font-semibold tracking-tight text-foreground">
-                      {lang.toUpperCase()}
-                    </p>
-                  </div>
-                  <div className="rounded-[20px] bg-black/[0.03] p-4 dark:bg-white/[0.05]">
-                    <p className="text-[11px] uppercase tracking-[0.16em] text-[#86868B]">Tema</p>
-                    <p className="mt-2 font-display text-[20px] font-semibold tracking-tight capitalize text-foreground">
-                      {currentTheme}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </aside>
-          </div>
-        </section>
-
-        <section className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-          <div className="space-y-6">
-            <article className="rounded-[30px] border border-black/[0.06] bg-[#FBFBFD] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.07)] dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_24px_60px_rgba(0,0,0,0.28)] sm:p-7">
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0071E3]/10 text-[#0071E3]">
-                  <User className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B]">
-                    Profil
-                  </p>
-                  <h2 className="mt-1 font-display text-[26px] font-semibold tracking-tight text-foreground">
-                    Informasi akun
-                  </h2>
-                </div>
-              </div>
-
-              <div className="mt-6 space-y-4">
-                <div className="rounded-[24px] border border-black/[0.06] bg-white/80 p-4 dark:border-white/[0.08] dark:bg-white/[0.04]">
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <p className="text-[14px] font-medium text-foreground">Nama</p>
-                      <p className="mt-1 text-[12px] text-[#86868B]">Nama yang tampil di seluruh pengalaman belajar.</p>
-                    </div>
-                    <User className="h-4 w-4 text-[#86868B]" />
-                  </div>
-                  <input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="mt-4 h-12 w-full rounded-[16px] border border-black/[0.08] bg-background px-4 text-[14px] text-foreground outline-none transition focus:border-[#0071E3] focus:ring-4 focus:ring-[#0071E3]/10 dark:border-white/[0.08]"
-                  />
-                </div>
-
-                <div className="rounded-[24px] border border-black/[0.06] bg-white/80 p-4 dark:border-white/[0.08] dark:bg-white/[0.04]">
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <p className="text-[14px] font-medium text-foreground">Bahasa</p>
-                      <p className="mt-1 text-[12px] text-[#86868B]">Pilih bahasa utama untuk antarmuka.</p>
-                    </div>
-                    <Globe className="h-4 w-4 text-[#86868B]" />
-                  </div>
-
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    {([
-                      { value: "id", label: "Bahasa Indonesia", short: "ID" },
-                      { value: "en", label: "English", short: "EN" },
-                    ] as const).map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() => setLang(option.value)}
-                        className={cn(
-                          "flex items-center justify-between rounded-[18px] border px-4 py-3 text-left transition-all",
-                          lang === option.value
-                            ? "border-[#0071E3]/20 bg-[#0071E3]/8 shadow-[0_14px_34px_rgba(0,113,227,0.12)]"
-                            : "border-black/[0.06] bg-background hover:border-black/[0.1] dark:border-white/[0.08] dark:hover:border-white/[0.12]",
-                        )}
-                      >
-                        <div>
-                          <span className="block text-[14px] font-medium text-foreground">{option.label}</span>
-                          <span className="mt-1 block text-[12px] text-[#86868B]">{option.short}</span>
-                        </div>
-                        <div
-                          className={cn(
-                            "h-5 w-9 rounded-full p-0.5 transition-colors",
-                            lang === option.value ? "bg-[#0071E3]" : "bg-black/[0.08] dark:bg-white/[0.12]",
-                          )}
-                        >
-                          <div
-                            className={cn(
-                              "h-4 w-4 rounded-full bg-white transition-transform",
-                              lang === option.value ? "translate-x-4" : "translate-x-0",
-                            )}
-                          />
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <button
-                onClick={saveProfile}
-                disabled={saving}
-                className="mt-5 w-full rounded-full bg-[#0071E3] px-5 py-3 text-[14px] font-medium text-white shadow-[0_18px_40px_rgba(0,113,227,0.24)] transition-colors hover:bg-[#0077ED] disabled:opacity-60"
-              >
-                {saving ? "Menyimpan..." : "Simpan Perubahan"}
-              </button>
-            </article>
-          </div>
-
-          <div className="space-y-6">
-            <article className="rounded-[30px] border border-black/[0.06] bg-[#FBFBFD] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.07)] dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_24px_60px_rgba(0,0,0,0.28)] sm:p-7">
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#AF52DE]/10 text-[#AF52DE]">
-                  {resolvedTheme === "dark" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-                </div>
-                <div>
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B]">
-                    Tampilan
-                  </p>
-                  <h2 className="mt-1 font-display text-[26px] font-semibold tracking-tight text-foreground">
-                    Tema aplikasi
-                  </h2>
-                </div>
-              </div>
-
-              <div className="mt-6 space-y-3">
-                {([
-                  { value: "light", label: "Light", note: "Tampilan terang dan bersih." },
-                  { value: "dark", label: "Dark", note: "Kontras lebih lembut untuk malam hari." },
-                  { value: "system", label: "System", note: "Ikuti pengaturan perangkat otomatis." },
-                ] as const).map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => setTheme(option.value)}
-                    className={cn(
-                      "flex w-full items-center justify-between rounded-[22px] border px-4 py-4 text-left transition-all",
-                      currentTheme === option.value
-                        ? "border-[#0071E3]/20 bg-[#0071E3]/8 shadow-[0_14px_34px_rgba(0,113,227,0.12)]"
-                        : "border-black/[0.06] bg-white/80 hover:border-black/[0.1] dark:border-white/[0.08] dark:bg-white/[0.04] dark:hover:border-white/[0.12]",
-                    )}
-                  >
-                    <div>
-                      <span className="block text-[14px] font-medium text-foreground">{option.label}</span>
-                      <span className="mt-1 block text-[12px] text-[#86868B]">{option.note}</span>
-                    </div>
-                    <div
-                      className={cn(
-                        "h-5 w-9 rounded-full p-0.5 transition-colors",
-                        currentTheme === option.value ? "bg-[#0071E3]" : "bg-black/[0.08] dark:bg-white/[0.12]",
-                      )}
-                    >
-                      <div
-                        className={cn(
-                          "h-4 w-4 rounded-full bg-white transition-transform",
-                          currentTheme === option.value ? "translate-x-4" : "translate-x-0",
-                        )}
+          {/* Main Content Area */}
+          <div className="bg-white dark:bg-[#111214] rounded-[32px] p-6 sm:p-10 border border-[#D2D2D7]/60 dark:border-white/10 shadow-[0_24px_60px_rgba(15,23,42,0.04)] dark:shadow-[0_24px_60px_rgba(0,0,0,0.2)]">
+            
+            {activeTab === "profile" && (
+              <div className="animate-in fade-in duration-300">
+                <h2 className="text-[20px] font-semibold text-foreground mb-6">Informasi Dasar</h2>
+                
+                <form onSubmit={handleProfileSubmit} className="space-y-6">
+                  <div>
+                    <label className="block text-[13px] font-medium text-[#1D1D1F] dark:text-[#F5F5F7] mb-2">Alamat Email</label>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#86868B]" />
+                      <input
+                        type="email"
+                        value={state.user.email}
+                        disabled
+                        className="w-full rounded-2xl border border-transparent bg-black/[0.03] dark:bg-white/[0.04] px-11 py-3.5 text-[15px] text-[#86868B] cursor-not-allowed outline-none"
                       />
                     </div>
-                  </button>
-                ))}
+                    <p className="mt-2 text-[12px] text-[#86868B]">Email terikat pada akun dan tidak dapat diubah.</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-[13px] font-medium text-[#1D1D1F] dark:text-[#F5F5F7] mb-2">Nama Lengkap</label>
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#86868B]" />
+                      <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                        className="w-full rounded-2xl border border-transparent bg-[#F5F5F7] dark:bg-white/[0.06] px-11 py-3.5 text-[15px] text-foreground outline-none transition-all placeholder:text-[#8E8E93] focus:border-[#0071E3]/20 focus:bg-white focus:ring-4 focus:ring-[#0071E3]/10 dark:focus:bg-white/[0.08]"
+                        placeholder="Masukkan nama kamu"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[13px] font-medium text-[#1D1D1F] dark:text-[#F5F5F7] mb-2">Bahasa Utama Lesson</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setLangPref("id")}
+                        className={`py-3 px-4 rounded-xl border text-[14px] font-medium transition-all ${
+                          langPref === "id" 
+                            ? "border-[#0071E3] bg-[#0071E3]/5 text-[#0071E3]" 
+                            : "border-[#D2D2D7]/60 dark:border-white/10 bg-transparent text-[#86868B] hover:border-[#86868B]"
+                        }`}
+                      >
+                        Bahasa Indonesia
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setLangPref("en")}
+                        className={`py-3 px-4 rounded-xl border text-[14px] font-medium transition-all ${
+                          langPref === "en" 
+                            ? "border-[#0071E3] bg-[#0071E3]/5 text-[#0071E3]" 
+                            : "border-[#D2D2D7]/60 dark:border-white/10 bg-transparent text-[#86868B] hover:border-[#86868B]"
+                        }`}
+                      >
+                        English
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t border-[#D2D2D7]/40 dark:border-white/10 flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={profileLoading}
+                      className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0071E3] px-8 py-3 text-[14px] font-medium text-white shadow-sm transition-all hover:bg-[#0077ED] disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {profileLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      Simpan Perubahan
+                    </button>
+                  </div>
+                </form>
               </div>
-            </article>
+            )}
 
-            <article className="rounded-[30px] border border-black/[0.06] bg-[#FBFBFD] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.07)] dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_24px_60px_rgba(0,0,0,0.28)] sm:p-7">
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#FF453A]/10 text-[#FF453A]">
-                  <Lock className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B]">
-                    Akun
-                  </p>
-                  <h2 className="mt-1 font-display text-[26px] font-semibold tracking-tight text-foreground">
-                    Sesi login
-                  </h2>
-                </div>
+            {activeTab === "security" && (
+              <div className="animate-in fade-in duration-300">
+                <h2 className="text-[20px] font-semibold text-foreground mb-6">Ubah Password</h2>
+                
+                <form onSubmit={handleSecuritySubmit} className="space-y-6">
+                  <div>
+                    <label className="block text-[13px] font-medium text-[#1D1D1F] dark:text-[#F5F5F7] mb-2">Password Saat Ini</label>
+                    <input
+                      type="password"
+                      value={oldPassword}
+                      onChange={(e) => setOldPassword(e.target.value)}
+                      required
+                      className="w-full rounded-2xl border border-transparent bg-[#F5F5F7] dark:bg-white/[0.06] px-4 py-3.5 text-[15px] text-foreground outline-none transition-all placeholder:text-[#8E8E93] focus:border-[#0071E3]/20 focus:bg-white focus:ring-4 focus:ring-[#0071E3]/10 dark:focus:bg-white/[0.08]"
+                      placeholder="••••••••"
+                    />
+                  </div>
+
+                  <div className="pt-2">
+                    <label className="block text-[13px] font-medium text-[#1D1D1F] dark:text-[#F5F5F7] mb-2">Password Baru</label>
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      required
+                      className="w-full rounded-2xl border border-transparent bg-[#F5F5F7] dark:bg-white/[0.06] px-4 py-3.5 text-[15px] text-foreground outline-none transition-all placeholder:text-[#8E8E93] focus:border-[#0071E3]/20 focus:bg-white focus:ring-4 focus:ring-[#0071E3]/10 dark:focus:bg-white/[0.08]"
+                      placeholder="Min. 8 karakter"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[13px] font-medium text-[#1D1D1F] dark:text-[#F5F5F7] mb-2">Konfirmasi Password Baru</label>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      className="w-full rounded-2xl border border-transparent bg-[#F5F5F7] dark:bg-white/[0.06] px-4 py-3.5 text-[15px] text-foreground outline-none transition-all placeholder:text-[#8E8E93] focus:border-[#0071E3]/20 focus:bg-white focus:ring-4 focus:ring-[#0071E3]/10 dark:focus:bg-white/[0.08]"
+                      placeholder="Ulangi password baru"
+                    />
+                  </div>
+
+                  <div className="pt-6 border-t border-[#D2D2D7]/40 dark:border-white/10 flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={securityLoading}
+                      className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0071E3] px-8 py-3 text-[14px] font-medium text-white shadow-sm transition-all hover:bg-[#0077ED] disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {securityLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      Update Password
+                    </button>
+                  </div>
+                </form>
               </div>
+            )}
 
-              <p className="mt-4 text-[14px] leading-6 text-[#86868B]">
-                Keluar dari sesi saat ini jika kamu ingin mengakhiri akses pada perangkat ini.
-              </p>
-
-              <button
-                onClick={handleLogout}
-                className="mt-6 flex w-full items-center justify-between rounded-[22px] border border-[#FF453A]/15 bg-[#FF453A]/6 px-4 py-4 text-left transition-colors hover:bg-[#FF453A]/10"
-              >
-                <div>
-                  <span className="block text-[14px] font-medium text-[#FF453A]">Keluar</span>
-                  <span className="mt-1 block text-[12px] text-[#86868B]">Kembali ke halaman utama setelah logout.</span>
-                </div>
-                <div className="h-5 w-9 rounded-full bg-[#FF453A] p-0.5">
-                  <div className="h-4 w-4 translate-x-4 rounded-full bg-white" />
-                </div>
-              </button>
-            </article>
           </div>
-        </section>
+        </div>
       </main>
     </div>
   );

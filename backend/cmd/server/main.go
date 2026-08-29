@@ -76,6 +76,7 @@ func main() {
 		r.Get("/github/callback", authH.GitHubCallback)
 		r.With(authMiddleware.Authenticate).Get("/me", authH.Me)
 		r.With(authMiddleware.Authenticate).Patch("/me", authH.UpdateMe)
+		r.With(authMiddleware.Authenticate).Post("/me/password", authH.ChangePassword)
 	})
 
 	// Public content routes

@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import {
   BookOpen, Moon, Sun, Menu, X, Search,
-  LogOut, LayoutDashboard,
+  LogOut, LayoutDashboard, User, Settings,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
@@ -29,12 +29,26 @@ export default function Navbar({ lang = "id" }: { lang?: "id" | "en" }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled]     = useState(false);
   const [mounted, setMounted]       = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    const onClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    if (dropdownOpen) {
+      window.addEventListener("click", onClickOutside);
+    }
+    return () => window.removeEventListener("click", onClickOutside);
+  }, [dropdownOpen]);
 
   useEffect(() => {
     setMounted(true);
@@ -109,11 +123,45 @@ export default function Navbar({ lang = "id" }: { lang?: "id" | "en" }) {
           {state.loading ? (
             <div className="w-7 h-7 rounded-full bg-[#F5F5F7] dark:bg-white/10 animate-pulse" />
           ) : state.user ? (
-            /* Logged-in: avatar → link to profile */
-            <Link href={`/profile/${state.user.name}`} title={state.user.name}
-              className="w-7 h-7 rounded-full bg-[#0071E3] flex items-center justify-center text-white text-[12px] font-semibold hover:bg-[#0077ED] transition-colors shrink-0">
-              {state.user.name.charAt(0).toUpperCase()}
-            </Link>
+            /* Logged-in: avatar → dropdown */
+            <div className="relative" ref={dropdownRef}>
+              <button 
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                title={state.user.name}
+                className="w-7 h-7 rounded-full bg-[#0071E3] flex items-center justify-center text-white text-[12px] font-semibold hover:bg-[#0077ED] transition-colors shrink-0 outline-none focus:ring-2 focus:ring-[#0071E3]/20"
+              >
+                {state.user.name.charAt(0).toUpperCase()}
+              </button>
+              
+              {/* Dropdown Menu */}
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.12)] overflow-hidden origin-top-right animate-in fade-in zoom-in-95 duration-100">
+                  <div className="px-4 py-3 border-b border-black/5 dark:border-white/5">
+                    <p className="text-[14px] font-medium text-foreground truncate">{state.user.name}</p>
+                    <p className="text-[12px] text-[#86868B] truncate">{state.user.email}</p>
+                  </div>
+                  <div className="p-1">
+                    <Link href="/dashboard" onClick={() => setDropdownOpen(false)} className="flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium text-foreground hover:bg-[#F5F5F7] dark:hover:bg-white/5 rounded-xl transition-colors">
+                      <LayoutDashboard className="w-4 h-4 text-[#86868B]" /> Dashboard
+                    </Link>
+                    <Link href={`/profile/${state.user.name}`} onClick={() => setDropdownOpen(false)} className="flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium text-foreground hover:bg-[#F5F5F7] dark:hover:bg-white/5 rounded-xl transition-colors">
+                      <User className="w-4 h-4 text-[#86868B]" /> Profil
+                    </Link>
+                    <Link href="/settings" onClick={() => setDropdownOpen(false)} className="flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium text-foreground hover:bg-[#F5F5F7] dark:hover:bg-white/5 rounded-xl transition-colors">
+                      <Settings className="w-4 h-4 text-[#86868B]" /> Pengaturan Akun
+                    </Link>
+                  </div>
+                  <div className="p-1 border-t border-black/5 dark:border-white/5">
+                    <button 
+                      onClick={() => { logout(); setDropdownOpen(false); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium text-[#FF453A] hover:bg-[#FF453A]/10 rounded-xl transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" /> Keluar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           ) : (
             /* Guest */
             <div className="flex items-center gap-2">
@@ -169,12 +217,18 @@ export default function Navbar({ lang = "id" }: { lang?: "id" | "en" }) {
 
             {/* Auth mobile */}
             {state.user ? (
-              <div className="flex items-center gap-3">
-                <Link href={`/profile/${state.user.name}`} className="text-[14px] text-foreground flex items-center gap-1.5" onClick={() => setMobileOpen(false)}>
-                  <LayoutDashboard className="w-4 h-4" /> Profil
+              <div className="flex flex-col gap-1 mt-2">
+                <Link href="/dashboard" className="text-[14px] text-foreground flex items-center gap-2.5 py-2 px-2 hover:bg-[#F5F5F7] dark:hover:bg-white/5 rounded-xl transition-colors" onClick={() => setMobileOpen(false)}>
+                  <LayoutDashboard className="w-4 h-4 text-[#86868B]" /> Dashboard
+                </Link>
+                <Link href={`/profile/${state.user.name}`} className="text-[14px] text-foreground flex items-center gap-2.5 py-2 px-2 hover:bg-[#F5F5F7] dark:hover:bg-white/5 rounded-xl transition-colors" onClick={() => setMobileOpen(false)}>
+                  <User className="w-4 h-4 text-[#86868B]" /> Profil
+                </Link>
+                <Link href="/settings" className="text-[14px] text-foreground flex items-center gap-2.5 py-2 px-2 hover:bg-[#F5F5F7] dark:hover:bg-white/5 rounded-xl transition-colors" onClick={() => setMobileOpen(false)}>
+                  <Settings className="w-4 h-4 text-[#86868B]" /> Pengaturan Akun
                 </Link>
                 <button onClick={() => { logout(); setMobileOpen(false); }}
-                  className="text-[14px] text-[#FF453A] flex items-center gap-1.5">
+                  className="text-[14px] text-[#FF453A] flex items-center gap-2.5 py-2 px-2 hover:bg-[#FF453A]/10 rounded-xl transition-colors text-left">
                   <LogOut className="w-4 h-4" /> Keluar
                 </button>
               </div>

@@ -40,6 +40,8 @@ export const api = {
     me: () => request<UserProfile>("/api/auth/me"),
     updateMe: (data: { name?: string; lang_pref?: string }) =>
       request("/api/auth/me", { method: "PATCH", body: JSON.stringify(data) }),
+    changePassword: (data: { old_password?: string; new_password?: string }) =>
+      request("/api/auth/me/password", { method: "POST", body: JSON.stringify(data) }),
   },
   topics: {
     list: () => request<Topic[]>("/api/topics"),

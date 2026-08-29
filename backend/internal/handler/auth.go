@@ -255,6 +255,49 @@ func (h *AuthHandler) UpdateMe(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"message": "updated"})
 }
 
+func (h *AuthHandler) ChangePassword(w http.ResponseWriter, r *http.Request) {
+	userID := middleware.GetUserID(r)
+	var req struct {
+		OldPassword string `json:"old_password"`
+		NewPassword string `json:"new_password"`
+	}
+	if !decodeJSONBody(w, r, &req, 32<<10) {
+		return
+	}
+	
+	if len(req.NewPassword) < 8 {
+		jsonError(w, "new password must be at least 8 characters", http.StatusBadRequest)
+		return
+	}
+
+	var hash string
+	err := h.db.QueryRow(r.Context(), `SELECT password_hash FROM users WHERE id = $1 AND provider = 'local'`, userID).Scan(&hash)
+	if err != nil {
+		jsonError(w, "user not found or is using external provider", http.StatusBadRequest)
+		return
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(req.OldPassword)); err != nil {
+		jsonError(w, "incorrect old password", http.StatusUnauthorized)
+		return
+	}
+
+	newHash, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		jsonError(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+
+	_, err = h.db.Exec(r.Context(), `UPDATE users SET password_hash = $1 WHERE id = $2`, string(newHash), userID)
+	if err != nil {
+		jsonError(w, "failed to update password", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"message": "password updated"})
+}
+
 // ── helpers ──────────────────────────────────────────────────────────────
 
 func generateJWT(userID, secret string, expiry time.Duration) (string, error) {
