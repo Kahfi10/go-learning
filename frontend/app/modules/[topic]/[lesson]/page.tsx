@@ -359,7 +359,7 @@ export default function LessonPage() {
                     defaultCode={getLastCode(topic, lesson) ?? data.starterCode}
                     onCodeChange={(c) => saveCode(topic, lesson, c)}
                     onRun={() => saveResumeState(topic, lesson, { hasRunCode: true, viewedAt: new Date().toISOString() })}
-                    height="calc(100vh - 220px)"
+                    height="calc(100vh - 340px)"
                   />
                   {completionHint && !done && (
                     <div className="mt-4 rounded-[14px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white/80 dark:bg-[#17181A] px-4 py-3">

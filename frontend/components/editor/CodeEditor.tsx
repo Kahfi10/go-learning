@@ -34,14 +34,21 @@ export default function CodeEditor({ defaultCode, onCodeChange, height = "320px"
   const [result, setResult] = useState<ExecuteResult | null>(null);
   const [running, setRunning] = useState(false);
   const [copied, setCopied] = useState(false);
-  const lastDefaultRef = useRef(defaultCode);
+  const initializedRef = useRef(false);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (defaultCode !== lastDefaultRef.current && code === lastDefaultRef.current) {
+    if (!initializedRef.current) {
+      initializedRef.current = true;
       setCode(defaultCode);
     }
-    lastDefaultRef.current = defaultCode;
-  }, [code, defaultCode]);
+  }, [defaultCode]);
+
+  useEffect(() => {
+    if (result !== null && resultRef.current) {
+      resultRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [result]);
 
   function handleChange(val: string | undefined) {
     const v = val ?? "";
@@ -63,7 +70,11 @@ export default function CodeEditor({ defaultCode, onCodeChange, height = "320px"
     }
   }
 
-  function reset() { setCode(defaultCode); setResult(null); onCodeChange?.(defaultCode); }
+  function reset() {
+    setCode(defaultCode);
+    setResult(null);
+    onCodeChange?.(defaultCode);
+  }
 
   async function copyCode() {
     await navigator.clipboard.writeText(code);
@@ -73,7 +84,6 @@ export default function CodeEditor({ defaultCode, onCodeChange, height = "320px"
 
   return (
     <div className="rounded-[18px] overflow-hidden border border-[#D2D2D7]/30 dark:border-white/10 shadow-md">
-      {/* Toolbar */}
       <div className="flex items-center justify-between px-4 py-2.5 bg-[#1C1C1E] border-b border-white/10">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-[#FF5F57]" />
@@ -102,7 +112,6 @@ export default function CodeEditor({ defaultCode, onCodeChange, height = "320px"
         </div>
       </div>
 
-      {/* Monaco */}
       <MonacoEditor
         height={height}
         language="go"
@@ -125,9 +134,8 @@ export default function CodeEditor({ defaultCode, onCodeChange, height = "320px"
         }}
       />
 
-      {/* Output */}
       {result !== null && (
-        <div className="bg-[#161618] border-t border-white/10 p-4">
+        <div ref={resultRef} className="bg-[#161618] border-t border-white/10 p-4">
           <div className="flex items-center gap-2 mb-2">
             <span className={cn("text-[11px] font-medium font-mono", result.timedOut ? "text-[#FF9500]" : result.stderr ? "text-[#FF453A]" : "text-[#30D158]")}>
               {result.timedOut ? "⏱ TIMEOUT" : result.stderr && !result.stdout ? "✗ ERROR" : "✓ OUTPUT"}

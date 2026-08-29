@@ -178,9 +178,11 @@ export default function LandingPage() {
 
   useLayoutEffect(() => {
     let ctx: any;
+    let mounted = true;
     const init = async () => {
       const { gsap }        = await import("gsap");
       const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+      if (!mounted) return;
       gsap.registerPlugin(ScrollTrigger);
 
       ctx = gsap.context(() => {
