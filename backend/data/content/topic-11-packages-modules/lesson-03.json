@@ -8,24 +8,73 @@
   "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t// TODO: import \"math/rand\" with alias 'rng'\n\t// TODO: import \"math\" normally\n\t// TODO: import \"strings\" with alias 'str'\n)\n\nfunc main() {\n\t// Use rng.Intn(100) to get a random number\n\tfmt.Println(\"Random number:\", 42) // replace 42 with rng.Intn(100)\n\n\t// Use math.Sqrt to compute square root of 144\n\tfmt.Println(\"Sqrt(144):\", 12.0) // replace with math.Sqrt(144)\n\n\t// Use str.ToTitle to convert a string\n\tfmt.Println(str.ToTitle(\"hello gopher\")) // uncomment after importing\n}",
   "quiz": [
     {
-      "question_id": "Apa tujuan dari blank import (`import _ \"pkg\"`) di Go?",
-      "question_en": "What is the purpose of a blank import (`import _ \"pkg\"`) in Go?",
-      "options_id": ["Menjalankan fungsi init() package tanpa menggunakan identifier apapun", "Mengimpor package tanpa nama", "Membuat package tersembunyi", "Mencegah package dari garbage collection"],
-      "options_en": ["Execute the package's init() without using any identifiers", "Import a package without a name", "Make the package invisible", "Prevent the package from garbage collection"],
+      "question_id": "Mengapa import alias seperti `yaml \"gopkg.in/yaml.v3\"` berguna pada contoh?",
+      "question_en": "Why is an import alias like `yaml \"gopkg.in/yaml.v3\"` useful in the example?",
+      "options_id": ["Agar package bisa dipakai dengan nama yang lebih jelas daripada nama terakhir di path", "Agar package menjadi blank import", "Agar exported identifier tidak perlu prefix apa pun", "Agar package hanya bisa di-import sekali"],
+      "options_en": ["So the package can be used with a clearer name than the last path segment", "So the package becomes a blank import", "So exported identifiers no longer need a prefix", "So the package can only be imported once"],
       "correct": 0
     },
     {
-      "question_id": "Bagaimana cara memberikan alias 'rng' untuk package math/rand?",
-      "question_en": "How do you give the alias 'rng' to the math/rand package?",
-      "options_id": ["rng \"math/rand\"", "\"math/rand\" as rng", "import rng from \"math/rand\"", "alias rng = math/rand"],
-      "options_en": ["rng \"math/rand\"", "\"math/rand\" as rng", "import rng from \"math/rand\"", "alias rng = math/rand"],
+      "question_id": "Sintaks mana yang benar untuk memberi alias `rng` pada `math/rand`?",
+      "question_en": "Which syntax correctly gives the alias `rng` to `math/rand`?",
+      "options_id": ["`rng \"math/rand\"`", "`\"math/rand\" as rng`", "`import rng from \"math/rand\"`", "`alias rng = math/rand`"],
+      "options_en": ["`rng \"math/rand\"`", "`\"math/rand\" as rng`", "`import rng from \"math/rand\"`", "`alias rng = math/rand`"],
       "correct": 0
     },
     {
-      "question_id": "Package di direktori `internal/` hanya bisa diimport dari?",
-      "question_en": "Packages in the `internal/` directory can only be imported from?",
-      "options_id": ["Module yang sama (parent dari direktori internal)", "Package manapun", "Hanya dari package main", "Hanya dari stdlib"],
-      "options_en": ["The same module (parent of the internal directory)", "Any package", "Only from package main", "Only from stdlib"],
+      "question_id": "Apa tradeoff utama dari dot import (`import . \"fmt\"`) menurut lesson?",
+      "question_en": "What is the main tradeoff of a dot import (`import . \"fmt\"`) according to the lesson?",
+      "options_id": ["Membuat semua exported identifier tersedia tanpa prefix package, tetapi mengurangi kejelasan sehingga biasanya dihindari", "Membuat package hanya bisa dipakai untuk testing", "Menjalankan `init()` tanpa memakai identifier", "Mengubah package menjadi internal-only"],
+      "options_en": ["It makes exported identifiers available without a package prefix, but reduces clarity so it is usually avoided", "It makes the package usable only for testing", "It runs `init()` without using identifiers", "It makes the package internal-only"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa blank import cocok untuk `github.com/lib/pq` pada contoh `database/sql`?",
+      "question_en": "Why is a blank import appropriate for `github.com/lib/pq` in the `database/sql` example?",
+      "options_id": ["Karena kita butuh identifier `pq.Open` langsung", "Karena package itu mendaftarkan driver melalui `init()` sebagai side effect", "Karena blank import lebih cepat daripada import biasa", "Karena `database/sql` hanya menerima package yang diawali `_`"],
+      "options_en": ["Because we need the `pq.Open` identifier directly", "Because the package registers a driver via `init()` as a side effect", "Because blank imports are faster than normal imports", "Because `database/sql` only accepts packages imported with `_`"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang TIDAK bisa dilakukan dengan blank import?",
+      "question_en": "What can you NOT do with a blank import?",
+      "options_id": ["Menjalankan `init()` package", "Memakai exported identifier package itu secara langsung dengan nama package", "Mendaftarkan driver database sebagai side effect", "Memicu inisialisasi package"],
+      "options_en": ["Run the package's `init()`", "Use that package's exported identifiers directly by package name", "Register a database driver as a side effect", "Trigger package initialization"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang paling akurat tentang import path di Go menurut lesson?",
+      "question_en": "What is most accurate about import paths in Go according to the lesson?",
+      "options_id": ["Import path adalah string unik yang mengidentifikasi package", "Import path selalu harus berupa URL lengkap dengan https://", "Import path ditentukan oleh nama file `.go`", "Import path hanya berlaku untuk dependency eksternal"],
+      "options_en": ["An import path is the unique string that identifies a package", "An import path must always be a full URL with https://", "An import path is determined by the `.go` filename", "Import paths only apply to external dependencies"],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika sebuah project luar module mencoba mengimpor `myapp/internal/db`, apa yang terjadi menurut aturan `internal/`?",
+      "question_en": "If an external project tries to import `myapp/internal/db`, what happens under the `internal/` rule?",
+      "options_id": ["Import valid selama path-nya benar", "Import ditolak karena `internal/` membatasi akses dari luar parent yang diizinkan", "Import valid hanya jika memakai alias", "Import otomatis menjadi blank import"],
+      "options_en": ["The import is valid as long as the path is correct", "The import is rejected because `internal/` restricts access from outside the allowed parent scope", "The import is valid only if an alias is used", "The import automatically becomes a blank import"],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa alias juga berguna saat dua package memiliki nama yang bentrok, seperti contoh `fmt` dan `github.com/user/fmt`?",
+      "question_en": "Why are aliases also useful when two packages have colliding names, like `fmt` and `github.com/user/fmt` in the example?",
+      "options_id": ["Karena alias mengizinkan kedua package dipakai tanpa ambiguitas di call site", "Karena tanpa alias salah satu package otomatis menjadi unexported", "Karena alias menonaktifkan compiler error", "Karena package dengan nama sama tidak boleh di-import bersamaan dalam Go"],
+      "options_en": ["Because an alias lets both packages be used without ambiguity at the call site", "Because without an alias one package automatically becomes unexported", "Because aliases disable compiler errors", "Because packages with the same name may never be imported together in Go"],
+      "correct": 0
+    },
+    {
+      "question_id": "Pada contoh dot import `import . \"fmt\"`, pemanggilan mana yang menjadi valid?",
+      "question_en": "In the dot-import example `import . \"fmt\"`, which call becomes valid?",
+      "options_id": ["`fmt.Println(\"x\")` saja", "`Println(\"x\")` tanpa prefix package", "`_.Println(\"x\")`", "`fmt->Println(\"x\")`"],
+      "options_en": ["Only `fmt.Println(\"x\")`", "`Println(\"x\")` without a package prefix", "`_.Println(\"x\")`", "`fmt->Println(\"x\")`"],
+      "correct": 1
+    },
+    {
+      "question_id": "Pernyataan mana yang paling tepat tentang direktori `pkg/` pada diagram lesson?",
+      "question_en": "Which statement is most accurate about the `pkg/` directory in the lesson diagram?",
+      "options_id": ["Itu konvensi untuk package yang dibagikan, bukan mekanisme pembatasan akses seperti `internal/`", "Direktori `pkg/` membuat semua package di dalamnya menjadi private", "Hanya package di `pkg/` yang boleh punya `init()`", "Go mewajibkan semua library berada di `pkg/`"],
+      "options_en": ["It is a convention for shareable packages, not an access restriction mechanism like `internal/`", "The `pkg/` directory makes every package inside it private", "Only packages in `pkg/` may define `init()`", "Go requires all libraries to live under `pkg/`"],
       "correct": 0
     }
   ]

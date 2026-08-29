@@ -8,25 +8,74 @@
   "starterCode": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"net/http\"\n)\n\ntype SearchRequest struct {\n\tQuery string `json:\"query\"`\n\tLimit int    `json:\"limit\"`\n}\n\ntype SearchResponse struct {\n\tQuery   string   `json:\"query\"`\n\tResults []string `json:\"results\"`\n\tTotal   int      `json:\"total\"`\n}\n\n// searchHandler handles GET /search?q=golang&limit=5\nfunc searchHandler(w http.ResponseWriter, r *http.Request) {\n\tif r.Method != http.MethodGet {\n\t\thttp.Error(w, \"Method not allowed\", http.StatusMethodNotAllowed)\n\t\treturn\n\t}\n\n\t// TODO: read 'q' query param\n\tq := r.URL.Query().Get(\"q\")\n\tif q == \"\" {\n\t\thttp.Error(w, \"query param 'q' is required\", http.StatusBadRequest)\n\t\treturn\n\t}\n\n\t// TODO: read 'limit' query param (default to 10)\n\t// Hint: use strconv.Atoi\n\n\tresults := []string{\"result1 for \" + q, \"result2 for \" + q}\n\tresponse := SearchResponse{\n\t\tQuery:   q,\n\t\tResults: results,\n\t\tTotal:   len(results),\n\t}\n\n\tw.Header().Set(\"Content-Type\", \"application/json\")\n\tjson.NewEncoder(w).Encode(response)\n}\n\nfunc main() {\n\tmux := http.NewServeMux()\n\tmux.HandleFunc(\"/search\", searchHandler)\n\n\tfmt.Println(\"Server on :8080 — try: curl 'localhost:8080/search?q=golang'\")\n\thttp.ListenAndServe(\":8080\", mux)\n}",
   "quiz": [
     {
-      "question_id": "Cara membaca query parameter 'id' dari URL /users?id=42?",
-      "question_en": "How do you read the query parameter 'id' from URL /users?id=42?",
-      "options_id": ["r.URL.Query().Get(\"id\")", "r.Params[\"id\"]", "r.Query(\"id\")", "r.PathValue(\"id\")"],
-      "options_en": ["r.URL.Query().Get(\"id\")", "r.Params[\"id\"]", "r.Query(\"id\")", "r.PathValue(\"id\")"],
+      "question_id": "Untuk URL `/users?id=42`, ekspresi mana yang membaca nilai query parameter `id`?",
+      "question_en": "For URL `/users?id=42`, which expression reads the `id` query parameter value?",
+      "options_id": ["`r.URL.Query().Get(\"id\")`", "`r.Params[\"id\"]`", "`r.PathValue(\"id\")`", "`r.Query(\"id\")`"],
+      "options_en": ["`r.URL.Query().Get(\"id\")`", "`r.Params[\"id\"]`", "`r.PathValue(\"id\")`", "`r.Query(\"id\")`"],
       "correct": 0
     },
     {
-      "question_id": "Cara terbaik untuk decode JSON body dari request adalah?",
-      "question_en": "The best way to decode the JSON body from a request is?",
-      "options_id": ["json.NewDecoder(r.Body).Decode(&req)", "json.Unmarshal(r.Body, &req)", "r.JSON.Decode(&req)", "http.ReadJSON(r, &req)"],
-      "options_en": ["json.NewDecoder(r.Body).Decode(&req)", "json.Unmarshal(r.Body, &req)", "r.JSON.Decode(&req)", "http.ReadJSON(r, &req)"],
+      "question_id": "Apa isi `r.URL.RawQuery` untuk request seperti `/search?name=alice&age=30`?",
+      "question_en": "What does `r.URL.RawQuery` contain for a request like `/search?name=alice&age=30`?",
+      "options_id": ["Hanya path `/search`", "Map query parameter yang sudah diparse", "String query mentah seperti `name=alice&age=30`", "Body request dalam bentuk string"],
+      "options_en": ["Only the path `/search`", "A parsed map of query parameters", "The raw query string such as `name=alice&age=30`", "The request body as a string"],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa `createUserHandler` memeriksa `r.Method` sebelum mencoba decode JSON body?",
+      "question_en": "Why does `createUserHandler` check `r.Method` before trying to decode the JSON body?",
+      "options_id": ["Agar body otomatis tertutup", "Agar request dengan method yang salah ditolak lebih awal dengan 405", "Karena `json.Decoder` hanya bekerja pada GET", "Karena `http.Error` hanya boleh dipanggil sebelum decode"],
+      "options_en": ["So the body closes automatically", "So requests with the wrong method are rejected early with 405", "Because `json.Decoder` only works on GET", "Because `http.Error` may only be called before decoding"],
+      "correct": 1
+    },
+    {
+      "question_id": "Cara yang paling sesuai dengan lesson untuk decode JSON body request adalah...",
+      "question_en": "The approach that best matches the lesson for decoding a request JSON body is...",
+      "options_id": ["`json.NewDecoder(r.Body).Decode(&req)`", "`json.Unmarshal(r.Body, &req)`", "`http.ReadJSON(r, &req)`", "`r.JSON.Decode(&req)`"],
+      "options_en": ["`json.NewDecoder(r.Body).Decode(&req)`", "`json.Unmarshal(r.Body, &req)`", "`http.ReadJSON(r, &req)`", "`r.JSON.Decode(&req)`"],
       "correct": 0
     },
     {
-      "question_id": "http.Error(w, msg, code) melakukan apa?",
-      "question_en": "What does http.Error(w, msg, code) do?",
-      "options_id": ["Menulis response dengan status code dan pesan teks", "Hanya mengeset status code", "Menulis ke error log server", "Menghentikan handler"],
-      "options_en": ["Writes a response with the given status code and text message", "Only sets the status code", "Writes to the server error log", "Stops the handler"],
+      "question_id": "Jika body JSON tidak valid, response mana yang paling sesuai dengan contoh lesson?",
+      "question_en": "If the JSON body is invalid, which response best matches the lesson example?",
+      "options_id": ["`http.Error(w, \"Invalid JSON: \"+err.Error(), http.StatusBadRequest)`", "`http.Error(w, \"Unauthorized\", http.StatusUnauthorized)`", "`w.WriteHeader(http.StatusCreated)`", "`panic(err)`"],
+      "options_en": ["`http.Error(w, \"Invalid JSON: \"+err.Error(), http.StatusBadRequest)`", "`http.Error(w, \"Unauthorized\", http.StatusUnauthorized)`", "`w.WriteHeader(http.StatusCreated)`", "`panic(err)`"],
       "correct": 0
+    },
+    {
+      "question_id": "Untuk form data `application/x-www-form-urlencoded`, urutan mana yang sesuai dengan lesson?",
+      "question_en": "For `application/x-www-form-urlencoded` form data, which sequence matches the lesson?",
+      "options_id": ["Panggil `r.ParseForm()` lalu baca dengan `r.FormValue(\"email\")`", "Panggil `json.NewDecoder(r.Body).Decode(&email)`", "Baca dengan `r.URL.Query().Get(\"email\")` tanpa parse form", "Gunakan `r.PathValue(\"email\")`"],
+      "options_en": ["Call `r.ParseForm()` then read with `r.FormValue(\"email\")`", "Call `json.NewDecoder(r.Body).Decode(&email)`", "Read with `r.URL.Query().Get(\"email\")` without parsing the form", "Use `r.PathValue(\"email\")`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa contoh response JSON mengatur `Content-Type` sebelum `json.NewEncoder(w).Encode(...)`?",
+      "question_en": "Why does the JSON response example set `Content-Type` before `json.NewEncoder(w).Encode(...)`?",
+      "options_id": ["Agar client tahu format body dan karena header harus diset sebelum body dikirim", "Karena encoder JSON akan gagal tanpa header itu", "Agar `r.Body` bisa ditutup", "Karena status 201 otomatis hilang tanpa header itu"],
+      "options_en": ["So the client knows the body format and because headers must be set before the body is sent", "Because the JSON encoder will fail without that header", "So `r.Body` can be closed", "Because status 201 disappears automatically without that header"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang dilakukan `http.Error(w, msg, code)` menurut lesson?",
+      "question_en": "According to the lesson, what does `http.Error(w, msg, code)` do?",
+      "options_id": ["Hanya mencetak ke server log", "Menulis status code dan pesan teks ke response", "Hanya mengganti header `Content-Type`", "Mengirim JSON error object secara otomatis"],
+      "options_en": ["It only prints to the server log", "It writes the status code and a text message to the response", "It only changes the `Content-Type` header", "It automatically sends a JSON error object"],
+      "correct": 1
+    },
+    {
+      "question_id": "Dengan pattern Go 1.22 `GET /users/{id}`, cara mengambil segmen path `id` adalah...",
+      "question_en": "With the Go 1.22 pattern `GET /users/{id}`, the way to get the `id` path segment is...",
+      "options_id": ["`r.URL.Query().Get(\"id\")`", "`r.FormValue(\"id\")`", "`r.PathValue(\"id\")`", "`r.Header.Get(\"id\")`"],
+      "options_en": ["`r.URL.Query().Get(\"id\")`", "`r.FormValue(\"id\")`", "`r.PathValue(\"id\")`", "`r.Header.Get(\"id\")`"],
+      "correct": 2
+    },
+    {
+      "question_id": "Pembedaan mana yang paling tepat antara query parameter dan path parameter pada lesson ini?",
+      "question_en": "Which distinction between a query parameter and a path parameter is most accurate in this lesson?",
+      "options_id": ["Keduanya selalu dibaca dengan `r.PathValue`", "Keduanya hanya bisa dibaca dari `r.URL.RawQuery`", "Query parameter dibaca dari header, path parameter dari body", "Query parameter biasanya dibaca dengan `r.URL.Query().Get`, sedangkan path parameter dari route pattern dibaca dengan `r.PathValue`"],
+      "options_en": ["Both are always read with `r.PathValue`", "Both can only be read from `r.URL.RawQuery`", "A query parameter is read from headers and a path parameter from the body", "A query parameter is usually read with `r.URL.Query().Get`, while a path parameter from a route pattern is read with `r.PathValue`"],
+      "correct": 3
     }
   ]
 }

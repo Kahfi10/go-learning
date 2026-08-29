@@ -8,24 +8,73 @@
   "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n\t\"sync\"\n)\n\n// isPrime checks if n is prime\nfunc isPrime(n int) bool {\n\tif n < 2 {\n\t\treturn false\n\t}\n\tfor i := 2; i <= int(math.Sqrt(float64(n))); i++ {\n\t\tif n%i == 0 {\n\t\t\treturn false\n\t\t}\n\t}\n\treturn true\n}\n\n// worker checks each number from jobs for primality\nfunc worker(id int, jobs <-chan int, results chan<- int, wg *sync.WaitGroup) {\n\tdefer wg.Done()\n\tfor n := range jobs {\n\t\tif isPrime(n) {\n\t\t\tresults <- n\n\t\t}\n\t}\n}\n\nfunc findPrimes(limit, numWorkers int) []int {\n\tjobs := make(chan int, limit)\n\tresults := make(chan int, limit)\n\tvar wg sync.WaitGroup\n\n\t// TODO: start numWorkers goroutines\n\tfor i := 0; i < numWorkers; i++ {\n\t\twg.Add(1)\n\t\tgo worker(i+1, jobs, results, &wg)\n\t}\n\n\t// TODO: send numbers 2..limit to jobs, then close(jobs)\n\tfor i := 2; i <= limit; i++ {\n\t\tjobs <- i\n\t}\n\tclose(jobs)\n\n\t// TODO: close results after all workers finish\n\tgo func() {\n\t\twg.Wait()\n\t\tclose(results)\n\t}()\n\n\tvar primes []int\n\tfor p := range results {\n\t\tprimes = append(primes, p)\n\t}\n\treturn primes\n}\n\nfunc main() {\n\tprimes := findPrimes(50, 4)\n\tfmt.Printf(\"Found %d primes up to 50\\n\", len(primes))\n\t// Note: order may vary due to concurrency\n}",
   "quiz": [
     {
-      "question_id": "Keuntungan utama worker pool dibanding membuat satu goroutine per item?",
-      "question_en": "The main advantage of a worker pool over creating one goroutine per item?",
-      "options_id": ["Mengontrol jumlah goroutine sehingga resource usage terbatas", "Kode lebih sederhana", "Goroutine berjalan lebih cepat", "Tidak perlu channel"],
-      "options_en": ["Controls the number of goroutines so resource usage is bounded", "Simpler code", "Goroutines run faster", "No channels needed"],
+      "question_id": "Masalah inti dari pola `go process(item)` untuk setiap item besar adalah...",
+      "question_en": "The core problem with the pattern `go process(item)` for every item in a large list is...",
+      "options_id": ["Jumlah goroutine bisa tumbuh tak terbatas dan penggunaan resource menjadi tidak terkontrol", "Setiap goroutine otomatis diblok oleh compiler", "Hasil jadi selalu berurutan", "Channel tidak bisa dipakai lagi"],
+      "options_en": ["The goroutine count can grow without bound and resource usage becomes uncontrolled", "Each goroutine is automatically blocked by the compiler", "Results become strictly ordered", "Channels can no longer be used"],
       "correct": 0
     },
     {
-      "question_id": "Mengapa kita memanggil close(jobs) setelah mengirim semua jobs?",
-      "question_en": "Why do we call close(jobs) after sending all jobs?",
-      "options_id": ["Agar workers tahu tidak ada job lagi dan bisa berhenti dari for-range loop", "Agar memori dibebaskan", "Agar goroutine bisa dimulai", "Agar WaitGroup bisa di-decrement"],
-      "options_en": ["So workers know there are no more jobs and can exit the for-range loop", "To free memory", "So goroutines can start", "So the WaitGroup can be decremented"],
+      "question_id": "Apa manfaat utama jumlah worker yang tetap pada worker pool?",
+      "question_en": "What is the main benefit of having a fixed number of workers in a worker pool?",
+      "options_id": ["Membatasi concurrency sehingga penggunaan resource lebih terkontrol", "Menjamin hasil selalu urut", "Menghapus kebutuhan akan `WaitGroup`", "Membuat semua jobs selesai dalam satu iterasi"],
+      "options_en": ["It bounds concurrency so resource usage is more controlled", "It guarantees results are always ordered", "It removes the need for a `WaitGroup`", "It makes all jobs finish in one iteration"],
       "correct": 0
     },
     {
-      "question_id": "Mengapa results channel ditutup di goroutine terpisah setelah wg.Wait()?",
-      "question_en": "Why is the results channel closed in a separate goroutine after wg.Wait()?",
-      "options_id": ["Agar main goroutine bisa mengumpulkan results sambil workers masih bekerja", "Agar workers bisa mengirim lebih banyak results", "Agar channel tidak leak", "Karena wg.Wait() harus dijalankan di goroutine terpisah"],
-      "options_en": ["So the main goroutine can collect results while workers are still running", "So workers can send more results", "So the channel doesn't leak", "Because wg.Wait() must run in a separate goroutine"],
+      "question_id": "Mengapa fungsi worker melakukan `for job := range jobs`?",
+      "question_en": "Why does the worker function use `for job := range jobs`?",
+      "options_id": ["Agar worker terus memproses job sampai channel `jobs` ditutup", "Agar worker hanya memproses satu job", "Agar `results` tertutup otomatis", "Agar tidak perlu `WaitGroup`"],
+      "options_en": ["So the worker keeps processing jobs until the `jobs` channel is closed", "So the worker processes only one job", "So `results` closes automatically", "So no `WaitGroup` is needed"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa `close(jobs)` penting setelah semua pekerjaan dikirim?",
+      "question_en": "Why is `close(jobs)` important after all work has been sent?",
+      "options_id": ["Agar worker tahu tidak ada job lagi dan dapat keluar dari loop range", "Agar memori channel langsung dibebaskan", "Agar `wg.Done()` dipanggil otomatis oleh runtime", "Agar hasil menjadi terurut"],
+      "options_en": ["So workers know there are no more jobs and can exit the range loop", "So channel memory is immediately freed", "So `wg.Done()` is automatically called by the runtime", "So results become ordered"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa `wg.Add(1)` dilakukan sebelum `go worker(...)`?",
+      "question_en": "Why is `wg.Add(1)` done before `go worker(...)`?",
+      "options_id": ["Agar `WaitGroup` sudah mencatat worker sebelum ia mungkin selesai dan memanggil `Done()`", "Agar worker bisa membaca `jobs` lebih cepat", "Agar channel `results` menjadi buffered", "Karena `Add` hanya boleh dipakai di goroutine utama"],
+      "options_en": ["So the `WaitGroup` has already counted the worker before it might finish and call `Done()`", "So the worker can read `jobs` faster", "So the `results` channel becomes buffered", "Because `Add` may only be used in the main goroutine"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa `results` ditutup di goroutine terpisah setelah `wg.Wait()`?",
+      "question_en": "Why is `results` closed in a separate goroutine after `wg.Wait()`?",
+      "options_id": ["Agar goroutine utama tetap bisa range membaca hasil saat worker masih berjalan", "Agar worker bisa menulis ke channel yang sudah tertutup", "Karena `wg.Wait()` wajib dijalankan di goroutine terpisah", "Untuk mengurutkan output berdasarkan ID"],
+      "options_en": ["So the main goroutine can keep ranging over results while workers are still running", "So workers can write to a channel that is already closed", "Because `wg.Wait()` must run in a separate goroutine", "To sort output by ID"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa bahaya jika `results` ditutup sebelum semua worker selesai mengirim hasil?",
+      "question_en": "What is the danger if `results` is closed before all workers finish sending?",
+      "options_id": ["Worker yang masih mengirim ke channel tertutup dapat menyebabkan panic", "Hasil otomatis di-buffer ke disk", "`jobs` akan ikut tertutup otomatis", "`WaitGroup` akan menambah counter sendiri"],
+      "options_en": ["A worker still sending to a closed channel can cause a panic", "Results are automatically buffered to disk", "`jobs` is automatically closed too", "The `WaitGroup` increments its counter by itself"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa lesson mencatat bahwa urutan hasil bisa bervariasi?",
+      "question_en": "Why does the lesson note that result order may vary?",
+      "options_id": ["Karena beberapa worker berjalan konkuren dan menyelesaikan job pada waktu berbeda", "Karena channel `results` selalu mengurutkan secara acak", "Karena `WaitGroup` membalik urutan hasil", "Karena Go melarang output berurutan di concurrency"],
+      "options_en": ["Because multiple workers run concurrently and finish jobs at different times", "Because the `results` channel always sorts randomly", "Because the `WaitGroup` reverses result order", "Because Go forbids ordered output in concurrency"],
+      "correct": 0
+    },
+    {
+      "question_id": "Pada versi dengan context, apa tujuan case `<-ctx.Done()` di worker?",
+      "question_en": "In the context-aware version, what is the purpose of the `<-ctx.Done()` case in the worker?",
+      "options_id": ["Menghentikan worker lebih awal saat ada cancellation atau timeout", "Mengosongkan channel `jobs`", "Mengganti `WaitGroup`", "Mengubah worker menjadi sender ke `jobs`"],
+      "options_en": ["To stop the worker early when there is cancellation or timeout", "To empty the `jobs` channel", "To replace the `WaitGroup`", "To turn the worker into a sender on `jobs`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Untuk jenis pekerjaan mana lesson secara eksplisit menyarankan worker pool?",
+      "question_en": "For which kind of work does the lesson explicitly suggest a worker pool?",
+      "options_id": ["Pemrosesan banyak file, scraping URL, API calls konkuren, batch DB, atau image resizing", "Hanya render template HTML tunggal", "Hanya parsing satu string kecil", "Hanya operasi yang harus berurutan ketat"],
+      "options_en": ["Processing many files, URL scraping, concurrent API calls, DB batch work, or image resizing", "Only rendering a single HTML template", "Only parsing one small string", "Only operations that must be strictly sequential"],
       "correct": 0
     }
   ]

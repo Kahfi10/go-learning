@@ -8,25 +8,74 @@
   "starterCode": "package main\n\nimport (\n\t\"strings\"\n\t\"testing\"\n)\n\n// isPalindrome returns true if s reads the same forwards and backwards\nfunc isPalindrome(s string) bool {\n\ts = strings.ToLower(s)\n\trunes := []rune(s)\n\tfor i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {\n\t\tif runes[i] != runes[j] {\n\t\t\treturn false\n\t\t}\n\t}\n\treturn true\n}\n\n// TestIsPalindrome tests the isPalindrome function\nfunc TestIsPalindrome(t *testing.T) {\n\t// TODO: test that \"racecar\" is a palindrome\n\t// TODO: test that \"hello\" is NOT a palindrome\n\t// TODO: test that \"level\" is a palindrome\n\t// TODO: test that empty string is a palindrome\n\n\tif !isPalindrome(\"racecar\") {\n\t\tt.Error(\"expected racecar to be a palindrome\")\n\t}\n}\n\nfunc main() {\n\t// In real code, tests are run with 'go test'\n\t// This main is just for the playground\n\tt := &testing.T{}\n\tTestIsPalindrome(t)\n}",
   "quiz": [
     {
-      "question_id": "Apa nama konvensi untuk file test di Go?",
-      "question_en": "What is the naming convention for test files in Go?",
-      "options_id": ["Nama file diakhiri dengan _test.go", "Nama file diawali dengan test_", "File disimpan di direktori test/", "Nama fungsi diawali dengan test"],
-      "options_en": ["File name ends with _test.go", "File name starts with test_", "File is stored in test/ directory", "Function name starts with test"],
+      "question_id": "Perubahan mana yang membuat `go test` tidak lagi mengenali sebuah fungsi sebagai unit test?",
+      "question_en": "Which change would make `go test` stop recognizing a function as a unit test?",
+      "options_id": ["Mengganti nama `TestAdd` menjadi `CheckAdd` tetapi tetap menerima `*testing.T`", "Memindahkan fungsi ke file bernama `_test.go`", "Menjaga nama `TestAdd` dan parameter `t *testing.T`", "Menjalankan `go test -run TestAdd`"],
+      "options_en": ["Renaming `TestAdd` to `CheckAdd` while still accepting `*testing.T`", "Moving the function into a file named `_test.go`", "Keeping the name `TestAdd` and parameter `t *testing.T`", "Running `go test -run TestAdd`"],
       "correct": 0
     },
     {
-      "question_id": "Perbedaan antara t.Error dan t.Fatal adalah?",
-      "question_en": "What is the difference between t.Error and t.Fatal?",
-      "options_id": ["Fatal menghentikan test saat itu juga, Error melanjutkan", "Fatal lebih keras dalam melaporkan error", "Error tidak mencetak pesan", "Tidak ada perbedaan"],
-      "options_en": ["Fatal stops the test immediately, Error continues", "Fatal reports errors more loudly", "Error doesn't print a message", "No difference"],
+      "question_id": "Manakah signature yang valid untuk sebuah test function biasa di Go?",
+      "question_en": "Which is a valid signature for a normal test function in Go?",
+      "options_id": ["`func TestSubtract()`", "`func TestSubtract(t testing.T)`", "`func TestSubtract(t *testing.T)`", "`func testSubtract(t *testing.T)`"],
+      "options_en": ["`func TestSubtract()`", "`func TestSubtract(t testing.T)`", "`func TestSubtract(t *testing.T)`", "`func testSubtract(t *testing.T)`"],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa `TestDivide` pada lesson memakai `t.Fatalf` saat muncul error yang tidak diharapkan?",
+      "question_en": "Why does `TestDivide` in the lesson use `t.Fatalf` when an unexpected error appears?",
+      "options_id": ["Agar test ditandai sebagai skipped", "Agar pengecekan hasil tidak lanjut ketika prasyarat dasar sudah gagal", "Karena `t.Errorf` tidak bisa memformat error", "Karena `Fatalf` otomatis menjalankan test lagi"],
+      "options_en": ["So the test is marked as skipped", "So result checks do not continue after a basic precondition has already failed", "Because `t.Errorf` cannot format errors", "Because `Fatalf` automatically reruns the test"],
+      "correct": 1
+    },
+    {
+      "question_id": "Perintah mana yang menonaktifkan test caching untuk semua package?",
+      "question_en": "Which command disables test caching for all packages?",
+      "options_id": ["`go test -run ./...`", "`go test -v ./...`", "`go test -count=1 ./...`", "`go test -nocache ./...`"],
+      "options_en": ["`go test -run ./...`", "`go test -v ./...`", "`go test -count=1 ./...`", "`go test -nocache ./...`"],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa yang sebenarnya difilter oleh flag `-run TestAdd`?",
+      "question_en": "What is actually filtered by the `-run TestAdd` flag?",
+      "options_id": ["Nama file `_test.go` yang mengandung `TestAdd`", "Nama package yang berakhiran `TestAdd`", "Hanya benchmark bernama `TestAdd`", "Test atau subtest yang namanya cocok dengan pola `TestAdd`"],
+      "options_en": ["`_test.go` file names containing `TestAdd`", "Package names ending with `TestAdd`", "Only benchmarks named `TestAdd`", "Tests or subtests whose names match the `TestAdd` pattern"],
+      "correct": 3
+    },
+    {
+      "question_id": "Kapan output dari `t.Log` biasanya terlihat?",
+      "question_en": "When is output from `t.Log` typically visible?",
+      "options_id": ["Hanya jika test memanggil `t.FailNow`", "Saat menjalankan dengan `-v` atau ketika test gagal", "Selalu, sama seperti `fmt.Println`", "Hanya pada benchmark"],
+      "options_en": ["Only if the test calls `t.FailNow`", "When running with `-v` or when the test fails", "Always, just like `fmt.Println`", "Only in benchmarks"],
+      "correct": 1
+    },
+    {
+      "question_id": "Untuk beberapa assertion yang independen dalam satu test, kapan `t.Error` lebih tepat daripada `t.Fatal`?",
+      "question_en": "For several independent assertions in one test, when is `t.Error` more appropriate than `t.Fatal`?",
+      "options_id": ["Saat Anda ingin mencatat kegagalan tetapi tetap memeriksa kondisi lain", "Saat test harus dihentikan sebelum cleanup", "Saat ingin skip test", "Saat tidak ada pesan error yang ingin dicetak"],
+      "options_en": ["When you want to record a failure but still check other conditions", "When the test must stop before cleanup", "When you want to skip the test", "When there is no error message to print"],
       "correct": 0
     },
     {
-      "question_id": "Perintah apa untuk menjalankan semua test secara verbose?",
-      "question_en": "Which command runs all tests with verbose output?",
-      "options_id": ["go test -v ./...", "go run test ./...", "go test --verbose", "go check ./..."],
-      "options_en": ["go test -v ./...", "go run test ./...", "go test --verbose", "go check ./..."],
-      "correct": 0
+      "question_id": "Jika `Divide(10, 0)` mengembalikan `0, nil`, pola pemeriksaan mana yang paling sesuai dengan lesson?",
+      "question_en": "If `Divide(10, 0)` returns `0, nil`, which check best matches the lesson?",
+      "options_id": ["`if err != nil { t.Fatal(...) }`", "`if err == nil { t.Error(...) }`", "`if result == 0 { t.Skip(...) }`", "`if err != nil { t.Log(...) }`"],
+      "options_en": ["`if err != nil { t.Fatal(...) }`", "`if err == nil { t.Error(...) }`", "`if result == 0 { t.Skip(...) }`", "`if err != nil { t.Log(...) }`"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa makna praktis bahwa Go punya framework testing built-in?",
+      "question_en": "What is the practical meaning of Go having a built-in testing framework?",
+      "options_id": ["Anda tetap harus memasang assertion library agar `go test` bekerja", "Hanya package internal Go yang bisa di-test", "Package `testing` dan tool `go test` sudah cukup untuk menulis dan menjalankan unit test dasar", "Semua test otomatis dijalankan saat `go run`"],
+      "options_en": ["You still must install an assertion library for `go test` to work", "Only Go internal packages can be tested", "The `testing` package and `go test` tool are enough to write and run basic unit tests", "All tests automatically run during `go run`"],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa perbedaan inti `t.Errorf` dibanding `t.Error`?",
+      "question_en": "What is the core difference between `t.Errorf` and `t.Error`?",
+      "options_id": ["`t.Errorf` menghentikan test, `t.Error` tidak", "`t.Errorf` memformat pesan dengan placeholder, tetapi keduanya tidak langsung menghentikan test", "`t.Errorf` hanya boleh dipakai di benchmark", "`t.Errorf` dipakai untuk skip"],
+      "options_en": ["`t.Errorf` stops the test while `t.Error` does not", "`t.Errorf` formats a message with placeholders, but neither one stops the test immediately", "`t.Errorf` may only be used in benchmarks", "`t.Errorf` is used for skipping"],
+      "correct": 1
     }
   ]
 }

@@ -8,25 +8,74 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\nfunc greet(name string, ch chan string) {\n\t// TODO: send a greeting message to the channel\n\tmsg := \"Hello, \" + name\n\t_ = msg\n}\n\nfunc main() {\n\t// TODO: create a string channel\n\tvar ch chan string\n\n\t// TODO: run greet as a goroutine\n\tgreet(\"Gopher\", ch)\n\n\t// TODO: receive the message from the channel and print it\n\tfmt.Println(\"done\")\n}",
   "quiz": [
     {
-      "question_id": "Apa yang terjadi ketika goroutine mencoba mengirim ke unbuffered channel yang belum ada receiver-nya?",
-      "question_en": "What happens when a goroutine tries to send to an unbuffered channel with no receiver?",
-      "options_id": ["Goroutine memblokir sampai ada receiver", "Nilai dibuang", "Program panic", "Nilai disimpan dalam antrian"],
-      "options_en": ["The goroutine blocks until there is a receiver", "The value is discarded", "The program panics", "The value is stored in a queue"],
+      "question_id": "Apa yang membuat unbuffered channel disebut synchronous?",
+      "question_en": "What makes an unbuffered channel synchronous?",
+      "options_id": ["Send dan receive harus bertemu agar operasi bisa lanjut", "Channel menyimpan antrian tak terbatas", "Operasi send tidak pernah memblokir", "Channel hanya bisa dipakai di goroutine utama"],
+      "options_en": ["Send and receive must rendezvous for the operation to proceed", "The channel stores an unlimited queue", "Send operations never block", "The channel can only be used in the main goroutine"],
       "correct": 0
     },
     {
-      "question_id": "Bagaimana cara membuat channel untuk tipe int?",
-      "question_en": "How do you create a channel for the int type?",
-      "options_id": ["make(chan int)", "new(chan int)", "chan int{}", "channel.New(int)"],
-      "options_en": ["make(chan int)", "new(chan int)", "chan int{}", "channel.New(int)"],
+      "question_id": "Pada contoh dua goroutine `sum` dan `x, y := <-ch, <-ch`, manakah jaminan yang benar?",
+      "question_en": "In the example with two `sum` goroutines and `x, y := <-ch, <-ch`, which guarantee is correct?",
+      "options_id": ["`x` selalu 7 dan `y` selalu 30", "Urutan `x` dan `y` tidak tentu, tetapi `x+y` tetap 37", "Program panic karena dua receive dalam satu baris", "Hanya satu nilai yang pernah diterima dari channel"],
+      "options_en": ["`x` is always 7 and `y` is always 30", "The order of `x` and `y` is not deterministic, but `x+y` is still 37", "The program panics because there are two receives on one line", "Only one value is ever received from the channel"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang terjadi jika goroutine melakukan `ch <- 42` pada unbuffered channel dan tidak ada receiver yang siap?",
+      "question_en": "What happens if a goroutine executes `ch <- 42` on an unbuffered channel and no receiver is ready?",
+      "options_id": ["Nilai otomatis masuk ke queue internal", "Goroutine memblokir sampai ada receiver yang siap", "Channel otomatis ditutup", "Send diam-diam gagal"],
+      "options_en": ["The value automatically goes into an internal queue", "The goroutine blocks until a receiver is ready", "The channel is automatically closed", "The send silently fails"],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika goroutine mengeksekusi `val := <-ch` pada unbuffered channel tanpa ada sender yang siap, apa yang terjadi?",
+      "question_en": "If a goroutine executes `val := <-ch` on an unbuffered channel with no sender ready, what happens?",
+      "options_id": ["Receive memblokir sampai ada goroutine yang mengirim", "Receive mengembalikan zero value secara otomatis", "Channel menutup dirinya sendiri", "Receiver berubah menjadi sender"],
+      "options_en": ["The receive blocks until another goroutine sends", "The receive automatically returns the zero value", "The channel closes itself", "The receiver becomes a sender"],
       "correct": 0
     },
     {
-      "question_id": "Apa yang terjadi saat melakukan `for val := range ch`?",
-      "question_en": "What happens with `for val := range ch`?",
-      "options_id": ["Loop terus menerima dari channel sampai channel ditutup", "Loop hanya berjalan sekali", "Loop berjalan selamanya tanpa berhenti", "Loop tidak bisa digunakan dengan channel"],
-      "options_en": ["Loop keeps receiving from channel until it is closed", "Loop only runs once", "Loop runs forever without stopping", "Loop cannot be used with channels"],
-      "correct": 0
+      "question_id": "Apa tujuan `close(ch)` pada contoh producer?",
+      "question_en": "What is the purpose of `close(ch)` in the producer example?",
+      "options_id": ["Membebaskan semua memori channel seketika", "Memaksa semua goroutine berhenti", "Memberi sinyal bahwa tidak ada nilai lagi sehingga loop `range` bisa selesai", "Mengubah channel menjadi buffered"],
+      "options_en": ["To free all channel memory immediately", "To force all goroutines to stop", "To signal that no more values will be sent so the `range` loop can finish", "To convert the channel into a buffered channel"],
+      "correct": 2
+    },
+    {
+      "question_id": "Pada desain producer-consumer dari lesson, siapa yang paling tepat menutup channel?",
+      "question_en": "In the producer-consumer design from the lesson, who should usually close the channel?",
+      "options_id": ["Receiver setelah menerima nilai pertama", "Goroutine sender atau producer setelah selesai mengirim semua nilai", "`main` sebelum meluncurkan producer", "Runtime secara otomatis setelah satu receive"],
+      "options_en": ["The receiver after receiving the first value", "The sending or producer goroutine after it has sent all values", "`main` before launching the producer", "The runtime automatically after one receive"],
+      "correct": 1
+    },
+    {
+      "question_id": "Tanda tangan fungsi mana yang paling jelas membatasi parameter agar hanya menerima data dari channel?",
+      "question_en": "Which function signature most clearly restricts the parameter to only receive data from the channel?",
+      "options_id": ["`func consume(ch chan int)`", "`func consume(ch chan<- int)`", "`func consume(ch <-chan int)`", "`func consume(ch *chan int)`"],
+      "options_en": ["`func consume(ch chan int)`", "`func consume(ch chan<- int)`", "`func consume(ch <-chan int)`", "`func consume(ch *chan int)`"],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa arti tipe `chan<- int`?",
+      "question_en": "What does the type `chan<- int` mean?",
+      "options_id": ["Channel `int` receive-only", "Channel `int` dua arah dengan buffer", "Pointer ke channel `int`", "Channel `int` send-only"],
+      "options_en": ["A receive-only `int` channel", "A bidirectional `int` channel with a buffer", "A pointer to an `int` channel", "A send-only `int` channel"],
+      "correct": 3
+    },
+    {
+      "question_id": "Apa yang harus benar agar `for v := range ch` berhenti secara normal?",
+      "question_en": "What must be true for `for v := range ch` to stop normally?",
+      "options_id": ["Receiver harus memanggil `break` pada elemen terakhir", "Channel harus ditutup setelah pengiriman selesai", "Channel harus dikonversi dulu ke slice", "`len(ch)` harus menjadi nol"],
+      "options_en": ["The receiver must call `break` on the last element", "The channel must be closed after sending is complete", "The channel must first be converted to a slice", "`len(ch)` must become zero"],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika `ch := make(chan int)` lalu satu-satunya goroutine mengeksekusi `ch <- 42` tanpa receiver, masalah dasarnya apa?",
+      "question_en": "If `ch := make(chan int)` and the only goroutine executes `ch <- 42` without a receiver, what is the core problem?",
+      "options_id": ["Syntax error", "Type mismatch", "Send memblokir tanpa receive pasangan sehingga terjadi deadlock", "Channel transparan berubah menjadi buffered"],
+      "options_en": ["A syntax error", "A type mismatch", "The send blocks without a matching receive, causing deadlock", "The channel transparently becomes buffered"],
+      "correct": 2
     }
   ]
 }

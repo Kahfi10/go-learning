@@ -8,55 +8,174 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\nfunc getPoint() (int, int) {\n\treturn 42, 100\n}\n\nfunc main() {\n\t// Zero values\n\tvar i int\n\tvar f float64\n\tvar b bool\n\tvar s string\n\tfmt.Printf(\"Zero values: int=%d, float=%f, bool=%t, string=%q\\n\", i, f, b, s)\n\n\t// Multiple assignment\n\tx, y, z := 10, 20, 30\n\tfmt.Println(\"x, y, z:\", x, y, z)\n\n\t// Swap trick\n\tx, y = y, x\n\tfmt.Println(\"Setelah swap x,y:\", x, y)\n\n\t// Blank identifier\n\t_, coordY := getPoint()\n\tfmt.Println(\"Hanya y:\", coordY)\n\n\t_ = z // gunakan z agar tidak error\n}",
   "quiz": [
     {
-      "question_id": "Apa zero value dari tipe data `bool` di Go?",
-      "question_en": "What is the zero value of the `bool` data type in Go?",
+      "question_id": "Pasangan tipe dan zero value mana yang benar menurut lesson?",
+      "question_en": "Which type and zero-value pair is correct according to the lesson?",
       "options_id": [
-        "nil",
-        "0",
-        "false",
-        "undefined"
+        "`bool` -> `true`",
+        "`string` -> `nil`",
+        "`map` -> `nil`",
+        "`int` -> `undefined`"
       ],
       "options_en": [
-        "nil",
-        "0",
-        "false",
-        "undefined"
+        "`bool` -> `true`",
+        "`string` -> `nil`",
+        "`map` -> `nil`",
+        "`int` -> `undefined`"
       ],
       "correct": 2
     },
     {
-      "question_id": "Apa fungsi dari blank identifier `_` di Go?",
-      "question_en": "What is the purpose of the blank identifier `_` in Go?",
+      "question_id": "Jika `var s string` dideklarasikan tanpa nilai awal, apa representasi output `%q` untuk `s`?",
+      "question_en": "If `var s string` is declared with no initial value, what `%q` output represents `s`?",
       "options_id": [
-        "Mendeklarasikan variabel private",
-        "Mengabaikan nilai yang tidak diperlukan",
-        "Membuat variabel dengan tipe dinamis",
-        "Menyimpan nilai sementara"
+        "`nil`",
+        "`\"\"`",
+        "`0`",
+        "`undefined`"
       ],
       "options_en": [
-        "Declare a private variable",
-        "Discard a value that is not needed",
-        "Create a dynamically typed variable",
-        "Store a temporary value"
+        "`nil`",
+        "`\"\"`",
+        "`0`",
+        "`undefined`"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa yang terjadi jika Anda mendeklarasikan variabel di Go tetapi tidak menggunakannya?",
-      "question_en": "What happens if you declare a variable in Go but never use it?",
+      "question_id": "Apa manfaat utama konsep zero value di Go menurut lesson?",
+      "question_en": "What is the main benefit of the zero-value concept in Go according to the lesson?",
       "options_id": [
-        "Program tetap berjalan dengan peringatan",
-        "Variabel dihapus otomatis oleh garbage collector",
-        "Kompilasi gagal dengan error",
-        "Variabel mendapatkan zero value"
+        "Menghindari masalah variabel yang tidak terinisialisasi",
+        "Membuat semua variabel otomatis menjadi konstanta",
+        "Menghilangkan kebutuhan tipe data",
+        "Mewajibkan semua variabel bernilai `nil`"
       ],
       "options_en": [
-        "The program runs with a warning",
-        "The variable is automatically removed by the garbage collector",
+        "It avoids the problem of uninitialized variables",
+        "It makes all variables automatically become constants",
+        "It removes the need for data types",
+        "It requires all variables to be `nil`"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Fitur apa yang ditunjukkan oleh `x, y, z := 1, 2, 3`?",
+      "question_en": "What feature is demonstrated by `x, y, z := 1, 2, 3`?",
+      "options_id": [
+        "Named return values",
+        "Multiple declaration/assignment in one line",
+        "Const grouping",
+        "Type conversion"
+      ],
+      "options_en": [
+        "Named return values",
+        "Multiple declaration/assignment in one line",
+        "Constant grouping",
+        "Type conversion"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `a, b = b, a` dianggap idiomatik pada lesson ini?",
+      "question_en": "Why is `a, b = b, a` considered idiomatic in this lesson?",
+      "options_id": [
+        "Karena menukar nilai dalam satu baris tanpa variabel temporary",
+        "Karena hanya bekerja untuk string",
+        "Karena menghasilkan nilai zero value sementara",
+        "Karena mengubah `a` dan `b` menjadi konstanta"
+      ],
+      "options_en": [
+        "Because it swaps values in one line without a temporary variable",
+        "Because it only works for strings",
+        "Because it creates temporary zero values",
+        "Because it turns `a` and `b` into constants"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa fungsi blank identifier `_` pada `_, y := getCoords()`?",
+      "question_en": "What does the blank identifier `_` do in `_, y := getCoords()`?",
+      "options_id": [
+        "Mengonversi nilai pertama menjadi `nil`",
+        "Mengabaikan nilai pertama yang tidak dibutuhkan",
+        "Menjadikan `y` package-level",
+        "Memaksa fungsi hanya mengembalikan satu nilai"
+      ],
+      "options_en": [
+        "It converts the first value to `nil`",
+        "It discards the first value that is not needed",
+        "It makes `y` package-level",
+        "It forces the function to return only one value"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Pada `for _, v := range nums`, mengapa `_` dipilih?",
+      "question_en": "In `for _, v := range nums`, why is `_` used?",
+      "options_id": [
+        "Karena hanya nilai elemen yang dipakai, bukan index",
+        "Karena `range` selalu butuh tiga variabel",
+        "Karena `v` harus berupa pointer",
+        "Karena index array di Go selalu private"
+      ],
+      "options_en": [
+        "Because only the element value is needed, not the index",
+        "Because `range` always needs three variables",
+        "Because `v` must be a pointer",
+        "Because array indexes in Go are always private"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang terjadi jika variabel lokal dideklarasikan tetapi tidak pernah digunakan?",
+      "question_en": "What happens if a local variable is declared but never used?",
+      "options_id": [
+        "Program tetap berjalan dengan warning",
+        "Compiler mengabaikannya secara diam-diam",
+        "Kompilasi gagal dengan error",
+        "Variabel otomatis dihapus saat runtime"
+      ],
+      "options_en": [
+        "The program still runs with a warning",
+        "The compiler silently ignores it",
         "Compilation fails with an error",
-        "The variable gets a zero value"
+        "The variable is automatically removed at runtime"
       ],
       "correct": 2
+    },
+    {
+      "question_id": "Contoh mana yang paling tepat menunjukkan zero value bertipe referensi dari tabel?",
+      "question_en": "Which example best shows a reference-like zero value from the table?",
+      "options_id": [
+        "`var n int` menghasilkan `0`",
+        "`var ok bool` menghasilkan `false`",
+        "`var m map[string]int` menghasilkan `nil`",
+        "`var s string` menghasilkan `\"go\"`"
+      ],
+      "options_en": [
+        "`var n int` yields `0`",
+        "`var ok bool` yields `false`",
+        "`var m map[string]int` yields `nil`",
+        "`var s string` yields `\"go\"`"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa starter code menulis `_ = z` di akhir?",
+      "question_en": "Why does the starter code include `_ = z` at the end?",
+      "options_id": [
+        "Untuk menghindari error variabel tidak digunakan",
+        "Untuk mereset `z` ke zero value",
+        "Untuk mengubah `z` menjadi konstanta",
+        "Untuk membuat `z` bisa diakses global"
+      ],
+      "options_en": [
+        "To avoid an unused-variable error",
+        "To reset `z` to its zero value",
+        "To turn `z` into a constant",
+        "To make `z` globally accessible"
+      ],
+      "correct": 0
     }
   ]
 }

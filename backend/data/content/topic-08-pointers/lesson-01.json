@@ -8,45 +8,174 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\nfunc doubleValue(n int) {\n\tn *= 2 // only changes local copy\n}\n\nfunc doublePointer(n *int) {\n\t*n *= 2 // modifies the original\n}\n\nfunc swap(a, b *int) {\n\t*a, *b = *b, *a\n}\n\nfunc main() {\n\t// Basic pointer operations\n\tx := 42\n\tp := &x\n\n\tfmt.Printf(\"Value of x: %d\\n\", x)\n\tfmt.Printf(\"Address of x: %p\\n\", p)\n\tfmt.Printf(\"Value via pointer: %d\\n\", *p)\n\n\t// Modify via pointer\n\t*p = 100\n\tfmt.Printf(\"x after *p=100: %d\\n\", x)\n\n\t// new(T)\n\tpi := new(int)\n\tfmt.Printf(\"new(int) zero value: %d\\n\", *pi)\n\t*pi = 99\n\tfmt.Printf(\"new(int) after assign: %d\\n\", *pi)\n\n\t// nil pointer check\n\tvar nilPtr *int\n\tfmt.Println(\"nil pointer:\", nilPtr == nil)\n\n\t// Without pointer — no change\n\tval := 5\n\tdoubleValue(val)\n\tfmt.Println(\"After doubleValue:\", val)\n\n\t// With pointer — changes original\n\tdoublePointer(&val)\n\tfmt.Println(\"After doublePointer:\", val)\n\n\t// Swap using pointers\n\ta, b := 10, 20\n\tfmt.Printf(\"Before swap: a=%d, b=%d\\n\", a, b)\n\tswap(&a, &b)\n\tfmt.Printf(\"After swap: a=%d, b=%d\\n\", a, b)\n}",
   "quiz": [
     {
-      "question_id": "Apa yang dilakukan operator `&` pada variabel?",
-      "question_en": "What does the `&` operator do to a variable?",
+      "question_id": "Setelah `x := 42; p := &x; *p = 100`, nilai `x` menjadi berapa?",
+      "question_en": "After `x := 42; p := &x; *p = 100`, what does `x` become?",
       "options_id": [
-        "Mengembalikan nilai variabel",
-        "Mengembalikan alamat memori variabel",
-        "Membuat salinan variabel",
-        "Menghapus variabel dari memori"
+        "42 karena pointer hanya menyalin nilai",
+        "100 karena dereference menulis ke variabel asli",
+        "0 karena `x` direferensikan oleh pointer",
+        "Tidak terdefinisi"
       ],
       "options_en": [
-        "Returns the value of the variable",
-        "Returns the memory address of the variable",
-        "Creates a copy of the variable",
-        "Removes the variable from memory"
+        "42 because the pointer only copied the value",
+        "100 because dereferencing writes to the original variable",
+        "0 because `x` is referenced by a pointer",
+        "Undefined"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa zero value dari variabel pointer `var p *int`?",
-      "question_en": "What is the zero value of pointer variable `var p *int`?",
-      "options_id": ["0", "\"\"", "nil", "false"],
-      "options_en": ["0", "\"\"", "nil", "false"],
+      "question_id": "Apa arti tipe `*int` di Go?",
+      "question_en": "What does the type `*int` mean in Go?",
+      "options_id": [
+        "Sebuah integer yang harus diinisialisasi dengan `new`",
+        "Sebuah pointer yang menunjuk ke nilai bertipe int",
+        "Array dari integer",
+        "Integer yang tidak bisa diubah"
+      ],
+      "options_en": [
+        "An integer that must be initialized with `new`",
+        "A pointer that points to a value of type int",
+        "An array of integers",
+        "An integer that cannot be changed"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa zero value dari `var p *int`?",
+      "question_en": "What is the zero value of `var p *int`?",
+      "options_id": [
+        "`0`",
+        "`false`",
+        "`nil`",
+        "Pointer ke zero value int"
+      ],
+      "options_en": [
+        "`0`",
+        "`false`",
+        "`nil`",
+        "A pointer to the zero value of int"
+      ],
       "correct": 2
     },
     {
-      "question_id": "Apa yang terjadi jika kamu melakukan `*p` ketika `p` adalah nil pointer?",
-      "question_en": "What happens if you dereference `*p` when `p` is a nil pointer?",
+      "question_id": "Mengapa `*p` pada nil pointer menyebabkan panic?",
+      "question_en": "Why does `*p` on a nil pointer cause a panic?",
       "options_id": [
-        "Mengembalikan zero value dari tipe",
-        "Program panic: nil pointer dereference",
-        "Error kompilasi",
-        "Mengembalikan 0"
+        "Karena compiler tidak tahu tipe dari `p`",
+        "Karena tidak ada alamat valid yang bisa diakses",
+        "Karena semua dereference dilarang di Go",
+        "Karena pointer hanya boleh dibaca, bukan ditulis"
       ],
       "options_en": [
-        "Returns zero value of the type",
-        "Program panics: nil pointer dereference",
-        "Compilation error",
-        "Returns 0"
+        "Because the compiler does not know the type of `p`",
+        "Because there is no valid address to access",
+        "Because all dereferencing is forbidden in Go",
+        "Because pointers may only be read, not written"
       ],
       "correct": 1
+    },
+    {
+      "question_id": "Apa yang dijamin oleh `new(int)`?",
+      "question_en": "What does `new(int)` guarantee?",
+      "options_id": [
+        "Mengembalikan `int` bernilai 0",
+        "Mengembalikan pointer ke `int` yang sudah dialokasikan dan diinisialisasi ke zero value",
+        "Mengembalikan alamat dari variabel global",
+        "Menghasilkan pointer yang tidak boleh diubah"
+      ],
+      "options_en": [
+        "It returns an `int` with value 0",
+        "It returns a pointer to an allocated `int` initialized to the zero value",
+        "It returns the address of a global variable",
+        "It produces a pointer that cannot be modified"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa trade-off utama memakai pointer sebagai parameter fungsi dibanding value?",
+      "question_en": "What is the main trade-off of using a pointer as a function parameter instead of a value?",
+      "options_id": [
+        "Pointer memungkinkan mutasi data asli, sedangkan value bekerja pada salinan",
+        "Pointer selalu lebih sederhana dibaca",
+        "Value tidak bisa dikirim ke fungsi",
+        "Pointer menghilangkan kebutuhan nil check"
+      ],
+      "options_en": [
+        "A pointer allows mutation of the original data, while a value works on a copy",
+        "Pointers are always simpler to read",
+        "Values cannot be passed to functions",
+        "Pointers remove the need for nil checks"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa fungsi `doubleValue(n int)` tidak mengubah variabel pemanggil?",
+      "question_en": "Why doesn't `doubleValue(n int)` change the caller's variable?",
+      "options_id": [
+        "Karena integer immutable di Go",
+        "Karena parameter fungsi menerima salinan nilai `n`",
+        "Karena operator `*=` hanya berlaku pada pointer",
+        "Karena Go selalu memakai pass-by-reference"
+      ],
+      "options_en": [
+        "Because integers are immutable in Go",
+        "Because the function parameter receives a copy of `n`",
+        "Because the `*=` operator only works on pointers",
+        "Because Go always uses pass-by-reference"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang ditunjukkan fungsi `swap(a, b *int)`?",
+      "question_en": "What does the function `swap(a, b *int)` demonstrate?",
+      "options_id": [
+        "Pointer arithmetic untuk mengubah alamat",
+        "Dua pointer bisa dipakai untuk memodifikasi dua variabel pemanggil secara langsung",
+        "Pointer hanya berguna untuk membaca nilai",
+        "Swap di Go hanya bisa dilakukan dengan return tuple"
+      ],
+      "options_en": [
+        "Pointer arithmetic to change addresses",
+        "Two pointers can be used to modify two caller variables directly",
+        "Pointers are only useful for reading values",
+        "Swapping in Go can only be done by returning a tuple"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa alasan Go tidak mendukung pointer arithmetic menurut pelajaran ini?",
+      "question_en": "According to this lesson, why does Go not support pointer arithmetic?",
+      "options_id": [
+        "Karena compiler Go tidak mampu mengimplementasikannya",
+        "Untuk keamanan; gunakan indexing slice sebagai gantinya",
+        "Karena pointer hanya ada untuk struct",
+        "Agar semua program menjadi lebih cepat"
+      ],
+      "options_en": [
+        "Because the Go compiler is not capable of implementing it",
+        "For safety; use slice indexing instead",
+        "Because pointers exist only for structs",
+        "So every program becomes faster"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Pilihan mana yang paling idiomatis untuk memakai pointer dengan aman?",
+      "question_en": "Which choice is the most idiomatic way to use pointers safely?",
+      "options_id": [
+        "Selalu dereference tanpa cek karena zero value aman",
+        "Hindari semua pointer di Go",
+        "Cek `p != nil` sebelum dereference jika pointer mungkin belum terinisialisasi",
+        "Konversi semua pointer menjadi `uintptr`"
+      ],
+      "options_en": [
+        "Always dereference without checking because zero values are safe",
+        "Avoid all pointers in Go",
+        "Check `p != nil` before dereferencing if the pointer may be uninitialized",
+        "Convert every pointer to `uintptr`"
+      ],
+      "correct": 2
     }
   ]
 }

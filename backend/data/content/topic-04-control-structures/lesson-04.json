@@ -8,72 +8,174 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\nfunc dayType(day string) string {\n\tswitch day {\n\tcase \"Saturday\", \"Sunday\":\n\t\treturn \"Weekend\"\n\tcase \"Monday\", \"Tuesday\", \"Wednesday\", \"Thursday\", \"Friday\":\n\t\treturn \"Weekday\"\n\tdefault:\n\t\treturn \"Unknown\"\n\t}\n}\n\nfunc describe(i interface{}) string {\n\tswitch v := i.(type) {\n\tcase int:\n\t\treturn fmt.Sprintf(\"int(%d)\", v)\n\tcase float64:\n\t\treturn fmt.Sprintf(\"float64(%.2f)\", v)\n\tcase string:\n\t\treturn fmt.Sprintf(\"string(%q)\", v)\n\tcase bool:\n\t\treturn fmt.Sprintf(\"bool(%t)\", v)\n\tdefault:\n\t\treturn fmt.Sprintf(\"unknown(%T)\", v)\n\t}\n}\n\nfunc main() {\n\tdays := []string{\"Monday\", \"Saturday\", \"Wednesday\", \"Sunday\"}\n\tfor _, d := range days {\n\t\tfmt.Printf(\"%s -> %s\\n\", d, dayType(d))\n\t}\n\n\tfmt.Println()\n\tvalues := []interface{}{42, 3.14, \"Go\", true, []int{1, 2}}\n\tfor _, v := range values {\n\t\tfmt.Println(describe(v))\n\t}\n}",
   "quiz": [
     {
-      "question_id": "Apakah Go memerlukan keyword `break` di setiap case dalam switch statement?",
-      "question_en": "Does Go require the `break` keyword at the end of each switch case?",
+      "question_id": "Mengapa `switch` Go biasanya tidak memerlukan `break` di akhir setiap `case`?",
+      "question_en": "Why does a Go `switch` usually not need `break` at the end of each `case`?",
       "options_id": [
-        "Ya, selalu diperlukan seperti di C",
-        "Tidak, Go tidak melakukan fallthrough otomatis",
-        "Hanya diperlukan untuk case terakhir",
-        "Opsional, tergantung preferensi programmer"
+        "Karena `break` otomatis ditambahkan hanya pada `default`",
+        "Karena setiap `case` berhenti sendiri kecuali diberi `fallthrough` secara eksplisit",
+        "Karena `switch` Go hanya boleh punya satu `case`",
+        "Karena compiler selalu mengubah `switch` menjadi `if` tunggal"
       ],
       "options_en": [
-        "Yes, always required like in C",
-        "No, Go does not perform automatic fallthrough",
-        "Only required for the last case",
-        "Optional, depends on programmer preference"
+        "Because `break` is automatically added only for `default`",
+        "Because each `case` stops on its own unless `fallthrough` is explicitly used",
+        "Because a Go `switch` may only have one `case`",
+        "Because the compiler always rewrites a `switch` into a single `if`"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa kegunaan 'type switch' (`switch v := i.(type)`) di Go?",
-      "question_en": "What is the purpose of a 'type switch' (`switch v := i.(type)`) in Go?",
+      "question_id": "Dengan `bulan := 4`, output apa yang dihasilkan oleh expression switch musim pada lesson?",
+      "question_en": "With `month := 4`, what output is produced by the season expression switch in the lesson?",
       "options_id": [
-        "Mengubah tipe data variabel secara dinamis",
-        "Memeriksa tipe dinamis dari nilai interface",
-        "Membuat variabel baru dengan tipe yang berbeda",
-        "Membandingkan dua tipe data"
+        "`Musim Dingin`",
+        "`Musim Semi`",
+        "`Musim Panas`",
+        "`Musim Gugur`"
       ],
       "options_en": [
-        "Dynamically change the data type of a variable",
-        "Check the dynamic type of an interface value",
-        "Create a new variable with a different type",
-        "Compare two data types"
+        "`Winter`",
+        "`Spring`",
+        "`Summer`",
+        "`Autumn`"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa efek dari keyword `fallthrough` di dalam switch Go?",
-      "question_en": "What is the effect of the `fallthrough` keyword inside a Go switch?",
+      "question_id": "Apa peran `switch { ... }` tanpa ekspresi dalam Go?",
+      "question_en": "What is the role of `switch { ... }` without an expression in Go?",
       "options_id": [
-        "Menghentikan eksekusi switch",
-        "Mengulangi case saat ini",
-        "Meneruskan eksekusi ke case berikutnya tanpa memeriksa kondisinya",
-        "Melompat ke case default"
+        "Itu hanya bentuk singkat dari `for {}`",
+        "Itu dipakai untuk membandingkan pointer saja",
+        "Itu berfungsi seperti rantai `if / else if` berbasis kondisi boolean",
+        "Itu hanya valid untuk type switch"
       ],
       "options_en": [
-        "Stops switch execution",
-        "Repeats the current case",
-        "Continues execution to the next case without checking its condition",
-        "Jumps to the default case"
+        "It is only shorthand for `for {}`",
+        "It is used only for pointer comparisons",
+        "It behaves like an `if / else if` chain based on boolean conditions",
+        "It is only valid for type switches"
       ],
       "correct": 2
     },
     {
-      "question_id": "Bagaimana cara menulis switch di Go yang bekerja seperti if-else (tanpa ekspresi)?",
-      "question_en": "How do you write a switch in Go that works like if-else (without an expression)?",
+      "question_id": "Dengan `suhu := 38.5`, apa output dari switch tanpa ekspresi pada lesson?",
+      "question_en": "With `temp := 38.5`, what is the output of the expressionless switch in the lesson?",
       "options_id": [
-        "switch true { case cond1: ... }",
-        "switch { case cond1: ... }",
-        "switch any { case cond1: ... }",
-        "switch nil { case cond1: ... }"
+        "`Normal`",
+        "`Sedikit panas`",
+        "`Demam`",
+        "`Demam tinggi!`"
       ],
       "options_en": [
-        "switch true { case cond1: ... }",
-        "switch { case cond1: ... }",
-        "switch any { case cond1: ... }",
-        "switch nil { case cond1: ... }"
+        "`Normal`",
+        "`Slightly warm`",
+        "`Fever`",
+        "`High fever!`"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa efek tepat dari `fallthrough` dalam switch Go?",
+      "question_en": "What is the exact effect of `fallthrough` in a Go switch?",
+      "options_id": [
+        "Menjalankan `default` setelah `case` saat ini",
+        "Memeriksa ulang kondisi semua `case` berikutnya",
+        "Memaksa eksekusi lanjut ke `case` berikutnya tanpa mengecek kondisinya",
+        "Mengulang `case` saat ini sekali lagi"
+      ],
+      "options_en": [
+        "It runs `default` after the current `case`",
+        "It re-checks the conditions of all following `case`s",
+        "It forces execution to continue to the next `case` without checking its condition",
+        "It repeats the current `case` one more time"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa output lengkap dari contoh `x := 1` yang menggunakan dua `fallthrough`?",
+      "question_en": "What is the full output of the `x := 1` example that uses two `fallthrough`s?",
+      "options_id": [
+        "`satu` lalu berhenti",
+        "`satu`, `dua`, `tiga`",
+        "`satu`, `tiga`",
+        "`dua`, `tiga`"
+      ],
+      "options_en": [
+        "`one` and then stop",
+        "`one`, `two`, `three`",
+        "`one`, `three`",
+        "`two`, `three`"
       ],
       "correct": 1
+    },
+    {
+      "question_id": "Dalam `switch v := i.(type)`, apa yang benar tentang `v` di dalam setiap `case`?",
+      "question_en": "In `switch v := i.(type)`, what is true about `v` inside each `case`?",
+      "options_id": [
+        "`v` selalu bertipe `interface{}` tanpa perubahan",
+        "`v` memiliki tipe konkret yang cocok dengan `case` yang sedang dijalankan",
+        "`v` selalu berupa pointer ke nilai asli",
+        "`v` hanya bisa dipakai di `default`"
+      ],
+      "options_en": [
+        "`v` always remains of type `interface{}`",
+        "`v` has the concrete type that matches the currently executing `case`",
+        "`v` is always a pointer to the original value",
+        "`v` can only be used in `default`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Kapan type switch lebih tepat dipakai daripada expression switch biasa?",
+      "question_en": "When is a type switch more appropriate than a regular expression switch?",
+      "options_id": [
+        "Saat ingin memeriksa tipe dinamis dari nilai interface",
+        "Saat ingin membandingkan banyak integer sekaligus",
+        "Saat ingin menghindari `default`",
+        "Saat butuh urutan `case` yang alfabetis"
+      ],
+      "options_en": [
+        "When you want to inspect the dynamic type of an interface value",
+        "When you want to compare many integers at once",
+        "When you want to avoid `default`",
+        "When you need alphabetically ordered `case`s"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika beberapa nilai harus memicu cabang yang sama, fitur mana yang paling tepat: `case 3, 4, 5:` atau `fallthrough`?",
+      "question_en": "If several values should trigger the same branch, which is more appropriate: `case 3, 4, 5:` or `fallthrough`?",
+      "options_id": [
+        "Gunakan `fallthrough`, karena itu memeriksa semua nilai satu per satu",
+        "Gunakan banyak nilai dalam satu `case`, karena itu langsung menyatakan himpunan nilai yang sama",
+        "Gunakan keduanya selalu bersama agar aman",
+        "Tidak ada bedanya sama sekali"
+      ],
+      "options_en": [
+        "Use `fallthrough`, because it checks all values one by one",
+        "Use multiple values in one `case`, because it directly states the set of equivalent values",
+        "Always use both together to be safe",
+        "There is no difference at all"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika `temp := 41.0` dimasukkan ke switch tanpa ekspresi dengan urutan `>= 40`, `>= 38`, `>= 37`, output mana yang benar?",
+      "question_en": "If `temp := 41.0` is used with an expressionless switch ordered as `>= 40`, `>= 38`, `>= 37`, which output is correct?",
+      "options_id": [
+        "`Demam` karena semua case true akan dijalankan",
+        "`Sedikit panas` karena case terakhir menang",
+        "`Demam tinggi!` karena case true pertama yang cocok dijalankan",
+        "Tidak ada output tanpa `fallthrough`"
+      ],
+      "options_en": [
+        "`Fever` because all true cases will run",
+        "`Slightly warm` because the last case wins",
+        "`High fever!` because the first matching true case runs",
+        "No output without `fallthrough`"
+      ],
+      "correct": 2
     }
   ]
 }

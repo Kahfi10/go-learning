@@ -8,53 +8,172 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\t// range atas slice\n\tfruits := []string{\"apel\", \"mangga\", \"pisang\", \"jeruk\"}\n\tfmt.Println(\"Daftar buah:\")\n\tfor i, f := range fruits {\n\t\tfmt.Printf(\"  %d. %s\\n\", i+1, f)\n\t}\n\n\t// range atas map\n\tpopulation := map[string]int{\n\t\t\"Jakarta\": 10000000,\n\t\t\"Surabaya\": 3000000,\n\t\t\"Bandung\":  2500000,\n\t}\n\tfmt.Println(\"\\nPopulasi kota:\")\n\tfor city, pop := range population {\n\t\tfmt.Printf(\"  %s: %d juta\\n\", city, pop/1000000)\n\t}\n\n\t// range atas string (Unicode-aware)\n\ts := \"Go!\"\n\tfmt.Println(\"\\nKarakter dalam string:\")\n\tfor i, r := range s {\n\t\tfmt.Printf(\"  index %d: '%c'\\n\", i, r)\n\t}\n\n\t// Hitung sum dengan range\n\tnums := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}\n\tsum := 0\n\tfor _, n := range nums {\n\t\tsum += n\n\t}\n\tfmt.Println(\"\\nSum 1..10:\", sum)\n}",
   "quiz": [
     {
-      "question_id": "Saat menggunakan `for i, v := range slice`, apa yang diwakili oleh `i` dan `v`?",
-      "question_en": "When using `for i, v := range slice`, what do `i` and `v` represent?",
+      "question_id": "Dalam `for i, v := range nums`, apa arti `i` dan `v` saat `nums` adalah slice?",
+      "question_en": "In `for i, v := range nums`, what do `i` and `v` mean when `nums` is a slice?",
       "options_id": [
-        "i = nilai, v = index",
-        "i = index, v = nilai elemen",
-        "i = iterator, v = versi",
-        "i = input, v = variabel"
+        "`i` adalah nilai, `v` adalah index",
+        "`i` adalah index, `v` adalah nilai elemen",
+        "`i` dan `v` keduanya adalah pointer",
+        "`i` adalah byte offset, `v` selalu rune"
       ],
       "options_en": [
-        "i = value, v = index",
-        "i = index, v = element value",
-        "i = iterator, v = version",
-        "i = input, v = variable"
+        "`i` is the value, `v` is the index",
+        "`i` is the index, `v` is the element value",
+        "`i` and `v` are both pointers",
+        "`i` is the byte offset, `v` is always a rune"
       ],
       "correct": 1
     },
     {
-      "question_id": "Saat `range` digunakan pada string di Go, apa yang diiterasi?",
-      "question_en": "When `range` is used on a string in Go, what does it iterate over?",
+      "question_id": "Apa yang sebenarnya dihasilkan `range` saat mengiterasi string Go seperti `\"Héllo\"`?",
+      "question_en": "What does `range` actually produce when iterating over a Go string like `\"Héllo\"`?",
       "options_id": [
-        "Byte individual",
-        "Kata-kata dalam string",
-        "Rune (karakter Unicode)",
-        "Baris-baris teks"
+        "Index karakter dan byte",
+        "Byte index dan rune",
+        "Hanya rune tanpa index",
+        "Hanya byte tanpa karakter Unicode"
       ],
       "options_en": [
-        "Individual bytes",
-        "Words in the string",
-        "Runes (Unicode characters)",
-        "Lines of text"
+        "Character index and byte",
+        "Byte index and rune",
+        "Only runes without an index",
+        "Only bytes without Unicode characters"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa output index yang benar saat menjalankan `for i, r := range \"Héllo\" { fmt.Printf(\"%d:%c \", i, r) }`?",
+      "question_en": "Which index output is correct for `for i, r := range \"Héllo\" { fmt.Printf(\"%d:%c \", i, r) }`?",
+      "options_id": [
+        "`0:H 1:e 2:l 3:l 4:o`",
+        "`0:H 1:e 2:l 3:l 4:o` karena semua karakter 1 byte",
+        "`0:H 1:e 3:l 4:l 5:o`",
+        "`0:H 1:e 2:l 4:l 5:o`"
+      ],
+      "options_en": [
+        "`0:H 1:e 2:l 3:l 4:o`",
+        "`0:H 1:e 2:l 3:l 4:o` because every character is 1 byte",
+        "`0:H 1:e 3:l 4:l 5:o`",
+        "`0:H 1:e 2:l 4:l 5:o`"
       ],
       "correct": 2
     },
     {
-      "question_id": "Apakah urutan key yang dikembalikan oleh `range` atas map di Go dijamin?",
-      "question_en": "Is the order of keys returned by `range` over a map in Go guaranteed?",
+      "question_id": "Apa fungsi `_` pada `for _, v := range nums`?",
+      "question_en": "What is the role of `_` in `for _, v := range nums`?",
       "options_id": [
-        "Ya, selalu terurut secara alfabetis",
-        "Ya, sesuai urutan penyisipan",
-        "Tidak, urutan tidak dijamin",
-        "Ya, sesuai nilai hash dari key"
+        "Menandai bahwa loop berjalan paralel",
+        "Mengabaikan nilai kedua dari `range`",
+        "Mengabaikan nilai yang tidak diperlukan, dalam hal ini index",
+        "Mengubah `v` menjadi variabel global"
       ],
       "options_en": [
-        "Yes, always sorted alphabetically",
-        "Yes, in insertion order",
-        "No, order is not guaranteed",
-        "Yes, according to the hash value of the key"
+        "It marks the loop as running in parallel",
+        "It ignores the second value from `range`",
+        "It discards the unneeded value, in this case the index",
+        "It turns `v` into a global variable"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Jika hanya membutuhkan index dari slice, bentuk `range` mana yang paling tepat?",
+      "question_en": "If you only need the indices from a slice, which `range` form is most appropriate?",
+      "options_id": [
+        "`for i := range nums { ... }`",
+        "`for _, i := range nums { ... }`",
+        "`for nums := range i { ... }`",
+        "`for range i, nums { ... }`"
+      ],
+      "options_en": [
+        "`for i := range nums { ... }`",
+        "`for _, i := range nums { ... }`",
+        "`for nums := range i { ... }`",
+        "`for range i, nums { ... }`"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Pernyataan mana yang benar tentang `range` pada map?",
+      "question_en": "Which statement is true about `range` on a map?",
+      "options_id": [
+        "Urutan key selalu mengikuti urutan literal saat map dibuat",
+        "Urutan key dijamin alfabetis untuk key string",
+        "Urutan iterasi tidak dijamin, jadi kode tidak boleh bergantung pada urutannya",
+        "`range` pada map hanya mengembalikan key, tidak pernah value"
+      ],
+      "options_en": [
+        "Key order always follows the literal order used to create the map",
+        "Key order is guaranteed to be alphabetical for string keys",
+        "Iteration order is not guaranteed, so code should not depend on it",
+        "`range` on a map only returns keys, never values"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Kapan loop `for v := range ch` berhenti pada channel?",
+      "question_en": "When does a `for v := range ch` loop stop for a channel?",
+      "options_id": [
+        "Saat channel kosong sesaat, walaupun belum ditutup",
+        "Setelah channel ditutup dan semua nilai yang tersisa sudah diterima",
+        "Saat menerima nilai `0`",
+        "Saat mencapai panjang buffer channel"
+      ],
+      "options_en": [
+        "When the channel is temporarily empty, even if it is not closed",
+        "After the channel is closed and all remaining values have been received",
+        "When it receives the value `0`",
+        "When it reaches the channel buffer length"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Struktur data mana dari lesson yang TIDAK ditunjukkan sebagai target `range`?",
+      "question_en": "Which data structure from the lesson is NOT shown as a `range` target?",
+      "options_id": [
+        "Slice",
+        "Map",
+        "Struct",
+        "Channel"
+      ],
+      "options_en": [
+        "Slice",
+        "Map",
+        "Struct",
+        "Channel"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa `range` atas slice sering dianggap lebih aman dan idiomatik daripada indeks manual?",
+      "question_en": "Why is `range` over a slice often considered safer and more idiomatic than manual indexing?",
+      "options_id": [
+        "Karena `range` membuat semua operasi menjadi O(1)",
+        "Karena `range` menghilangkan kebutuhan mengelola batas index secara manual pada pola iterasi umum",
+        "Karena `range` hanya bekerja untuk slice kecil",
+        "Karena `range` selalu mengurutkan data terlebih dahulu"
+      ],
+      "options_en": [
+        "Because `range` makes all operations O(1)",
+        "Because `range` removes the need to manually manage index bounds in common iteration patterns",
+        "Because `range` only works for small slices",
+        "Because `range` always sorts the data first"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika menulis `for name := range scores` untuk sebuah map, apa yang diterima `name`?",
+      "question_en": "If you write `for name := range scores` for a map, what does `name` receive?",
+      "options_id": [
+        "Nilai map saja",
+        "Pasangan key-value sebagai tuple",
+        "Key map saja",
+        "Index iterasi yang dijamin berurutan"
+      ],
+      "options_en": [
+        "Only the map value",
+        "The key-value pair as a tuple",
+        "Only the map key",
+        "A guaranteed sequential iteration index"
       ],
       "correct": 2
     }

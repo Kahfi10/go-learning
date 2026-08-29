@@ -8,24 +8,73 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\n// This demonstrates a well-structured Go application's dependency injection\n// pattern typically found in cmd/api/main.go\n\n// --- Domain Layer ---\ntype User struct {\n\tID   int\n\tName string\n}\n\ntype UserRepository interface {\n\tFindAll() ([]*User, error)\n}\n\n// --- Repository Layer ---\ntype InMemoryUserRepo struct {\n\tusers []*User\n}\n\nfunc NewInMemoryUserRepo() *InMemoryUserRepo {\n\treturn &InMemoryUserRepo{\n\t\tusers: []*User{\n\t\t\t{ID: 1, Name: \"Alice\"},\n\t\t\t{ID: 2, Name: \"Bob\"},\n\t\t},\n\t}\n}\n\nfunc (r *InMemoryUserRepo) FindAll() ([]*User, error) {\n\treturn r.users, nil\n}\n\n// --- Service Layer ---\ntype UserService struct {\n\trepo UserRepository\n}\n\nfunc NewUserService(repo UserRepository) *UserService {\n\treturn &UserService{repo: repo}\n}\n\nfunc (s *UserService) ListUsers() ([]*User, error) {\n\t// TODO: add business logic (e.g., filtering, sorting)\n\treturn s.repo.FindAll()\n}\n\n// --- Main (Composition Root) ---\nfunc main() {\n\t// Dependency injection: wire everything together\n\trepo := NewInMemoryUserRepo()\n\tsvc := NewUserService(repo)\n\n\tusers, err := svc.ListUsers()\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t\treturn\n\t}\n\n\tfor _, u := range users {\n\t\tfmt.Printf(\"User %d: %s\\n\", u.ID, u.Name)\n\t}\n}",
   "quiz": [
     {
-      "question_id": "Apa tujuan dari direktori `cmd/` dalam Go project layout?",
-      "question_en": "What is the purpose of the `cmd/` directory in a Go project layout?",
-      "options_id": ["Berisi entry points (main packages) untuk setiap binary yang dihasilkan", "Berisi semua command-line tools", "Berisi file konfigurasi", "Berisi test commands"],
-      "options_en": ["Contains the entry points (main packages) for each binary produced", "Contains all command-line tools", "Contains configuration files", "Contains test commands"],
+      "question_id": "Direktori mana yang direkomendasikan untuk entry points dari binary seperti `api` dan `worker`?",
+      "question_en": "Which directory is recommended for entry points of binaries such as `api` and `worker`?",
+      "options_id": ["`cmd/`", "`internal/`", "`migrations/`", "`pkg/`"],
+      "options_en": ["`cmd/`", "`internal/`", "`migrations/`", "`pkg/`"],
       "correct": 0
     },
     {
-      "question_id": "Mengapa kode bisnis sebaiknya ditempatkan di `internal/`?",
-      "question_en": "Why should business code be placed in `internal/`?",
-      "options_id": ["Go mencegah import dari luar module secara otomatis, melindungi API internal", "Kode di internal/ berjalan lebih cepat", "internal/ dioptimasi oleh compiler", "Agar lebih mudah di-test"],
-      "options_en": ["Go automatically prevents imports from outside the module, protecting the internal API", "Code in internal/ runs faster", "internal/ is optimized by the compiler", "So it's easier to test"],
+      "question_id": "Mengapa lesson menyarankan file `cmd/api/main.go` tetap seminimal mungkin?",
+      "question_en": "Why does the lesson suggest keeping `cmd/api/main.go` minimal?",
+      "options_id": ["Agar `main` fokus menjadi composition root dan menyerahkan detail ke package lain", "Karena file `main.go` dibatasi 50 baris oleh Go", "Agar import `log` tidak diperlukan", "Karena logic bisnis hanya boleh berada di `pkg/`"],
+      "options_en": ["So `main` stays focused as the composition root and delegates details to other packages", "Because Go limits `main.go` to 50 lines", "So importing `log` is unnecessary", "Because business logic may only live in `pkg/`"],
       "correct": 0
     },
     {
-      "question_id": "Pola dependency injection yang baik di Go dilakukan di mana?",
-      "question_en": "Where should the dependency injection wiring be done in a well-structured Go project?",
-      "options_id": ["Di main() atau fungsi Run() yang dipanggil dari main()", "Di setiap package yang membutuhkan dependency", "Di file config.go", "Menggunakan framework DI khusus"],
-      "options_en": ["In main() or a Run() function called from main()", "In each package that needs the dependency", "In config.go", "Using a dedicated DI framework"],
+      "question_id": "Apa manfaat utama menaruh core business code di `internal/`?",
+      "question_en": "What is the main benefit of placing core business code under `internal/`?",
+      "options_id": ["Go otomatis mencegah import dari luar module sehingga API internal lebih terlindungi", "Kode di sana pasti lebih cepat", "Compiler memberi optimasi khusus hanya untuk `internal/`", "Package menjadi otomatis public"],
+      "options_en": ["Go automatically prevents imports from outside the module so the internal API is better protected", "Code there is guaranteed to be faster", "The compiler gives special optimizations only to `internal/`", "Packages become automatically public"],
+      "correct": 0
+    },
+    {
+      "question_id": "Dalam layout clean architecture pada lesson, folder mana yang paling cocok untuk business entities dan interfaces?",
+      "question_en": "In the lesson's clean-architecture layout, which folder best fits business entities and interfaces?",
+      "options_id": ["`internal/domain/`", "`internal/delivery/http/`", "`scripts/`", "`migrations/`"],
+      "options_en": ["`internal/domain/`", "`internal/delivery/http/`", "`scripts/`", "`migrations/`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Folder mana yang pada layout besar dipakai untuk business logic/use cases?",
+      "question_en": "Which folder in the large layout is used for business logic/use cases?",
+      "options_id": ["`internal/usecase/`", "`pkg/logger/`", "`config/`", "`cmd/api/`"],
+      "options_en": ["`internal/usecase/`", "`pkg/logger/`", "`config/`", "`cmd/api/`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika sebuah package dimaksudkan reusable dan public untuk module lain, lesson menempatkannya paling mungkin di mana?",
+      "question_en": "If a package is intended to be reusable and public for other modules, where does the lesson most likely place it?",
+      "options_id": ["`pkg/`", "`internal/`", "`cmd/`", "`scripts/`"],
+      "options_en": ["`pkg/`", "`internal/`", "`cmd/`", "`scripts/`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa lesson menampilkan contoh global `var db *sql.DB` sebagai buruk?",
+      "question_en": "Why does the lesson show the global `var db *sql.DB` example as bad?",
+      "options_id": ["Karena global state membuat dependency lebih tersembunyi dan wiring kurang jelas dibanding menyimpannya di struct seperti `App`", "Karena `sql.DB` tidak boleh global di Go", "Karena global state selalu menyebabkan panic", "Karena variabel global membuat binary gagal build"],
+      "options_en": ["Because global state hides dependencies and makes wiring less explicit than storing them in a struct like `App`", "Because `sql.DB` may never be global in Go", "Because global state always causes a panic", "Because global variables make the binary fail to build"],
+      "correct": 0
+    },
+    {
+      "question_id": "Di mana dependency injection wiring yang baik dilakukan menurut lesson?",
+      "question_en": "According to the lesson, where should good dependency injection wiring be done?",
+      "options_id": ["Di `main()` atau fungsi startup yang dipanggil dari sana", "Di setiap package yang memakai dependency", "Di dalam entity domain", "Di file migrasi SQL"],
+      "options_en": ["In `main()` or a startup function called from there", "Inside every package that uses the dependency", "Inside domain entities", "In SQL migration files"],
+      "correct": 0
+    },
+    {
+      "question_id": "Urutan wiring mana yang paling sesuai dengan contoh dependency injection lesson?",
+      "question_en": "Which wiring order best matches the lesson's dependency-injection example?",
+      "options_id": ["connect DB -> repo -> service -> handler -> server", "handler -> service -> repo -> connect DB -> server", "server -> handler -> DB -> repo -> service", "repo -> connect DB -> server -> handler -> service"],
+      "options_en": ["connect DB -> repo -> service -> handler -> server", "handler -> service -> repo -> connect DB -> server", "server -> handler -> DB -> repo -> service", "repo -> connect DB -> server -> handler -> service"],
+      "correct": 0
+    },
+    {
+      "question_id": "Prinsip penutup apa yang ditekankan lesson tentang project structure?",
+      "question_en": "What closing principle does the lesson emphasize about project structure?",
+      "options_id": ["Mulai sederhana lalu tambah struktur saat memang dibutuhkan, jangan over-engineer di awal", "Gunakan clean architecture sejak hari pertama apa pun ukuran proyeknya", "Semua proyek harus memiliki `pkg/`, `internal/`, dan `cmd/` sejak awal", "Pindahkan semua kode ke `cmd/` agar mudah ditemukan"],
+      "options_en": ["Start simple, then add structure when it is actually needed; do not over-engineer early", "Use clean architecture from day one no matter the project size", "Every project must have `pkg/`, `internal/`, and `cmd/` from the start", "Move all code into `cmd/` so it is easier to find"],
       "correct": 0
     }
   ]

@@ -8,25 +8,74 @@
   "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n\t\"time\"\n)\n\nfunc download(url string, wg *sync.WaitGroup) {\n\t// TODO: call wg.Done() when finished (use defer)\n\ttime.Sleep(100 * time.Millisecond)\n\tfmt.Println(\"Downloaded:\", url)\n}\n\nfunc main() {\n\turls := []string{\n\t\t\"https://example.com/file1\",\n\t\t\"https://example.com/file2\",\n\t\t\"https://example.com/file3\",\n\t}\n\n\tvar wg sync.WaitGroup\n\n\tfor _, url := range urls {\n\t\t// TODO: call wg.Add(1) and launch download as goroutine\n\t\tdownload(url, &wg)\n\t}\n\n\t// TODO: wait for all downloads to finish\n\tfmt.Println(\"All downloads complete\")\n}",
   "quiz": [
     {
-      "question_id": "Kapan sebaiknya memanggil wg.Add(1)?",
-      "question_en": "When should you call wg.Add(1)?",
-      "options_id": ["Sebelum statement `go`, di goroutine pemanggil", "Di dalam goroutine yang baru diluncurkan", "Setelah wg.Wait()", "Di awal fungsi main saja"],
-      "options_en": ["Before the `go` statement, in the calling goroutine", "Inside the newly launched goroutine", "After wg.Wait()", "Only at the start of main"],
+      "question_id": "Mengapa `sync.WaitGroup` lebih baik daripada `time.Sleep` untuk menunggu goroutine?",
+      "question_en": "Why is `sync.WaitGroup` better than `time.Sleep` for waiting on goroutines?",
+      "options_id": ["Karena `WaitGroup` selalu membuat goroutine parallel", "Karena `WaitGroup` menghapus kebutuhan akan channel", "Karena `WaitGroup` deterministik dan menunggu penyelesaian kerja yang nyata", "Karena `time.Sleep` tidak bisa dipakai di Go"],
+      "options_en": ["Because `WaitGroup` always makes goroutines parallel", "Because `WaitGroup` removes the need for channels", "Because `WaitGroup` is deterministic and waits for real work completion", "Because `time.Sleep` cannot be used in Go"],
+      "correct": 2
+    },
+    {
+      "question_id": "Urutan mana yang benar saat meluncurkan worker dengan `WaitGroup`?",
+      "question_en": "Which order is correct when launching a worker with a `WaitGroup`?",
+      "options_id": ["`go worker(...); wg.Add(1)`", "`wg.Add(1); go worker(...)`", "`wg.Wait(); go worker(...)`", "`go wg.Add(1); worker(...)`"],
+      "options_en": ["`go worker(...); wg.Add(1)`", "`wg.Add(1); go worker(...)`", "`wg.Wait(); go worker(...)`", "`go wg.Add(1); worker(...)`"],
+      "correct": 1
+    },
+    {
+      "question_id": "`wg.Wait()` berhenti memblokir kapan?",
+      "question_en": "When does `wg.Wait()` stop blocking?",
+      "options_id": ["Saat counter `WaitGroup` mencapai 0", "Saat goroutine pertama selesai", "Saat semua channel ditutup", "Segera setelah `Add(1)` dipanggil"],
+      "options_en": ["When the `WaitGroup` counter reaches 0", "When the first goroutine finishes", "When all channels are closed", "Immediately after `Add(1)` is called"],
       "correct": 0
     },
     {
-      "question_id": "Mengapa sebaiknya menggunakan `defer wg.Done()` di dalam goroutine?",
-      "question_en": "Why is it recommended to use `defer wg.Done()` inside a goroutine?",
-      "options_id": ["Memastikan Done dipanggil meski terjadi panic atau return awal", "Agar wg.Done() dipanggil lebih cepat", "Agar goroutine berjalan paralel", "Agar wg.Wait() tidak memblokir"],
-      "options_en": ["Ensures Done is called even on panic or early return", "So wg.Done() is called faster", "So the goroutine runs in parallel", "So wg.Wait() doesn't block"],
+      "question_id": "Mengapa `defer wg.Done()` biasanya diletakkan di awal worker?",
+      "question_en": "Why is `defer wg.Done()` typically placed at the start of a worker?",
+      "options_id": ["Agar `Done` dipanggil sebelum kerja dimulai", "Agar `WaitGroup` bisa di-copy dengan aman", "Agar worker tidak perlu menerima parameter lain", "Agar counter tetap dikurangi meski terjadi return awal atau panic"],
+      "options_en": ["So `Done` is called before the work starts", "So the `WaitGroup` can be copied safely", "So the worker does not need any other parameters", "So the counter is still decremented even if there is an early return or panic"],
+      "correct": 3
+    },
+    {
+      "question_id": "Apa risiko memanggil `wg.Add(1)` di dalam goroutine yang baru dibuat?",
+      "question_en": "What is the risk of calling `wg.Add(1)` inside the newly launched goroutine?",
+      "options_id": ["`WaitGroup` otomatis menjadi negatif", "`wg.Wait()` bisa melihat counter masih nol dan selesai terlalu cepat sebelum `Add` terjadi", "Goroutine tidak akan pernah mulai", "`Done()` otomatis menjadi no-op"],
+      "options_en": ["The `WaitGroup` automatically becomes negative", "`wg.Wait()` may still see the counter as zero and return too early before `Add` happens", "The goroutine will never start", "`Done()` automatically becomes a no-op"],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa parameter worker bertipe `*sync.WaitGroup` dan bukan `sync.WaitGroup`?",
+      "question_en": "Why is the worker parameter type `*sync.WaitGroup` instead of `sync.WaitGroup`?",
+      "options_id": ["Agar semua goroutine berbagi counter yang sama, bukan salinan", "Agar method `Done()` bisa dipanggil tanpa `defer`", "Agar worker otomatis menjadi OS thread", "Agar `Wait()` tidak pernah memblokir"],
+      "options_en": ["So all goroutines share the same counter instead of copies", "So the `Done()` method can be called without `defer`", "So the worker automatically becomes an OS thread", "So `Wait()` never blocks"],
       "correct": 0
     },
     {
-      "question_id": "Apa yang terjadi jika Anda mengoper sync.WaitGroup by value (bukan pointer)?",
-      "question_en": "What happens if you pass sync.WaitGroup by value instead of by pointer?",
-      "options_id": ["WaitGroup di-copy, sehingga Add/Done tidak mempengaruhi yang asli", "Program berjalan lebih cepat", "WaitGroup otomatis menjadi pointer", "Tidak ada perbedaan"],
-      "options_en": ["The WaitGroup is copied, so Add/Done don't affect the original", "Program runs faster", "WaitGroup automatically becomes a pointer", "No difference"],
-      "correct": 0
+      "question_id": "Pada contoh fan-out, mengapa ada goroutine terpisah yang menjalankan `wg.Wait()` lalu `close(results)`?",
+      "question_en": "In the fan-out example, why is there a separate goroutine that runs `wg.Wait()` and then `close(results)`?",
+      "options_id": ["Untuk mengurutkan hasil berdasarkan item asal", "Untuk menambah kapasitas channel `results` saat runtime", "Agar loop `range results` tahu kapan semua pengiriman selesai dan bisa berhenti", "Agar setiap worker menutup channelnya sendiri"],
+      "options_en": ["To sort results by the original item", "To increase the `results` channel capacity at runtime", "So the `range results` loop knows when all sends are finished and can stop", "So each worker closes its own channel"],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa yang mungkin terjadi jika `results` tidak pernah ditutup pada contoh fan-out?",
+      "question_en": "What may happen if `results` is never closed in the fan-out example?",
+      "options_id": ["`range` akan otomatis berhenti saat buffer kosong", "Receiver yang melakukan `range` bisa menunggu selamanya setelah semua nilai habis", "Semua hasil akan hilang sebelum dicetak", "`WaitGroup` akan panic saat `Wait()` dipanggil"],
+      "options_en": ["The `range` will automatically stop when the buffer is empty", "The receiver ranging over the channel may wait forever after all values are consumed", "All results will be lost before they are printed", "The `WaitGroup` will panic when `Wait()` is called"],
+      "correct": 1
+    },
+    {
+      "question_id": "Istilah fan-out pada lesson berarti apa?",
+      "question_en": "What does the term fan-out mean in the lesson?",
+      "options_id": ["Menggabungkan banyak channel menjadi satu", "Membuat satu goroutine membaca semua file", "Memindahkan pekerjaan dari goroutine ke OS thread", "Membagi satu kumpulan pekerjaan ke banyak goroutine"],
+      "options_en": ["Combining many channels into one", "Making one goroutine read all files", "Moving work from a goroutine to an OS thread", "Distributing one set of work across many goroutines"],
+      "correct": 3
+    },
+    {
+      "question_id": "Mengapa `results := make(chan int, len(items))` cocok pada contoh fan-out?",
+      "question_en": "Why is `results := make(chan int, len(items))` a good fit in the fan-out example?",
+      "options_id": ["Karena channel harus selalu buffered untuk dipakai dengan `WaitGroup`", "Karena `len(items)` mengubah channel menjadi send-only", "Karena setiap worker bisa mengirim satu hasil tanpa menunggu receive langsung dari collector", "Karena `close(results)` hanya bekerja pada channel penuh"],
+      "options_en": ["Because a channel must always be buffered when used with a `WaitGroup`", "Because `len(items)` makes the channel send-only", "Because each worker can send one result without waiting for an immediate receive from the collector", "Because `close(results)` only works on full channels"],
+      "correct": 2
     }
   ]
 }

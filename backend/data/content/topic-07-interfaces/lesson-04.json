@@ -8,72 +8,174 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\ntype Shape interface {\n\tArea() float64\n}\n\ntype Circle struct {\n\tRadius float64\n}\n\ntype Rectangle struct {\n\tWidth, Height float64\n}\n\ntype Triangle struct {\n\tBase, Height float64\n}\n\nfunc (c Circle) Area() float64    { return 3.14159 * c.Radius * c.Radius }\nfunc (r Rectangle) Area() float64 { return r.Width * r.Height }\nfunc (t Triangle) Area() float64  { return 0.5 * t.Base * t.Height }\n\nfunc describeShape(s Shape) {\n\tswitch v := s.(type) {\n\tcase Circle:\n\t\tfmt.Printf(\"Circle with radius=%.1f, area=%.2f\\n\", v.Radius, v.Area())\n\tcase Rectangle:\n\t\tfmt.Printf(\"Rectangle %gx%g, area=%.2f\\n\", v.Width, v.Height, v.Area())\n\tcase Triangle:\n\t\tfmt.Printf(\"Triangle base=%g height=%g, area=%.2f\\n\", v.Base, v.Height, v.Area())\n\tdefault:\n\t\tfmt.Printf(\"Unknown shape: %T\\n\", v)\n\t}\n}\n\nfunc safeGetRadius(s Shape) (float64, bool) {\n\tc, ok := s.(Circle)\n\tif !ok {\n\t\treturn 0, false\n\t}\n\treturn c.Radius, true\n}\n\nfunc main() {\n\tshapes := []Shape{\n\t\tCircle{Radius: 5},\n\t\tRectangle{Width: 4, Height: 6},\n\t\tTriangle{Base: 3, Height: 8},\n\t}\n\n\tfor _, s := range shapes {\n\t\tdescribeShape(s)\n\t}\n\n\tfmt.Println()\n\tfor _, s := range shapes {\n\t\tif r, ok := safeGetRadius(s); ok {\n\t\t\tfmt.Printf(\"This is a circle with radius %.1f\\n\", r)\n\t\t} else {\n\t\t\tfmt.Printf(\"%T is not a circle\\n\", s)\n\t\t}\n\t}\n}",
   "quiz": [
     {
-      "question_id": "Apa yang terjadi jika type assertion `i.(int)` dilakukan tapi `i` berisi string?",
-      "question_en": "What happens if type assertion `i.(int)` is performed but `i` contains a string?",
+      "question_id": "Apa beda utama antara `i.(string)` dan `i.(int)` saat `i` menyimpan string?",
+      "question_en": "What is the main difference between `i.(string)` and `i.(int)` when `i` stores a string?",
       "options_id": [
-        "Mengembalikan zero value int",
-        "Program panic dengan pesan 'interface conversion'",
-        "Error kompilasi",
-        "Mengembalikan nil"
+        "Keduanya error kompilasi karena interface tidak bisa di-assert",
+        "Yang pertama berhasil, yang kedua panic saat runtime",
+        "Keduanya mengembalikan zero value jika tipe salah",
+        "Keduanya melakukan konversi otomatis"
       ],
       "options_en": [
-        "Returns zero value int",
-        "Program panics with 'interface conversion' message",
-        "Compilation error",
-        "Returns nil"
+        "Both are compile errors because interfaces cannot be asserted",
+        "The first succeeds, the second panics at runtime",
+        "Both return zero values when the type is wrong",
+        "Both perform automatic conversions"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa kegunaan comma-ok pattern `v, ok := x.(T)`?",
-      "question_en": "What is the purpose of the comma-ok pattern `v, ok := x.(T)`?",
+      "question_id": "Apa hasil dari `n, ok := i.(int)` jika `i` berisi string?",
+      "question_en": "What is the result of `n, ok := i.(int)` if `i` contains a string?",
       "options_id": [
-        "Membuat program lebih cepat",
-        "Melakukan type assertion dengan aman tanpa risiko panic",
-        "Mengkonversi tipe secara otomatis",
-        "Mendapatkan nama tipe sebagai string"
+        "`n` menjadi nilai acak dan `ok` false",
+        "`n` menjadi `nil` dan `ok` false",
+        "`n` menjadi `0` dan `ok` false",
+        "Program panic sebelum assignment"
       ],
       "options_en": [
-        "Makes the program faster",
-        "Performs type assertion safely without panic risk",
-        "Automatically converts the type",
-        "Gets the type name as a string"
+        "`n` becomes a random value and `ok` is false",
+        "`n` becomes `nil` and `ok` is false",
+        "`n` becomes `0` and `ok` is false",
+        "The program panics before assignment"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa comma-ok pattern lebih aman untuk data dengan tipe dinamis?",
+      "question_en": "Why is the comma-ok pattern safer for dynamically typed data?",
+      "options_id": [
+        "Karena mempercepat type assertion",
+        "Karena memberi sinyal kegagalan tanpa panic",
+        "Karena mengubah interface menjadi pointer",
+        "Karena memaksa semua case ditangani"
+      ],
+      "options_en": [
+        "Because it makes type assertions faster",
+        "Because it signals failure without panicking",
+        "Because it turns the interface into a pointer",
+        "Because it forces all cases to be handled"
       ],
       "correct": 1
     },
     {
-      "question_id": "Dalam `switch v := i.(type)`, apa yang disimpan dalam `v` di dalam setiap case?",
-      "question_en": "In `switch v := i.(type)`, what is stored in `v` inside each case?",
+      "question_id": "Dalam `switch v := i.(type)`, apa tipe dari `v` di dalam `case []int:`?",
+      "question_en": "In `switch v := i.(type)`, what is the type of `v` inside `case []int:`?",
       "options_id": [
-        "Nilai interface asli",
-        "Nilai konkret dengan tipe yang sesuai dengan case tersebut",
-        "Nama tipe sebagai string",
-        "Pointer ke nilai interface"
+        "Tetap `interface{}`",
+        "String yang berisi nama tipe",
+        "`[]int`",
+        "Pointer ke `[]int`"
       ],
       "options_en": [
-        "The original interface value",
-        "The concrete value with the type matching that case",
-        "The type name as a string",
-        "A pointer to the interface value"
+        "It remains `interface{}`",
+        "A string containing the type name",
+        "`[]int`",
+        "A pointer to `[]int`"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Kapan type switch lebih tepat daripada beberapa direct assertion terpisah?",
+      "question_en": "When is a type switch more appropriate than several separate direct assertions?",
+      "options_id": [
+        "Ketika hanya ada satu tipe pasti",
+        "Ketika perlu membedakan banyak kemungkinan tipe dengan cabang yang berbeda",
+        "Ketika ingin menghindari semua interface",
+        "Hanya ketika nilai adalah nil"
+      ],
+      "options_en": [
+        "When there is only one guaranteed type",
+        "When you need to distinguish among many possible types with different branches",
+        "When you want to avoid all interfaces",
+        "Only when the value is nil"
       ],
       "correct": 1
     },
     {
-      "question_id": "Kapan sebaiknya menggunakan type switch daripada type assertion?",
-      "question_en": "When should you use a type switch instead of a type assertion?",
+      "question_id": "Apa yang ditangani oleh `case nil` dalam type switch?",
+      "question_en": "What does `case nil` handle in a type switch?",
       "options_id": [
-        "Selalu lebih baik menggunakan type assertion",
-        "Ketika ada banyak kemungkinan tipe dan perlu menangani masing-masing berbeda",
-        "Ketika bekerja dengan slice",
-        "Hanya ketika tipe tidak diketahui saat kompilasi"
+        "Semua interface yang berisi typed nil pointer",
+        "Hanya nilai interface yang benar-benar nil",
+        "Semua zero value dari tipe apa pun",
+        "Hanya pointer nil ke struct"
       ],
       "options_en": [
-        "Type assertion is always better",
-        "When there are many possible types and each needs different handling",
-        "When working with slices",
-        "Only when types are unknown at compile time"
+        "All interfaces that contain typed nil pointers",
+        "Only an interface value that is truly nil",
+        "All zero values of any type",
+        "Only nil struct pointers"
       ],
       "correct": 1
+    },
+    {
+      "question_id": "Pada contoh `describeShape`, apa yang terjadi jika ditambahkan tipe `Hexagon` yang mengimplementasikan `Shape` tetapi tidak punya case khusus?",
+      "question_en": "In the `describeShape` example, what happens if a `Hexagon` type is added that implements `Shape` but has no dedicated case?",
+      "options_id": [
+        "Compile error sampai case baru ditambahkan",
+        "Program panic ketika switch berjalan",
+        "Nilai masuk ke `default` case",
+        "Nilai otomatis diperlakukan sebagai `Circle`"
+      ],
+      "options_en": [
+        "A compile error occurs until a new case is added",
+        "The program panics when the switch runs",
+        "The value falls into the `default` case",
+        "The value is automatically treated as `Circle`"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa keuntungan type switch untuk error seperti `switch e := err.(type)`?",
+      "question_en": "What is the advantage of a type switch for errors such as `switch e := err.(type)`?",
+      "options_id": [
+        "Error berubah menjadi string",
+        "Kita bisa menangani tiap tipe error konkret dan mengakses field atau method yang relevan",
+        "Wrapping error otomatis dihapus",
+        "Semua error dianggap sama"
+      ],
+      "options_en": [
+        "The error is converted into a string",
+        "We can handle each concrete error type and access relevant fields or methods",
+        "Error wrapping is automatically removed",
+        "All errors are treated the same"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang dibuktikan oleh fungsi `safeGetRadius(s Shape) (float64, bool)`?",
+      "question_en": "What does the function `safeGetRadius(s Shape) (float64, bool)` demonstrate?",
+      "options_id": [
+        "Type assertion bisa dipakai untuk mengambil data yang hanya dimiliki satu tipe konkret",
+        "Interface menyimpan semua field semua implementer",
+        "`Shape` seharusnya punya method `Radius()`",
+        "Assertion selalu lebih baik daripada polymorphism"
+      ],
+      "options_en": [
+        "A type assertion can be used to access data that belongs only to one concrete type",
+        "An interface stores all fields from all implementers",
+        "`Shape` should have a `Radius()` method",
+        "Assertions are always better than polymorphism"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Pernyataan mana yang paling tepat tentang type assertion di Go?",
+      "question_en": "Which statement is most accurate about type assertions in Go?",
+      "options_id": [
+        "Ini adalah cara mengonversi semua nilai antar tipe yang kompatibel",
+        "Ini hanya bisa dipakai pada pointer",
+        "Ini mengekstrak nilai konkret dari interface, bukan menggantikan desain interface yang baik",
+        "Ini selalu aman tanpa perlu pemeriksaan"
+      ],
+      "options_en": [
+        "It is the way to convert all values between compatible types",
+        "It can only be used on pointers",
+        "It extracts a concrete value from an interface, rather than replacing good interface design",
+        "It is always safe without checks"
+      ],
+      "correct": 2
     }
   ]
 }

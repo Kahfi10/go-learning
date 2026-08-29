@@ -8,25 +8,74 @@
   "starterCode": "package main\n\nimport (\n\t\"strings\"\n\t\"testing\"\n)\n\n// --- Helper functions ---\n\n// assertStringContains checks that s contains substr\nfunc assertStringContains(t *testing.T, s, substr string) {\n\t// TODO: add t.Helper() call\n\tt.Helper()\n\tif !strings.Contains(s, substr) {\n\t\tt.Errorf(\"expected %q to contain %q\", s, substr)\n\t}\n}\n\n// assertLen checks that a slice has the expected length\nfunc assertLen(t *testing.T, got, want int) {\n\t// TODO: add t.Helper() call\n\tif got != want {\n\t\tt.Errorf(\"length: got %d, want %d\", got, want)\n\t}\n}\n\n// --- Function under test ---\n\nfunc splitCSV(line string) []string {\n\treturn strings.Split(line, \",\")\n}\n\n// --- Tests using helpers ---\n\nfunc TestSplitCSV(t *testing.T) {\n\tresult := splitCSV(\"go,is,awesome\")\n\n\tassertLen(t, len(result), 3)\n\tassertStringContains(t, result[0], \"go\")\n\tassertStringContains(t, result[2], \"awesome\")\n}\n\nfunc main() {\n\tt := &testing.T{}\n\tTestSplitCSV(t)\n}",
   "quiz": [
     {
-      "question_id": "Apa tujuan memanggil t.Helper() dalam fungsi test helper?",
-      "question_en": "What is the purpose of calling t.Helper() in a test helper function?",
-      "options_id": ["Agar error line number menunjuk ke pemanggil helper, bukan helper itu sendiri", "Agar helper bisa dipanggil dari goroutine", "Agar helper bisa digunakan di package lain", "Agar helper mendapat t *testing.T secara otomatis"],
-      "options_en": ["So error line numbers point to the helper's caller, not the helper itself", "So the helper can be called from goroutines", "So the helper can be used in other packages", "So the helper gets t *testing.T automatically"],
+      "question_id": "Tanpa `t.Helper()`, baris kegagalan biasanya menunjuk ke mana?",
+      "question_en": "Without `t.Helper()`, where does the failure line usually point?",
+      "options_id": ["Ke pemanggil helper", "Ke fungsi `TestMain`", "Ke baris di dalam helper yang memanggil `t.Errorf` atau `t.Fatal`", "Ke package `testing`"],
+      "options_en": ["To the helper's caller", "To the `TestMain` function", "To the line inside the helper that calls `t.Errorf` or `t.Fatal`", "To the `testing` package"],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa manfaat utama mengekstrak assertion berulang ke helper function?",
+      "question_en": "What is the main benefit of extracting repeated assertions into helper functions?",
+      "options_id": ["Membuat helper berjalan otomatis di semua test", "Mengurangi duplikasi dan menjaga test utama fokus pada intent", "Menghilangkan kebutuhan akan `*testing.T`", "Memaksa semua test menjadi parallel"],
+      "options_en": ["It makes helpers run automatically in every test", "It reduces duplication and keeps the main test focused on intent", "It removes the need for `*testing.T`", "It forces all tests to become parallel"],
+      "correct": 1
+    },
+    {
+      "question_id": "`AssertEqual` pada lesson memakai `reflect.DeepEqual` terutama untuk apa?",
+      "question_en": "Why does `AssertEqual` in the lesson mainly use `reflect.DeepEqual`?",
+      "options_id": ["Agar perbandingan bisa bekerja pada value kompleks seperti slice, map, atau struct", "Agar semua comparison menjadi constant time", "Agar helper bisa dipanggil tanpa `t.Helper()`", "Agar error message otomatis diterjemahkan"],
+      "options_en": ["So comparisons can work on complex values like slices, maps, or structs", "So every comparison becomes constant time", "So the helper can be called without `t.Helper()`", "So error messages are translated automatically"],
       "correct": 0
     },
     {
-      "question_id": "t.Cleanup(func) berguna untuk?",
-      "question_en": "What is t.Cleanup(func) useful for?",
-      "options_id": ["Mendaftarkan fungsi yang dijalankan saat test selesai (cleanup)", "Membersihkan output test", "Memanggil t.Helper() secara otomatis", "Menghapus test dari test suite"],
-      "options_en": ["Registering a function to run when the test finishes (cleanup)", "Cleaning up test output", "Automatically calling t.Helper()", "Removing tests from the test suite"],
+      "question_id": "Mengapa `AssertNoError` memakai `t.Fatalf` saat `err != nil`?",
+      "question_en": "Why does `AssertNoError` use `t.Fatalf` when `err != nil`?",
+      "options_id": ["Karena setelah error tak terduga, assertion berikutnya sering tidak valid lagi", "Karena `Fatalf` lebih cepat dari `Errorf`", "Karena helper harus selalu menghentikan seluruh package test", "Karena `Errorf` tidak bisa menerima `error`"],
+      "options_en": ["Because after an unexpected error, later assertions are often no longer valid", "Because `Fatalf` is faster than `Errorf`", "Because helpers must always stop the entire package test", "Because `Errorf` cannot accept an `error`"],
       "correct": 0
     },
     {
-      "question_id": "TestMain(m *testing.M) digunakan untuk?",
-      "question_en": "What is TestMain(m *testing.M) used for?",
-      "options_id": ["Setup dan teardown yang dijalankan sebelum/sesudah semua test di package", "Mengganti fungsi main() di test", "Menjalankan test secara paralel", "Mendefinisikan test yang harus selalu berhasil"],
-      "options_en": ["Setup and teardown run before/after all tests in the package", "Replacing the main() function in tests", "Running tests in parallel", "Defining tests that must always pass"],
+      "question_id": "Apa perilaku `AssertError(t, err)` bila `err` ternyata `nil`?",
+      "question_en": "What does `AssertError(t, err)` do if `err` turns out to be `nil`?",
+      "options_id": ["Mencatat log lalu lanjut", "Memanggil `t.Fatal` karena error diharapkan tetapi tidak ada", "Mengembalikan `false` ke caller", "Melewati test dengan `t.Skip`"],
+      "options_en": ["It logs a message and continues", "It calls `t.Fatal` because an error was expected but none was present", "It returns `false` to the caller", "It skips the test with `t.Skip`"],
+      "correct": 1
+    },
+    {
+      "question_id": "Urutan yang benar dalam `TestMain` pada lesson adalah...",
+      "question_en": "What is the correct order in the lesson's `TestMain`?",
+      "options_id": ["Teardown -> `m.Run()` -> setup", "`m.Run()` -> setup -> `os.Exit`", "Setup -> `m.Run()` -> teardown -> `os.Exit(code)`", "Setup -> teardown -> `m.Run()`"],
+      "options_en": ["Teardown -> `m.Run()` -> setup", "`m.Run()` -> setup -> `os.Exit`", "Setup -> `m.Run()` -> teardown -> `os.Exit(code)`", "Setup -> teardown -> `m.Run()`"],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa return value dari `m.Run()` disimpan lalu diteruskan ke `os.Exit(code)` setelah teardown?",
+      "question_en": "Why is the return value of `m.Run()` stored and then passed to `os.Exit(code)` after teardown?",
+      "options_id": ["Agar hasil pass/fail test package tetap menjadi exit status proses", "Agar test bisa dijalankan dua kali", "Agar `t.Helper()` aktif global", "Agar semua benchmark diskip"],
+      "options_en": ["So the package test pass/fail result remains the process exit status", "So the tests can be run twice", "So `t.Helper()` becomes globally active", "So all benchmarks are skipped"],
       "correct": 0
+    },
+    {
+      "question_id": "Apa kegunaan `t.Cleanup(func() { ... })`?",
+      "question_en": "What is `t.Cleanup(func() { ... })` useful for?",
+      "options_id": ["Membersihkan output terminal dari log test", "Menjadwalkan fungsi cleanup yang dijalankan saat test atau subtest selesai", "Menghapus file `_test.go` setelah test", "Mengubah `t.Error` menjadi `t.Fatal`"],
+      "options_en": ["Cleaning terminal output from test logs", "Scheduling a cleanup function to run when the test or subtest finishes", "Deleting `_test.go` files after the test", "Turning `t.Error` into `t.Fatal`"],
+      "correct": 1
+    },
+    {
+      "question_id": "Dalam pembagian tanggung jawab, mana yang paling cocok menjadi helper dan bukan `TestMain`?",
+      "question_en": "In terms of responsibilities, which belongs in a helper rather than in `TestMain`?",
+      "options_id": ["Reusable assertion seperti `AssertEqual`", "Setup database sekali untuk seluruh package", "Pemanggilan `os.Exit`", "Parsing flag test global"],
+      "options_en": ["A reusable assertion like `AssertEqual`", "Setting up the database once for the whole package", "Calling `os.Exit`", "Parsing global test flags"],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika helper lupa memanggil `t.Helper()`, apa kerugian debugging yang paling nyata?",
+      "question_en": "If a helper forgets to call `t.Helper()`, what is the most visible debugging cost?",
+      "options_id": ["Test tidak akan terdeteksi oleh `go test`", "Stack trace dan line number mengarah ke abstraksi helper, bukan lokasi pemanggilan yang gagal", "Subtest tidak bisa dijalankan dengan `-run`", "Benchmark menjadi lebih lambat"],
+      "options_en": ["The test will not be discovered by `go test`", "The stack trace and line number point at the helper abstraction, not the failing call site", "Subtests cannot be run with `-run`", "Benchmarks become slower"],
+      "correct": 1
     }
   ]
 }

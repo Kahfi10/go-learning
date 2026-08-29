@@ -8,45 +8,174 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\ntype Address struct {\n\tStreet string\n\tCity   string\n\tZip    string\n}\n\ntype Person struct {\n\tName    string\n\tAge     int\n\tAddress Address\n}\n\ntype Order struct {\n\tID       int\n\tCustomer string\n\tItems    []string\n\tTotal    float64\n\tStatus   string\n}\n\nfunc main() {\n\t// Create person with nested address\n\tbudi := Person{\n\t\tName: \"Budi Santoso\",\n\t\tAge:  28,\n\t\tAddress: Address{\n\t\t\tStreet: \"Jl. Merdeka No. 17\",\n\t\t\tCity:   \"Jakarta\",\n\t\t\tZip:    \"10110\",\n\t\t},\n\t}\n\n\tfmt.Printf(\"Name: %s\\n\", budi.Name)\n\tfmt.Printf(\"City: %s\\n\", budi.Address.City)\n\n\t// Anonymous struct\n\tconfig := struct {\n\t\tHost  string\n\t\tPort  int\n\t\tDebug bool\n\t}{\n\t\tHost:  \"localhost\",\n\t\tPort:  8080,\n\t\tDebug: true,\n\t}\n\tfmt.Printf(\"Server: %s:%d (debug=%v)\\n\", config.Host, config.Port, config.Debug)\n\n\t// Struct comparison\n\ttype Point struct{ X, Y int }\n\tp1 := Point{1, 2}\n\tp2 := Point{1, 2}\n\tp3 := Point{3, 4}\n\tfmt.Println(\"p1 == p2:\", p1 == p2)\n\tfmt.Println(\"p1 == p3:\", p1 == p3)\n\n\t// Order with items\n\torder := Order{\n\t\tID:       1001,\n\t\tCustomer: \"Alice\",\n\t\tItems:    []string{\"Laptop\", \"Mouse\", \"Keyboard\"},\n\t\tTotal:    15_500_000,\n\t\tStatus:   \"confirmed\",\n\t}\n\tfmt.Printf(\"Order #%d: %d items, Total: Rp %.0f\\n\",\n\t\torder.ID, len(order.Items), order.Total)\n}",
   "quiz": [
     {
-      "question_id": "Apa zero value untuk field `Name string` dalam sebuah struct yang dideklarasikan dengan `var p Person`?",
-      "question_en": "What is the zero value for a `Name string` field in a struct declared with `var p Person`?",
-      "options_id": ["nil", "\"\"  (string kosong)", "\"zero\"", "Undefined"],
-      "options_en": ["nil", "\"\" (empty string)", "\"zero\"", "Undefined"],
-      "correct": 1
-    },
-    {
-      "question_id": "Kapan dua struct bisa dibandingkan menggunakan `==`?",
-      "question_en": "When can two structs be compared using `==`?",
+      "question_id": "Apa fungsi utama struct dalam Go menurut lesson ini?",
+      "question_en": "According to this lesson, what is the main purpose of a struct in Go?",
       "options_id": [
-        "Selalu bisa dibandingkan",
-        "Hanya jika semua field-nya bertipe comparable (tidak ada slice/map/func)",
-        "Hanya jika struct memiliki metode Equal()",
-        "Tidak pernah bisa dibandingkan"
+        "Menggantikan semua interface",
+        "Mengelompokkan field bernama dengan tipe berbeda untuk memodelkan data kustom",
+        "Menyimpan hanya data homogen seperti array",
+        "Memberikan inheritance seperti class OOP tradisional"
       ],
       "options_en": [
-        "Always comparable",
-        "Only if all fields are comparable types (no slice/map/func)",
-        "Only if the struct has an Equal() method",
-        "Never comparable"
+        "To replace all interfaces",
+        "To group named fields of different types for modeling custom data",
+        "To store only homogeneous data like an array",
+        "To provide inheritance like a traditional OOP class"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa kegunaan utama anonymous struct di Go?",
-      "question_en": "What is the main use of anonymous structs in Go?",
+      "question_id": "Apa tradeoff utama antara struct literal bernama field dan positional literal?",
+      "question_en": "What is the main tradeoff between a named-field struct literal and a positional literal?",
       "options_id": [
-        "Menggantikan semua struct yang diberi nama",
-        "Untuk data sementara atau test data tanpa perlu mendefinisikan tipe baru",
-        "Untuk optimasi performa",
-        "Untuk inheritance seperti di Java"
+        "Positional literal lebih jelas karena menyebut nama field",
+        "Named-field literal lebih tahan terhadap kesalahan urutan, sedangkan positional bergantung pada urutan field yang tepat",
+        "Keduanya identik dan compiler menghapus semua perbedaan",
+        "Named-field literal hanya valid untuk struct anonim"
       ],
       "options_en": [
-        "To replace all named structs",
-        "For temporary or test data without defining a new named type",
-        "For performance optimization",
-        "For inheritance like in Java"
+        "A positional literal is clearer because it names the fields",
+        "A named-field literal is less error-prone about ordering, while a positional literal depends on the exact field order",
+        "They are identical and the compiler removes all differences",
+        "A named-field literal is only valid for anonymous structs"
       ],
       "correct": 1
+    },
+    {
+      "question_id": "Jika `var p Person` dideklarasikan tanpa inisialisasi, apa zero value untuk field `Name string`?",
+      "question_en": "If `var p Person` is declared without initialization, what is the zero value of the `Name string` field?",
+      "options_id": [
+        "`nil`",
+        "`\"\"`",
+        "`\"zero\"`",
+        "Undefined"
+      ],
+      "options_en": [
+        "`nil`",
+        "`\"\"`",
+        "`\"zero\"`",
+        "Undefined"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang ditunjukkan oleh `p.Email = \"alice@newdomain.com\"`?",
+      "question_en": "What does `p.Email = \"alice@newdomain.com\"` demonstrate?",
+      "options_id": [
+        "Field struct tidak bisa diubah setelah dibuat",
+        "Field diakses dan diubah dengan dot operator",
+        "Itu adalah method call terselubung",
+        "Email harus selalu diubah lewat pointer ke struct"
+      ],
+      "options_en": [
+        "Struct fields cannot be changed after creation",
+        "Fields are accessed and modified with the dot operator",
+        "It is a disguised method call",
+        "Email must always be changed through a pointer to the struct"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Kapan anonymous struct paling masuk akal dipakai?",
+      "question_en": "When is it most sensible to use an anonymous struct?",
+      "options_id": [
+        "Saat tipe akan dipakai luas di banyak package",
+        "Saat butuh data sementara atau test cases tanpa mendefinisikan tipe bernama baru",
+        "Saat butuh inheritance",
+        "Saat ingin menghindari semua zero value"
+      ],
+      "options_en": [
+        "When the type will be widely reused across many packages",
+        "When you need temporary data or test cases without defining a new named type",
+        "When you need inheritance",
+        "When you want to avoid all zero values"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa manfaat utama nested struct seperti `Person` yang memiliki field `Address Address`?",
+      "question_en": "What is the main benefit of a nested struct such as `Person` having an `Address Address` field?",
+      "options_id": [
+        "Mencegah akses ke field bagian dalam",
+        "Mengelompokkan sub-data terkait secara eksplisit di dalam model yang lebih besar",
+        "Mengubah `Address` menjadi interface secara otomatis",
+        "Membuat semua field menjadi private"
+      ],
+      "options_en": [
+        "It prevents access to the inner fields",
+        "It groups related sub-data explicitly inside a larger model",
+        "It automatically turns `Address` into an interface",
+        "It makes all fields private"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Bagaimana cara mengakses kota dari `budi` pada example nested struct?",
+      "question_en": "How do you access the city from `budi` in the nested struct example?",
+      "options_id": [
+        "`budi.City`",
+        "`budi.Address.City`",
+        "`budi->Address->City`",
+        "`city(budi.Address)`"
+      ],
+      "options_en": [
+        "`budi.City`",
+        "`budi.Address.City`",
+        "`budi->Address->City`",
+        "`city(budi.Address)`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Kapan dua struct dapat dibandingkan dengan `==`?",
+      "question_en": "When can two structs be compared with `==`?",
+      "options_id": [
+        "Selalu, tanpa pengecualian",
+        "Hanya jika semua field bertipe comparable",
+        "Hanya jika struct punya method `Equal()`",
+        "Tidak pernah, struct harus dibandingkan manual"
+      ],
+      "options_en": [
+        "Always, with no exceptions",
+        "Only if all fields are of comparable types",
+        "Only if the struct has an `Equal()` method",
+        "Never, structs must be compared manually"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa struct dengan field slice, map, atau func tidak bisa dibandingkan dengan `==` secara langsung?",
+      "question_en": "Why can't a struct with slice, map, or func fields be directly compared with `==`?",
+      "options_id": [
+        "Karena field-field itu bukan tipe comparable",
+        "Karena compiler tidak mendukung struct besar",
+        "Karena `==` hanya untuk pointer",
+        "Karena zero value field tersebut tidak diketahui"
+      ],
+      "options_en": [
+        "Because those fields are not comparable types",
+        "Because the compiler does not support large structs",
+        "Because `==` is only for pointers",
+        "Because the zero values of those fields are unknown"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Pernyataan mana yang paling akurat tentang struct dibanding array/slice?",
+      "question_en": "Which statement is most accurate about a struct compared with an array/slice?",
+      "options_id": [
+        "Struct cocok untuk data heterogen bernama; array/slice untuk koleksi elemen homogen",
+        "Struct dan slice identik kecuali syntax",
+        "Struct hanya bisa berisi field string",
+        "Struct tidak bisa dinesting"
+      ],
+      "options_en": [
+        "A struct suits named heterogeneous data; arrays/slices suit homogeneous collections",
+        "Structs and slices are identical except for syntax",
+        "A struct can only contain string fields",
+        "A struct cannot be nested"
+      ],
+      "correct": 0
     }
   ]
 }

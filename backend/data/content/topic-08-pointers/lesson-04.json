@@ -8,53 +8,172 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\ntype TreeNode struct {\n\tVal   int\n\tLeft  *TreeNode\n\tRight *TreeNode\n}\n\nfunc newNode(val int) *TreeNode {\n\treturn &TreeNode{Val: val}\n}\n\n// Safe tree operations\nfunc (n *TreeNode) Height() int {\n\tif n == nil {\n\t\treturn 0\n\t}\n\tleftH := n.Left.Height()\n\trightH := n.Right.Height()\n\tif leftH > rightH {\n\t\treturn 1 + leftH\n\t}\n\treturn 1 + rightH\n}\n\nfunc (n *TreeNode) Sum() int {\n\tif n == nil {\n\t\treturn 0\n\t}\n\treturn n.Val + n.Left.Sum() + n.Right.Sum()\n}\n\nfunc (n *TreeNode) InOrder() []int {\n\tif n == nil {\n\t\treturn nil\n\t}\n\tresult := n.Left.InOrder()\n\tresult = append(result, n.Val)\n\tresult = append(result, n.Right.InOrder()...)\n\treturn result\n}\n\n// Safe dereferencing helpers\nfunc derefInt(p *int, def int) int {\n\tif p == nil {\n\t\treturn def\n\t}\n\treturn *p\n}\n\nfunc derefString(p *string, def string) string {\n\tif p == nil {\n\t\treturn def\n\t}\n\treturn *p\n}\n\nfunc main() {\n\t// Binary tree:\n\t//       4\n\t//      / \\\n\t//     2   6\n\t//    / \\ / \\\n\t//   1  3 5  7\n\troot := newNode(4)\n\troot.Left = newNode(2)\n\troot.Right = newNode(6)\n\troot.Left.Left = newNode(1)\n\troot.Left.Right = newNode(3)\n\troot.Right.Left = newNode(5)\n\troot.Right.Right = newNode(7)\n\n\tfmt.Println(\"Tree height:\", root.Height())\n\tfmt.Println(\"Tree sum:\", root.Sum())\n\tfmt.Println(\"In-order:\", root.InOrder())\n\n\t// Nil tree is safe\n\tvar nilTree *TreeNode\n\tfmt.Println(\"Nil tree height:\", nilTree.Height())\n\tfmt.Println(\"Nil tree sum:\", nilTree.Sum())\n\n\t// Safe deref helpers\n\tvar age *int\n\tname := \"Alice\"\n\n\tfmt.Println(\"Age:\", derefInt(age, -1))\n\tfmt.Println(\"Name:\", derefString(&name, \"unknown\"))\n\n\tval := 42\n\tfmt.Println(\"Val:\", derefInt(&val, -1))\n}",
   "quiz": [
     {
-      "question_id": "Apa yang menyebabkan 'nil pointer dereference panic' di Go?",
-      "question_en": "What causes a 'nil pointer dereference panic' in Go?",
+      "question_id": "Manakah operasi yang aman ketika `var p *int` masih nil?",
+      "question_en": "Which operation is safe when `var p *int` is still nil?",
       "options_id": [
-        "Mendeklarasikan pointer tanpa inisialisasi",
-        "Mengakses nilai (`*p`) atau field dari pointer yang bernilai nil",
-        "Membandingkan dua nil pointer",
-        "Mengirim nil pointer sebagai parameter fungsi"
+        "`fmt.Println(*p)`",
+        "`*p = 10`",
+        "`fmt.Println(p == nil)`",
+        "`fmt.Println((*p) + 1)`"
       ],
       "options_en": [
-        "Declaring a pointer without initialization",
-        "Accessing the value (`*p`) or field of a nil pointer",
-        "Comparing two nil pointers",
-        "Passing a nil pointer as a function argument"
+        "`fmt.Println(*p)`",
+        "`*p = 10`",
+        "`fmt.Println(p == nil)`",
+        "`fmt.Println((*p) + 1)`"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa deklarasi pointer tanpa inisialisasi sendiri tidak panic?",
+      "question_en": "Why does declaring an uninitialized pointer by itself not panic?",
+      "options_id": [
+        "Karena panic hanya terjadi saat pointer nil benar-benar didereference atau field-nya diakses",
+        "Karena compiler diam-diam mengalokasikan memori target",
+        "Karena semua pointer nil otomatis menjadi pointer ke zero value",
+        "Karena nil pointer hanya berbahaya di method receiver"
+      ],
+      "options_en": [
+        "Because a panic only happens when a nil pointer is actually dereferenced or one of its fields is accessed",
+        "Because the compiler silently allocates the target memory",
+        "Because all nil pointers automatically become pointers to zero values",
+        "Because nil pointers are only dangerous in method receivers"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa pola idiomatis setelah `user := findUser(id)` ketika fungsi bisa mengembalikan nil?",
+      "question_en": "What is the idiomatic pattern after `user := findUser(id)` when the function may return nil?",
+      "options_id": [
+        "Langsung akses `user.Name` lalu recover jika panic",
+        "Cek `if user == nil` lalu tangani kondisi tidak ditemukan lebih awal",
+        "Bandingkan `user` dengan struct kosong",
+        "Ubah `user` menjadi interface kosong lebih dulu"
+      ],
+      "options_en": [
+        "Access `user.Name` immediately and recover if it panics",
+        "Check `if user == nil` and handle the not-found case early",
+        "Compare `user` with an empty struct",
+        "Convert `user` to an empty interface first"
       ],
       "correct": 1
     },
     {
-      "question_id": "Mengapa `var a Animal = (*Dog)(nil)` menghasilkan `a != nil` meskipun Dog-nya nil?",
-      "question_en": "Why does `var a Animal = (*Dog)(nil)` result in `a != nil` even though the Dog is nil?",
+      "question_id": "Mengapa `var a Animal = (*Dog)(nil)` membuat `a != nil`?",
+      "question_en": "Why does `var a Animal = (*Dog)(nil)` make `a != nil`?",
       "options_id": [
-        "Ini adalah bug di Go",
-        "Interface value terdiri dari pasangan (type, value) — type info (*Dog) menyebabkan interface tidak nil",
-        "Karena Animal bukan interface",
-        "Karena nil tidak bisa disimpan dalam interface"
+        "Karena interface menyimpan pasangan tipe dan nilai; tipenya terisi walaupun nilai pointer di dalamnya nil",
+        "Karena interface tidak pernah bisa bernilai nil",
+        "Karena pointer nil otomatis dikonversi menjadi error",
+        "Karena `Dog` bukan struct"
       ],
       "options_en": [
-        "This is a bug in Go",
-        "Interface values are (type, value) pairs — the type info (*Dog) makes the interface non-nil",
-        "Because Animal is not an interface",
-        "Because nil cannot be stored in an interface"
+        "Because an interface stores a type-and-value pair; the type is present even though the pointer value inside is nil",
+        "Because an interface can never be nil",
+        "Because nil pointers are automatically converted to errors",
+        "Because `Dog` is not a struct"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa pemeriksaan `a == nil` tidak cukup untuk interface yang mungkin menyimpan typed nil pointer?",
+      "question_en": "Why is checking `a == nil` not enough for an interface that may store a typed nil pointer?",
+      "options_id": [
+        "Karena operator `==` tidak valid untuk interface",
+        "Karena interface bisa non-nil walaupun nilai konkret di dalamnya nil",
+        "Karena semua interface selalu berisi zero value struct",
+        "Karena type assertion tidak bekerja pada interface nil"
+      ],
+      "options_en": [
+        "Because the `==` operator is not valid for interfaces",
+        "Because an interface can be non-nil even when the concrete value inside it is nil",
+        "Because every interface always contains a zero-value struct",
+        "Because type assertions do not work on nil interfaces"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa cara paling idiomatis di Go untuk menangani pointer yang mungkin nil sebelum menggunakannya?",
-      "question_en": "What is the most idiomatic Go way to handle a potentially nil pointer before using it?",
+      "question_id": "Mengapa method nil-safe seperti `func (n *Node) Length() int` berguna?",
+      "question_en": "Why are nil-safe methods like `func (n *Node) Length() int` useful?",
       "options_id": [
-        "Gunakan try-catch untuk menangkap panic",
-        "Cek `if ptr != nil` sebelum dereference dan kembalikan error atau default jika nil",
-        "Gunakan recover() di setiap fungsi",
-        "Inisialisasi semua pointer dengan new(T)"
+        "Karena method receiver pointer tidak pernah bisa nil",
+        "Karena mereka memungkinkan struktur rekursif diperlakukan aman bahkan saat receiver nil",
+        "Karena semua method di Go wajib return int saat receiver nil",
+        "Karena mereka menghilangkan kebutuhan unit test"
       ],
       "options_en": [
-        "Use try-catch to catch the panic",
-        "Check `if ptr != nil` before dereference and return error or default if nil",
-        "Use recover() in every function",
-        "Initialize all pointers with new(T)"
+        "Because pointer method receivers can never be nil",
+        "Because they let recursive structures be handled safely even when the receiver is nil",
+        "Because all Go methods must return int when the receiver is nil",
+        "Because they eliminate the need for unit tests"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa tujuan helper seperti `derefInt(p *int, def int)`?",
+      "question_en": "What is the purpose of helpers like `derefInt(p *int, def int)`?",
+      "options_id": [
+        "Mengubah pointer menjadi interface",
+        "Memberi nilai default ketika pointer nil tanpa menyebabkan panic",
+        "Memaksa semua pointer dialokasikan di heap",
+        "Mengganti semua pointer dengan zero value"
+      ],
+      "options_en": [
+        "To turn pointers into interfaces",
+        "To provide a default when a pointer is nil without causing a panic",
+        "To force all pointers onto the heap",
+        "To replace all pointers with zero values"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Dalam desain API, kapan pointer nil sering dipakai secara sah?",
+      "question_en": "In API design, when is a nil pointer often used legitimately?",
+      "options_id": [
+        "Sebagai penanda nilai opsional atau tidak ada data",
+        "Sebagai pengganti semua boolean",
+        "Untuk menghindari return error",
+        "Untuk membuat interface selalu nil"
+      ],
+      "options_en": [
+        "As a marker for an optional value or missing data",
+        "As a replacement for all booleans",
+        "To avoid returning errors",
+        "To make interfaces always nil"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa trade-off dari menggunakan pointer untuk optional field seperti `Bio *string`?",
+      "question_en": "What is the trade-off of using a pointer for an optional field like `Bio *string`?",
+      "options_id": [
+        "Kita bisa membedakan 'belum diset' dari nilai string biasa, tetapi caller perlu menangani kemungkinan nil",
+        "Field menjadi selalu aman didereference tanpa cek",
+        "String tidak lagi comparable",
+        "Pointer menghilangkan kebutuhan zero value"
+      ],
+      "options_en": [
+        "We can distinguish 'not set yet' from an ordinary string value, but callers must handle the possibility of nil",
+        "The field becomes always safe to dereference without checks",
+        "Strings are no longer comparable",
+        "Pointers eliminate the need for zero values"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Pernyataan mana yang paling tepat tentang safe access di Go?",
+      "question_en": "Which statement is most accurate about safe access in Go?",
+      "options_id": [
+        "Safe access berarti menunggu panic lalu memakai recover di semua fungsi",
+        "Safe access berarti mendesain alur kode agar nil diperiksa atau ditangani sebelum dereference terjadi",
+        "Safe access berarti menghindari semua pointer",
+        "Safe access hanya relevan untuk interface, bukan pointer"
+      ],
+      "options_en": [
+        "Safe access means waiting for a panic and then using recover in every function",
+        "Safe access means designing code so nil is checked or handled before dereferencing occurs",
+        "Safe access means avoiding all pointers",
+        "Safe access is only relevant to interfaces, not pointers"
       ],
       "correct": 1
     }

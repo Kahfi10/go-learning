@@ -8,25 +8,74 @@
   "starterCode": "package main\n\nimport (\n\t\"bytes\"\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"net/http\"\n\t\"time\"\n)\n\ntype Todo struct {\n\tID        int    `json:\"id\"`\n\tUserID    int    `json:\"userId\"`\n\tTitle     string `json:\"title\"`\n\tCompleted bool   `json:\"completed\"`\n}\n\n// getTodo fetches a single todo by ID from jsonplaceholder\nfunc getTodo(id int) (*Todo, error) {\n\tclient := &http.Client{Timeout: 10 * time.Second}\n\n\t// TODO: make GET request to https://jsonplaceholder.typicode.com/todos/{id}\n\t// TODO: check status code is 200\n\t// TODO: decode response body into *Todo\n\t_ = client\n\treturn &Todo{ID: id, Title: \"placeholder\"}, nil\n}\n\n// createTodo posts a new todo to jsonplaceholder\nfunc createTodo(title string) (*Todo, error) {\n\tclient := &http.Client{Timeout: 10 * time.Second}\n\n\tpayload := map[string]interface{}{\n\t\t\"title\":     title,\n\t\t\"completed\": false,\n\t\t\"userId\":    1,\n\t}\n\n\t// TODO: marshal payload to JSON\n\t// TODO: make POST request with JSON body\n\t// TODO: decode response into *Todo\n\tdata, _ := json.Marshal(payload)\n\t_ = bytes.NewBuffer(data)\n\t_ = client\n\treturn &Todo{Title: title}, nil\n}\n\nfunc main() {\n\ttodo, err := getTodo(1)\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t\treturn\n\t}\n\tfmt.Printf(\"Todo: %+v\\n\", todo)\n}",
   "quiz": [
     {
-      "question_id": "Mengapa penting selalu memanggil defer resp.Body.Close()?",
-      "question_en": "Why is it important to always call defer resp.Body.Close()?",
-      "options_id": ["Agar koneksi TCP dikembalikan ke pool dan tidak terjadi resource leak", "Agar response bisa dibaca", "Agar status code bisa diakses", "Agar request bisa dibatalkan"],
-      "options_en": ["So the TCP connection is returned to the pool and no resource leak occurs", "So the response can be read", "So the status code can be accessed", "So the request can be cancelled"],
+      "question_id": "Jika Anda perlu timeout dan custom header `Authorization`, pola mana yang paling sesuai dengan lesson?",
+      "question_en": "If you need a timeout and a custom `Authorization` header, which pattern best matches the lesson?",
+      "options_id": ["`http.Get(url)`", "`http.Post(url, contentType, body)`", "Buat `http.Client{Timeout: ...}`, lalu `http.NewRequest`, set header, dan panggil `client.Do(req)`", "`io.ReadAll(url)`"],
+      "options_en": ["`http.Get(url)`", "`http.Post(url, contentType, body)`", "Create `http.Client{Timeout: ...}`, then `http.NewRequest`, set headers, and call `client.Do(req)`", "`io.ReadAll(url)`"],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa `defer resp.Body.Close()` selalu penting setelah request berhasil?",
+      "question_en": "Why is `defer resp.Body.Close()` always important after a successful request?",
+      "options_id": ["Agar resource response tidak bocor dan koneksi bisa dikembalikan ke pool", "Agar status code berubah menjadi 200", "Agar JSON otomatis ter-decode", "Agar header request bisa diubah lagi"],
+      "options_en": ["So response resources do not leak and the connection can be returned to the pool", "So the status code changes to 200", "So JSON is decoded automatically", "So request headers can be modified again"],
       "correct": 0
     },
     {
-      "question_id": "Mengapa tidak boleh menggunakan http.DefaultClient di production?",
-      "question_en": "Why should you NOT use http.DefaultClient in production?",
-      "options_id": ["http.DefaultClient tidak memiliki timeout, sehingga bisa hang selamanya", "http.DefaultClient lebih lambat", "http.DefaultClient tidak mendukung HTTPS", "http.DefaultClient tidak bisa mengirim JSON"],
-      "options_en": ["http.DefaultClient has no timeout, so it can hang forever", "http.DefaultClient is slower", "http.DefaultClient doesn't support HTTPS", "http.DefaultClient can't send JSON"],
+      "question_id": "Fungsi mana yang digunakan lesson untuk mengubah payload Go menjadi JSON sebelum POST?",
+      "question_en": "Which function does the lesson use to turn a Go payload into JSON before a POST?",
+      "options_id": ["`json.Marshal(payload)`", "`json.NewEncoder(payload).Encode()`", "`bytes.NewBufferJSON(payload)`", "`http.EncodeJSON(payload)`"],
+      "options_en": ["`json.Marshal(payload)`", "`json.NewEncoder(payload).Encode()`", "`bytes.NewBufferJSON(payload)`", "`http.EncodeJSON(payload)`"],
       "correct": 0
     },
     {
-      "question_id": "Cara membuat HTTP request dengan custom header di Go?",
-      "question_en": "How do you make an HTTP request with a custom header in Go?",
-      "options_id": ["http.NewRequest lalu req.Header.Set(key, value) lalu client.Do(req)", "http.Get(url, headers)", "http.GetWithHeaders(url, map)", "resp := client.Request{Header: ...}.Do()"],
-      "options_en": ["http.NewRequest then req.Header.Set(key, value) then client.Do(req)", "http.Get(url, headers)", "http.GetWithHeaders(url, map)", "resp := client.Request{Header: ...}.Do()"],
+      "question_id": "Mengapa `bytes.NewBuffer(data)` diberikan ke `http.Post` pada contoh JSON POST?",
+      "question_en": "Why is `bytes.NewBuffer(data)` passed to `http.Post` in the JSON POST example?",
+      "options_id": ["Karena `http.Post` membutuhkan body yang dapat dibaca sebagai stream, bukan `[]byte` mentah", "Karena `json.Marshal` mengembalikan string", "Karena buffer otomatis menambah header Authorization", "Karena `http.Post` hanya menerima `*bytes.Buffer` untuk HTTPS"],
+      "options_en": ["Because `http.Post` needs a readable body stream, not raw `[]byte`", "Because `json.Marshal` returns a string", "Because the buffer automatically adds the Authorization header", "Because `http.Post` only accepts `*bytes.Buffer` for HTTPS"],
       "correct": 0
+    },
+    {
+      "question_id": "Mengapa lesson memperingatkan untuk tidak memakai `http.DefaultClient` di production?",
+      "question_en": "Why does the lesson warn against using `http.DefaultClient` in production?",
+      "options_id": ["Karena ia tidak punya timeout default sehingga request bisa hang selamanya", "Karena ia tidak mendukung TLS", "Karena ia tidak bisa membaca body response", "Karena ia memaksa semua request menjadi GET"],
+      "options_en": ["Because it has no default timeout, so a request can hang forever", "Because it does not support TLS", "Because it cannot read the response body", "Because it forces every request to become GET"],
+      "correct": 0
+    },
+    {
+      "question_id": "Pada helper `getGitHubUser`, mengapa `resp.StatusCode` diperiksa sebelum decode JSON?",
+      "question_en": "In the `getGitHubUser` helper, why is `resp.StatusCode` checked before decoding JSON?",
+      "options_id": ["Agar bisa gagal lebih awal saat server mengembalikan status non-200 yang tidak sesuai ekspektasi", "Karena decoder JSON membutuhkan status 200 untuk bekerja", "Agar `defer resp.Body.Close()` aktif", "Karena `resp.Status` tidak tersedia di GET"],
+      "options_en": ["So the function can fail early if the server returns a non-200 status that is not expected", "Because the JSON decoder requires status 200 to work", "So `defer resp.Body.Close()` becomes active", "Because `resp.Status` is unavailable on GET"],
+      "correct": 0
+    },
+    {
+      "question_id": "Field mana yang tepat untuk dibandingkan dengan konstanta seperti `http.StatusOK`?",
+      "question_en": "Which field should be compared with constants like `http.StatusOK`?",
+      "options_id": ["`resp.Header`", "`resp.Status`", "`resp.StatusCode`", "`resp.Body`"],
+      "options_en": ["`resp.Header`", "`resp.Status`", "`resp.StatusCode`", "`resp.Body`"],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa keuntungan memakai `fmt.Errorf(\"request: %w\", err)` atau `fmt.Errorf(\"decode: %w\", err)`?",
+      "question_en": "What is the benefit of using `fmt.Errorf(\"request: %w\", err)` or `fmt.Errorf(\"decode: %w\", err)`?",
+      "options_id": ["Error asli tetap terbungkus sambil diberi konteks tambahan", "Error otomatis berubah menjadi JSON", "Program otomatis retry request", "Header response disalin ke error"],
+      "options_en": ["The original error stays wrapped while gaining extra context", "The error is automatically turned into JSON", "The program automatically retries the request", "The response headers are copied into the error"],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika Anda hanya butuh GET paling sederhana tanpa header tambahan, helper mana yang memang ditunjukkan lesson?",
+      "question_en": "If you only need the simplest GET with no additional headers, which helper does the lesson actually show?",
+      "options_id": ["`http.Get(url)`", "`http.NewRequest(url)`", "`client.Do(url)`", "`http.Fetch(url)`"],
+      "options_en": ["`http.Get(url)`", "`http.NewRequest(url)`", "`client.Do(url)`", "`http.Fetch(url)`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Cara yang sesuai dengan lesson untuk decode JSON response body ke struct adalah...",
+      "question_en": "The lesson-consistent way to decode a JSON response body into a struct is...",
+      "options_id": ["`json.Unmarshal(resp.Body, &user)`", "`json.NewDecoder(resp.Body).Decode(&user)`", "`http.DecodeJSON(resp.Body, &user)`", "`io.ReadAll(resp.Body)` lalu assign ke struct secara manual tanpa parse"],
+      "options_en": ["`json.Unmarshal(resp.Body, &user)`", "`json.NewDecoder(resp.Body).Decode(&user)`", "`http.DecodeJSON(resp.Body, &user)`", "`io.ReadAll(resp.Body)` and then manually assign to the struct without parsing"],
+      "correct": 1
     }
   ]
 }

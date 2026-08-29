@@ -8,25 +8,74 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\n// Rectangle represents a rectangle shape\ntype Rectangle struct {\n\tWidth  float64 // exported\n\tHeight float64 // exported\n\t// TODO: add an unexported field 'area float64' to cache the area\n}\n\n// NewRectangle creates a new Rectangle\nfunc NewRectangle(w, h float64) *Rectangle {\n\treturn &Rectangle{Width: w, Height: h}\n}\n\n// Area returns the area of the rectangle\n// TODO: cache the result in the unexported 'area' field\nfunc (r *Rectangle) Area() float64 {\n\treturn r.Width * r.Height\n}\n\n// Perimeter returns the perimeter of the rectangle\nfunc (r *Rectangle) Perimeter() float64 {\n\treturn 2 * (r.Width + r.Height)\n}\n\nfunc main() {\n\trect := NewRectangle(5, 3)\n\tfmt.Printf(\"Area: %.1f\\n\", rect.Area())\n\tfmt.Printf(\"Perimeter: %.1f\\n\", rect.Perimeter())\n}",
   "quiz": [
     {
-      "question_id": "Bagaimana cara membuat identifier exported di Go?",
-      "question_en": "How do you make an identifier exported in Go?",
-      "options_id": ["Mulai dengan huruf kapital", "Gunakan keyword `public`", "Tambahkan prefix `export_`", "Deklarasikan di luar fungsi"],
-      "options_en": ["Start it with an uppercase letter", "Use the `public` keyword", "Add the prefix `export_`", "Declare it outside any function"],
+      "question_id": "Mengapa `User` dan `NewUser` bisa diakses dari package lain, tetapi `password` dan `hashPassword` tidak?",
+      "question_en": "Why can `User` and `NewUser` be accessed from another package, but `password` and `hashPassword` cannot?",
+      "options_id": ["Karena identifier yang diawali huruf kapital exported, sedangkan huruf kecil unexported", "Karena hanya struct dan constructor yang boleh diakses lintas package", "Karena field dan helper function selalu private di Go", "Karena `user` adalah package khusus untuk autentikasi"],
+      "options_en": ["Because identifiers starting with an uppercase letter are exported, while lowercase ones are unexported", "Because only structs and constructors may be accessed across packages", "Because fields and helper functions are always private in Go", "Because `user` is a special package for authentication"],
       "correct": 0
     },
     {
-      "question_id": "Field struct unexported bisa diakses dari mana?",
-      "question_en": "Where can an unexported struct field be accessed?",
-      "options_id": ["Hanya dari dalam package yang sama", "Dari package manapun", "Hanya dari main package", "Tidak bisa diakses sama sekali"],
-      "options_en": ["Only from within the same package", "From any package", "Only from the main package", "Cannot be accessed at all"],
+      "question_id": "Baris mana yang akan gagal jika ditulis di package lain menurut contoh lesson?",
+      "question_en": "Which line would fail if written in another package according to the lesson example?",
+      "options_id": ["`fmt.Println(u.ID)`", "`fmt.Println(u.Username)`", "`fmt.Println(u.password)`", "`fmt.Println(u.CheckPassword(\"secret123\"))`"],
+      "options_en": ["`fmt.Println(u.ID)`", "`fmt.Println(u.Username)`", "`fmt.Println(u.password)`", "`fmt.Println(u.CheckPassword(\"secret123\"))`"],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa contoh memakai method exported `CheckPassword` alih-alih mengekspos field `password` secara langsung?",
+      "question_en": "Why does the example use the exported `CheckPassword` method instead of exposing the `password` field directly?",
+      "options_id": ["Agar package menjaga detail internal dan memberi API validasi yang aman", "Agar method bisa diakses tanpa import package", "Agar field string bisa berubah menjadi int", "Agar constructor tidak perlu mengisi password"],
+      "options_en": ["So the package can protect internal details and expose a safer validation API", "So the method can be accessed without importing the package", "So the string field can change into an int", "So the constructor no longer needs to set the password"],
       "correct": 0
     },
     {
-      "question_id": "Apa manfaat utama dari unexported identifiers?",
-      "question_en": "What is the main benefit of unexported identifiers?",
-      "options_id": ["Encapsulation — menyembunyikan detail implementasi", "Membuat kode lebih cepat", "Mengurangi ukuran binary", "Mencegah kompilasi error"],
-      "options_en": ["Encapsulation — hiding implementation details", "Making code faster", "Reducing binary size", "Preventing compile errors"],
+      "question_id": "Apa manfaat utama fungsi unexported seperti `hashPassword` di dalam package?",
+      "question_en": "What is the main benefit of an unexported function like `hashPassword` inside the package?",
+      "options_id": ["Menjamin fungsi akan inline oleh compiler", "Menyembunyikan detail implementasi sehingga bisa diubah tanpa mengubah API publik", "Mencegah fungsi dipanggil dari file lain dalam package yang sama", "Memaksa semua password disimpan plaintext"],
+      "options_en": ["It guarantees the compiler will inline the function", "It hides implementation details so they can change without changing the public API", "It prevents the function from being called by other files in the same package", "It forces all passwords to be stored in plaintext"],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika sebuah field struct diawali huruf kecil, di mana field itu tetap bisa diakses?",
+      "question_en": "If a struct field starts with a lowercase letter, where can it still be accessed?",
+      "options_id": ["Di package mana pun selama memakai pointer", "Hanya di package yang sama", "Hanya di `main` package", "Tidak bisa diakses bahkan dari package sendiri"],
+      "options_en": ["In any package as long as a pointer is used", "Only within the same package", "Only in the `main` package", "It cannot be accessed even from its own package"],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa guideline lesson menyarankan 'export as little as possible'?",
+      "question_en": "Why does the lesson guideline recommend 'export as little as possible'?",
+      "options_id": ["Karena exported API lebih sulit diubah tanpa mempengaruhi pengguna package", "Karena exported code tidak bisa dites", "Karena unexported code selalu lebih cepat", "Karena package dengan banyak export tidak bisa di-compile"],
+      "options_en": ["Because exported API is harder to change without affecting package users", "Because exported code cannot be tested", "Because unexported code is always faster", "Because packages with many exports cannot compile"],
       "correct": 0
+    },
+    {
+      "question_id": "Constructor mana yang paling sesuai dengan pola pada lesson?",
+      "question_en": "Which constructor best matches the lesson's pattern?",
+      "options_id": ["`func newUser(...) User`", "`func NewUser(...) *User`", "`func USER(...) User`", "`func build_user(...) *User`"],
+      "options_en": ["`func newUser(...) User`", "`func NewUser(...) *User`", "`func USER(...) User`", "`func build_user(...) *User`"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang paling tepat menggambarkan encapsulation pada contoh `User`?",
+      "question_en": "What best describes encapsulation in the `User` example?",
+      "options_id": ["Semua field dan fungsi dibuat exported agar fleksibel", "State sensitif disembunyikan, lalu diakses melalui method publik yang terkontrol", "Package tidak boleh punya helper function internal", "Encapsulation berarti semua field harus immutable"],
+      "options_en": ["All fields and functions are exported for flexibility", "Sensitive state is hidden and accessed through controlled public methods", "A package may not have internal helper functions", "Encapsulation means all fields must be immutable"],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika implementasi hashing berubah di dalam `hashPassword`, siapa yang paling mungkin tidak perlu mengubah kodenya?",
+      "question_en": "If the hashing implementation changes inside `hashPassword`, who is most likely not required to change their code?",
+      "options_id": ["Pengguna package yang hanya memakai `NewUser` dan `CheckPassword`", "Semua package yang mengakses `u.password` secara langsung", "Compiler Go", "Hanya package `fmt`"],
+      "options_en": ["Package users who only rely on `NewUser` and `CheckPassword`", "All packages that access `u.password` directly", "The Go compiler", "Only the `fmt` package"],
+      "correct": 0
+    },
+    {
+      "question_id": "Identifier mana yang exported menurut aturan lesson?",
+      "question_en": "Which identifier is exported according to the lesson's rule?",
+      "options_id": ["`password`", "`hashPassword`", "`username`", "`CheckPassword`"],
+      "options_en": ["`password`", "`hashPassword`", "`username`", "`CheckPassword`"],
+      "correct": 3
     }
   ]
 }

@@ -8,55 +8,74 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tname := \"Gopher\"\n\tage := 15\n\theight := 1.75\n\tisLearning := true\n\n\t// Gunakan format verbs yang berbeda / Use different format verbs\n\tfmt.Printf(\"Nama: %s\\n\", name)\n\tfmt.Printf(\"Umur: %d tahun\\n\", age)\n\tfmt.Printf(\"Tinggi: %.2f meter\\n\", height)\n\tfmt.Printf(\"Sedang belajar Go: %t\\n\", isLearning)\n\tfmt.Printf(\"Tipe data name: %T\\n\", name)\n\n\t// Coba Sprintf\n\tprofile := fmt.Sprintf(\"%s (%d tahun)\", name, age)\n\tfmt.Println(profile)\n}",
   "quiz": [
     {
-      "question_id": "Package apa yang harus dideklarasikan agar sebuah file Go dapat dijalankan sebagai program?",
-      "question_en": "Which package must be declared for a Go file to run as a program?",
-      "options_id": [
-        "package program",
-        "package run",
-        "package main",
-        "package exec"
-      ],
-      "options_en": [
-        "package program",
-        "package run",
-        "package main",
-        "package exec"
-      ],
+      "question_id": "Mengapa `package main` penting dalam program Go yang ingin dieksekusi langsung?",
+      "question_en": "Why is `package main` important in a Go program that should be run directly?",
+      "options_id": ["Karena hanya package ini yang boleh memakai `fmt`", "Karena package ini menandai program sebagai executable, bukan library", "Karena package ini otomatis menambahkan semua import", "Karena semua variabel global harus berada di package ini"],
+      "options_en": ["Because only this package may use `fmt`", "Because this package marks the program as an executable rather than a library", "Because this package automatically adds all imports", "Because all global variables must live in this package"],
+      "correct": 1
+    },
+    {
+      "question_id": "Dalam program yang dapat dijalankan, apa peran `func main()`?",
+      "question_en": "In an executable program, what is the role of `func main()`?",
+      "options_id": ["Mendefinisikan package yang akan di-import", "Menjadi titik masuk pertama saat program dijalankan", "Mengubah semua output menjadi string", "Menentukan tipe default semua variabel"],
+      "options_en": ["It defines which package will be imported", "It is the first entry point when the program runs", "It converts all output into strings", "It determines the default type of all variables"],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika kode memanggil `fmt.Println` tetapi tidak mengimpor `fmt`, konsep apa yang diabaikan?",
+      "question_en": "If code calls `fmt.Println` but does not import `fmt`, what concept is being ignored?",
+      "options_id": ["Package yang dipakai harus di-import terlebih dahulu", "Fungsi `main` tidak boleh memanggil package standard library", "Go otomatis mencari package yang belum di-import saat runtime", "`fmt.Println` hanya boleh dipakai di package `fmt`"],
+      "options_en": ["A package must be imported before its members can be used", "The `main` function may not call standard library packages", "Go automatically searches for missing imports at runtime", "`fmt.Println` may only be used inside the `fmt` package"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa output gabungan dari `fmt.Print(\"Hello\")` lalu `fmt.Print(\" World\")`?",
+      "question_en": "What is the combined output of `fmt.Print(\"Hello\")` followed by `fmt.Print(\" World\")`?",
+      "options_id": ["Hello lalu baris baru lalu World", "HelloWorld", "Hello World", "Tidak ada output karena `Print` butuh format verb"],
+      "options_en": ["Hello then a newline then World", "HelloWorld", "Hello World", "There is no output because `Print` needs a format verb"],
       "correct": 2
     },
     {
-      "question_id": "Format verb `%T` di Go digunakan untuk?",
-      "question_en": "What is the `%T` format verb used for in Go?",
-      "options_id": [
-        "Mencetak nilai boolean",
-        "Mencetak nilai dalam format binary",
-        "Mencetak tipe data dari sebuah nilai",
-        "Mencetak nilai dalam format hexadecimal"
-      ],
-      "options_en": [
-        "Print a boolean value",
-        "Print a value in binary format",
-        "Print the data type of a value",
-        "Print a value in hexadecimal format"
-      ],
+      "question_id": "Kapan `fmt.Sprintf` lebih tepat daripada `fmt.Printf`?",
+      "question_en": "When is `fmt.Sprintf` more appropriate than `fmt.Printf`?",
+      "options_id": ["Saat ingin langsung mencetak dengan newline otomatis", "Saat ingin menyimpan hasil format sebagai string tanpa mencetaknya dulu", "Saat ingin mencetak tanpa format verb", "Saat ingin mengimpor banyak package sekaligus"],
+      "options_en": ["When you want to print directly with an automatic newline", "When you want to store the formatted result as a string without printing it yet", "When you want to print without any format verbs", "When you want to import several packages at once"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa hasil dari `fmt.Printf(\"PI = %.2f\", 3.14159)`?",
+      "question_en": "What is the result of `fmt.Printf(\"PI = %.2f\", 3.14159)`?",
+      "options_id": ["PI = 3.14159", "PI = 3.14", "PI = %.2f", "PI = 3"],
+      "options_en": ["PI = 3.14159", "PI = 3.14", "PI = %.2f", "PI = 3"],
+      "correct": 1
+    },
+    {
+      "question_id": "Format verb mana yang digunakan untuk menampilkan tipe data sebuah nilai?",
+      "question_en": "Which format verb is used to display the data type of a value?",
+      "options_id": ["`%d`", "`%T`", "`%q`", "`%v`"],
+      "options_en": ["`%d`", "`%T`", "`%q`", "`%v`"],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika Anda ingin representasi default dari nilai seperti `[]int{1, 2}`, verb mana yang paling cocok?",
+      "question_en": "If you want the default representation of a value like `[]int{1, 2}`, which verb is the best fit?",
+      "options_id": ["`%v`", "`%T`", "`%b`", "`%p`"],
+      "options_en": ["`%v`", "`%T`", "`%b`", "`%p`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika Anda ingin string tampil beserta tanda kutipnya, verb mana yang paling tepat?",
+      "question_en": "If you want a string to be shown together with its quotation marks, which verb is most appropriate?",
+      "options_id": ["`%s`", "`%x`", "`%q`", "`%t`"],
+      "options_en": ["`%s`", "`%x`", "`%q`", "`%t`"],
       "correct": 2
     },
     {
-      "question_id": "Fungsi fmt mana yang memformat string tetapi TIDAK mencetak langsung ke konsol?",
-      "question_en": "Which fmt function formats a string but does NOT print it directly to the console?",
-      "options_id": [
-        "fmt.Println",
-        "fmt.Printf",
-        "fmt.Sprintf",
-        "fmt.Print"
-      ],
-      "options_en": [
-        "fmt.Println",
-        "fmt.Printf",
-        "fmt.Sprintf",
-        "fmt.Print"
-      ],
-      "correct": 2
+      "question_id": "Mengapa lesson menampilkan bentuk `import (...)` selain `import \"fmt\"`?",
+      "question_en": "Why does the lesson show the `import (...)` form in addition to `import \"fmt\"`?",
+      "options_id": ["Karena bentuk blok dipakai ketika perlu mengimpor beberapa package dalam satu deklarasi", "Karena bentuk blok hanya boleh dipakai untuk package third-party", "Karena bentuk blok otomatis mengganti nama package menjadi lokal", "Karena bentuk blok hanya valid di Windows"],
+      "options_en": ["Because the block form is used when you need to import several packages in one declaration", "Because the block form may only be used for third-party packages", "Because the block form automatically renames packages locally", "Because the block form is only valid on Windows"],
+      "correct": 0
     }
   ]
 }

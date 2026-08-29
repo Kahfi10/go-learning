@@ -8,72 +8,174 @@
   "starterCode": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"log\"\n)\n\ntype Address struct {\n\tStreet string `json:\"street\"`\n\tCity   string `json:\"city\"`\n\tZip    string `json:\"zip\"`\n}\n\ntype User struct {\n\tID       int     `json:\"id\"`\n\tUsername string  `json:\"username\"`\n\tEmail    string  `json:\"email\"`\n\tPassword string  `json:\"-\"`\n\tAge      int     `json:\"age,omitempty\"`\n\tAddress  Address `json:\"address\"`\n\tTags     []string `json:\"tags,omitempty\"`\n}\n\ntype APIResponse struct {\n\tSuccess bool        `json:\"success\"`\n\tCode    int         `json:\"code\"`\n\tMessage string      `json:\"message\"`\n\tData    interface{} `json:\"data,omitempty\"`\n}\n\nfunc main() {\n\t// Marshal: struct -> JSON\n\tuser := User{\n\t\tID:       1,\n\t\tUsername: \"alice\",\n\t\tEmail:    \"alice@example.com\",\n\t\tPassword: \"secret123\",\n\t\tAge:      30,\n\t\tAddress: Address{\n\t\t\tStreet: \"Jl. Sudirman 1\",\n\t\t\tCity:   \"Jakarta\",\n\t\t\tZip:    \"10220\",\n\t\t},\n\t\tTags: []string{\"admin\"},\n\t}\n\n\tdata, err := json.MarshalIndent(user, \"\", \"  \")\n\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\tfmt.Println(\"Marshal output:\")\n\tfmt.Println(string(data))\n\n\t// Unmarshal: JSON -> struct\n\tjsonStr := `{\"id\":2,\"username\":\"bob\",\"email\":\"bob@example.com\",\"address\":{\"street\":\"Jl. Gatot 5\",\"city\":\"Bandung\",\"zip\":\"40000\"}}`\n\tvar user2 User\n\tif err := json.Unmarshal([]byte(jsonStr), &user2); err != nil {\n\t\tlog.Fatal(err)\n\t}\n\tfmt.Printf(\"\\nUnmarshal: %s lives in %s\\n\", user2.Username, user2.Address.City)\n\n\t// API response\n\tresp := APIResponse{\n\t\tSuccess: true,\n\t\tCode:    200,\n\t\tMessage: \"User fetched\",\n\t\tData:    user,\n\t}\n\trespData, _ := json.MarshalIndent(resp, \"\", \"  \")\n\tfmt.Println(\"\\nAPI Response:\")\n\tfmt.Println(string(respData))\n}",
   "quiz": [
     {
-      "question_id": "Apa fungsi dari tag `json:\"-\"` pada field struct?",
-      "question_en": "What does the `json:\"-\"` tag on a struct field do?",
+      "question_id": "Apa fungsi utama struct tag `json:\"id\"` pada field?",
+      "question_en": "What is the main purpose of a struct tag like `json:\"id\"` on a field?",
       "options_id": [
-        "Mengubah nama field menjadi \"-\" dalam JSON",
-        "Membuat field tidak ikut di-serialize/deserialize ke/dari JSON",
-        "Menandai field sebagai required",
-        "Mengosongkan nilai field"
+        "Menjadikan field private",
+        "Mengatur nama field saat serialisasi/deserialisasi JSON",
+        "Mengubah tipe field menjadi string",
+        "Menandai field agar wajib non-zero"
       ],
       "options_en": [
-        "Renames the field to \"-\" in JSON",
-        "Excludes the field from JSON serialization/deserialization",
-        "Marks the field as required",
-        "Clears the field value"
+        "It makes the field private",
+        "It controls the field name during JSON serialization/deserialization",
+        "It changes the field type to string",
+        "It marks the field as required to be non-zero"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa yang dilakukan tag `json:\"name,omitempty\"` jika field `name` memiliki nilai `\"\"`?",
-      "question_en": "What does the tag `json:\"name,omitempty\"` do if the `name` field has value `\"\"`?",
+      "question_id": "Apa arti tag `json:\"-\"` pada field struct?",
+      "question_en": "What does the tag `json:\"-\"` mean on a struct field?",
       "options_id": [
-        "Field tetap muncul di JSON dengan nilai \"\"",
-        "Field tidak muncul di JSON output",
-        "Program panic",
-        "Field diganti dengan nilai default"
+        "Field akan bernama `-` di JSON",
+        "Field dikecualikan dari proses JSON",
+        "Field wajib diisi sebelum marshal",
+        "Field hanya dipakai saat unmarshal"
       ],
       "options_en": [
-        "The field still appears in JSON with value \"\"",
+        "The field will be named `-` in JSON",
+        "The field is excluded from JSON processing",
+        "The field must be populated before marshaling",
+        "The field is only used during unmarshal"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa efek `omitempty` pada field string bernilai `\"\"` saat marshal?",
+      "question_en": "What is the effect of `omitempty` on a string field whose value is `\"\"` during marshaling?",
+      "options_id": [
+        "Field tetap muncul dengan nilai kosong",
+        "Field dihapus dari output JSON",
+        "Marshal gagal dengan error",
+        "Field berubah menjadi `null`"
+      ],
+      "options_en": [
+        "The field still appears with an empty value",
         "The field is omitted from the JSON output",
-        "The program panics",
-        "The field is replaced with a default value"
+        "Marshaling fails with an error",
+        "The field becomes `null`"
       ],
       "correct": 1
     },
     {
-      "question_id": "Fungsi mana yang digunakan untuk mengubah struct menjadi JSON byte slice?",
-      "question_en": "Which function is used to convert a struct to a JSON byte slice?",
+      "question_id": "Mengapa field `Password string `json:\"-\"`` pada lesson adalah desain yang masuk akal?",
+      "question_en": "Why is a field like `Password string `json:\"-\"`` a sensible design in the lesson?",
       "options_id": [
-        "json.Encode()",
-        "json.Marshal()",
-        "json.Serialize()",
-        "json.Convert()"
+        "Agar password tidak ikut terekspos ke JSON output atau diproses sebagai data API biasa",
+        "Agar password otomatis terenkripsi",
+        "Agar `encoding/json` menghapus field dari struct di memori",
+        "Agar field password menjadi exported"
       ],
       "options_en": [
-        "json.Encode()",
-        "json.Marshal()",
-        "json.Serialize()",
-        "json.Convert()"
+        "So the password is not exposed in JSON output or treated as normal API data",
+        "So the password is automatically encrypted",
+        "So `encoding/json` removes the field from the in-memory struct",
+        "So the password field becomes exported"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Fungsi mana yang menghasilkan `[]byte` dari sebuah struct?",
+      "question_en": "Which function produces `[]byte` from a struct?",
+      "options_id": [
+        "`json.Unmarshal`",
+        "`json.Marshal`",
+        "`json.Decode`",
+        "`json.Parse`"
+      ],
+      "options_en": [
+        "`json.Unmarshal`",
+        "`json.Marshal`",
+        "`json.Decode`",
+        "`json.Parse`"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa yang harus dikirim ke `json.Unmarshal` sebagai argumen kedua?",
-      "question_en": "What must be passed to `json.Unmarshal` as the second argument?",
+      "question_id": "Kapan `json.MarshalIndent` lebih tepat dipakai daripada `json.Marshal`?",
+      "question_en": "When is `json.MarshalIndent` more appropriate than `json.Marshal`?",
       "options_id": [
-        "Nilai struct secara langsung",
-        "Pointer ke struct (`&myStruct`)",
-        "Tipe struct",
-        "Nama field sebagai string"
+        "Saat butuh output JSON yang lebih mudah dibaca manusia",
+        "Saat butuh unmarshal ke struct",
+        "Saat JSON harus selalu tanpa spasi",
+        "Saat field private ingin ikut dimarshal"
       ],
       "options_en": [
-        "The struct value directly",
-        "A pointer to the struct (`&myStruct`)",
-        "The struct type",
-        "Field names as strings"
+        "When you want JSON output that is easier for humans to read",
+        "When you need to unmarshal into a struct",
+        "When the JSON must always contain no spaces",
+        "When you want private fields to be marshaled too"
       ],
-      "correct": 1
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa argumen kedua `json.Unmarshal` harus berupa pointer seperti `&product`?",
+      "question_en": "Why must the second argument to `json.Unmarshal` be a pointer such as `&product`?",
+      "options_id": [
+        "Karena `Unmarshal` perlu memodifikasi nilai tujuan dengan data hasil decode",
+        "Karena `Unmarshal` hanya menerima pointer demi performa",
+        "Karena struct biasa tidak punya alamat memori",
+        "Karena tanpa pointer JSON akan otomatis jadi map"
+      ],
+      "options_en": [
+        "Because `Unmarshal` needs to modify the destination value with the decoded data",
+        "Because `Unmarshal` only accepts pointers for performance reasons",
+        "Because ordinary structs do not have memory addresses",
+        "Because without a pointer the JSON would automatically become a map"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika JSON nested berisi objek `address`, bagaimana field itu dipetakan pada struct `User` di starter code?",
+      "question_en": "If nested JSON contains an `address` object, how is that mapped onto the `User` struct in the starter code?",
+      "options_id": [
+        "Ke field `Address` yang juga struct dengan tag JSON pada field-fieldnya",
+        "Harus selalu di-unmarshal manual setelah field lain selesai",
+        "Tidak bisa; `encoding/json` hanya mendukung field primitif",
+        "Otomatis menjadi string JSON mentah"
+      ],
+      "options_en": [
+        "Into the `Address` field, which is itself a struct with JSON tags on its fields",
+        "It must always be unmarshaled manually after the other fields",
+        "It cannot; `encoding/json` only supports primitive fields",
+        "It automatically becomes a raw JSON string"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa tradeoff umum dari penggunaan `interface{}` atau `any` pada field `Data` respons API?",
+      "question_en": "What is a common tradeoff of using `interface{}` or `any` for an API response `Data` field?",
+      "options_id": [
+        "Lebih fleksibel untuk berbagai bentuk payload, tetapi kurang type-safe dibanding field konkret",
+        "Lebih type-safe daripada tipe konkret",
+        "Membuat `omitempty` tidak berlaku",
+        "Mencegah nested struct dimarshal"
+      ],
+      "options_en": [
+        "It is more flexible for varying payload shapes, but less type-safe than a concrete field",
+        "It is more type-safe than a concrete type",
+        "It makes `omitempty` stop working",
+        "It prevents nested structs from being marshaled"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Pernyataan mana yang paling akurat tentang struct tags dan `encoding/json`?",
+      "question_en": "Which statement is most accurate about struct tags and `encoding/json`?",
+      "options_id": [
+        "Struct tags memungkinkan kontrol nama field, penghilangan field tertentu, dan perilaku seperti `omitempty` saat proses JSON",
+        "Struct tags hanya dipakai saat unmarshaling, bukan marshaling",
+        "Struct tags mengubah definisi tipe field di compile time",
+        "Struct tags wajib pada setiap field struct di Go"
+      ],
+      "options_en": [
+        "Struct tags let you control field names, omit certain fields, and use behaviors like `omitempty` during JSON processing",
+        "Struct tags are only used during unmarshaling, not marshaling",
+        "Struct tags change the field's type definition at compile time",
+        "Struct tags are required on every struct field in Go"
+      ],
+      "correct": 0
     }
   ]
 }

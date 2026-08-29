@@ -8,24 +8,73 @@
   "starterCode": "package main\n\nimport (\n\t\"flag\"\n\t\"fmt\"\n\t\"os\"\n)\n\ntype Config struct {\n\tHost     string\n\tPort     string\n\tDebug    bool\n\tLogLevel string\n}\n\nfunc loadConfig() Config {\n\tconfig := Config{}\n\n\t// TODO: read HOST from env, default to \"localhost\"\n\tconfig.Host = \"localhost\"\n\n\t// TODO: read PORT from env, default to \"8080\"\n\tconfig.Port = \"8080\"\n\n\t// TODO: read DEBUG from env (\"true\" = true)\n\tconfig.Debug = os.Getenv(\"DEBUG\") == \"true\"\n\n\t// TODO: use flag package to define -log-level flag (default: \"info\")\n\tlogLevel := flag.String(\"log-level\", \"info\", \"Log level: debug, info, warn, error\")\n\tflag.Parse()\n\tconfig.LogLevel = *logLevel\n\n\treturn config\n}\n\nfunc main() {\n\tcfg := loadConfig()\n\tfmt.Printf(\"Host: %s\\n\", cfg.Host)\n\tfmt.Printf(\"Port: %s\\n\", cfg.Port)\n\tfmt.Printf(\"Debug: %v\\n\", cfg.Debug)\n\tfmt.Printf(\"LogLevel: %s\\n\", cfg.LogLevel)\n}",
   "quiz": [
     {
-      "question_id": "Perbedaan antara os.Getenv dan os.LookupEnv adalah?",
-      "question_en": "What is the difference between os.Getenv and os.LookupEnv?",
-      "options_id": ["LookupEnv mengembalikan boolean kedua yang menunjukkan apakah variable ada", "Getenv lebih cepat", "LookupEnv bisa mengubah nilai variable", "Tidak ada perbedaan"],
-      "options_en": ["LookupEnv returns a second boolean indicating if the variable exists", "Getenv is faster", "LookupEnv can change the variable value", "No difference"],
+      "question_id": "Apa perbedaan inti antara `os.Getenv` dan `os.LookupEnv` pada lesson?",
+      "question_en": "What is the core difference between `os.Getenv` and `os.LookupEnv` in the lesson?",
+      "options_id": ["`LookupEnv` juga mengembalikan boolean yang memberi tahu apakah variable benar-benar ada", "`Getenv` mengembalikan error, `LookupEnv` tidak", "`LookupEnv` hanya bekerja untuk numeric values", "Tidak ada perbedaan sama sekali"],
+      "options_en": ["`LookupEnv` also returns a boolean telling you whether the variable actually exists", "`Getenv` returns an error while `LookupEnv` does not", "`LookupEnv` only works for numeric values", "There is no difference at all"],
       "correct": 0
     },
     {
-      "question_id": "os.Args[0] berisi apa?",
-      "question_en": "What does os.Args[0] contain?",
-      "options_id": ["Nama/path program yang sedang berjalan", "Argumen pertama dari pengguna", "Versi Go", "Direktori kerja saat ini"],
-      "options_en": ["The name/path of the running program", "The first argument from the user", "The Go version", "The current working directory"],
+      "question_id": "Mengapa contoh `PORT` memakai fallback `8080` setelah `os.Getenv`?",
+      "question_en": "Why does the `PORT` example use a fallback of `8080` after `os.Getenv`?",
+      "options_id": ["Karena environment variable selalu harus berupa angka genap", "Karena aplikasi sering membutuhkan nilai default saat variable tidak diset", "Karena `Getenv` otomatis menghapus variable setelah dibaca", "Karena `8080` adalah satu-satunya port valid di Go"],
+      "options_en": ["Because environment variables must always be even numbers", "Because applications often need a default when the variable is not set", "Because `Getenv` automatically deletes the variable after reading it", "Because `8080` is the only valid port in Go"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa arti `os.Setenv(\"APP_ENV\", \"production\")` pada contoh?",
+      "question_en": "What does `os.Setenv(\"APP_ENV\", \"production\")` mean in the example?",
+      "options_id": ["Mengubah environment variable untuk proses yang sedang berjalan", "Mengubah file `.env` di disk secara permanen", "Menetapkan flag command-line baru", "Membuat variable global di semua proses OS"],
+      "options_en": ["It changes the environment variable for the current process", "It permanently edits a `.env` file on disk", "It defines a new command-line flag", "It creates a global variable across all OS processes"],
       "correct": 0
     },
     {
-      "question_id": "Kapan sebaiknya menggunakan package `flag` daripada os.Args langsung?",
-      "question_en": "When should you use the `flag` package instead of os.Args directly?",
-      "options_id": ["Ketika membutuhkan named flags (-port=8080), help text, dan type parsing", "Ketika program tidak membutuhkan argumen", "Ketika deploy ke production", "Ketika menggunakan goroutine"],
-      "options_en": ["When you need named flags (-port=8080), help text, and type parsing", "When the program doesn't need arguments", "When deploying to production", "When using goroutines"],
+      "question_id": "Jika `DATABASE_URL` bisa kosong sebagai string valid, mengapa `LookupEnv` lebih informatif daripada `Getenv`?",
+      "question_en": "If `DATABASE_URL` could validly be an empty string, why is `LookupEnv` more informative than `Getenv`?",
+      "options_id": ["Karena boolean keduanya membedakan antara 'tidak diset' dan 'diset tapi kosong'", "Karena `LookupEnv` otomatis mem-parse URL", "Karena `Getenv` tidak bisa membaca variable dengan underscore", "Karena `LookupEnv` hanya mengembalikan string non-empty"],
+      "options_en": ["Because its boolean result distinguishes 'not set' from 'set but empty'", "Because `LookupEnv` automatically parses URLs", "Because `Getenv` cannot read variables with underscores", "Because `LookupEnv` only returns non-empty strings"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang disimpan di `os.Args[0]` menurut lesson?",
+      "question_en": "What is stored in `os.Args[0]` according to the lesson?",
+      "options_id": ["Nama atau path program yang sedang berjalan", "Argumen pertama pengguna setelah nama program", "Working directory saat ini", "Nilai environment variable pertama"],
+      "options_en": ["The name or path of the running program", "The user's first argument after the program name", "The current working directory", "The first environment variable value"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa contoh memeriksa `len(os.Args) < 2` sebelum membaca `os.Args[1]`?",
+      "question_en": "Why does the example check `len(os.Args) < 2` before reading `os.Args[1]`?",
+      "options_id": ["Untuk menghindari akses out-of-range saat argumen wajib belum diberikan", "Karena `os.Args[1]` selalu berisi angka", "Karena `len` dibutuhkan sebelum `flag.Parse()`", "Untuk memastikan program berjalan di Linux"],
+      "options_en": ["To avoid an out-of-range access when the required argument is missing", "Because `os.Args[1]` always contains a number", "Because `len` is required before `flag.Parse()`", "To ensure the program is running on Linux"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa contoh memakai `strconv.Atoi(os.Args[2])`?",
+      "question_en": "Why does the example use `strconv.Atoi(os.Args[2])`?",
+      "options_id": ["Untuk mengubah argumen string menjadi integer `times`", "Untuk mengubah integer menjadi string", "Untuk membaca environment variable `PORT`", "Untuk mem-parse named flag `-times`"],
+      "options_en": ["To convert the string argument into an integer `times` value", "To convert an integer into a string", "To read the `PORT` environment variable", "To parse the named `-times` flag"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa pesan error untuk `times` ditulis ke `os.Stderr` pada contoh?",
+      "question_en": "Why is the error message for `times` written to `os.Stderr` in the example?",
+      "options_id": ["Karena error CLI sebaiknya dipisahkan dari output normal program", "Karena `fmt.Println` tidak bisa mencetak string", "Karena `stderr` selalu disimpan ke file log otomatis", "Karena `os.Exit(1)` hanya bekerja setelah menulis ke `stderr`"],
+      "options_en": ["Because CLI errors should be separated from the program's normal output", "Because `fmt.Println` cannot print strings", "Because `stderr` is always automatically saved to a log file", "Because `os.Exit(1)` only works after writing to `stderr`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Kapan package `flag` lebih cocok daripada memakai `os.Args` langsung?",
+      "question_en": "When is the `flag` package a better fit than using `os.Args` directly?",
+      "options_id": ["Saat butuh named flags, default values, help text, dan parsing tipe dasar", "Saat program sama sekali tidak menerima argumen", "Saat menggunakan goroutine", "Saat environment variable sudah cukup"],
+      "options_en": ["When you need named flags, default values, help text, and basic type parsing", "When the program accepts no arguments at all", "When using goroutines", "When environment variables are already enough"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa contoh `flag` menyimpan hasil `flag.String` dan `flag.Int` lalu memanggil `flag.Parse()` sebelum dipakai?",
+      "question_en": "Why does the `flag` example store the results of `flag.String` and `flag.Int` and then call `flag.Parse()` before using them?",
+      "options_id": ["Karena `flag.String` dan `flag.Int` mendefinisikan flag, lalu `flag.Parse()` mengisi nilainya dari input command line", "Karena `flag.Parse()` membuat semua flag menjadi environment variable", "Karena tanpa `Parse` semua flag otomatis bernilai nol walau user mengisinya", "Karena `Parse` hanya dipakai untuk menampilkan help text"],
+      "options_en": ["Because `flag.String` and `flag.Int` define the flags, and `flag.Parse()` then populates them from the command line", "Because `flag.Parse()` turns every flag into an environment variable", "Because without `Parse` every flag is automatically zero even if the user provides a value", "Because `Parse` is only used to show help text"],
       "correct": 0
     }
   ]

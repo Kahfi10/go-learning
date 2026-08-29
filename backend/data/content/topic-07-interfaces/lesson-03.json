@@ -8,55 +8,174 @@
   "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"reflect\"\n)\n\n// Generic cache using any\ntype Cache struct {\n\tdata map[string]any\n}\n\nfunc NewCache() *Cache {\n\treturn &Cache{data: make(map[string]any)}\n}\n\nfunc (c *Cache) Set(key string, value any) {\n\tc.data[key] = value\n}\n\nfunc (c *Cache) Get(key string) (any, bool) {\n\tv, ok := c.data[key]\n\treturn v, ok\n}\n\n// Function accepting any type\nfunc describe(v any) {\n\tt := reflect.TypeOf(v)\n\tif t == nil {\n\t\tfmt.Println(\"nil\")\n\t\treturn\n\t}\n\tfmt.Printf(\"Type: %-12s Kind: %-10s Value: %v\\n\", t.Name(), t.Kind(), v)\n}\n\n// Type-safe add using any (not recommended — shows the problem)\nfunc addAny(a, b any) any {\n\tswitch v := a.(type) {\n\tcase int:\n\t\tif w, ok := b.(int); ok {\n\t\t\treturn v + w\n\t\t}\n\tcase float64:\n\t\tif w, ok := b.(float64); ok {\n\t\t\treturn v + w\n\t\t}\n\tcase string:\n\t\tif w, ok := b.(string); ok {\n\t\t\treturn v + w\n\t\t}\n\t}\n\treturn nil\n}\n\nfunc main() {\n\t// Store different types\n\tvar x any\n\tvalues := []any{42, \"hello\", 3.14, true, []int{1, 2, 3}}\n\tfor _, v := range values {\n\t\tx = v\n\t\tdescribe(x)\n\t}\n\n\t// Cache example\n\tcache := NewCache()\n\tcache.Set(\"user_id\", 123)\n\tcache.Set(\"username\", \"alice\")\n\tcache.Set(\"scores\", []int{90, 85, 92})\n\n\tif v, ok := cache.Get(\"username\"); ok {\n\t\tfmt.Printf(\"\\nCached username: %v (type: %T)\\n\", v, v)\n\t}\n\n\t// addAny example\n\tfmt.Println(\"\\naddAny:\", addAny(10, 20))\n\tfmt.Println(\"addAny:\", addAny(\"foo\", \"bar\"))\n\tfmt.Println(\"addAny mismatch:\", addAny(10, \"bar\")) // nil\n}",
   "quiz": [
     {
-      "question_id": "Apa itu `any` di Go?",
-      "question_en": "What is `any` in Go?",
+      "question_id": "Apa pernyataan paling akurat tentang `any`?",
+      "question_en": "What is the most accurate statement about `any`?",
       "options_id": [
-        "Tipe data baru yang diperkenalkan di Go 1.18",
-        "Alias untuk `interface{}` — interface kosong yang bisa menyimpan nilai apapun",
-        "Tipe untuk menangani error",
-        "Tipe yang hanya bisa dipakai dengan reflect"
+        "Tipe generik built-in yang berbeda dari interface",
+        "Alias persis untuk `interface{}`",
+        "Keyword khusus yang hanya untuk variadic function",
+        "Tipe yang hanya dapat menyimpan pointer"
       ],
       "options_en": [
-        "A new data type introduced in Go 1.18",
-        "An alias for `interface{}` — an empty interface that can hold any value",
-        "A type for handling errors",
-        "A type that can only be used with reflect"
+        "A built-in generic type different from interfaces",
+        "An exact alias for `interface{}`",
+        "A special keyword used only for variadic functions",
+        "A type that can only store pointers"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa risiko utama dari penggunaan `any` yang berlebihan?",
-      "question_en": "What is the main risk of overusing `any`?",
+      "question_id": "Mengapa `x + 1` tidak valid ketika `var x any = 42`?",
+      "question_en": "Why is `x + 1` invalid when `var x any = 42`?",
       "options_id": [
-        "Program menjadi lebih lambat",
-        "Hilangnya type safety — error tipe hanya terdeteksi saat runtime",
-        "Menggunakan lebih banyak memori",
-        "Tidak kompatibel dengan package standard library"
+        "Karena `any` hanya boleh menyimpan string",
+        "Karena operator tidak bisa dipakai pada nilai interface tanpa mengetahui tipe konkretnya",
+        "Karena `42` otomatis menjadi `float64`",
+        "Karena nilai `any` bersifat immutable"
       ],
       "options_en": [
-        "Program becomes slower",
-        "Loss of type safety — type errors are only detected at runtime",
-        "Uses more memory",
-        "Incompatible with standard library packages"
+        "Because `any` may only store strings",
+        "Because operators cannot be used on interface values without knowing the concrete type",
+        "Because `42` is automatically converted to `float64`",
+        "Because `any` values are immutable"
       ],
       "correct": 1
     },
     {
-      "question_id": "Mengapa `fmt.Println` menggunakan `...any` sebagai parameter?",
-      "question_en": "Why does `fmt.Println` use `...any` as its parameter?",
+      "question_id": "Kapan penggunaan `any` paling masuk akal menurut pelajaran ini?",
+      "question_en": "According to this lesson, when is using `any` most reasonable?",
       "options_id": [
-        "Karena merupakan satu-satunya cara mendefinisikan variadic function",
-        "Agar bisa menerima argumen dari tipe apapun",
-        "Karena lebih efisien dalam penggunaan memori",
-        "Karena disyaratkan oleh Go specification"
+        "Ketika semua nilai punya method yang sama",
+        "Ketika struktur data heterogen dan tipenya benar-benar tidak diketahui sebelumnya, seperti hasil JSON dinamis",
+        "Setiap kali ingin menghindari menulis interface",
+        "Untuk menggantikan semua generic code"
       ],
       "options_en": [
-        "Because it's the only way to define variadic functions",
-        "So it can accept arguments of any type",
-        "Because it's more memory efficient",
-        "Because it's required by the Go specification"
+        "When all values share the same methods",
+        "When the data is heterogeneous and its types are genuinely not known ahead of time, such as dynamic JSON results",
+        "Any time you want to avoid writing an interface",
+        "To replace all generic code"
       ],
       "correct": 1
+    },
+    {
+      "question_id": "Apa harga yang dibayar saat memakai `map[string]any` sebagai cache umum?",
+      "question_en": "What is the cost of using `map[string]any` as a general-purpose cache?",
+      "options_id": [
+        "Nilai tidak bisa lagi disimpan ke map",
+        "Compiler otomatis membuat semua akses lebih cepat",
+        "Caller biasanya harus melakukan type assertion saat mengambil nilai",
+        "Package `reflect` wajib diimport untuk setiap operasi"
+      ],
+      "options_en": [
+        "Values can no longer be stored in the map",
+        "The compiler automatically makes every access faster",
+        "Callers usually have to do a type assertion when retrieving a value",
+        "The `reflect` package must be imported for every operation"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa `fmt.Println` memakai parameter `...any`?",
+      "question_en": "Why does `fmt.Println` use a `...any` parameter?",
+      "options_id": [
+        "Agar bisa menerima argumen dengan tipe berbeda dalam satu pemanggilan",
+        "Karena Go tidak mendukung variadic selain `any`",
+        "Supaya setiap argumen otomatis di-convert ke string lebih awal",
+        "Agar fungsi selalu mengembalikan `any`"
+      ],
+      "options_en": [
+        "So it can accept arguments of different types in a single call",
+        "Because Go does not support variadics except with `any`",
+        "So each argument is automatically converted to string in advance",
+        "So the function always returns `any`"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang ditunjukkan contoh `[]any{1, \"two\", 3.0, true}`?",
+      "question_en": "What does the example `[]any{1, \"two\", 3.0, true}` demonstrate?",
+      "options_id": [
+        "Semua elemen diubah menjadi string",
+        "Slice hanya menyimpan satu tipe runtime",
+        "Empty interface memungkinkan satu collection menyimpan nilai dengan tipe konkret berbeda",
+        "`[]any` hanya valid sebelum Go 1.18"
+      ],
+      "options_en": [
+        "All elements are converted to strings",
+        "The slice stores only one runtime type",
+        "The empty interface lets one collection store values with different concrete types",
+        "`[]any` was only valid before Go 1.18"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Jika fungsi seperti `addAny` harus menangani int, float64, dan string, apa implikasi desainnya?",
+      "question_en": "If a function like `addAny` has to handle int, float64, and string, what design implication does that have?",
+      "options_id": [
+        "Compiler akan meng-generate overload terpisah secara otomatis",
+        "Logika operasi berpindah dari compile time ke runtime checks",
+        "Tidak perlu lagi type assertion atau type switch",
+        "Fungsi menjadi type-safe seperti generic function"
+      ],
+      "options_en": [
+        "The compiler will automatically generate separate overloads",
+        "Operational logic moves from compile time to runtime checks",
+        "Type assertions or type switches are no longer needed",
+        "The function becomes type-safe like a generic function"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Alternatif yang lebih baik daripada `any` ketika semua nilai harus mendukung perilaku tertentu adalah?",
+      "question_en": "What is a better alternative to `any` when all values must support a specific behavior?",
+      "options_id": [
+        "Gunakan interface spesifik yang mendeskripsikan perilaku tersebut",
+        "Gunakan `map[string]bool`",
+        "Ubah semua nilai menjadi `[]byte`",
+        "Simpan pointer mentah"
+      ],
+      "options_en": [
+        "Use a specific interface that describes that behavior",
+        "Use `map[string]bool`",
+        "Convert all values to `[]byte`",
+        "Store raw pointers"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa fungsi `describe(v any)` perlu memeriksa apakah `reflect.TypeOf(v)` bernilai nil?",
+      "question_en": "Why does `describe(v any)` need to check whether `reflect.TypeOf(v)` is nil?",
+      "options_id": [
+        "Karena `TypeOf` panic untuk semua string",
+        "Karena interface dapat menyimpan `nil`, dan memanggil method pada nilai reflect yang nil akan gagal",
+        "Karena `reflect` hanya bekerja untuk pointer",
+        "Karena `any` tidak bisa menyimpan zero value"
+      ],
+      "options_en": [
+        "Because `TypeOf` panics for every string",
+        "Because an interface can store `nil`, and calling methods on a nil reflect value would fail",
+        "Because `reflect` only works for pointers",
+        "Because `any` cannot store zero values"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa kesimpulan paling tepat tentang `any` dalam Go modern?",
+      "question_en": "What is the most accurate conclusion about `any` in modern Go?",
+      "options_id": [
+        "Ini default terbaik untuk hampir semua API",
+        "Ini mengembalikan type safety penuh bila dipadukan dengan `switch`",
+        "Ini berguna untuk kasus heterogen tertentu, tetapi sebaiknya dihindari bila interface spesifik atau generics lebih jelas",
+        "Ini menggantikan kebutuhan custom types"
+      ],
+      "options_en": [
+        "It is the best default for almost every API",
+        "It restores full type safety when combined with a `switch`",
+        "It is useful for certain heterogeneous cases, but should be avoided when a specific interface or generics are clearer",
+        "It replaces the need for custom types"
+      ],
+      "correct": 2
     }
   ]
 }

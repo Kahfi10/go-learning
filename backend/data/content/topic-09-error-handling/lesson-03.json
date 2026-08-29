@@ -8,24 +8,173 @@
   "starterCode": "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\nvar ErrPermission = errors.New(\"permission denied\")\n\ntype DBError struct {\n\tCode    int\n\tMessage string\n}\n\nfunc (e *DBError) Error() string {\n\treturn fmt.Sprintf(\"db error %d: %s\", e.Code, e.Message)\n}\n\nfunc queryDB() error {\n\treturn &DBError{Code: 500, Message: \"connection timeout\"}\n}\n\nfunc fetchData() error {\n\terr := queryDB()\n\tif err != nil {\n\t\treturn fmt.Errorf(\"fetchData: %w\", err)\n\t}\n\treturn nil\n}\n\nfunc main() {\n\terr := fetchData()\n\tif err == nil {\n\t\treturn\n\t}\n\n\t// TODO: use errors.Is to check for ErrPermission\n\t// TODO: use errors.As to extract *DBError and print its Code\n\tfmt.Println(err)\n}",
   "quiz": [
     {
-      "question_id": "errors.Is() memeriksa error di mana dalam rantai wrapping?",
-      "question_en": "Where in the wrapping chain does errors.Is() check for an error?",
-      "options_id": ["Di seluruh rantai (termasuk yang terbungkus)", "Hanya di error terluar", "Hanya di error terdalam", "Hanya satu level"],
-      "options_en": ["Throughout the entire chain (including wrapped errors)", "Only the outermost error", "Only the innermost error", "Only one level deep"],
+      "question_id": "Apa yang diperiksa `errors.Is(err, target)`?",
+      "question_en": "What does `errors.Is(err, target)` check?",
+      "options_id": [
+        "Apakah pesan error sama persis sebagai string",
+        "Apakah `target` muncul di mana pun dalam rantai error",
+        "Apakah tipe konkret error adalah `target`",
+        "Apakah error memiliki method `Unwrap`"
+      ],
+      "options_en": [
+        "Whether the error message strings are exactly equal",
+        "Whether `target` appears anywhere in the error chain",
+        "Whether the concrete error type is `target`",
+        "Whether the error has an `Unwrap` method"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `errors.Is` lebih tepat untuk sentinel error seperti `ErrNotFound`?",
+      "question_en": "Why is `errors.Is` more appropriate for sentinel errors like `ErrNotFound`?",
+      "options_id": [
+        "Karena sentinel error selalu pointer ke struct",
+        "Karena ia memeriksa identitas error melalui wrapping chain tanpa bergantung pada pesan string",
+        "Karena ia mengekstrak field custom error",
+        "Karena ia mengubah error menjadi bool permanen"
+      ],
+      "options_en": [
+        "Because sentinel errors are always pointers to structs",
+        "Because it checks error identity through the wrapping chain without relying on message strings",
+        "Because it extracts custom error fields",
+        "Because it permanently turns the error into a bool"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang dicari `errors.As(err, &ve)` pada rantai error?",
+      "question_en": "What does `errors.As(err, &ve)` search for in the error chain?",
+      "options_id": [
+        "String error yang paling pendek",
+        "Error pertama yang bisa di-assign ke tipe target `*ValidationError`",
+        "Semua error yang memiliki method `Error`",
+        "Hanya error terluar"
+      ],
+      "options_en": [
+        "The shortest error string",
+        "The first error that can be assigned to the target type `*ValidationError`",
+        "Every error that has an `Error` method",
+        "Only the outermost error"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa argumen kedua `errors.As` harus berupa pointer ke target?",
+      "question_en": "Why must the second argument to `errors.As` be a pointer to the target?",
+      "options_id": [
+        "Agar `errors.As` bisa menuliskan hasil error yang ditemukan ke variabel target",
+        "Karena semua error di Go harus pointer",
+        "Agar pointer tersebut bisa di-wrap lagi",
+        "Karena `errors.As` membandingkan alamat memori saja"
+      ],
+      "options_en": [
+        "So `errors.As` can write the found error value into the target variable",
+        "Because all Go errors must be pointers",
+        "So the pointer can be wrapped again",
+        "Because `errors.As` compares memory addresses only"
+      ],
       "correct": 0
     },
     {
-      "question_id": "Apa yang harus dioper sebagai argumen kedua ke errors.As()?",
-      "question_en": "What must be passed as the second argument to errors.As()?",
-      "options_id": ["Pointer ke tipe error target", "Nilai error target langsung", "String nama tipe", "Interface error"],
-      "options_en": ["A pointer to the target error type", "The target error value directly", "A string type name", "An error interface"],
+      "question_id": "Kapan `errors.As` lebih tepat daripada `errors.Is`?",
+      "question_en": "When is `errors.As` more appropriate than `errors.Is`?",
+      "options_id": [
+        "Saat perlu mengakses field atau perilaku dari custom error type tertentu",
+        "Saat hanya ingin tahu apakah error itu `ErrNotFound`",
+        "Saat error belum dibungkus",
+        "Saat ingin membandingkan dua string error"
+      ],
+      "options_en": [
+        "When you need to access fields or behavior from a specific custom error type",
+        "When you only want to know whether the error is `ErrNotFound`",
+        "When the error has not been wrapped",
+        "When you want to compare two error strings"
+      ],
       "correct": 0
     },
     {
-      "question_id": "Kapan sebaiknya menggunakan errors.As daripada errors.Is?",
-      "question_en": "When should you use errors.As instead of errors.Is?",
-      "options_id": ["Ketika Anda perlu mengakses field dari custom error type", "Ketika Anda ingin membandingkan dua pesan error", "Ketika error adalah nil", "Ketika menggunakan errors.New"],
-      "options_en": ["When you need to access fields from a custom error type", "When you want to compare two error messages", "When the error is nil", "When using errors.New"],
+      "question_id": "Jika `err := fmt.Errorf(\"process: %w\", &ValidationError{...})`, apa yang memungkinkan `errors.As(err, &ve)` berhasil?",
+      "question_en": "If `err := fmt.Errorf(\"process: %w\", &ValidationError{...})`, what allows `errors.As(err, &ve)` to succeed?",
+      "options_id": [
+        "Karena `%w` mempertahankan error asli di dalam chain",
+        "Karena `fmt.Errorf` otomatis mengubah semua error menjadi sentinel",
+        "Karena `ValidationError` harus punya method `Unwrap`",
+        "Karena `ve` bisa berupa string"
+      ],
+      "options_en": [
+        "Because `%w` preserves the original error inside the chain",
+        "Because `fmt.Errorf` automatically turns all errors into sentinels",
+        "Because `ValidationError` must have an `Unwrap` method",
+        "Because `ve` may be a string"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa kesalahan desain yang dihindari dengan `errors.Is` dan `errors.As`?",
+      "question_en": "What design mistake do `errors.Is` and `errors.As` help avoid?",
+      "options_id": [
+        "Membandingkan error berdasarkan isi pesan teks mentah",
+        "Mengembalikan error dari fungsi",
+        "Menulis custom error type",
+        "Menggunakan package `fmt`"
+      ],
+      "options_en": [
+        "Comparing errors based on raw message text",
+        "Returning errors from functions",
+        "Writing custom error types",
+        "Using the `fmt` package"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika `errors.Is(err, ErrPermission)` bernilai false, mana interpretasi terbaiknya?",
+      "question_en": "If `errors.Is(err, ErrPermission)` is false, what is the best interpretation?",
+      "options_id": [
+        "Tidak ada error sama sekali",
+        "Rantai error itu tidak berisi identitas `ErrPermission`",
+        "Error pasti bukan wrapped error",
+        "Pasti ada custom error type lain"
+      ],
+      "options_en": [
+        "There is no error at all",
+        "That error chain does not contain the identity `ErrPermission`",
+        "The error definitely is not wrapped",
+        "There must be another custom error type"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa keuntungan API dari membedakan sentinel errors dan custom error types?",
+      "question_en": "What is the API advantage of distinguishing sentinel errors from custom error types?",
+      "options_id": [
+        "Caller dapat memilih apakah hanya perlu identitas error atau juga detail terstruktur",
+        "Compiler bisa menghapus semua if statement",
+        "Semua error menjadi comparable dengan `==`",
+        "Tidak perlu lagi wrapping"
+      ],
+      "options_en": [
+        "The caller can choose whether it only needs error identity or also structured details",
+        "The compiler can remove all if statements",
+        "All errors become comparable with `==`",
+        "Wrapping is no longer needed"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Pernyataan mana yang paling tepat tentang `errors.Is` dan `errors.As`?",
+      "question_en": "Which statement is most accurate about `errors.Is` and `errors.As`?",
+      "options_id": [
+        "`errors.Is` untuk identitas error; `errors.As` untuk mengekstrak error dengan tipe tertentu",
+        "`errors.Is` untuk custom error saja; `errors.As` untuk sentinel saja",
+        "Keduanya hanya bekerja pada error yang tidak dibungkus",
+        "Keduanya identik dan hanya beda nama"
+      ],
+      "options_en": [
+        "`errors.Is` is for error identity; `errors.As` is for extracting an error of a specific type",
+        "`errors.Is` is only for custom errors; `errors.As` is only for sentinels",
+        "They both only work on unwrapped errors",
+        "They are identical and differ only by name"
+      ],
       "correct": 0
     }
   ]

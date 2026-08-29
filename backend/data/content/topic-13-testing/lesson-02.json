@@ -8,25 +8,74 @@
   "starterCode": "package main\n\nimport (\n\t\"strings\"\n\t\"testing\"\n)\n\nfunc titleCase(s string) string {\n\tif s == \"\" {\n\t\treturn \"\"\n\t}\n\twords := strings.Fields(s)\n\tfor i, w := range words {\n\t\tif len(w) > 0 {\n\t\t\twords[i] = strings.ToUpper(w[:1]) + strings.ToLower(w[1:])\n\t\t}\n\t}\n\treturn strings.Join(words, \" \")\n}\n\nfunc TestTitleCase(t *testing.T) {\n\ttests := []struct {\n\t\tname  string\n\t\tinput string\n\t\twant  string\n\t}{\n\t\t// TODO: add at least 5 test cases:\n\t\t// 1. normal sentence\n\t\t// 2. already title case\n\t\t// 3. all uppercase\n\t\t// 4. empty string\n\t\t// 5. single word\n\t\t{\"basic\", \"hello world\", \"Hello World\"},\n\t}\n\n\tfor _, tt := range tests {\n\t\tt.Run(tt.name, func(t *testing.T) {\n\t\t\tgot := titleCase(tt.input)\n\t\t\tif got != tt.want {\n\t\t\t\tt.Errorf(\"titleCase(%q) = %q; want %q\", tt.input, got, tt.want)\n\t\t\t}\n\t\t})\n\t}\n}\n\nfunc main() {\n\tt := &testing.T{}\n\tTestTitleCase(t)\n}",
   "quiz": [
     {
-      "question_id": "Apa keuntungan utama dari table-driven tests?",
-      "question_en": "What is the main advantage of table-driven tests?",
-      "options_id": ["Mudah menambah test cases baru tanpa kode duplikat", "Test berjalan lebih cepat", "Tidak membutuhkan package testing", "Otomatis menggenerate test"],
-      "options_en": ["Easy to add new test cases without code duplication", "Tests run faster", "No testing package needed", "Automatically generates tests"],
+      "question_id": "Dalam table-driven test, mengapa test cases dikumpulkan dalam slice of struct?",
+      "question_en": "In a table-driven test, why are test cases collected in a slice of structs?",
+      "options_id": ["Agar satu loop bisa menguji banyak kasus tanpa menduplikasi assertion logic", "Agar semua test otomatis paralel", "Agar tidak perlu `testing.T`", "Agar compiler meng-generate mock"],
+      "options_en": ["So one loop can test many cases without duplicating assertion logic", "So all tests become parallel automatically", "So `testing.T` is no longer needed", "So the compiler generates mocks"],
       "correct": 0
     },
     {
-      "question_id": "Cara menjalankan sub-test tertentu bernama 'divide by zero' dalam TestDivide?",
-      "question_en": "How do you run a specific sub-test named 'divide by zero' inside TestDivide?",
-      "options_id": ["go test -run TestDivide/divide_by_zero", "go test TestDivide.divide_by_zero", "go test -sub 'divide by zero'", "go test -filter TestDivide"],
-      "options_en": ["go test -run TestDivide/divide_by_zero", "go test TestDivide.divide_by_zero", "go test -sub 'divide by zero'", "go test -filter TestDivide"],
+      "question_id": "Apa fungsi utama `tt.name` pada `t.Run(tt.name, ...)`?",
+      "question_en": "What is the main role of `tt.name` in `t.Run(tt.name, ...)`?",
+      "options_id": ["Menentukan package tujuan", "Memberi nama subtest agar output jelas dan bisa difilter", "Menentukan jumlah iterasi benchmark", "Mengatur timeout per subtest"],
+      "options_en": ["It chooses the target package", "It names the subtest so output is clear and filterable", "It sets the number of benchmark iterations", "It sets a timeout per subtest"],
+      "correct": 1
+    },
+    {
+      "question_id": "Perintah mana yang paling sesuai untuk hanya menjalankan subtest `positive numbers` di `TestAdd` menurut pola lesson?",
+      "question_en": "Which command best matches the lesson for running only the `positive numbers` subtest inside `TestAdd`?",
+      "options_id": ["`go test -run TestAdd/positive_numbers`", "`go test -subtest positive numbers`", "`go test TestAdd.positive numbers`", "`go test -run positive numbers/TestAdd`"],
+      "options_en": ["`go test -run TestAdd/positive_numbers`", "`go test -subtest positive numbers`", "`go test TestAdd.positive numbers`", "`go test -run positive numbers/TestAdd`"],
       "correct": 0
     },
     {
-      "question_id": "Pola idiomatis untuk memeriksa error dalam test adalah?",
-      "question_en": "What is the idiomatic pattern for checking errors in tests?",
-      "options_id": ["if (err != nil) != tt.wantErr { t.Errorf(...) }", "assert.Error(t, err)", "if err { t.Fail() }", "try-catch dalam test"],
-      "options_en": ["if (err != nil) != tt.wantErr { t.Errorf(...) }", "assert.Error(t, err)", "if err { t.Fail() }", "try-catch in test"],
+      "question_id": "Mengapa pemeriksaan `(err != nil) != tt.wantErr` dilakukan sebelum membandingkan `got`?",
+      "question_en": "Why is `(err != nil) != tt.wantErr` checked before comparing `got`?",
+      "options_id": ["Karena Go mewajibkannya untuk subtest", "Karena nilai hasil baru bermakna jika status error sudah sesuai ekspektasi", "Agar `t.Run` bisa mengembalikan bool", "Karena `wantErr` harus selalu false"],
+      "options_en": ["Because Go requires it for subtests", "Because the returned value is only meaningful once the error state matches expectations", "So `t.Run` can return a bool", "Because `wantErr` must always be false"],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa contoh `TestDivide` langsung `return` setelah menemukan mismatch pada error state?",
+      "question_en": "Why does the sample `TestDivide` immediately `return` after finding an error-state mismatch?",
+      "options_id": ["Agar subtest diskip", "Agar loop luar berhenti total", "Agar pemeriksaan nilai tidak memakai hasil yang tidak relevan atau belum valid", "Karena `t.Errorf` akan panic tanpa `return`"],
+      "options_en": ["So the subtest is skipped", "So the outer loop stops entirely", "So value checks do not use a result that is irrelevant or not valid yet", "Because `t.Errorf` would panic without `return`"],
+      "correct": 2
+    },
+    {
+      "question_id": "Manakah set field yang paling idiomatis untuk struct test case menurut lesson?",
+      "question_en": "Which set of fields is most idiomatic for the test case struct according to the lesson?",
+      "options_id": ["`first`, `second`, `answer`, `flag`", "`input`, `output`, `exception`", "`name`, data input, `want`, dan bila perlu `wantErr`", "`caseID`, `state`, `message`, `done`"],
+      "options_en": ["`first`, `second`, `answer`, `flag`", "`input`, `output`, `exception`", "`name`, input data, `want`, and if needed `wantErr`", "`caseID`, `state`, `message`, `done`"],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa penggunaan nama variabel loop `tt` dianggap idiomatis?",
+      "question_en": "Why is the loop variable name `tt` considered idiomatic?",
+      "options_id": ["Karena `tt` adalah keyword di Go", "Karena itu konvensi ringkas yang membuat pattern table-driven familiar untuk dibaca", "Karena hanya `tt` yang bisa di-capture oleh closure", "Karena package `testing` mencari nama itu"],
+      "options_en": ["Because `tt` is a Go keyword", "Because it is a compact convention that makes the table-driven pattern familiar to read", "Because only `tt` can be captured by a closure", "Because the `testing` package looks for that name"],
+      "correct": 1
+    },
+    {
+      "question_id": "Kasus mana yang paling cocok disebut edge case berdasarkan saran lesson?",
+      "question_en": "Which set best matches the edge cases suggested by the lesson?",
+      "options_id": ["Hanya input yang paling umum", "Zero, nilai negatif, string kosong, atau overflow", "Hanya input yang lolos validasi", "Kasus yang membutuhkan database sungguhan"],
+      "options_en": ["Only the most common inputs", "Zero, negative values, empty strings, or overflow", "Only inputs that pass validation", "Cases that require a real database"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa keuntungan tambahan subtest selain organisasi kode?",
+      "question_en": "What additional benefit do subtests provide beyond code organization?",
+      "options_id": ["Setiap subtest punya `*testing.T` sendiri dan muncul terpisah di output verbose", "Setiap subtest selalu berjalan di process terpisah", "Setiap subtest otomatis menggunakan mock", "Subtest menghilangkan kebutuhan akan assertions"],
+      "options_en": ["Each subtest has its own `*testing.T` and appears separately in verbose output", "Each subtest always runs in a separate process", "Each subtest automatically uses mocks", "Subtests remove the need for assertions"],
       "correct": 0
+    },
+    {
+      "question_id": "Jika `tt.wantErr` bernilai true, pola lesson memperlakukan field `want` bagaimana?",
+      "question_en": "If `tt.wantErr` is true, how does the lesson's pattern treat the `want` field?",
+      "options_id": ["Tetap harus dibandingkan dengan `got`", "Harus diisi `-1`", "Tidak relevan untuk assertion nilai sampai error expectation sudah lolos", "Digunakan untuk menyimpan pesan error"],
+      "options_en": ["It still must be compared with `got`", "It must be set to `-1`", "It is not relevant for value assertions until the error expectation has passed", "It is used to store the error message"],
+      "correct": 2
     }
   ]
 }

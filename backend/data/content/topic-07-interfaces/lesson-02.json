@@ -8,55 +8,174 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\n// Small, focused interfaces\ntype Namer interface {\n\tName() string\n}\n\ntype Describer interface {\n\tDescribe() string\n}\n\ntype Pricer interface {\n\tPrice() float64\n}\n\n// Composed interface\ntype Product interface {\n\tNamer\n\tDescriber\n\tPricer\n}\n\n// Concrete types\ntype Laptop struct {\n\tmodel string\n\tram   int\n\tprice float64\n}\n\nfunc (l Laptop) Name() string { return l.model }\nfunc (l Laptop) Describe() string {\n\treturn fmt.Sprintf(\"%s with %dGB RAM\", l.model, l.ram)\n}\nfunc (l Laptop) Price() float64 { return l.price }\n\ntype Book struct {\n\ttitle  string\n\tauthor string\n\tprice  float64\n}\n\nfunc (b Book) Name() string    { return b.title }\nfunc (b Book) Describe() string { return fmt.Sprintf(\"%s by %s\", b.title, b.author) }\nfunc (b Book) Price() float64  { return b.price }\n\n// Functions using interface subsets\nfunc printName(n Namer) {\n\tfmt.Println(\"Name:\", n.Name())\n}\n\nfunc printCatalog(products []Product) {\n\tfor _, p := range products {\n\t\tfmt.Printf(\"%-30s Rp %.0f\\n\", p.Describe(), p.Price())\n\t}\n}\n\nfunc totalCost(items []Pricer) float64 {\n\ttotal := 0.0\n\tfor _, item := range items {\n\t\ttotal += item.Price()\n\t}\n\treturn total\n}\n\nfunc main() {\n\tproducts := []Product{\n\t\tLaptop{\"MacBook Pro\", 16, 25_000_000},\n\t\tLaptop{\"ThinkPad X1\", 32, 22_000_000},\n\t\tBook{\"The Go Programming Language\", \"Donovan & Kernighan\", 350_000},\n\t\tBook{\"Clean Code\", \"Robert C. Martin\", 280_000},\n\t}\n\n\tfmt.Println(\"=== Product Catalog ===\")\n\tprintCatalog(products)\n\n\t// Use subset interface\n\tpricers := make([]Pricer, len(products))\n\tfor i, p := range products {\n\t\tpricers[i] = p\n\t}\n\tfmt.Printf(\"\\nTotal cost: Rp %.0f\\n\", totalCost(pricers))\n}",
   "quiz": [
     {
-      "question_id": "Apa itu interface composition di Go?",
-      "question_en": "What is interface composition in Go?",
+      "question_id": "Apa arti `type ReadWriteCloser interface { Reader; Writer; Closer }`?",
+      "question_en": "What does `type ReadWriteCloser interface { Reader; Writer; Closer }` mean?",
       "options_id": [
-        "Menggabungkan dua struct menjadi satu",
-        "Mendefinisikan interface baru yang meng-embed satu atau lebih interface lain",
-        "Membuat instance dari interface",
-        "Mengimplementasikan interface secara eksplisit"
+        "Interface baru mewarisi field dari tiga struct",
+        "Tipe harus memiliki seluruh method dari `Reader`, `Writer`, dan `Closer`",
+        "Hanya salah satu dari tiga interface yang perlu dipenuhi",
+        "Compiler membuat adaptor otomatis untuk method yang hilang"
       ],
       "options_en": [
-        "Merging two structs into one",
-        "Defining a new interface that embeds one or more other interfaces",
-        "Creating an instance from an interface",
-        "Implementing an interface explicitly"
+        "The new interface inherits fields from three structs",
+        "A type must have all methods from `Reader`, `Writer`, and `Closer`",
+        "Only one of the three interfaces needs to be satisfied",
+        "The compiler creates automatic adapters for missing methods"
       ],
       "correct": 1
     },
     {
-      "question_id": "Mengapa interface kecil lebih disukai di Go?",
-      "question_en": "Why are small interfaces preferred in Go?",
+      "question_id": "Jika sebuah fungsi hanya memanggil `Price()`, parameter mana yang paling tepat?",
+      "question_en": "If a function only calls `Price()`, which parameter type is the most appropriate?",
       "options_id": [
-        "Karena Go tidak mendukung interface dengan banyak method",
-        "Karena lebih mudah diimplementasikan, di-mock, dan di-compose",
-        "Karena lebih cepat saat runtime",
-        "Karena compiler Go hanya bisa menangani interface kecil"
+        "`Product`",
+        "`Namer`",
+        "`Pricer`",
+        "`any`"
       ],
       "options_en": [
-        "Because Go doesn't support interfaces with many methods",
-        "Because they are easier to implement, mock, and compose",
-        "Because they are faster at runtime",
-        "Because the Go compiler can only handle small interfaces"
+        "`Product`",
+        "`Namer`",
+        "`Pricer`",
+        "`any`"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa manfaat utama interface kecil terhadap testing?",
+      "question_en": "What is the main benefit of small interfaces for testing?",
+      "options_id": [
+        "Memaksa semua mock punya seluruh API aplikasi",
+        "Membuat mock bisa fokus pada sedikit method yang benar-benar dipakai",
+        "Mencegah penggunaan dependency injection",
+        "Menghilangkan kebutuhan assertion di test"
+      ],
+      "options_en": [
+        "They force every mock to include the entire application API",
+        "They let mocks focus on the few methods that are actually used",
+        "They prevent dependency injection",
+        "They remove the need for assertions in tests"
       ],
       "correct": 1
     },
     {
-      "question_id": "Jika fungsi hanya membutuhkan kemampuan membaca data, parameter tipe interface yang tepat adalah?",
-      "question_en": "If a function only needs to read data, the appropriate interface parameter type is?",
+      "question_id": "Jika `Employee` punya `Name`, `Age`, dan `Email` tetapi tidak punya `Dept`, apakah ia masih memenuhi `Person` dari contoh?",
+      "question_en": "If `Employee` has `Name`, `Age`, and `Email` but no `Dept`, does it still satisfy `Person` from the example?",
       "options_id": [
-        "UserRepository (yang memiliki semua CRUD)",
-        "UserReader (hanya method read)",
-        "interface{} (any type)",
-        "Harus menggunakan struct konkret"
+        "Tidak, karena setiap field struct harus cocok persis",
+        "Tidak, karena `Dept()` wajib untuk semua employee",
+        "Ya, karena `Person` hanya mensyaratkan method dari interface yang di-embed",
+        "Ya, tetapi hanya jika `Employee` dideklarasikan dengan keyword `implements`"
       ],
       "options_en": [
-        "UserRepository (which has all CRUD methods)",
-        "UserReader (only read methods)",
-        "interface{} (any type)",
-        "Must use a concrete struct"
+        "No, because every struct field must match exactly",
+        "No, because `Dept()` is required for every employee",
+        "Yes, because `Person` only requires the methods from its embedded interfaces",
+        "Yes, but only if `Employee` is declared with an `implements` keyword"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa yang terjadi pada tipe yang sudah memenuhi `Product`?",
+      "question_en": "What is true of a type that already satisfies `Product`?",
+      "options_id": [
+        "Tipe itu otomatis juga memenuhi `Namer`, `Describer`, dan `Pricer`",
+        "Tipe itu tidak bisa dipakai sebagai interface yang lebih kecil",
+        "Tipe itu harus di-wrap dulu sebelum dipakai sebagai `Pricer`",
+        "Tipe itu kehilangan method set ketika disimpan sebagai interface"
+      ],
+      "options_en": [
+        "It automatically also satisfies `Namer`, `Describer`, and `Pricer`",
+        "It cannot be used as a smaller interface",
+        "It must be wrapped before it can be used as `Pricer`",
+        "It loses its method set when stored as an interface"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa desain `showUser(repo UserReader, id int)` lebih baik daripada menerima `UserRepository` jika fungsi hanya membaca?",
+      "question_en": "Why is `showUser(repo UserReader, id int)` a better design than accepting `UserRepository` when the function only reads?",
+      "options_id": [
+        "Karena interface lebih besar lebih lambat",
+        "Karena fungsi jadi bergantung hanya pada kemampuan yang dipakai",
+        "Karena `UserRepository` tidak bisa diimplementasikan di Go",
+        "Karena `UserReader` selalu berupa pointer"
+      ],
+      "options_en": [
+        "Because larger interfaces are slower",
+        "Because the function depends only on the capability it actually uses",
+        "Because `UserRepository` cannot be implemented in Go",
+        "Because `UserReader` is always a pointer"
       ],
       "correct": 1
+    },
+    {
+      "question_id": "Pernyataan mana yang benar tentang embedding interface?",
+      "question_en": "Which statement is true about embedding interfaces?",
+      "options_id": [
+        "Embedding interface menambahkan field ke nilai runtime",
+        "Embedding interface menggabungkan method set ke interface baru",
+        "Embedding interface hanya boleh dilakukan satu level",
+        "Embedding interface mengubah receiver method menjadi pointer"
+      ],
+      "options_en": [
+        "Embedding an interface adds fields to the runtime value",
+        "Embedding interfaces combines their method sets into a new interface",
+        "Embedding interfaces is only allowed one level deep",
+        "Embedding interfaces changes method receivers into pointers"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Sebuah tipe punya `Read` dan `Write`, tetapi tidak punya `Close`. Interface mana yang pasti dipenuhi?",
+      "question_en": "A type has `Read` and `Write`, but not `Close`. Which interface does it definitely satisfy?",
+      "options_id": [
+        "`ReadWriteCloser` saja",
+        "`Closer` saja",
+        "`ReadWriter`, tetapi bukan `ReadWriteCloser`",
+        "Tidak ada, karena embedded interface butuh semua tiga method"
+      ],
+      "options_en": [
+        "Only `ReadWriteCloser`",
+        "Only `Closer`",
+        "`ReadWriter`, but not `ReadWriteCloser`",
+        "None, because embedded interfaces require all three methods"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Trade-off apa yang paling tepat ketika memilih antara satu interface besar vs beberapa interface kecil yang di-compose?",
+      "question_en": "What is the most accurate trade-off when choosing one large interface versus several small composed interfaces?",
+      "options_id": [
+        "Interface besar selalu lebih idiomatis",
+        "Interface kecil membuat dependency lebih eksplisit dan reuse lebih mudah",
+        "Interface kecil mencegah polymorphism",
+        "Interface composition hanya berguna di package `io`"
+      ],
+      "options_en": [
+        "Large interfaces are always more idiomatic",
+        "Small interfaces make dependencies more explicit and reuse easier",
+        "Small interfaces prevent polymorphism",
+        "Interface composition is only useful in the `io` package"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika `var p Person = Employee{...}`, apakah `p` bisa dikirim ke fungsi yang menerima `Namer`?",
+      "question_en": "If `var p Person = Employee{...}`, can `p` be passed to a function that accepts `Namer`?",
+      "options_id": [
+        "Tidak, karena interface tidak bisa memenuhi interface lain",
+        "Tidak, kecuali dilakukan type assertion manual",
+        "Ya, karena method set `Person` mencakup method `Name() string`",
+        "Ya, tetapi hanya bila `p` berisi pointer"
+      ],
+      "options_en": [
+        "No, because one interface cannot satisfy another interface",
+        "No, unless you do a manual type assertion first",
+        "Yes, because the method set of `Person` includes `Name() string`",
+        "Yes, but only if `p` holds a pointer"
+      ],
+      "correct": 2
     }
   ]
 }

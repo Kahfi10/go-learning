@@ -8,24 +8,73 @@
   "starterCode": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"net/http\"\n\t\"strconv\"\n\t\"sync\"\n)\n\ntype Product struct {\n\tID    int     `json:\"id\"`\n\tName  string  `json:\"name\"`\n\tPrice float64 `json:\"price\"`\n}\n\nvar (\n\tmu       sync.RWMutex\n\tproducts = map[int]*Product{}\n\tnextID   = 1\n)\n\nfunc writeJSON(w http.ResponseWriter, status int, v any) {\n\tw.Header().Set(\"Content-Type\", \"application/json\")\n\tw.WriteHeader(status)\n\tjson.NewEncoder(w).Encode(v)\n}\n\n// TODO: implement listProducts — GET /products\nfunc listProducts(w http.ResponseWriter, r *http.Request) {\n\tmu.RLock()\n\tdefer mu.RUnlock()\n\tresult := make([]*Product, 0, len(products))\n\tfor _, p := range products {\n\t\tresult = append(result, p)\n\t}\n\twriteJSON(w, http.StatusOK, result)\n}\n\n// TODO: implement createProduct — POST /products\nfunc createProduct(w http.ResponseWriter, r *http.Request) {\n\tvar p Product\n\tif err := json.NewDecoder(r.Body).Decode(&p); err != nil {\n\t\thttp.Error(w, err.Error(), http.StatusBadRequest)\n\t\treturn\n\t}\n\tmu.Lock()\n\tp.ID = nextID\n\tproducts[nextID] = &p\n\tnextID++\n\tmu.Unlock()\n\twriteJSON(w, http.StatusCreated, p)\n}\n\n// TODO: implement getProduct — GET /products/{id}\nfunc getProduct(w http.ResponseWriter, r *http.Request) {\n\tid, err := strconv.Atoi(r.PathValue(\"id\"))\n\tif err != nil {\n\t\thttp.Error(w, \"invalid id\", http.StatusBadRequest)\n\t\treturn\n\t}\n\tmu.RLock()\n\tdefer mu.RUnlock()\n\tp, ok := products[id]\n\tif !ok {\n\t\thttp.Error(w, \"not found\", http.StatusNotFound)\n\t\treturn\n\t}\n\twriteJSON(w, http.StatusOK, p)\n}\n\nfunc main() {\n\tmux := http.NewServeMux()\n\tmux.HandleFunc(\"GET /products\", listProducts)\n\tmux.HandleFunc(\"POST /products\", createProduct)\n\tmux.HandleFunc(\"GET /products/{id}\", getProduct)\n\n\tfmt.Println(\"Products API on :8080\")\n\thttp.ListenAndServe(\":8080\", mux)\n}",
   "quiz": [
     {
-      "question_id": "HTTP status code yang tepat untuk resource yang berhasil dibuat (POST) adalah?",
-      "question_en": "The appropriate HTTP status code for a successfully created resource (POST) is?",
-      "options_id": ["201 Created", "200 OK", "204 No Content", "202 Accepted"],
-      "options_en": ["201 Created", "200 OK", "204 No Content", "202 Accepted"],
+      "question_id": "Mengapa `listTodos` memakai `mu.RLock()` sedangkan `createTodo` dan `deleteTodo` memakai `mu.Lock()`?",
+      "question_en": "Why does `listTodos` use `mu.RLock()` while `createTodo` and `deleteTodo` use `mu.Lock()`?",
+      "options_id": ["Karena membaca data bisa berbagi lock, sedangkan mutasi map harus eksklusif", "Karena `RLock` selalu lebih cepat untuk semua operasi", "Karena `Lock` hanya boleh dipakai pada POST", "Karena JSON encoder membutuhkan `RLock`"],
+      "options_en": ["Because reads can share a lock, while mutating the map must be exclusive", "Because `RLock` is always faster for every operation", "Because `Lock` may only be used for POST", "Because the JSON encoder requires `RLock`"],
       "correct": 0
     },
     {
-      "question_id": "Mengapa in-memory store dalam REST API harus menggunakan sync.RWMutex?",
-      "question_en": "Why should an in-memory store in a REST API use sync.RWMutex?",
-      "options_id": ["Karena Go HTTP server menangani setiap request di goroutine tersendiri", "Karena map tidak thread-safe secara default di Go", "Keduanya benar", "Karena JSON encoding memerlukan lock"],
-      "options_en": ["Because Go HTTP server handles each request in its own goroutine", "Because maps are not thread-safe by default in Go", "Both are correct", "Because JSON encoding requires a lock"],
-      "correct": 2
+      "question_id": "Mengapa validasi `input.Title == \"\"` sebaiknya dilakukan sebelum memasuki critical section yang memodifikasi store?",
+      "question_en": "Why is validating `input.Title == \"\"` best done before entering the critical section that mutates the store?",
+      "options_id": ["Agar request invalid ditolak lebih awal tanpa memegang lock lebih lama dari perlu", "Karena string kosong bisa membuat mutex panic", "Agar `nextID` otomatis di-reset", "Karena `json.Decoder` hanya bekerja di luar lock"],
+      "options_en": ["So invalid requests are rejected early without holding the lock longer than necessary", "Because an empty string can make the mutex panic", "So `nextID` is automatically reset", "Because `json.Decoder` only works outside a lock"],
+      "correct": 0
     },
     {
-      "question_id": "HTTP status code yang tepat untuk DELETE yang berhasil (tanpa body) adalah?",
-      "question_en": "The appropriate HTTP status code for a successful DELETE (no body) is?",
-      "options_id": ["204 No Content", "200 OK", "202 Accepted", "201 Created"],
-      "options_en": ["204 No Content", "200 OK", "202 Accepted", "201 Created"],
+      "question_id": "Route registration mana yang sesuai dengan handler delete pada sample?",
+      "question_en": "Which route registration matches the delete handler in the sample?",
+      "options_id": ["`mux.HandleFunc(\"DELETE /todos/{id}\", deleteTodo)`", "`mux.HandleFunc(\"/todos/delete/{id}\", deleteTodo)`", "`mux.HandleFunc(\"POST /todos/{id}/delete\", deleteTodo)`", "`mux.HandleFunc(\"DELETE /todos?id={id}\", deleteTodo)`"],
+      "options_en": ["`mux.HandleFunc(\"DELETE /todos/{id}\", deleteTodo)`", "`mux.HandleFunc(\"/todos/delete/{id}\", deleteTodo)`", "`mux.HandleFunc(\"POST /todos/{id}/delete\", deleteTodo)`", "`mux.HandleFunc(\"DELETE /todos?id={id}\", deleteTodo)`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa `deleteTodo` memanggil `strconv.Atoi(r.PathValue(\"id\"))`?",
+      "question_en": "Why does `deleteTodo` call `strconv.Atoi(r.PathValue(\"id\"))`?",
+      "options_id": ["Karena path parameter dibaca sebagai string, sedangkan map `todos` menggunakan key `int`", "Karena `PathValue` mengembalikan JSON", "Karena `Atoi` sekaligus mengecek apakah todo ada", "Karena route DELETE selalu mengirim angka biner"],
+      "options_en": ["Because the path parameter is read as a string, while the `todos` map uses `int` keys", "Because `PathValue` returns JSON", "Because `Atoi` also checks whether the todo exists", "Because DELETE routes always send a binary number"],
+      "correct": 0
+    },
+    {
+      "question_id": "Kombinasi status code mana yang benar untuk `deleteTodo` bila `id` invalid versus todo tidak ditemukan?",
+      "question_en": "Which status code combination is correct in `deleteTodo` for an invalid `id` versus a missing todo?",
+      "options_id": ["400 lalu 404", "404 lalu 400", "401 lalu 404", "400 lalu 204"],
+      "options_en": ["400 then 404", "404 then 400", "401 then 404", "400 then 204"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa `nextID++` sebaiknya dilakukan saat lock masih dipegang?",
+      "question_en": "Why should `nextID++` happen while the lock is still held?",
+      "options_id": ["Agar pembuatan ID dan penyimpanan todo menjadi satu operasi sinkron yang aman dari race", "Karena `nextID` tidak bisa diubah di luar function", "Agar status code otomatis menjadi 201", "Karena `json.NewEncoder` memerlukan ID terbaru"],
+      "options_en": ["So ID assignment and todo storage stay as one synchronized operation safe from races", "Because `nextID` cannot be changed outside the function", "So the status code automatically becomes 201", "Because `json.NewEncoder` requires the newest ID"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa response sukses untuk DELETE menggunakan `http.StatusNoContent`?",
+      "question_en": "Why does the successful DELETE response use `http.StatusNoContent`?",
+      "options_id": ["Karena operasi berhasil dan handler tidak mengirim body response", "Karena DELETE tidak boleh berhasil dengan kode lain", "Karena resource belum benar-benar dihapus", "Karena client harus redirect setelah delete"],
+      "options_en": ["Because the operation succeeded and the handler does not send a response body", "Because DELETE may not succeed with any other code", "Because the resource has not actually been deleted yet", "Because the client must redirect after delete"],
+      "correct": 0
+    },
+    {
+      "question_id": "Registrasi method-specific routing mana yang sesuai untuk pembuatan todo?",
+      "question_en": "Which method-specific route registration matches todo creation?",
+      "options_id": ["`mux.HandleFunc(\"POST /todos\", createTodo)`", "`mux.HandleFunc(\"/todos\", createTodo)` saja tanpa method", "`mux.Handle(\"POST\", createTodo)`", "`mux.Post(\"/todos\", createTodo)`"],
+      "options_en": ["`mux.HandleFunc(\"POST /todos\", createTodo)`", "`mux.HandleFunc(\"/todos\", createTodo)` alone without a method", "`mux.Handle(\"POST\", createTodo)`", "`mux.Post(\"/todos\", createTodo)`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika `deleteTodo` memakai `RLock` lalu tetap memanggil `delete(todos, id)`, masalah konsep utamanya apa?",
+      "question_en": "If `deleteTodo` used `RLock` and still called `delete(todos, id)`, what would be the main conceptual problem?",
+      "options_id": ["Itu hanya memperlambat sedikit, tapi tetap benar", "Ia mencoba memodifikasi shared map di bawah read lock, yang tidak aman", "Status code akan otomatis berubah ke 500", "`r.PathValue` tidak bekerja dengan `RLock`"],
+      "options_en": ["It would only be slightly slower but still correct", "It would be mutating a shared map under a read lock, which is unsafe", "The status code would automatically change to 500", "`r.PathValue` does not work with `RLock`"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa alasan utama `sync.RWMutex` diperlukan pada store in-memory di server HTTP ini?",
+      "question_en": "What is the main reason `sync.RWMutex` is needed for this in-memory store in an HTTP server?",
+      "options_id": ["Karena setiap request HTTP dapat berjalan bersamaan dan map Go tidak aman untuk concurrent mutation/read tanpa sinkronisasi", "Karena JSON encoder selalu menuntut mutex", "Karena route path `{id}` harus dikunci", "Karena `http.ListenAndServe` hanya bekerja dengan mutex"],
+      "options_en": ["Because HTTP requests can run concurrently and Go maps are not safe for concurrent mutation/read without synchronization", "Because the JSON encoder always demands a mutex", "Because the `{id}` route path must be locked", "Because `http.ListenAndServe` only works with a mutex"],
       "correct": 0
     }
   ]

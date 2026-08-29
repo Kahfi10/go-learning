@@ -8,25 +8,174 @@
   "starterCode": "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\nvar ErrNotFound = errors.New(\"not found\")\n\nfunc findUser(id int) error {\n\tif id <= 0 {\n\t\treturn ErrNotFound\n\t}\n\treturn nil\n}\n\nfunc getProfile(id int) error {\n\terr := findUser(id)\n\tif err != nil {\n\t\t// TODO: wrap the error with context using fmt.Errorf and %w\n\t\treturn err\n\t}\n\treturn nil\n}\n\nfunc main() {\n\terr := getProfile(-1)\n\tif err != nil {\n\t\tfmt.Println(err)\n\t\tfmt.Println(\"Unwrapped:\", errors.Unwrap(err))\n\t}\n}",
   "quiz": [
     {
-      "question_id": "Verb apa yang digunakan di fmt.Errorf untuk membungkus error?",
-      "question_en": "Which verb is used in fmt.Errorf to wrap an error?",
-      "options_id": ["%w", "%e", "%v", "%s"],
-      "options_en": ["%w", "%e", "%v", "%s"],
+      "question_id": "Apa fungsi utama `%w` pada `fmt.Errorf`?",
+      "question_en": "What is the main role of `%w` in `fmt.Errorf`?",
+      "options_id": [
+        "Mengubah error menjadi warning",
+        "Menambahkan konteks sambil tetap mempertahankan error asal dalam chain",
+        "Mencetak error tanpa return value",
+        "Membandingkan dua error"
+      ],
+      "options_en": [
+        "It converts an error into a warning",
+        "It adds context while preserving the original error in the chain",
+        "It prints the error without a return value",
+        "It compares two errors"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa wrapping berguna ketika error muncul jauh di dalam call stack?",
+      "question_en": "Why is wrapping useful when an error occurs deep in the call stack?",
+      "options_id": [
+        "Karena wrapping menghapus error asli agar caller tidak bingung",
+        "Karena wrapping menambahkan konteks tentang operasi yang gagal tanpa kehilangan error awal",
+        "Karena wrapping mencegah fungsi return error nil",
+        "Karena wrapping membuat semua error menjadi sentinel"
+      ],
+      "options_en": [
+        "Because wrapping removes the original error so callers are not confused",
+        "Because wrapping adds context about the failed operation without losing the original error",
+        "Because wrapping prevents functions from returning nil errors",
+        "Because wrapping turns all errors into sentinels"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa hasil cetak umum dari `fmt.Errorf(\"loadApp: %w\", err)` ketika `err` adalah `file not found`?",
+      "question_en": "What is the usual printed result of `fmt.Errorf(\"loadApp: %w\", err)` when `err` is `file not found`?",
+      "options_id": [
+        "`file not found: loadApp`",
+        "`loadApp: file not found`",
+        "`%w loadApp file not found`",
+        "Hanya `loadApp`"
+      ],
+      "options_en": [
+        "`file not found: loadApp`",
+        "`loadApp: file not found`",
+        "`%w loadApp file not found`",
+        "Only `loadApp`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang dikembalikan `errors.Unwrap(wrapped)` untuk error yang dibungkus satu level?",
+      "question_en": "What does `errors.Unwrap(wrapped)` return for an error wrapped one level deep?",
+      "options_id": [
+        "String konteks terluar",
+        "Error yang langsung dibungkus di dalamnya",
+        "Seluruh rantai error sekaligus",
+        "Selalu `nil` untuk error hasil `fmt.Errorf`"
+      ],
+      "options_en": [
+        "The outer context string",
+        "The directly wrapped inner error",
+        "The entire error chain at once",
+        "Always `nil` for errors created by `fmt.Errorf`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika error dibungkus beberapa kali, apa yang dipertahankan oleh wrapping chain?",
+      "question_en": "If an error is wrapped several times, what is preserved by the wrapping chain?",
+      "options_id": [
+        "Hanya error terluar",
+        "Hanya pesan error terdalam",
+        "Jalur konteks bertingkat beserta akses ke error yang dibungkus",
+        "Tidak ada; tiap wrapping mengganti total error sebelumnya"
+      ],
+      "options_en": [
+        "Only the outermost error",
+        "Only the innermost error message",
+        "A layered context path together with access to the wrapped errors",
+        "Nothing; each wrap completely replaces the previous error"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Kapan `%v` lebih tepat daripada `%w` pada `fmt.Errorf`?",
+      "question_en": "When is `%v` more appropriate than `%w` in `fmt.Errorf`?",
+      "options_id": [
+        "Saat caller tidak perlu atau tidak boleh menginspeksi error asal melalui chain",
+        "Saat ingin mendukung `errors.Unwrap`",
+        "Saat semua error adalah sentinel",
+        "Saat error nil"
+      ],
+      "options_en": [
+        "When the caller does not need or should not be able to inspect the original error through the chain",
+        "When you want to support `errors.Unwrap`",
+        "When all errors are sentinels",
+        "When the error is nil"
+      ],
       "correct": 0
     },
     {
-      "question_id": "Apa fungsi dari errors.Unwrap()?",
-      "question_en": "What does errors.Unwrap() do?",
-      "options_id": ["Mengembalikan error yang dibungkus di dalamnya", "Menghapus semua error", "Mengubah error menjadi string", "Membuat error baru"],
-      "options_en": ["Returns the wrapped error inside", "Removes all errors", "Converts an error to string", "Creates a new error"],
+      "question_id": "Apa trade-off dari selalu memakai `%w` untuk semua error?",
+      "question_en": "What is the trade-off of always using `%w` for every error?",
+      "options_id": [
+        "Tidak ada trade-off; `%w` selalu paling tepat",
+        "Anda mungkin tanpa sengaja mengekspos detail atau identitas error internal yang tidak ingin dijadikan kontrak API",
+        "Program tidak akan bisa dicompile",
+        "Error tidak bisa dicetak lagi"
+      ],
+      "options_en": [
+        "There is no trade-off; `%w` is always the right choice",
+        "You may accidentally expose internal error details or identities that you do not want to become part of your API contract",
+        "The program will no longer compile",
+        "The error can no longer be printed"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa manfaat menulis konteks seperti `getProfile: %w` daripada hanya mengembalikan `err`?",
+      "question_en": "What is the benefit of writing context like `getProfile: %w` instead of just returning `err`?",
+      "options_id": [
+        "Membuat error menjadi nil",
+        "Menjelaskan lapisan operasi mana yang gagal ketika error sampai ke level atas",
+        "Mengubah error menjadi custom type otomatis",
+        "Menghapus kebutuhan `if err != nil`"
+      ],
+      "options_en": [
+        "It makes the error nil",
+        "It explains which operation layer failed when the error reaches higher levels",
+        "It automatically turns the error into a custom type",
+        "It removes the need for `if err != nil`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika `original := errors.New(\"disk full\")` lalu `wrapped := fmt.Errorf(\"write failed: %w\", original)`, mana yang benar?",
+      "question_en": "If `original := errors.New(\"disk full\")` and then `wrapped := fmt.Errorf(\"write failed: %w\", original)`, which is true?",
+      "options_id": [
+        "`errors.Unwrap(wrapped) == original` bernilai true",
+        "`wrapped == original` selalu true",
+        "`wrapped.Error()` hanya berisi `disk full`",
+        "`wrapped` tidak lagi bertipe error"
+      ],
+      "options_en": [
+        "`errors.Unwrap(wrapped) == original` is true",
+        "`wrapped == original` is always true",
+        "`wrapped.Error()` contains only `disk full`",
+        "`wrapped` is no longer of type error"
+      ],
       "correct": 0
     },
     {
-      "question_id": "Kapan sebaiknya menggunakan %v daripada %w di fmt.Errorf?",
-      "question_en": "When should you use %v instead of %w in fmt.Errorf?",
-      "options_id": ["Ketika Anda tidak ingin caller bisa memeriksa error asli", "Ketika error adalah nil", "Ketika error adalah string", "Ketika error perlu dicetak"],
-      "options_en": ["When you don't want callers to inspect the underlying error", "When the error is nil", "When the error is a string", "When the error needs to be printed"],
-      "correct": 0
+      "question_id": "Pernyataan mana yang paling tepat tentang error wrapping di Go?",
+      "question_en": "Which statement is most accurate about error wrapping in Go?",
+      "options_id": [
+        "Wrapping menggantikan kebutuhan error handling lokal",
+        "Wrapping terutama untuk menambah konteks sambil menjaga kemampuan inspeksi terhadap error asal bila diperlukan",
+        "Wrapping hanya relevan untuk panic",
+        "Wrapping membuat semua error menjadi comparable dengan `==`"
+      ],
+      "options_en": [
+        "Wrapping replaces the need for local error handling",
+        "Wrapping is primarily for adding context while preserving the ability to inspect the original error when needed",
+        "Wrapping is only relevant to panics",
+        "Wrapping makes all errors comparable with `==`"
+      ],
+      "correct": 1
     }
   ]
 }

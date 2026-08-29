@@ -8,55 +8,174 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\n// Package-level variables\nvar appName = \"BelajarGo\"\nvar version = \"1.0\"\n\nfunc main() {\n\t// var dengan tipe eksplisit\n\tvar nama string = \"Gopher\"\n\tvar umur int = 5\n\n\t// Short declaration\n\tkota := \"Jakarta\"\n\ttinggi := 1.80\n\n\t// Multiple assignment\n\tx, y := 10, 20\n\tx, y = y, x // swap!\n\n\tfmt.Printf(\"App: %s v%s\\n\", appName, version)\n\tfmt.Printf(\"Nama: %s, Umur: %d tahun\\n\", nama, umur)\n\tfmt.Printf(\"Kota: %s, Tinggi: %.2f\\n\", kota, tinggi)\n\tfmt.Printf(\"x=%d, y=%d (setelah swap)\\n\", x, y)\n}",
   "quiz": [
     {
-      "question_id": "Operator deklarasi variabel mana yang HANYA bisa digunakan di dalam fungsi di Go?",
-      "question_en": "Which variable declaration operator can ONLY be used inside functions in Go?",
+      "question_id": "Manakah deklarasi yang valid di level package menurut lesson ini?",
+      "question_en": "Which declaration is valid at package level according to this lesson?",
       "options_id": [
-        "var x int",
-        "x := value",
-        "x = value",
-        "let x = value"
+        "appName := \"GoApp\"",
+        "version := \"1.0.0\"",
+        "var appName = \"GoApp\"",
+        "name, age := \"Budi\", 25"
       ],
       "options_en": [
-        "var x int",
-        "x := value",
-        "x = value",
-        "let x = value"
-      ],
-      "correct": 1
-    },
-    {
-      "question_id": "Bagaimana cara menukar nilai dua variabel `a` dan `b` secara idiomatik di Go?",
-      "question_en": "How do you idiomatically swap the values of two variables `a` and `b` in Go?",
-      "options_id": [
-        "temp := a; a = b; b = temp",
-        "a, b = b, a",
-        "swap(a, b)",
-        "a.swap(b)"
-      ],
-      "options_en": [
-        "temp := a; a = b; b = temp",
-        "a, b = b, a",
-        "swap(a, b)",
-        "a.swap(b)"
-      ],
-      "correct": 1
-    },
-    {
-      "question_id": "Deklarasi variabel `var x int` di level package (di luar fungsi) akan memiliki nilai awal berapa?",
-      "question_en": "A variable declared as `var x int` at package level (outside functions) will have what initial value?",
-      "options_id": [
-        "nil",
-        "undefined",
-        "0",
-        "1"
-      ],
-      "options_en": [
-        "nil",
-        "undefined",
-        "0",
-        "1"
+        "appName := \"GoApp\"",
+        "version := \"1.0.0\"",
+        "var appName = \"GoApp\"",
+        "name, age := \"Budi\", 25"
       ],
       "correct": 2
+    },
+    {
+      "question_id": "Mengapa `:=` tidak dipakai pada contoh variabel package-level?",
+      "question_en": "Why is `:=` not used in the package-level variable example?",
+      "options_id": [
+        "Karena `:=` hanya boleh digunakan di dalam fungsi",
+        "Karena `:=` hanya berlaku untuk angka",
+        "Karena `:=` selalu membuat konstanta",
+        "Karena `:=` membutuhkan package `fmt`"
+      ],
+      "options_en": [
+        "Because `:=` may only be used inside functions",
+        "Because `:=` only works for numbers",
+        "Because `:=` always creates constants",
+        "Because `:=` requires the `fmt` package"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Pernyataan mana yang BENAR tentang `var kota = \"Jakarta\"`?",
+      "question_en": "Which statement is TRUE about `var kota = \"Jakarta\"`?",
+      "options_id": [
+        "Kode itu tidak valid karena tipe harus selalu ditulis",
+        "Go menyimpulkan tipenya sebagai `string` dari nilai awal",
+        "Go menyimpulkan tipenya sebagai `[]byte`",
+        "Variabel itu otomatis menjadi konstanta"
+      ],
+      "options_en": [
+        "That code is invalid because the type must always be written",
+        "Go infers its type as `string` from the initial value",
+        "Go infers its type as `[]byte`",
+        "The variable automatically becomes a constant"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang membedakan `x = 10` dari `x := 10`?",
+      "question_en": "What distinguishes `x = 10` from `x := 10`?",
+      "options_id": [
+        "`x = 10` adalah assignment, sedangkan `x := 10` adalah deklarasi sekaligus inisialisasi",
+        "`x = 10` hanya boleh di package-level, sedangkan `x := 10` hanya di loop",
+        "Keduanya selalu mendeklarasikan variabel baru",
+        "Keduanya hanya valid jika tipe ditulis eksplisit"
+      ],
+      "options_en": [
+        "`x = 10` is assignment, while `x := 10` is declaration plus initialization",
+        "`x = 10` may only be used at package level, while `x := 10` is only for loops",
+        "Both always declare a brand-new variable",
+        "Both are only valid if the type is written explicitly"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Kapan bentuk `var nama string` lebih berguna daripada `nama := \"Budi\"`?",
+      "question_en": "When is the form `var nama string` more useful than `nama := \"Budi\"`?",
+      "options_id": [
+        "Saat ingin deklarasi lebih dulu tanpa nilai awal dan memanfaatkan zero value",
+        "Saat ingin memaksa variabel menjadi konstanta",
+        "Saat ingin memakai short declaration di package-level",
+        "Saat ingin mendeklarasikan parameter fungsi"
+      ],
+      "options_en": [
+        "When you want to declare first without an initial value and use the zero value",
+        "When you want to force the variable to become a constant",
+        "When you want to use short declaration at package level",
+        "When you want to declare function parameters"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Manakah bentuk penukaran nilai yang idiomatik di Go tanpa variabel temporary?",
+      "question_en": "Which form is the idiomatic Go way to swap values without a temporary variable?",
+      "options_id": [
+        "`a = b; b = a`",
+        "`a, b = b, a`",
+        "`a := b; b := a`",
+        "`swap(a, b)`"
+      ],
+      "options_en": [
+        "`a = b; b = a`",
+        "`a, b = b, a`",
+        "`a := b; b := a`",
+        "`swap(a, b)`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Perbandingan mana yang akurat antara `var` dan `:=`?",
+      "question_en": "Which comparison between `var` and `:=` is accurate?",
+      "options_id": [
+        "`var` bisa di package atau function level, sedangkan `:=` hanya di function level",
+        "`var` hanya untuk string, sedangkan `:=` untuk semua tipe lain",
+        "`:=` bisa tanpa nilai awal, sedangkan `var` tidak bisa",
+        "`:=` mendukung tipe eksplisit, sedangkan `var` tidak"
+      ],
+      "options_en": [
+        "`var` can be used at package or function level, while `:=` is only for function level",
+        "`var` is only for strings, while `:=` is for all other types",
+        "`:=` can be used without an initial value, while `var` cannot",
+        "`:=` supports explicit types, while `var` does not"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika beberapa variabel berbeda tipe ingin dideklarasikan rapi sekaligus, bentuk mana yang paling sesuai?",
+      "question_en": "If several variables of different types should be declared neatly at once, which form is most appropriate?",
+      "options_id": [
+        "Menggunakan `var (...)` group",
+        "Menggunakan `import (...)` block",
+        "Menggunakan `:=` di luar fungsi",
+        "Menggunakan `const (...)` untuk nilai yang akan berubah"
+      ],
+      "options_en": [
+        "Use a `var (...)` group",
+        "Use an `import (...)` block",
+        "Use `:=` outside a function",
+        "Use `const (...)` for values that will change"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Di dalam fungsi, bentuk mana yang PALING idiomatik bila nilai awal sudah tersedia dan tipe tidak perlu ditulis eksplisit?",
+      "question_en": "Inside a function, which form is MOST idiomatic when the initial value is already available and the type does not need to be written explicitly?",
+      "options_id": [
+        "`var umur int = 22`",
+        "`var umur = 22`",
+        "`umur := 22`",
+        "`const umur = 22`"
+      ],
+      "options_en": [
+        "`var umur int = 22`",
+        "`var umur = 22`",
+        "`umur := 22`",
+        "`const umur = 22`"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Jika ditulis `var x int` tanpa nilai awal, nilai awal `x` adalah?",
+      "question_en": "If `var x int` is written without an initial value, what is the initial value of `x`?",
+      "options_id": [
+        "`nil`",
+        "`0`",
+        "`undefined`",
+        "`1`"
+      ],
+      "options_en": [
+        "`nil`",
+        "`0`",
+        "`undefined`",
+        "`1`"
+      ],
+      "correct": 1
     }
   ]
 }

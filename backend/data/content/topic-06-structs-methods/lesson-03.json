@@ -8,55 +8,174 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\ntype Animal struct {\n\tName string\n}\n\nfunc (a Animal) Breathe() string {\n\treturn a.Name + \" is breathing\"\n}\n\nfunc (a Animal) Eat(food string) string {\n\treturn a.Name + \" eats \" + food\n}\n\ntype Dog struct {\n\tAnimal\n\tBreed string\n}\n\nfunc (d Dog) Bark() string {\n\treturn d.Name + \" says: Woof!\"\n}\n\ntype Cat struct {\n\tAnimal\n\tIndoor bool\n}\n\n// Cat overrides Eat\nfunc (c Cat) Eat(food string) string {\n\treturn c.Name + \" delicately eats \" + food\n}\n\ntype Eater interface {\n\tEat(string) string\n}\n\nfunc feed(e Eater, food string) {\n\tfmt.Println(e.Eat(food))\n}\n\nfunc main() {\n\tdog := Dog{\n\t\tAnimal: Animal{Name: \"Rex\"},\n\t\tBreed:  \"Golden Retriever\",\n\t}\n\n\tcat := Cat{\n\t\tAnimal: Animal{Name: \"Whiskers\"},\n\t\tIndoor: true,\n\t}\n\n\t// Promoted methods\n\tfmt.Println(dog.Breathe())\n\tfmt.Println(dog.Bark())\n\tfmt.Println(dog.Name, \"is a\", dog.Breed)\n\n\t// Shadowed method\n\tfmt.Println(cat.Eat(\"fish\"))\n\tfmt.Println(cat.Animal.Eat(\"fish\")) // direct access\n\n\t// Interface polymorphism\n\tfmt.Println(\"--- Feeding time ---\")\n\tfeed(dog, \"bone\")\n\tfeed(cat, \"tuna\")\n}",
   "quiz": [
     {
-      "question_id": "Apa yang dimaksud dengan 'promoted method' dalam struct embedding?",
-      "question_en": "What does 'promoted method' mean in struct embedding?",
+      "question_id": "Apa arti embedding pada `type Dog struct { Animal; Breed string }`?",
+      "question_en": "What does embedding mean in `type Dog struct { Animal; Breed string }`?",
       "options_id": [
-        "Method yang tidak bisa diakses dari luar package",
-        "Method dari tipe yang di-embed yang bisa dipanggil langsung dari tipe luar",
-        "Method yang berjalan lebih cepat",
-        "Method yang hanya ada di tipe luar"
+        "`Dog` mewarisi `Animal` sebagai subclass sejati",
+        "`Animal` disertakan sebagai anonymous field sehingga field dan method-nya bisa dipromosikan",
+        "`Animal` hanya boleh dipakai untuk field `Name`",
+        "`Dog` otomatis bisa dikonversi implisit ke `Animal` di semua konteks"
       ],
       "options_en": [
-        "A method that cannot be accessed from outside the package",
-        "A method from the embedded type that can be called directly on the outer type",
-        "A method that runs faster",
-        "A method that only exists on the outer type"
+        "`Dog` inherits `Animal` as a true subclass",
+        "`Animal` is included as an anonymous field so its fields and methods can be promoted",
+        "`Animal` may only be used for the `Name` field",
+        "`Dog` can always be implicitly converted to `Animal` in every context"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apakah embedding di Go sama dengan inheritance di Java/C#?",
-      "question_en": "Is embedding in Go the same as inheritance in Java/C#?",
+      "question_id": "Apa yang dimaksud promoted method pada embedding?",
+      "question_en": "What is a promoted method in embedding?",
       "options_id": [
-        "Ya, keduanya persis sama",
-        "Tidak, embedding adalah komposisi. Dog yang embed Animal bukan subtype dari Animal",
-        "Ya, tapi hanya untuk struct",
-        "Tidak, embedding lebih lambat"
+        "Method yang otomatis menjadi lebih cepat",
+        "Method milik tipe yang di-embed yang bisa dipanggil langsung dari tipe luar",
+        "Method yang hanya dapat diakses via pointer",
+        "Method yang dipindahkan secara fisik ke definisi struct luar"
       ],
       "options_en": [
-        "Yes, they are exactly the same",
-        "No, embedding is composition. A Dog that embeds Animal is not a subtype of Animal",
-        "Yes, but only for structs",
-        "No, embedding is slower"
+        "A method that automatically becomes faster",
+        "A method of the embedded type that can be called directly from the outer type",
+        "A method that can only be accessed through a pointer",
+        "A method that is physically moved into the outer struct definition"
       ],
       "correct": 1
     },
     {
-      "question_id": "Jika `Dog` meng-embed `Animal` dan keduanya memiliki method `Eat()`, method mana yang dipanggil dengan `dog.Eat()`?",
-      "question_en": "If `Dog` embeds `Animal` and both have an `Eat()` method, which method is called with `dog.Eat()`?",
+      "question_id": "Mengapa `dog.Name` valid jika `Dog` meng-embed `Animal` yang memiliki field `Name`?",
+      "question_en": "Why is `dog.Name` valid if `Dog` embeds `Animal` which has a `Name` field?",
       "options_id": [
-        "Method dari Animal",
-        "Method dari Dog — method luar meng-shadow method embedded",
-        "Error kompilasi karena ada konflik",
-        "Keduanya dipanggil secara berurutan"
+        "Karena field `Name` dipromosikan dari embedded field `Animal`",
+        "Karena semua struct Go otomatis punya field `Name`",
+        "Karena compiler menyalin field `Name` ke `Dog` sebagai field baru yang terpisah",
+        "Karena `Name` adalah keyword spesial"
       ],
       "options_en": [
-        "Animal's method",
-        "Dog's method — the outer method shadows the embedded method",
-        "Compilation error due to conflict",
-        "Both are called in sequence"
+        "Because the `Name` field is promoted from the embedded `Animal` field",
+        "Because all Go structs automatically have a `Name` field",
+        "Because the compiler copies `Name` into `Dog` as a separate new field",
+        "Because `Name` is a special keyword"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang benar tentang relasi embedding dan inheritance pada lesson ini?",
+      "question_en": "What is true about the relationship between embedding and inheritance in this lesson?",
+      "options_id": [
+        "Embedding sama persis dengan inheritance klasik",
+        "Embedding adalah bentuk komposisi; `Dog` yang embed `Animal` bukan otomatis subtype dari `Animal`",
+        "Embedding hanya boleh dipakai jika ingin polymorphism",
+        "Embedding melarang interface"
+      ],
+      "options_en": [
+        "Embedding is exactly the same as classical inheritance",
+        "Embedding is a form of composition; a `Dog` embedding `Animal` is not automatically a subtype of `Animal`",
+        "Embedding may only be used when you want polymorphism",
+        "Embedding forbids interfaces"
       ],
       "correct": 1
+    },
+    {
+      "question_id": "Jika `Cat` memiliki method `Eat` sendiri dan juga meng-embed `Animal` yang punya `Eat`, apa yang dipanggil oleh `cat.Eat(\"fish\")`?",
+      "question_en": "If `Cat` has its own `Eat` method and also embeds `Animal` which has `Eat`, what is called by `cat.Eat(\"fish\")`?",
+      "options_id": [
+        "Method `Eat` milik `Animal`",
+        "Method `Eat` milik `Cat`, karena method luar meng-shadow method embedded",
+        "Keduanya dipanggil berurutan otomatis",
+        "Compile error karena nama method sama"
+      ],
+      "options_en": [
+        "`Animal`'s `Eat` method",
+        "`Cat`'s `Eat` method, because the outer method shadows the embedded one",
+        "Both are called automatically in sequence",
+        "A compile error because the method names are the same"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Bagaimana cara tetap mengakses method asli milik embedded type yang ter-shadow?",
+      "question_en": "How can you still access the original method on the embedded type when it is shadowed?",
+      "options_id": [
+        "Tidak bisa; method embedded hilang permanen",
+        "Panggil melalui field embedded secara eksplisit, misalnya `cat.Animal.Eat(\"fish\")`",
+        "Gunakan `super.Eat(...)`",
+        "Gunakan `fallthrough`"
+      ],
+      "options_en": [
+        "You cannot; the embedded method is permanently lost",
+        "Call it through the embedded field explicitly, for example `cat.Animal.Eat(\"fish\")`",
+        "Use `super.Eat(...)`",
+        "Use `fallthrough`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa manfaat utama multiple embedding seperti `Duck` yang meng-embed `Animal`, `Flyer`, dan `Swimmer`?",
+      "question_en": "What is the main benefit of multiple embedding such as `Duck` embedding `Animal`, `Flyer`, and `Swimmer`?",
+      "options_id": [
+        "Memberi komposisi perilaku dari beberapa tipe tanpa inheritance klasik",
+        "Menggabungkan semua tipe menjadi satu interface otomatis",
+        "Menjamin tidak ada konflik nama method",
+        "Membuat semua method menjadi static"
+      ],
+      "options_en": [
+        "It provides behavior composition from multiple types without classical inheritance",
+        "It automatically merges all types into a single interface",
+        "It guarantees there can be no method-name conflicts",
+        "It makes all methods static"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa interface dipakai dalam example `feed(e Eater)` daripada menerima `Animal` langsung?",
+      "question_en": "Why does the example use an interface in `feed(e Eater)` instead of accepting `Animal` directly?",
+      "options_id": [
+        "Karena hanya `Animal` yang bisa memenuhi interface `Eater`",
+        "Karena interface mengekspresikan kemampuan (`Eat`) tanpa memaksa relasi subtype konkret",
+        "Karena fungsi Go tidak bisa menerima struct",
+        "Karena interface membuat dispatch compile-time saja"
+      ],
+      "options_en": [
+        "Because only `Animal` can satisfy the `Eater` interface",
+        "Because an interface expresses a capability (`Eat`) without requiring a concrete subtype relationship",
+        "Because Go functions cannot accept structs",
+        "Because interfaces make dispatch compile-time only"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `feed(dog)` valid pada lesson walau `Dog` tidak mendefinisikan method `Eat` sendiri?",
+      "question_en": "Why is `feed(dog)` valid in the lesson even though `Dog` does not define its own `Eat` method?",
+      "options_id": [
+        "Karena semua struct otomatis memenuhi semua interface satu-method",
+        "Karena `Eat` dipromosikan dari `Animal`, sehingga `Dog` memenuhi interface `Eater`",
+        "Karena `Dog` di-cast otomatis menjadi `Animal`",
+        "Karena fungsi `feed` sebenarnya menerima `any`"
+      ],
+      "options_en": [
+        "Because every struct automatically satisfies every single-method interface",
+        "Because `Eat` is promoted from `Animal`, so `Dog` satisfies the `Eater` interface",
+        "Because `Dog` is automatically cast to `Animal`",
+        "Because `feed` actually accepts `any`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Pernyataan mana yang paling akurat tentang embedding di Go?",
+      "question_en": "Which statement is most accurate about embedding in Go?",
+      "options_id": [
+        "Embedding adalah alat komposisi yang dapat mempromosikan field dan method, tetapi bukan inheritance penuh",
+        "Embedding hanyalah syntax singkat untuk copy-paste field",
+        "Embedding hanya bekerja untuk method, bukan field",
+        "Embedding mengharuskan semua tipe yang di-embed berasal dari package yang sama"
+      ],
+      "options_en": [
+        "Embedding is a composition tool that can promote fields and methods, but it is not full inheritance",
+        "Embedding is only shorthand for copy-pasting fields",
+        "Embedding works only for methods, not fields",
+        "Embedding requires all embedded types to come from the same package"
+      ],
+      "correct": 0
     }
   ]
 }

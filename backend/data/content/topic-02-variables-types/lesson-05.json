@@ -8,55 +8,174 @@
   "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"reflect\"\n\t\"strconv\"\n)\n\nfunc main() {\n\t// Konversi numerik\n\tvar i int = 255\n\tf := float64(i)\n\tu := uint8(i)\n\tfmt.Printf(\"int: %d, float64: %.1f, uint8: %d\\n\", i, f, u)\n\n\t// Truncation (bukan round)\n\tpi := 3.99\n\tpiInt := int(pi)\n\tfmt.Printf(\"%.2f -> int = %d (truncated!)\\n\", pi, piInt)\n\n\t// strconv\n\ts := strconv.Itoa(42)\n\tfmt.Printf(\"Itoa: %q (type: %s)\\n\", s, reflect.TypeOf(s))\n\n\tnum, err := strconv.Atoi(\"789\")\n\tif err == nil {\n\t\tfmt.Printf(\"Atoi: %d (type: %s)\\n\", num, reflect.TypeOf(num))\n\t}\n\n\t// Float formatting\n\tfs := strconv.FormatFloat(3.14159, 'f', 3, 64)\n\tfmt.Println(\"FormatFloat:\", fs)\n}",
   "quiz": [
     {
-      "question_id": "Apa hasil dari konversi `int(3.99)` di Go?",
-      "question_en": "What is the result of `int(3.99)` conversion in Go?",
+      "question_id": "Apa prinsip utama konversi tipe di Go menurut lesson ini?",
+      "question_en": "What is the main principle of type conversion in Go according to this lesson?",
       "options_id": [
-        "4 (dibulatkan ke atas)",
-        "3 (dipotong/truncated)",
-        "3.99 (tidak berubah)",
-        "Error kompilasi"
+        "Go melakukan implicit casting seperti Java",
+        "Konversi harus eksplisit; tidak ada implicit casting otomatis",
+        "Semua tipe numerik saling kompatibel tanpa konversi",
+        "Konversi hanya diperlukan untuk string"
       ],
       "options_en": [
-        "4 (rounded up)",
-        "3 (truncated)",
-        "3.99 (unchanged)",
-        "Compile error"
+        "Go performs implicit casting like Java",
+        "Conversions must be explicit; there is no automatic implicit casting",
+        "All numeric types are mutually compatible without conversion",
+        "Conversion is only needed for strings"
       ],
       "correct": 1
     },
     {
-      "question_id": "Fungsi `strconv.Atoi` digunakan untuk?",
-      "question_en": "The `strconv.Atoi` function is used to?",
+      "question_id": "Mengapa `float64(i)` diperlukan pada contoh `var f float64 = float64(i)`?",
+      "question_en": "Why is `float64(i)` required in the example `var f float64 = float64(i)`?",
       "options_id": [
-        "Mengkonversi integer ke string ASCII",
-        "Mengkonversi string ke integer",
-        "Mengkonversi float ke integer",
-        "Mengkonversi byte ke integer"
+        "Karena Go tidak mengonversi `int` ke `float64` secara otomatis",
+        "Karena `float64(i)` membuat nilai menjadi konstanta",
+        "Karena `int` tidak bisa dicetak oleh `fmt.Println`",
+        "Karena `float64` hanya menerima nilai hasil konversi"
       ],
       "options_en": [
-        "Convert an integer to ASCII string",
-        "Convert a string to an integer",
-        "Convert a float to an integer",
-        "Convert a byte to an integer"
+        "Because Go does not automatically convert `int` to `float64`",
+        "Because `float64(i)` turns the value into a constant",
+        "Because `int` cannot be printed by `fmt.Println`",
+        "Because `float64` only accepts converted values"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa hasil `int(3.99)` dan pelajaran utamanya?",
+      "question_en": "What is the result of `int(3.99)` and what is the main lesson?",
+      "options_id": [
+        "`4`, karena Go membulatkan ke atas",
+        "`3`, karena konversi ke `int` memotong bagian pecahan",
+        "`3.99`, karena angka desimal dipertahankan",
+        "Compile error, karena float tidak bisa dikonversi ke int"
+      ],
+      "options_en": [
+        "`4`, because Go rounds up",
+        "`3`, because converting to `int` truncates the fractional part",
+        "`3.99`, because the decimal part is preserved",
+        "Compile error, because a float cannot be converted to int"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa perbedaan antara 'type alias' (`type A = B`) dan 'defined type' (`type A B`) di Go?",
-      "question_en": "What is the difference between a 'type alias' (`type A = B`) and a 'defined type' (`type A B`) in Go?",
+      "question_id": "Kapan `strconv.Itoa` lebih tepat daripada `string(rune(n))`?",
+      "question_en": "When is `strconv.Itoa` more appropriate than `string(rune(n))`?",
       "options_id": [
-        "Tidak ada perbedaan",
-        "Type alias membuat tipe baru yang tidak kompatibel, defined type hanya nama lain",
-        "Type alias hanya nama lain (kompatibel penuh), defined type membuat tipe baru yang tidak kompatibel otomatis",
-        "Defined type lebih cepat diproses daripada type alias"
+        "Saat ingin representasi teks angka seperti `42`, bukan karakter Unicode dengan code point 42",
+        "Saat ingin mem-parse string menjadi integer",
+        "Saat ingin mengubah rune menjadi float",
+        "Saat ingin membulatkan float ke integer"
       ],
       "options_en": [
-        "There is no difference",
-        "Type alias creates a new incompatible type, defined type is just another name",
-        "Type alias is just another name (fully compatible), defined type creates a new type that is not automatically compatible",
-        "Defined type is processed faster than type alias"
+        "When you want the textual digits like `42`, not the Unicode character with code point 42",
+        "When you want to parse a string into an integer",
+        "When you want to convert a rune into a float",
+        "When you want to round a float into an integer"
       ],
-      "correct": 2
+      "correct": 0
+    },
+    {
+      "question_id": "Apa perilaku `strconv.Atoi(\"abc\")` pada contoh lesson?",
+      "question_en": "What is the behavior of `strconv.Atoi(\"abc\")` in the lesson example?",
+      "options_id": [
+        "Menghasilkan `0` tanpa error",
+        "Mengembalikan error parsing `invalid syntax`",
+        "Mengubah `abc` menjadi jumlah kode ASCII",
+        "Menghasilkan `nil, nil`"
+      ],
+      "options_en": [
+        "It yields `0` without an error",
+        "It returns a parsing error with `invalid syntax`",
+        "It converts `abc` to the sum of ASCII codes",
+        "It returns `nil, nil`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika ingin string `\"3.14\"` dari `3.14159`, fungsi mana yang paling sesuai dari lesson?",
+      "question_en": "If you want the string `\"3.14\"` from `3.14159`, which function from the lesson is most appropriate?",
+      "options_id": [
+        "`strconv.FormatFloat(f, 'f', 2, 64)`",
+        "`strconv.Atoi(\"3.14159\")`",
+        "`string(f)`",
+        "`int(f)`"
+      ],
+      "options_en": [
+        "`strconv.FormatFloat(f, 'f', 2, 64)`",
+        "`strconv.Atoi(\"3.14159\")`",
+        "`string(f)`",
+        "`int(f)`"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa perbedaan arah konversi antara `strconv.FormatFloat` dan `strconv.ParseFloat`?",
+      "question_en": "What is the conversion-direction difference between `strconv.FormatFloat` and `strconv.ParseFloat`?",
+      "options_id": [
+        "Keduanya mengubah string ke float",
+        "`FormatFloat` mengubah float ke string, `ParseFloat` mengubah string ke float",
+        "`FormatFloat` mengubah int ke float, `ParseFloat` mengubah float ke int",
+        "Keduanya hanya bekerja untuk integer"
+      ],
+      "options_en": [
+        "Both convert strings to floats",
+        "`FormatFloat` converts a float to a string, while `ParseFloat` converts a string to a float",
+        "`FormatFloat` converts int to float, while `ParseFloat` converts float to int",
+        "Both only work for integers"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa lesson memberi peringatan bahwa `int` ke `string` bukan angka, tetapi karakter?",
+      "question_en": "Why does the lesson warn that converting an `int` to `string` yields a character rather than a number?",
+      "options_id": [
+        "Karena konversi itu memakai code point/rune, sehingga `65` menjadi `\"A\"`",
+        "Karena Go melarang semua konversi numerik ke string",
+        "Karena string di Go hanya boleh berisi satu digit",
+        "Karena compiler otomatis memanggil `strconv.Itoa`"
+      ],
+      "options_en": [
+        "Because that conversion uses a code point/rune, so `65` becomes `\"A\"`",
+        "Because Go forbids all numeric-to-string conversions",
+        "Because strings in Go may contain only one digit",
+        "Because the compiler automatically calls `strconv.Itoa`"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Pernyataan mana yang benar tentang `type MyString = string`?",
+      "question_en": "Which statement is true about `type MyString = string`?",
+      "options_id": [
+        "It creates a brand-new incompatible type",
+        "It is a type alias, so values are fully compatible with `string`",
+        "It can only be used inside functions",
+        "It must always be converted with `MyString(s)`"
+      ],
+      "options_en": [
+        "It creates a brand-new incompatible type",
+        "It is a type alias, so values are fully compatible with `string`",
+        "It can only be used inside functions",
+        "It must always be converted with `MyString(s)`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `Celsius` harus dikonversi eksplisit ke `Fahrenheit` pada contoh defined type?",
+      "question_en": "Why must `Celsius` be explicitly converted to `Fahrenheit` in the defined-type example?",
+      "options_id": [
+        "Karena keduanya defined type yang berbeda dan tidak kompatibel otomatis",
+        "Karena `Fahrenheit` sebenarnya bertipe string",
+        "Karena defined type tidak bisa disimpan di variabel",
+        "Karena Go hanya mengizinkan satu defined type per package"
+      ],
+      "options_en": [
+        "Because they are different defined types and are not automatically compatible",
+        "Because `Fahrenheit` is actually a string",
+        "Because defined types cannot be stored in variables",
+        "Because Go only allows one defined type per package"
+      ],
+      "correct": 0
     }
   ]
 }

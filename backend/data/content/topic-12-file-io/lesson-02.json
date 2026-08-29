@@ -8,25 +8,74 @@
   "starterCode": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\n// countBytes reads all data from r and returns the byte count\nfunc countBytes(r io.Reader) (int64, error) {\n\t// TODO: use io.Copy to a discard writer (io.Discard)\n\t// and return the number of bytes copied\n\treturn 0, nil\n}\n\n// duplicate reads from r and writes to both w1 and w2\nfunc duplicate(r io.Reader, w1, w2 io.Writer) error {\n\t// TODO: use io.MultiWriter to write to both w1 and w2 simultaneously\n\t// then io.Copy from r to the multi-writer\n\treturn nil\n}\n\nfunc main() {\n\tsrc := strings.NewReader(\"Hello, io.Reader and io.Writer!\")\n\n\tn, err := countBytes(src)\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t\treturn\n\t}\n\tfmt.Printf(\"Byte count: %d\\n\", n)\n\n\t// Reset and duplicate\n\tsrc = strings.NewReader(\"Duplicate this text\")\n\tvar buf1, buf2 bytes.Buffer\n\tif err := duplicate(src, &buf1, &buf2); err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t\treturn\n\t}\n\tfmt.Println(\"buf1:\", buf1.String())\n\tfmt.Println(\"buf2:\", buf2.String())\n}",
   "quiz": [
     {
-      "question_id": "Signature method dari interface io.Reader adalah?",
-      "question_en": "What is the method signature of the io.Reader interface?",
-      "options_id": ["Read(p []byte) (n int, err error)", "Read() []byte", "ReadAll() ([]byte, error)", "Read(w io.Writer) error"],
-      "options_en": ["Read(p []byte) (n int, err error)", "Read() []byte", "ReadAll() ([]byte, error)", "Read(w io.Writer) error"],
+      "question_id": "Signature method mana yang membuat sebuah tipe memenuhi `io.Reader`?",
+      "question_en": "Which method signature makes a type satisfy `io.Reader`?",
+      "options_id": ["`Read(p []byte) (n int, err error)`", "`Read() []byte`", "`ReadAll() ([]byte, error)`", "`Read(w io.Writer) error`"],
+      "options_en": ["`Read(p []byte) (n int, err error)`", "`Read() []byte`", "`ReadAll() ([]byte, error)`", "`Read(w io.Writer) error`"],
       "correct": 0
     },
     {
-      "question_id": "Apa manfaat memprogram terhadap io.Reader/io.Writer daripada tipe konkret?",
-      "question_en": "What is the benefit of programming against io.Reader/io.Writer instead of concrete types?",
-      "options_id": ["Kode bisa bekerja dengan file, buffer, network, dan sumber lainnya", "Lebih cepat dari tipe konkret", "Tidak membutuhkan error handling", "Otomatis thread-safe"],
-      "options_en": ["Code works with files, buffers, networks, and other sources", "Faster than concrete types", "No error handling required", "Automatically thread-safe"],
+      "question_id": "Mengapa fungsi `writeGreeting(w io.Writer, name string)` lebih fleksibel daripada menerima `*os.File` langsung?",
+      "question_en": "Why is `writeGreeting(w io.Writer, name string)` more flexible than taking `*os.File` directly?",
+      "options_id": ["Karena fungsi itu bisa menulis ke file, stdout, buffer, dan target lain yang memenuhi `io.Writer`", "Karena `io.Writer` tidak pernah mengembalikan error", "Karena `*os.File` bukan writer yang valid", "Karena `io.Writer` otomatis menyimpan data ke memori"],
+      "options_en": ["Because the function can write to files, stdout, buffers, and other targets that satisfy `io.Writer`", "Because `io.Writer` never returns errors", "Because `*os.File` is not a valid writer", "Because `io.Writer` automatically stores data in memory"],
       "correct": 0
     },
     {
-      "question_id": "io.MultiWriter berguna untuk?",
-      "question_en": "io.MultiWriter is useful for?",
-      "options_id": ["Menulis ke beberapa Writer sekaligus dalam satu operasi", "Membaca dari beberapa Reader", "Menyalin antara Reader dan Writer", "Membuat buffer baru"],
-      "options_en": ["Writing to multiple Writers simultaneously in one operation", "Reading from multiple Readers", "Copying between a Reader and Writer", "Creating a new buffer"],
+      "question_id": "Peran utama `io.Copy(dst, src)` pada lesson adalah?",
+      "question_en": "What is the main role of `io.Copy(dst, src)` in the lesson?",
+      "options_id": ["Menyalin data secara efisien dari `Reader` ke `Writer`", "Mengubah `src` menjadi buffered reader", "Membuat file baru jika `src` kosong", "Mengembalikan string hasil salinan"],
+      "options_en": ["To efficiently copy data from a `Reader` to a `Writer`", "To turn `src` into a buffered reader", "To create a new file if `src` is empty", "To return the copied data as a string"],
       "correct": 0
+    },
+    {
+      "question_id": "Nilai pertama yang dikembalikan `io.Copy` merepresentasikan apa?",
+      "question_en": "What does the first value returned by `io.Copy` represent?",
+      "options_id": ["Jumlah byte yang berhasil disalin", "Jumlah writer yang dipakai", "Kapasitas buffer internal", "Jumlah baris yang berhasil dibaca"],
+      "options_en": ["The number of bytes successfully copied", "The number of writers used", "The capacity of the internal buffer", "The number of lines successfully read"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa `strings.NewReader(\"text\")` berguna pada contoh?",
+      "question_en": "Why is `strings.NewReader(\"text\")` useful in the example?",
+      "options_id": ["Karena ia membuat `io.Reader` dari string sehingga API yang menerima reader bisa memakai sumber itu tanpa file nyata", "Karena ia mengubah string menjadi writer", "Karena ia otomatis menyalin data ke stdout", "Karena ia hanya bekerja dengan `json.Decoder`"],
+      "options_en": ["Because it creates an `io.Reader` from a string so APIs that accept readers can use it without a real file", "Because it turns a string into a writer", "Because it automatically copies data to stdout", "Because it only works with `json.Decoder`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang dilakukan `io.MultiWriter(os.Stdout, fileWriter, bufWriter)`?",
+      "question_en": "What does `io.MultiWriter(os.Stdout, fileWriter, bufWriter)` do?",
+      "options_id": ["Membaca dari beberapa sumber sekaligus", "Membungkus beberapa writer sehingga satu operasi tulis dikirim ke semuanya", "Memilih satu writer tercepat secara otomatis", "Menjadikan semua writer thread-safe"],
+      "options_en": ["It reads from several sources at once", "It wraps several writers so one write operation is sent to all of them", "It automatically chooses the fastest writer", "It makes all writers thread-safe"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa kegunaan `io.TeeReader(sourceReader, logWriter)` pada lesson?",
+      "question_en": "What is the purpose of `io.TeeReader(sourceReader, logWriter)` in the lesson?",
+      "options_id": ["Membaca dari sumber sambil menduplikasi data yang dibaca ke writer lain", "Menulis ke dua writer sekaligus tanpa reader", "Menggabungkan dua reader menjadi satu", "Menghentikan pembacaan setelah satu byte"],
+      "options_en": ["It reads from a source while duplicating the read data to another writer", "It writes to two writers at once without a reader", "It combines two readers into one", "It stops reading after one byte"],
+      "correct": 0
+    },
+    {
+      "question_id": "Tradeoff desain apa yang ditekankan lesson dengan interface `io.Reader` dan `io.Writer`?",
+      "question_en": "What design tradeoff does the lesson emphasize with `io.Reader` and `io.Writer` interfaces?",
+      "options_id": ["Program terhadap abstraksi agar satu fungsi bisa bekerja pada banyak tipe konkret", "Hindari interface karena selalu lebih lambat", "Selalu ganti semua tipe konkret menjadi `interface{}`", "Gunakan hanya file agar API tetap sederhana"],
+      "options_en": ["Program against abstractions so one function can work with many concrete types", "Avoid interfaces because they are always slower", "Replace every concrete type with `interface{}`", "Use only files so the API stays simple"],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika fungsi menerima `io.Writer`, target mana dari lesson yang valid untuk dipass?",
+      "question_en": "If a function accepts an `io.Writer`, which target from the lesson is valid to pass in?",
+      "options_id": ["`os.Stdout`", "`bytes.Buffer` pointer", "File hasil `os.Create`", "Semua jawaban benar"],
+      "options_en": ["`os.Stdout`", "A `bytes.Buffer` pointer", "A file returned by `os.Create`", "All of the above"],
+      "correct": 3
+    },
+    {
+      "question_id": "Mengapa `processReader(r io.Reader)` tidak perlu tahu apakah sumbernya file atau string?",
+      "question_en": "Why does `processReader(r io.Reader)` not need to know whether its source is a file or a string?",
+      "options_id": ["Karena Go secara otomatis membaca semua tipe menjadi JSON", "Karena fungsi hanya bergantung pada kontrak `Read`, bukan tipe konkret sumbernya", "Karena `io.Reader` hanya bisa dibuat dari string", "Karena semua reader di Go identik secara internal"],
+      "options_en": ["Because Go automatically reads every type as JSON", "Because the function depends only on the `Read` contract, not the concrete source type", "Because `io.Reader` can only be created from strings", "Because all readers in Go are internally identical"],
+      "correct": 1
     }
   ]
 }

@@ -8,55 +8,174 @@
   "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n)\n\nfunc grade(score int) string {\n\tif score >= 90 {\n\t\treturn \"A\"\n\t} else if score >= 80 {\n\t\treturn \"B\"\n\t} else if score >= 70 {\n\t\treturn \"C\"\n\t} else if score >= 60 {\n\t\treturn \"D\"\n\t}\n\treturn \"F\"\n}\n\nfunc main() {\n\t// Dasar if-else\n\tscores := []int{95, 82, 71, 65, 45}\n\tfor _, s := range scores {\n\t\tfmt.Printf(\"Score %d -> Grade %s\\n\", s, grade(s))\n\t}\n\n\t// Short init statement\n\tif n, err := strconv.Atoi(\"42\"); err == nil {\n\t\tfmt.Printf(\"Berhasil parse: %d (double: %d)\\n\", n, n*2)\n\t} else {\n\t\tfmt.Println(\"Parse error:\", err)\n\t}\n\n\t// Coba parse string yang invalid\n\tif _, err := strconv.Atoi(\"abc\"); err != nil {\n\t\tfmt.Println(\"Expected error:\", err)\n\t}\n}",
   "quiz": [
     {
-      "question_id": "Apakah tanda kurung `()` di sekitar kondisi diperlukan dalam `if` statement Go?",
-      "question_en": "Are parentheses `()` around the condition required in a Go `if` statement?",
+      "question_id": "Manakah bentuk `if` yang valid dan idiomatik dalam Go untuk mengecek `score >= 80`?",
+      "question_en": "Which `if` form is valid and idiomatic in Go for checking `score >= 80`?",
       "options_id": [
-        "Ya, selalu diperlukan",
-        "Tidak, tidak diperlukan (dan tidak direkomendasikan)",
-        "Hanya diperlukan jika kondisinya kompleks",
-        "Opsional, bisa dengan atau tanpa"
+        "`if (score >= 80) { fmt.Println(score) }`",
+        "`if score >= 80 { fmt.Println(score) }`",
+        "`if score >= 80 then { fmt.Println(score) }`",
+        "`if score >= 80: fmt.Println(score)`"
       ],
       "options_en": [
-        "Yes, always required",
-        "No, not required (and not recommended)",
-        "Only required if the condition is complex",
-        "Optional, can use with or without"
+        "`if (score >= 80) { fmt.Println(score) }`",
+        "`if score >= 80 { fmt.Println(score) }`",
+        "`if score >= 80 then { fmt.Println(score) }`",
+        "`if score >= 80: fmt.Println(score)`"
       ],
       "correct": 1
     },
     {
-      "question_id": "Dalam `if n, err := f(); err != nil { ... }`, di mana variabel `n` dan `err` tersedia?",
-      "question_en": "In `if n, err := f(); err != nil { ... }`, where are the variables `n` and `err` available?",
+      "question_id": "Dalam `if n, err := strconv.Atoi(\"42\"); err == nil { ... } else { ... }`, di mana `n` dan `err` bisa dipakai?",
+      "question_en": "In `if n, err := strconv.Atoi(\"42\"); err == nil { ... } else { ... }`, where can `n` and `err` be used?",
       "options_id": [
-        "Di seluruh package",
-        "Di seluruh fungsi yang mengandung if tersebut",
-        "Hanya di dalam blok if-else tersebut",
-        "Hanya di baris if itu saja"
+        "Hanya di dalam blok `if` saja",
+        "Di seluruh fungsi setelah statement itu",
+        "Di seluruh rangkaian `if` dan `else`, tetapi tidak setelahnya",
+        "Di seluruh package"
       ],
       "options_en": [
-        "Throughout the entire package",
-        "Throughout the function containing the if",
-        "Only within that if-else block",
-        "Only on that if line"
+        "Only inside the `if` block",
+        "Throughout the function after that statement",
+        "Throughout the `if` and `else` chain, but not after it",
+        "Throughout the package"
       ],
       "correct": 2
     },
     {
-      "question_id": "Teknik 'early return' atau 'guard clause' dalam fungsi Go bertujuan untuk?",
-      "question_en": "The 'early return' or 'guard clause' technique in Go functions is intended to?",
+      "question_id": "Apa tujuan utama guard clause seperti `if err != nil { return err }` dalam gaya Go?",
+      "question_en": "What is the main purpose of a guard clause like `if err != nil { return err }` in Go style?",
       "options_id": [
-        "Meningkatkan kecepatan eksekusi program",
-        "Mengurangi nesting berlebihan agar kode lebih mudah dibaca",
-        "Mencegah garbage collector bekerja",
-        "Menghemat penggunaan memori"
+        "Menangani kondisi gagal lebih awal agar alur utama tetap datar dan mudah dibaca",
+        "Memastikan fungsi selalu lebih cepat",
+        "Menghindari semua penggunaan `else` karena `else` dilarang di Go",
+        "Mengubah semua error menjadi panic"
       ],
       "options_en": [
-        "Increase program execution speed",
-        "Reduce excessive nesting to make code more readable",
-        "Prevent the garbage collector from running",
-        "Save memory usage"
+        "Handle failure conditions early so the main flow stays flat and readable",
+        "Guarantee the function is always faster",
+        "Avoid all use of `else` because `else` is forbidden in Go",
+        "Turn all errors into panics"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Pada contoh grading, mengapa `score := 85` menghasilkan `B`, bukan `C`?",
+      "question_en": "In the grading example, why does `score := 85` produce `B` instead of `C`?",
+      "options_id": [
+        "Karena Go otomatis membulatkan 85 menjadi 90",
+        "Karena semua cabang yang cocok dijalankan dan hasil terakhir yang dipakai",
+        "Karena kondisi diperiksa dari atas ke bawah dan cabang true pertama menghentikan rantai",
+        "Karena `else if` selalu memprioritaskan grade yang lebih tinggi"
+      ],
+      "options_en": [
+        "Because Go automatically rounds 85 up to 90",
+        "Because all matching branches run and the last result is used",
+        "Because conditions are checked top to bottom and the first true branch stops the chain",
+        "Because `else if` always prioritizes the higher grade"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa output dari kode berikut? `if score := 59; score >= 60 { fmt.Println(\"pass\") } else if score >= 50 { fmt.Println(\"remedial\") } else { fmt.Println(\"fail\") }`",
+      "question_en": "What is the output of this code? `if score := 59; score >= 60 { fmt.Println(\"pass\") } else if score >= 50 { fmt.Println(\"remedial\") } else { fmt.Println(\"fail\") }`",
+      "options_id": [
+        "`pass`",
+        "`remedial`",
+        "`fail`",
+        "Compile error karena `score` dideklarasikan di `if`"
+      ],
+      "options_en": [
+        "`pass`",
+        "`remedial`",
+        "`fail`",
+        "Compile error because `score` is declared in the `if`"
       ],
       "correct": 1
+    },
+    {
+      "question_id": "Apa keuntungan utama short init dibanding menulis `val, err := ...` sebelum `if`?",
+      "question_en": "What is the main advantage of short init compared with writing `val, err := ...` before the `if`?",
+      "options_id": [
+        "Membuat `val` tetap tersedia di seluruh fungsi",
+        "Menyempitkan scope dan menjaga hasil operasi tetap dekat dengan pengecekannya",
+        "Menghindari alokasi memori sepenuhnya",
+        "Memastikan `err` tidak mungkin bernilai `nil`"
+      ],
+      "options_en": [
+        "It keeps `val` available throughout the whole function",
+        "It narrows scope and keeps the operation result close to its check",
+        "It completely avoids memory allocation",
+        "It guarantees `err` cannot be `nil`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang terjadi saat `validateAge(-5)` dipanggil berdasarkan contoh lesson?",
+      "question_en": "What happens when `validateAge(-5)` is called based on the lesson example?",
+      "options_id": [
+        "Fungsi mengembalikan `nil` karena `-5` tetap bertipe `int`",
+        "Fungsi panic karena umur negatif dianggap fatal",
+        "Fungsi segera mengembalikan error dari guard clause pertama dan pengecekan berikutnya dilewati",
+        "Fungsi mencetak error tetapi tetap mengembalikan `nil`"
+      ],
+      "options_en": [
+        "The function returns `nil` because `-5` is still an `int`",
+        "The function panics because negative age is treated as fatal",
+        "The function immediately returns an error from the first guard clause and skips later checks",
+        "The function prints an error but still returns `nil`"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa pola `if val, err := strconv.Atoi(\"123\"); err != nil { ... } else { fmt.Println(val) }` lebih aman dibaca dibanding mencetak `val` setelah blok error terpisah?",
+      "question_en": "Why is the pattern `if val, err := strconv.Atoi(\"123\"); err != nil { ... } else { fmt.Println(val) }` safer to read than printing `val` after a separate error block?",
+      "options_id": [
+        "Karena pola itu membuat kegagalan parse menjadi mustahil",
+        "Karena pola itu memastikan `val` hanya dipakai pada jalur sukses",
+        "Karena pola itu memaksa `err` dialokasikan di heap",
+        "Karena pola itu membuat `val` bisa dipakai setelah `if`"
+      ],
+      "options_en": [
+        "Because it makes parse failure impossible",
+        "Because it ensures `val` is only used on the success path",
+        "Because it forces `err` to be heap allocated",
+        "Because it makes `val` available after the `if`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Dalam satu rangkaian `if / else if / else`, berapa banyak cabang maksimal yang dieksekusi?",
+      "question_en": "In a single `if / else if / else` chain, how many branches can execute at most?",
+      "options_id": [
+        "Sebanyak semua kondisi yang bernilai true",
+        "Paling banyak satu cabang",
+        "Selalu tepat dua cabang",
+        "Tergantung ada tidaknya short init"
+      ],
+      "options_en": [
+        "As many as there are true conditions",
+        "At most one branch",
+        "Always exactly two branches",
+        "It depends on whether there is a short init"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Pola `if err := doSomething(); err != nil { return }` menunjukkan idiom apa dalam Go?",
+      "question_en": "What Go idiom does the pattern `if err := doSomething(); err != nil { return }` demonstrate?",
+      "options_id": [
+        "Menunda penanganan error sampai akhir fungsi",
+        "Mengubah semua error menjadi panic",
+        "Menangani error segera di dekat sumbernya dengan scope variabel yang sempit",
+        "Menggunakan variabel global untuk menyimpan error terakhir"
+      ],
+      "options_en": [
+        "Delaying error handling until the end of the function",
+        "Converting all errors into panics",
+        "Handling the error immediately near its source with narrow variable scope",
+        "Using a global variable to store the last error"
+      ],
+      "correct": 2
     }
   ]
 }

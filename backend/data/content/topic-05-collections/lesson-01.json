@@ -8,45 +8,174 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\t// Declare and initialize arrays\n\tvar a [3]int\n\tfmt.Println(\"Zero array:\", a)\n\n\tb := [3]int{1, 2, 3}\n\tfmt.Println(\"Literal array:\", b)\n\n\tc := [...]string{\"Go\", \"Python\", \"Rust\"}\n\tfmt.Println(\"Auto-sized array:\", c, \"len:\", len(c))\n\n\t// Array comparison\n\tx := [3]int{1, 2, 3}\n\ty := [3]int{1, 2, 3}\n\tfmt.Println(\"Arrays equal:\", x == y)\n\n\t// Multi-dimensional array\n\tmatrix := [3][3]int{\n\t\t{1, 2, 3},\n\t\t{4, 5, 6},\n\t\t{7, 8, 9},\n\t}\n\tfmt.Println(\"Matrix:\")\n\tfor _, row := range matrix {\n\t\tfmt.Println(row)\n\t}\n\n\t// Array is value type\n\toriginal := [3]int{10, 20, 30}\n\tcopy := original\n\tcopy[0] = 99\n\tfmt.Println(\"Original:\", original)\n\tfmt.Println(\"Copy:\", copy)\n}",
   "quiz": [
     {
-      "question_id": "Apa yang terjadi jika kamu mendeklarasikan `var arr [4]int` tanpa inisialisasi?",
-      "question_en": "What happens if you declare `var arr [4]int` without initialization?",
+      "question_id": "Apa yang membedakan `[3]int` dan `[5]int` dalam sistem tipe Go?",
+      "question_en": "What distinguishes `[3]int` from `[5]int` in Go's type system?",
       "options_id": [
-        "Program akan error karena array harus diinisialisasi",
-        "Semua elemen bernilai 0 (zero value untuk int)",
-        "Semua elemen bernilai nil",
-        "Ukuran array menjadi 0"
+        "Keduanya tipe yang sama karena elemen sama-sama `int`",
+        "Keduanya hanya berbeda nilai awal, bukan tipe",
+        "Ukuran array adalah bagian dari tipe, jadi keduanya tipe berbeda",
+        "Compiler mengubah keduanya menjadi slice"
       ],
       "options_en": [
-        "The program will error because arrays must be initialized",
-        "All elements are 0 (zero value for int)",
-        "All elements are nil",
-        "The array size becomes 0"
+        "They are the same type because both hold `int` elements",
+        "They differ only in initial values, not in type",
+        "Array size is part of the type, so they are different types",
+        "The compiler turns both into slices"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Jika menulis `var a [3]int`, nilai awal `a` apa yang paling tepat?",
+      "question_en": "If you write `var a [3]int`, which initial value is most accurate for `a`?",
+      "options_id": [
+        "`nil`",
+        "`[0 0 0]`",
+        "`[]`",
+        "Compile error sampai semua elemen diisi"
+      ],
+      "options_en": [
+        "`nil`",
+        "`[0 0 0]`",
+        "`[]`",
+        "Compile error until all elements are filled"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apakah `[3]int` dan `[4]int` adalah tipe yang sama di Go?",
-      "question_en": "Are `[3]int` and `[4]int` the same type in Go?",
+      "question_id": "Apa yang ditunjukkan deklarasi `c := [...]int{10, 20, 30, 40}`?",
+      "question_en": "What does the declaration `c := [...]int{10, 20, 30, 40}` demonstrate?",
       "options_id": [
-        "Ya, keduanya hanya array of int",
-        "Tidak, ukuran array adalah bagian dari tipenya",
-        "Tergantung dari isi array",
-        "Ya, jika isinya sama"
+        "Itu membuat slice dengan panjang dinamis",
+        "Ukuran array diinferensikan dari jumlah elemen literal",
+        "Itu sama dengan `make([]int, 4)`",
+        "Itu hanya valid untuk konstanta"
       ],
       "options_en": [
-        "Yes, both are just arrays of int",
-        "No, array size is part of its type",
-        "It depends on the array contents",
-        "Yes, if the contents are the same"
+        "It creates a dynamically sized slice",
+        "The array size is inferred from the number of literal elements",
+        "It is the same as `make([]int, 4)`",
+        "It is only valid for constants"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa output dari kode berikut?\n```go\na := [3]int{1, 2, 3}\nb := a\nb[0] = 99\nfmt.Println(a[0])\n```",
-      "question_en": "What is the output of the following code?\n```go\na := [3]int{1, 2, 3}\nb := a\nb[0] = 99\nfmt.Println(a[0])\n```",
-      "options_id": ["99", "1", "0", "Error runtime"],
-      "options_en": ["99", "1", "0", "Runtime error"],
+      "question_id": "Pada `d := [5]int{0: 100, 4: 200}`, seperti apa isi `d`?",
+      "question_en": "For `d := [5]int{0: 100, 4: 200}`, what does `d` contain?",
+      "options_id": [
+        "`[100 200 0 0 0]`",
+        "`[100 0 0 0 200]`",
+        "`[0 100 0 0 200]`",
+        "Compile error karena index literal harus berurutan"
+      ],
+      "options_en": [
+        "`[100 200 0 0 0]`",
+        "`[100 0 0 0 200]`",
+        "`[0 100 0 0 200]`",
+        "Compile error because indexed literals must be sequential"
+      ],
       "correct": 1
+    },
+    {
+      "question_id": "Jika `b := a` untuk sebuah array, lalu `b[0]` diubah, apa yang terjadi pada `a[0]`?",
+      "question_en": "If `b := a` for an array and then `b[0]` is changed, what happens to `a[0]`?",
+      "options_id": [
+        "`a[0]` ikut berubah karena array bersifat reference type",
+        "`a[0]` tidak berubah karena assignment menyalin seluruh array",
+        "Program panic karena array tidak bisa disalin",
+        "Perilakunya tergantung ukuran array"
+      ],
+      "options_en": [
+        "`a[0]` also changes because arrays are reference types",
+        "`a[0]` does not change because assignment copies the entire array",
+        "The program panics because arrays cannot be copied",
+        "The behavior depends on the array size"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `scores := [5]float64{...}` berbeda secara konsep dari slice, menurut lesson ini?",
+      "question_en": "Why is `scores := [5]float64{...}` conceptually different from a slice, according to the lesson?",
+      "options_id": [
+        "Karena array memiliki ukuran tetap setelah deklarasi",
+        "Karena array tidak bisa menyimpan zero value",
+        "Karena array selalu kosong saat dibuat",
+        "Karena array hanya bisa berisi angka"
+      ],
+      "options_en": [
+        "Because an array has a fixed size after declaration",
+        "Because an array cannot store zero values",
+        "Because an array is always empty when created",
+        "Because an array can only contain numbers"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Kapan dua array dapat dibandingkan dengan `==` di Go?",
+      "question_en": "When can two arrays be compared with `==` in Go?",
+      "options_id": [
+        "Hanya jika panjangnya sama, tanpa peduli tipe elemen",
+        "Hanya jika keduanya pointer ke array",
+        "Jika tipenya sama dan tipe elemennya comparable",
+        "Selalu bisa dibandingkan apa pun isi elemennya"
+      ],
+      "options_en": [
+        "Only if they have the same length, regardless of element type",
+        "Only if both are pointers to arrays",
+        "If they have the same array type and the element type is comparable",
+        "They are always comparable regardless of element contents"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa `a == [4]int{1,2,3,4}` error jika `a` bertipe `[3]int`?",
+      "question_en": "Why does `a == [4]int{1,2,3,4}` fail if `a` has type `[3]int`?",
+      "options_id": [
+        "Karena operator `==` tidak didukung untuk array",
+        "Karena dua array dengan ukuran berbeda adalah tipe berbeda",
+        "Karena literal array tidak boleh dipakai di perbandingan",
+        "Karena elemen integer tidak comparable"
+      ],
+      "options_en": [
+        "Because `==` is not supported for arrays",
+        "Because arrays with different sizes are different types",
+        "Because array literals cannot be used in comparisons",
+        "Because integer elements are not comparable"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Pada matrix `matrix := [3][3]int{{1,2,3},{4,5,6},{7,8,9}}`, nilai `matrix[1][2]` adalah?",
+      "question_en": "In the matrix `matrix := [3][3]int{{1,2,3},{4,5,6},{7,8,9}}`, what is `matrix[1][2]`?",
+      "options_id": [
+        "`3`",
+        "`5`",
+        "`6`",
+        "`8`"
+      ],
+      "options_en": [
+        "`3`",
+        "`5`",
+        "`6`",
+        "`8`"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Pernyataan mana yang paling tepat tentang array di Go dibanding slice?",
+      "question_en": "Which statement is most accurate about arrays in Go compared with slices?",
+      "options_id": [
+        "Array umumnya dipakai saat ukuran tetap penting sebagai bagian dari tipe",
+        "Array hanya versi lama dari slice dan sebaiknya selalu dihindari",
+        "Array bisa bertambah otomatis dengan `append`",
+        "Array dan slice identik kecuali syntax literalnya"
+      ],
+      "options_en": [
+        "Arrays are typically useful when a fixed size matters as part of the type",
+        "Arrays are just an old version of slices and should always be avoided",
+        "Arrays can grow automatically with `append`",
+        "Arrays and slices are identical except for literal syntax"
+      ],
+      "correct": 0
     }
   ]
 }

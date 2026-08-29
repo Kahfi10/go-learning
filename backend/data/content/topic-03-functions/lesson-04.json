@@ -8,55 +8,174 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\n// sum: menjumlahkan angka variadic\nfunc sum(nums ...int) int {\n\ttotal := 0\n\tfor _, n := range nums {\n\t\ttotal += n\n\t}\n\treturn total\n}\n\n// max: mencari nilai maksimum\nfunc max(first int, rest ...int) int {\n\tm := first\n\tfor _, n := range rest {\n\t\tif n > m {\n\t\t\tm = n\n\t\t}\n\t}\n\treturn m\n}\n\nfunc main() {\n\t// Panggil dengan berbagai jumlah argumen\n\tfmt.Println(\"sum():\", sum())\n\tfmt.Println(\"sum(5):\", sum(5))\n\tfmt.Println(\"sum(1,2,3,4,5):\", sum(1, 2, 3, 4, 5))\n\n\t// Teruskan slice\n\tnums := []int{10, 20, 30, 40}\n\tfmt.Println(\"sum(slice...):\", sum(nums...))\n\n\t// max\n\tfmt.Println(\"max(3,1,4,1,5,9):\", max(3, 1, 4, 1, 5, 9))\n}",
   "quiz": [
     {
-      "question_id": "Di mana posisi parameter variadic dalam daftar parameter fungsi Go?",
-      "question_en": "Where must the variadic parameter appear in a Go function's parameter list?",
+      "question_id": "Apa sifat utama fungsi variadic menurut lesson ini?",
+      "question_en": "What is the main property of a variadic function according to this lesson?",
       "options_id": [
-        "Di awal (parameter pertama)",
-        "Di tengah",
-        "Di akhir (parameter terakhir)",
-        "Bisa di mana saja"
+        "Hanya bisa menerima tepat dua argumen",
+        "Dapat menerima nol atau lebih argumen dari tipe yang sama",
+        "Harus selalu mengembalikan slice",
+        "Tidak boleh memiliki parameter non-variadic"
       ],
       "options_en": [
-        "At the beginning (first parameter)",
-        "In the middle",
-        "At the end (last parameter)",
-        "Anywhere"
+        "It can only accept exactly two arguments",
+        "It can accept zero or more arguments of the same type",
+        "It must always return a slice",
+        "It may not have any non-variadic parameters"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `sum()` tanpa argumen tetap valid pada contoh?",
+      "question_en": "Why is `sum()` with no arguments still valid in the example?",
+      "options_id": [
+        "Karena parameter variadic boleh menerima nol argumen",
+        "Karena Go otomatis mengisi `1` sebagai default",
+        "Karena compiler menghapus parameter `nums`",
+        "Karena `sum` sebenarnya bukan fungsi variadic"
+      ],
+      "options_en": [
+        "Because a variadic parameter may receive zero arguments",
+        "Because Go automatically fills in `1` as a default",
+        "Because the compiler removes the `nums` parameter",
+        "Because `sum` is not really variadic"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa parameter variadic wajib berada di akhir daftar parameter?",
+      "question_en": "Why must the variadic parameter be the last item in the parameter list?",
+      "options_id": [
+        "Agar argumen yang jumlahnya tidak tetap tidak membuat parsing parameter berikutnya ambigu",
+        "Karena parameter variadic selalu harus bernama `args`",
+        "Karena Go hanya mengizinkan satu parameter total",
+        "Agar fungsi otomatis menjadi generic"
+      ],
+      "options_en": [
+        "So that the variable-length arguments do not make later parameters ambiguous to parse",
+        "Because variadic parameters must always be named `args`",
+        "Because Go allows only one parameter in total",
+        "So the function automatically becomes generic"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Di dalam fungsi, tipe nyata dari `nums ...int` adalah apa?",
+      "question_en": "Inside the function, what is the actual type of `nums ...int`?",
+      "options_id": [
+        "`int`",
+        "`...int`",
+        "`[]int`",
+        "`*[]int`"
+      ],
+      "options_en": [
+        "`int`",
+        "`...int`",
+        "`[]int`",
+        "`*[]int`"
       ],
       "correct": 2
     },
     {
-      "question_id": "Bagaimana cara meneruskan slice `s []int` ke fungsi variadic `func f(nums ...int)` di Go?",
-      "question_en": "How do you pass a slice `s []int` to a variadic function `func f(nums ...int)` in Go?",
+      "question_id": "Mengapa `sum(nums)` salah jika `nums` bertipe `[]int`, tetapi `sum(nums...)` benar?",
+      "question_en": "Why is `sum(nums)` wrong when `nums` has type `[]int`, but `sum(nums...)` is correct?",
       "options_id": [
-        "f(s)",
-        "f(&s)",
-        "f(s...)",
-        "f(*s)"
+        "Karena slice harus di-spread dengan `...` agar elemennya diperlakukan sebagai argumen variadic individual",
+        "Karena `sum` tidak menerima slice sama sekali meskipun variadic",
+        "Karena `...` mengubah slice menjadi map",
+        "Karena `sum(nums)` hanya salah di Windows"
       ],
       "options_en": [
-        "f(s)",
-        "f(&s)",
-        "f(s...)",
-        "f(*s)"
+        "Because the slice must be expanded with `...` so its elements are treated as individual variadic arguments",
+        "Because `sum` can never accept a slice even when variadic",
+        "Because `...` turns the slice into a map",
+        "Because `sum(nums)` is only wrong on Windows"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang ditunjukkan tanda tangan `func Println(a ...any) (n int, err error)` tentang `fmt.Println`?",
+      "question_en": "What does the signature `func Println(a ...any) (n int, err error)` show about `fmt.Println`?",
+      "options_id": [
+        "Bahwa `fmt.Println` adalah fungsi variadic yang bisa menerima banyak tipe nilai",
+        "Bahwa `fmt.Println` hanya menerima slice `[]string`",
+        "Bahwa `fmt.Println` tidak mengembalikan nilai apa pun",
+        "Bahwa `fmt.Println` hanya bisa dipanggil sekali per program"
+      ],
+      "options_en": [
+        "That `fmt.Println` is a variadic function that can accept values of many types",
+        "That `fmt.Println` accepts only `[]string` slices",
+        "That `fmt.Println` returns no values",
+        "That `fmt.Println` may be called only once per program"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Pada contoh `max(first int, rest ...int)`, mengapa ada parameter `first` terpisah?",
+      "question_en": "In the example `max(first int, rest ...int)`, why is there a separate `first` parameter?",
+      "options_id": [
+        "Agar fungsi punya nilai awal pembanding tanpa harus menangani kasus kosong untuk maksimum",
+        "Karena fungsi variadic tidak boleh melakukan loop",
+        "Karena `rest` selalu berisi tepat satu elemen",
+        "Agar `first` bisa menjadi return value otomatis"
+      ],
+      "options_en": [
+        "So the function has an initial comparison value without needing to handle an empty maximum case",
+        "Because variadic functions may not use loops",
+        "Because `rest` always contains exactly one element",
+        "So `first` can automatically become the return value"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Tradeoff mana yang paling tepat saat memilih variadic function dibanding menerima slice langsung?",
+      "question_en": "Which tradeoff is most accurate when choosing a variadic function instead of accepting a slice directly?",
+      "options_id": [
+        "Variadic memudahkan pemanggilan dengan banyak argumen literal, tetapi slice yang sudah ada perlu diteruskan dengan `...`",
+        "Variadic selalu lebih cepat dan lebih sederhana dalam semua kasus",
+        "Variadic menghilangkan kebutuhan tipe elemen",
+        "Variadic hanya cocok untuk fungsi tanpa return value"
+      ],
+      "options_en": [
+        "Variadic makes calls with many literal arguments convenient, but an existing slice must be passed with `...`",
+        "Variadic is always faster and simpler in every case",
+        "Variadic removes the need for an element type",
+        "Variadic only suits functions with no return value"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa hasil `sum(1, 2, 3, 4, 5)` pada contoh lesson?",
+      "question_en": "What is the result of `sum(1, 2, 3, 4, 5)` in the lesson example?",
+      "options_id": [
+        "`5`",
+        "`10`",
+        "`15`",
+        "Compile error"
+      ],
+      "options_en": [
+        "`5`",
+        "`10`",
+        "`15`",
+        "Compile error"
       ],
       "correct": 2
     },
     {
-      "question_id": "Di dalam sebuah variadic function, parameter variadic `nums ...int` memiliki tipe apa?",
-      "question_en": "Inside a variadic function, what type does the variadic parameter `nums ...int` have?",
+      "question_id": "Manakah deklarasi yang valid menurut aturan lesson?",
+      "question_en": "Which declaration is valid according to the lesson's rule?",
       "options_id": [
-        "int",
-        "...int",
-        "[]int",
-        "*int"
+        "`func wrong(nums ...int, last string) {}`",
+        "`func printAll(prefix string, values ...int) {}`",
+        "`func bad(...int values) {}`",
+        "`func alsoBad(...int) string {}`"
       ],
       "options_en": [
-        "int",
-        "...int",
-        "[]int",
-        "*int"
+        "`func wrong(nums ...int, last string) {}`",
+        "`func printAll(prefix string, values ...int) {}`",
+        "`func bad(...int values) {}`",
+        "`func alsoBad(...int) string {}`"
       ],
-      "correct": 2
+      "correct": 1
     }
   ]
 }

@@ -8,72 +8,174 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\t// Basic map operations\n\tstudent := map[string]int{\n\t\t\"Alice\": 90,\n\t\t\"Bob\":   85,\n\t\t\"Carol\": 92,\n\t}\n\n\t// Read\n\tfmt.Println(\"Alice's score:\", student[\"Alice\"])\n\n\t// Add & Update\n\tstudent[\"Dave\"] = 78\n\tstudent[\"Alice\"] = 95\n\n\t// Existence check\n\tif score, ok := student[\"Eve\"]; ok {\n\t\tfmt.Println(\"Eve:\", score)\n\t} else {\n\t\tfmt.Println(\"Eve not found\")\n\t}\n\n\t// Delete\n\tdelete(student, \"Bob\")\n\tfmt.Println(\"After delete, len:\", len(student))\n\n\t// Iterate\n\tfmt.Println(\"All students:\")\n\tfor name, score := range student {\n\t\tfmt.Printf(\"  %s: %d\\n\", name, score)\n\t}\n\n\t// Word counter pattern\n\twords := []string{\"go\", \"rust\", \"go\", \"python\", \"go\", \"rust\"}\n\tcounter := make(map[string]int)\n\tfor _, w := range words {\n\t\tcounter[w]++\n\t}\n\tfmt.Println(\"\\nWord counts:\", counter)\n\n\t// Map of slices\n\tgrades := map[string][]int{}\n\tgrades[\"Alice\"] = append(grades[\"Alice\"], 90, 85, 92)\n\tgrades[\"Bob\"] = append(grades[\"Bob\"], 75, 80)\n\tfmt.Println(\"\\nGrades:\", grades)\n}",
   "quiz": [
     {
-      "question_id": "Apa yang terjadi jika kamu membaca key yang tidak ada dari map `m[\"missing\"]`?",
-      "question_en": "What happens when you read a non-existent key from a map with `m[\"missing\"]`?",
+      "question_id": "Apa yang dikembalikan saat membaca key yang tidak ada dari map `map[string]int`?",
+      "question_en": "What is returned when reading a missing key from a `map[string]int`?",
       "options_id": [
-        "Program panic",
-        "Mengembalikan nil",
-        "Mengembalikan zero value dari tipe value",
-        "Error kompilasi"
+        "`nil`",
+        "Panic",
+        "Zero value dari tipe value, yaitu `0`",
+        "Compile error"
       ],
       "options_en": [
-        "Program panics",
-        "Returns nil",
-        "Returns the zero value of the value type",
-        "Compilation error"
+        "`nil`",
+        "Panic",
+        "The zero value of the value type, namely `0`",
+        "Compile error"
       ],
       "correct": 2
     },
     {
-      "question_id": "Apa yang terjadi jika kamu menulis ke nil map?",
-      "question_en": "What happens if you write to a nil map?",
+      "question_id": "Mengapa comma-ok pattern penting saat value map sendiri bisa bernilai zero value yang sah?",
+      "question_en": "Why is the comma-ok pattern important when the map value type can legitimately be its zero value?",
       "options_id": [
-        "Map akan diinisialisasi secara otomatis",
-        "Program panic",
-        "Nilai diabaikan secara diam-diam",
-        "Error kompilasi"
+        "Karena tanpa itu Go tidak bisa membaca map sama sekali",
+        "Karena tanpa `ok`, kita tidak bisa membedakan key hilang dari key yang memang menyimpan zero value",
+        "Karena `ok` mempercepat hash lookup",
+        "Karena `ok` diperlukan sebelum `delete`"
       ],
       "options_en": [
-        "The map is automatically initialized",
-        "Program panics",
-        "The value is silently ignored",
-        "Compilation error"
+        "Because without it Go cannot read from a map at all",
+        "Because without `ok`, we cannot distinguish a missing key from a key that legitimately stores the zero value",
+        "Because `ok` speeds up hash lookup",
+        "Because `ok` is required before `delete`"
       ],
       "correct": 1
     },
     {
-      "question_id": "Bagaimana cara yang benar untuk memeriksa apakah key ada di map?",
-      "question_en": "What is the correct way to check if a key exists in a map?",
+      "question_id": "Manakah pemeriksaan keberadaan key yang idiomatik di Go?",
+      "question_en": "Which key-existence check is idiomatic in Go?",
       "options_id": [
-        "if m[key] != nil { }",
-        "if m.contains(key) { }",
-        "v, ok := m[key]; if ok { }",
-        "if len(m[key]) > 0 { }"
+        "`if m.contains(key) {}`",
+        "`if m[key] != nil {}`",
+        "`v, ok := m[key]; if ok {}`",
+        "`if exists(m, key) {}`"
       ],
       "options_en": [
-        "if m[key] != nil { }",
-        "if m.contains(key) { }",
-        "v, ok := m[key]; if ok { }",
-        "if len(m[key]) > 0 { }"
+        "`if m.contains(key) {}`",
+        "`if m[key] != nil {}`",
+        "`v, ok := m[key]; if ok {}`",
+        "`if exists(m, key) {}`"
       ],
       "correct": 2
     },
     {
-      "question_id": "Jika `a := m` di mana m adalah map, lalu `a[\"x\"] = 1`, apa yang terjadi pada m?",
-      "question_en": "If `a := m` where m is a map, then `a[\"x\"] = 1`, what happens to m?",
+      "question_id": "Apa perbedaan penting antara membaca dari nil map dan menulis ke nil map?",
+      "question_en": "What is the important difference between reading from a nil map and writing to a nil map?",
       "options_id": [
-        "m tidak berubah karena a adalah salinan",
-        "m juga memiliki key x dengan nilai 1 karena map adalah reference type",
-        "Program panic",
-        "m menjadi nil"
+        "Keduanya aman dan menghasilkan zero value",
+        "Membaca dari nil map aman, tetapi menulis ke nil map menyebabkan panic",
+        "Membaca dari nil map panic, menulis aman",
+        "Keduanya compile error"
       ],
       "options_en": [
-        "m is unchanged because a is a copy",
-        "m also has key x with value 1 because maps are reference types",
-        "Program panics",
-        "m becomes nil"
+        "Both are safe and yield the zero value",
+        "Reading from a nil map is safe, but writing to a nil map causes a panic",
+        "Reading from a nil map panics, writing is safe",
+        "Both are compile errors"
       ],
       "correct": 1
+    },
+    {
+      "question_id": "Mengapa urutan iterasi `range` pada map tidak boleh dipakai sebagai logika program?",
+      "question_en": "Why must the iteration order of `range` on a map not be used as program logic?",
+      "options_id": [
+        "Karena urutannya tidak deterministik",
+        "Karena `range` pada map selalu berjalan terbalik",
+        "Karena map Go selalu terurut berdasarkan hash",
+        "Karena `range` pada map hanya valid sekali per program"
+      ],
+      "options_en": [
+        "Because the order is non-deterministic",
+        "Because `range` over a map always runs backward",
+        "Because Go maps are always ordered by hash",
+        "Because `range` over a map is only valid once per program"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika `copyMap := original` lalu `copyMap[\"a\"] = 99`, apa implikasinya?",
+      "question_en": "If `copyMap := original` and then `copyMap[\"a\"] = 99`, what is the implication?",
+      "options_id": [
+        "`original` tidak berubah karena map disalin deep-copy",
+        "`original` ikut berubah karena kedua variabel merujuk map yang sama",
+        "Program panic karena map tidak bisa di-assign",
+        "Hanya `copyMap` yang berubah jika ukuran map kecil"
+      ],
+      "options_en": [
+        "`original` is unchanged because maps are deep-copied",
+        "`original` also changes because both variables refer to the same map",
+        "The program panics because maps cannot be assigned",
+        "Only `copyMap` changes if the map is small"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang dilakukan `delete(city, \"SBY\")` jika key `SBY` tidak ada?",
+      "question_en": "What does `delete(city, \"SBY\")` do if the key `SBY` does not exist?",
+      "options_id": [
+        "Panic",
+        "Compile error",
+        "Tidak ada efek yang berarti dan operasi tetap aman",
+        "Map menjadi nil"
+      ],
+      "options_en": [
+        "It panics",
+        "It is a compile error",
+        "It has no meaningful effect and remains safe",
+        "The map becomes nil"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa pola word counter `counter[w]++` bekerja baik untuk key yang belum pernah ada?",
+      "question_en": "Why does the word-counter pattern `counter[w]++` work well even for keys that have not appeared before?",
+      "options_id": [
+        "Karena Go otomatis memanggil `make` untuk key baru",
+        "Karena pembacaan key yang hilang menghasilkan zero value, lalu hasil increment ditulis kembali",
+        "Karena operator `++` pada map membuat entry sementara di stack",
+        "Karena map string-int selalu diurutkan lebih dulu"
+      ],
+      "options_en": [
+        "Because Go automatically calls `make` for a new key",
+        "Because reading a missing key yields the zero value, then the incremented result is written back",
+        "Because `++` on a map creates a temporary stack entry",
+        "Because string-int maps are always sorted first"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa tradeoff desain yang disorot oleh example `map[string][]int` pada starter code?",
+      "question_en": "What design tradeoff is highlighted by the `map[string][]int` example in the starter code?",
+      "options_id": [
+        "Map memberi lookup per key yang mudah, sementara tiap key masih bisa menyimpan koleksi nilai terpisah",
+        "Map memaksa semua slice punya panjang sama",
+        "Slice di dalam map tidak bisa di-append",
+        "Map of slices selalu lebih hemat memori daripada semua alternatif"
+      ],
+      "options_en": [
+        "A map gives easy per-key lookup, while each key can still hold its own collection of values",
+        "A map forces all slices to have the same length",
+        "Slices inside a map cannot be appended to",
+        "A map of slices is always more memory-efficient than every alternative"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Pernyataan mana yang paling akurat tentang map di Go menurut lesson?",
+      "question_en": "Which statement is most accurate about maps in Go according to the lesson?",
+      "options_id": [
+        "Map adalah struktur key-value yang efisien untuk lookup, insert, dan delete berdasarkan key",
+        "Map hanyalah slice dengan syntax berbeda",
+        "Map selalu terurut menurut key",
+        "Map hanya bisa memakai string sebagai key"
+      ],
+      "options_en": [
+        "A map is a key-value structure efficient for lookup, insert, and delete by key",
+        "A map is just a slice with different syntax",
+        "A map is always ordered by key",
+        "A map can only use strings as keys"
+      ],
+      "correct": 0
     }
   ]
 }

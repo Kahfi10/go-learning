@@ -8,24 +8,73 @@
   "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n)\n\n// listGoFiles returns all .go files in a directory (non-recursive)\nfunc listGoFiles(dir string) ([]string, error) {\n\tentries, err := os.ReadDir(dir)\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\n\tvar goFiles []string\n\tfor _, entry := range entries {\n\t\t// TODO: add to goFiles if it's a .go file (not a directory)\n\t\t// Use filepath.Ext to check extension\n\t\t_ = entry\n\t}\n\treturn goFiles, nil\n}\n\n// createTempStructure creates a temp directory with some files\nfunc createTempStructure(base string) error {\n\t// TODO: use os.MkdirAll to create base/src/pkg\n\t// TODO: create base/src/main.go with content \"package main\"\n\t// TODO: create base/src/util.go with content \"package main\"\n\treturn nil\n}\n\nfunc main() {\n\ttmpDir, _ := os.MkdirTemp(\"\", \"golearn\")\n\tdefer os.RemoveAll(tmpDir)\n\n\tif err := createTempStructure(tmpDir); err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t\treturn\n\t}\n\n\tsrcDir := filepath.Join(tmpDir, \"src\")\n\tfiles, err := listGoFiles(srcDir)\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t\treturn\n\t}\n\n\tfmt.Printf(\"Found %d Go files:\\n\", len(files))\n\tfor _, f := range files {\n\t\tfmt.Println(\" -\", f)\n\t}\n}",
   "quiz": [
     {
-      "question_id": "Mengapa harus menggunakan `path/filepath` daripada `path` untuk filesystem?",
-      "question_en": "Why should you use `path/filepath` instead of `path` for filesystems?",
-      "options_id": ["filepath menangani separator OS secara otomatis (/ di Linux, \\\\ di Windows)", "filepath lebih cepat", "path tidak tersedia di stdlib", "filepath mendukung cloud storage"],
-      "options_en": ["filepath handles OS separators automatically (/ on Linux, \\\\ on Windows)", "filepath is faster", "path is not in stdlib", "filepath supports cloud storage"],
+      "question_id": "Mengapa lesson menekankan `path/filepath` dan bukan `path` untuk filesystem lokal?",
+      "question_en": "Why does the lesson emphasize `path/filepath` instead of `path` for local filesystems?",
+      "options_id": ["Karena `filepath` menangani separator path sesuai OS secara otomatis", "Karena `path` sudah dihapus dari Go", "Karena `filepath` hanya bekerja di Windows", "Karena `path` tidak bisa dipakai dengan string"],
+      "options_en": ["Because `filepath` automatically handles path separators for the current OS", "Because `path` has been removed from Go", "Because `filepath` only works on Windows", "Because `path` cannot be used with strings"],
       "correct": 0
     },
     {
-      "question_id": "Perbedaan antara os.Mkdir dan os.MkdirAll adalah?",
-      "question_en": "What is the difference between os.Mkdir and os.MkdirAll?",
-      "options_id": ["MkdirAll membuat semua parent directory yang belum ada", "Mkdir lebih cepat", "MkdirAll hanya bisa membuat satu level", "Tidak ada perbedaan"],
-      "options_en": ["MkdirAll creates all missing parent directories", "Mkdir is faster", "MkdirAll can only create one level", "No difference"],
+      "question_id": "Jika `p := filepath.Join(\"home\", \"user\", \"documents\", \"file.txt\")`, apa manfaat utama `Join`?",
+      "question_en": "If `p := filepath.Join(\"home\", \"user\", \"documents\", \"file.txt\")`, what is the main benefit of `Join`?",
+      "options_id": ["Menyusun path dengan separator yang benar secara cross-platform", "Mengubah file menjadi absolut", "Membuat direktori di disk", "Memvalidasi permission file"],
+      "options_en": ["It assembles a path with the correct separator in a cross-platform way", "It turns the file into an absolute path", "It creates the directory on disk", "It validates file permissions"],
       "correct": 0
     },
     {
-      "question_id": "Fungsi apa yang digunakan untuk traversal rekursif sebuah direktori?",
-      "question_en": "Which function is used for recursive traversal of a directory?",
-      "options_id": ["filepath.WalkDir()", "os.ReadDir()", "filepath.Glob()", "os.Walk()"],
-      "options_en": ["filepath.WalkDir()", "os.ReadDir()", "filepath.Glob()", "os.Walk()"],
+      "question_id": "Pada path `home/user/documents/file.txt`, hasil `filepath.Base(p)` adalah?",
+      "question_en": "For the path `home/user/documents/file.txt`, what does `filepath.Base(p)` return?",
+      "options_id": ["`home/user/documents`", "`file.txt`", "`.txt`", "`file`"],
+      "options_en": ["`home/user/documents`", "`file.txt`", "`.txt`", "`file`"],
+      "correct": 1
+    },
+    {
+      "question_id": "Pada path yang sama, hasil `filepath.Ext(p)` adalah?",
+      "question_en": "For that same path, what does `filepath.Ext(p)` return?",
+      "options_id": ["`file`", "`documents`", "`.txt`", "`file.txt`"],
+      "options_en": ["`file`", "`documents`", "`.txt`", "`file.txt`"],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa contoh menghitung nama tanpa ekstensi dengan `base[:len(base)-len(ext)]`?",
+      "question_en": "Why does the example compute the name without extension using `base[:len(base)-len(ext)]`?",
+      "options_id": ["Untuk menghapus suffix ekstensi dari nama file dasar", "Untuk mengubah relative path menjadi absolute path", "Untuk membaca isi file tanpa ekstensi", "Untuk memeriksa apakah file adalah direktori"],
+      "options_en": ["To remove the extension suffix from the base filename", "To turn a relative path into an absolute path", "To read the file contents without its extension", "To check whether the file is a directory"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa perbedaan penting antara `os.Mkdir` dan `os.MkdirAll` menurut lesson?",
+      "question_en": "What is the important difference between `os.Mkdir` and `os.MkdirAll` according to the lesson?",
+      "options_id": ["`MkdirAll` dapat membuat parent directory yang belum ada juga", "`Mkdir` hanya bisa dipakai untuk file", "`MkdirAll` selalu membuat file kosong di tiap level", "Tidak ada perbedaan perilaku"],
+      "options_en": ["`MkdirAll` can also create any missing parent directories", "`Mkdir` can only be used for files", "`MkdirAll` always creates an empty file at each level", "There is no behavioral difference"],
+      "correct": 0
+    },
+    {
+      "question_id": "Kapan `os.ReadDir` lebih tepat daripada `filepath.WalkDir`?",
+      "question_en": "When is `os.ReadDir` a better fit than `filepath.WalkDir`?",
+      "options_id": ["Saat hanya ingin membaca isi satu direktori tanpa traversal rekursif", "Saat ingin menjelajahi semua subdirektori secara rekursif", "Saat ingin mengubah separator path otomatis", "Saat ingin menghapus direktori"],
+      "options_en": ["When you only want the contents of one directory without recursive traversal", "When you want to walk all subdirectories recursively", "When you want to automatically change path separators", "When you want to delete a directory"],
+      "correct": 0
+    },
+    {
+      "question_id": "Dalam callback `filepath.WalkDir`, mengapa contoh memeriksa `!d.IsDir() && filepath.Ext(path) == \".go\"`?",
+      "question_en": "Inside the `filepath.WalkDir` callback, why does the example check `!d.IsDir() && filepath.Ext(path) == \".go\"`?",
+      "options_id": ["Untuk memproses hanya file Go dan mengabaikan direktori", "Untuk menghapus semua file non-Go", "Untuk membuat semua direktori menjadi package Go", "Untuk memastikan semua file punya ekstensi"],
+      "options_en": ["To process only Go files and ignore directories", "To delete all non-Go files", "To turn all directories into Go packages", "To ensure every file has an extension"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa konsekuensi dari `return err` di dalam callback `WalkDir` ketika parameter `err` tidak nil?",
+      "question_en": "What is the consequence of `return err` inside the `WalkDir` callback when the `err` parameter is not nil?",
+      "options_id": ["Traversal melaporkan error itu ke pemanggil alih-alih mengabaikannya diam-diam", "Traversal otomatis melanjutkan ke item berikutnya tanpa error", "Error diubah menjadi warning string", "Semua path berikutnya di-skip tetapi fungsi mengembalikan nil"],
+      "options_en": ["The traversal reports that error back to the caller instead of silently ignoring it", "The traversal automatically continues to the next item without error", "The error is converted into a warning string", "All later paths are skipped but the function still returns nil"],
+      "correct": 0
+    },
+    {
+      "question_id": "Manakah pasangan operasi dan fungsi yang benar menurut bagian akhir lesson?",
+      "question_en": "Which operation and function pairing is correct according to the final section of the lesson?",
+      "options_id": ["Hapus direktori rekursif dengan `os.RemoveAll`", "Rename file dengan `filepath.WalkDir`", "Baca file info dengan `os.Environ`", "Buat direktori bertingkat dengan `filepath.Base`"],
+      "options_en": ["Delete a directory recursively with `os.RemoveAll`", "Rename a file with `filepath.WalkDir`", "Read file info with `os.Environ`", "Create nested directories with `filepath.Base`"],
       "correct": 0
     }
   ]

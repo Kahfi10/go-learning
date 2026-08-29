@@ -8,55 +8,174 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\n// makeCounter mengembalikan closure counter\nfunc makeCounter() func() int {\n\tcount := 0\n\treturn func() int {\n\t\tcount++\n\t\treturn count\n\t}\n}\n\n// makeAdder mengembalikan closure adder yang dikonfigurasi\nfunc makeAdder(x int) func(int) int {\n\treturn func(y int) int {\n\t\treturn x + y\n\t}\n}\n\n// makeMultiplier mengembalikan closure untuk perkalian\nfunc makeMultiplier(factor int) func(int) int {\n\treturn func(n int) int {\n\t\treturn n * factor\n\t}\n}\n\nfunc main() {\n\t// Counter\n\tc1 := makeCounter()\n\tc2 := makeCounter()\n\tfmt.Println(\"c1:\", c1(), c1(), c1()) // 1 2 3\n\tfmt.Println(\"c2:\", c2(), c2())       // 1 2 (state terpisah)\n\n\t// Adder\n\tadd10 := makeAdder(10)\n\tadd100 := makeAdder(100)\n\tfmt.Println(\"add10(5):\", add10(5))\n\tfmt.Println(\"add100(5):\", add100(5))\n\n\t// Multiplier\n\tdouble := makeMultiplier(2)\n\ttriple := makeMultiplier(3)\n\tfmt.Println(\"double(7):\", double(7))\n\tfmt.Println(\"triple(7):\", triple(7))\n}",
   "quiz": [
     {
-      "question_id": "Apa yang dimaksud dengan 'closure' dalam pemrograman Go?",
-      "question_en": "What is a 'closure' in Go programming?",
+      "question_id": "Apa inti konsep closure pada lesson ini?",
+      "question_en": "What is the core concept of a closure in this lesson?",
       "options_id": [
-        "Sebuah fungsi yang hanya bisa dipanggil sekali",
-        "Sebuah fungsi yang menangkap variabel dari scope di sekitarnya",
-        "Sebuah fungsi tanpa nama (anonymous function)",
-        "Sebuah fungsi yang tidak mengembalikan nilai"
+        "Fungsi yang menangkap variabel dari scope sekitarnya dan tetap bisa mengaksesnya kemudian",
+        "Fungsi yang hanya valid satu kali pemanggilan",
+        "Fungsi yang harus selalu anonim dan tidak bisa dikembalikan",
+        "Fungsi yang tidak memiliki parameter"
       ],
       "options_en": [
-        "A function that can only be called once",
-        "A function that captures variables from its surrounding scope",
-        "A function without a name (anonymous function)",
-        "A function that does not return a value"
+        "A function that captures variables from its surrounding scope and can still access them later",
+        "A function that is valid for only one call",
+        "A function that must always be anonymous and cannot be returned",
+        "A function with no parameters"
       ],
-      "correct": 1
+      "correct": 0
     },
     {
-      "question_id": "Pada contoh `counter := makeCounter()`, setiap kali `counter()` dipanggil, apa yang terjadi?",
-      "question_en": "In the example `counter := makeCounter()`, what happens each time `counter()` is called?",
+      "question_id": "Pada `makeCounter`, mengapa pemanggilan berulang ke closure yang sama menghasilkan 1, 2, 3, ...?",
+      "question_en": "In `makeCounter`, why do repeated calls to the same closure produce 1, 2, 3, ...?",
       "options_id": [
-        "Variabel count direset ke 0",
-        "Fungsi makeCounter dipanggil ulang",
-        "Variabel count yang di-capture bertambah 1",
-        "Closure baru dibuat"
+        "Karena variabel `count` yang di-capture tetap hidup dan dimodifikasi di setiap pemanggilan",
+        "Karena `makeCounter` dipanggil ulang secara otomatis setiap kali",
+        "Karena compiler menyimpan semua angka counter di array global",
+        "Karena `count++` hanya bekerja di fungsi tanpa parameter"
       ],
       "options_en": [
-        "The count variable resets to 0",
-        "The makeCounter function is called again",
-        "The captured count variable increments by 1",
-        "A new closure is created"
+        "Because the captured `count` variable stays alive and is modified on each call",
+        "Because `makeCounter` is automatically called again every time",
+        "Because the compiler stores all counter numbers in a global array",
+        "Because `count++` only works in functions with no parameters"
       ],
-      "correct": 2
+      "correct": 0
     },
     {
-      "question_id": "Jika `c1 := makeCounter()` dan `c2 := makeCounter()` dibuat secara terpisah, bagaimana state `count` keduanya?",
-      "question_en": "If `c1 := makeCounter()` and `c2 := makeCounter()` are created separately, how does their `count` state relate?",
+      "question_id": "Mengapa `c1 := makeCounter()` dan `c2 := makeCounter()` tidak saling berbagi state?",
+      "question_en": "Why do `c1 := makeCounter()` and `c2 := makeCounter()` not share state?",
       "options_id": [
-        "c1 dan c2 berbagi state count yang sama",
-        "c1 dan c2 memiliki state count yang independen/terpisah",
-        "State count c2 selalu lebih besar dari c1",
-        "c2 mewarisi nilai count terakhir dari c1"
+        "Karena tiap pemanggilan `makeCounter` membuat lingkungan captured sendiri",
+        "Karena closure di Go tidak boleh menyimpan state",
+        "Karena `count` adalah konstanta tersembunyi",
+        "Karena semua closure di Go selalu thread-local"
       ],
       "options_en": [
-        "c1 and c2 share the same count state",
-        "c1 and c2 have independent/separate count states",
-        "c2's count state is always greater than c1's",
-        "c2 inherits the last count value from c1"
+        "Because each call to `makeCounter` creates its own captured environment",
+        "Because closures in Go may not store state",
+        "Because `count` is a hidden constant",
+        "Because all closures in Go are always thread-local"
       ],
-      "correct": 1
+      "correct": 0
+    },
+    {
+      "question_id": "Apa peran `x` pada `makeAdder(x int) func(int) int`?",
+      "question_en": "What role does `x` play in `makeAdder(x int) func(int) int`?",
+      "options_id": [
+        "Sebagai variabel yang di-capture untuk mengonfigurasi closure hasil",
+        "Sebagai nilai lokal sementara yang hilang sebelum closure dipanggil",
+        "Sebagai return value kedua yang disembunyikan",
+        "Sebagai nama package anonim"
+      ],
+      "options_en": [
+        "As a captured variable that configures the returned closure",
+        "As a temporary local value that disappears before the closure is called",
+        "As a hidden second return value",
+        "As the name of an anonymous package"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa closure berguna untuk 'state tersembunyi' menurut lesson?",
+      "question_en": "Why are closures useful for 'hidden state' according to the lesson?",
+      "options_id": [
+        "Karena state bisa disimpan tanpa harus memakai variabel global",
+        "Karena closure otomatis mengenkripsi variabel",
+        "Karena state closure tidak pernah berubah",
+        "Karena closure menghapus kebutuhan semua fungsi lain"
+      ],
+      "options_en": [
+        "Because state can be stored without using global variables",
+        "Because closures automatically encrypt variables",
+        "Because closure state never changes",
+        "Because closures remove the need for all other functions"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa risiko utama pada loop closure yang dijelaskan lesson lewat contoh `for i := 0; i < 3; i++`?",
+      "question_en": "What is the main risk in the closure loop shown in the lesson with `for i := 0; i < 3; i++`?",
+      "options_id": [
+        "Semua closure bisa mengamati variabel loop yang sama dan akhirnya mencetak nilai terakhir",
+        "Closure tidak boleh dibuat di dalam loop menurut spesifikasi Go",
+        "`fmt.Println(i)` otomatis mematikan closure setelah satu panggilan",
+        "`range` wajib dipakai sebagai pengganti `for` biasa"
+      ],
+      "options_en": [
+        "All closures may observe the same loop variable and end up printing its final value",
+        "Closures may not be created inside loops according to the Go spec",
+        "`fmt.Println(i)` automatically disables the closure after one call",
+        "`range` must always be used instead of a regular `for`"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa `i := i` di dalam loop memperbaiki masalah capture pada contoh?",
+      "question_en": "Why does `i := i` inside the loop fix the capture problem in the example?",
+      "options_id": [
+        "Karena itu membuat variabel baru per iterasi yang nilainya kemudian di-capture oleh masing-masing closure",
+        "Karena itu mengubah `i` menjadi konstanta compile-time",
+        "Karena itu mencegah `fmt.Println` mengakses variabel lokal",
+        "Karena closure hanya bisa menangkap variabel bernama sama"
+      ],
+      "options_en": [
+        "Because it creates a new variable per iteration whose value is then captured by each closure",
+        "Because it turns `i` into a compile-time constant",
+        "Because it prevents `fmt.Println` from accessing local variables",
+        "Because closures can only capture variables with the same name"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang ditunjukkan contoh `add5 := makeAdder(5)` dan `add10 := makeAdder(10)`?",
+      "question_en": "What do the examples `add5 := makeAdder(5)` and `add10 := makeAdder(10)` demonstrate?",
+      "options_id": [
+        "Closure factory dapat menghasilkan fungsi berbeda yang perilakunya dikonfigurasi oleh nilai captured yang berbeda",
+        "Semua closure yang berasal dari fungsi sama harus memberi hasil identik",
+        "Adder hanya bekerja untuk satu pemanggilan",
+        "Nilai `x` tidak benar-benar dipakai oleh closure"
+      ],
+      "options_en": [
+        "A closure factory can produce different functions whose behavior is configured by different captured values",
+        "All closures coming from the same function must produce identical results",
+        "Adders only work for one call",
+        "The value `x` is not actually used by the closure"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Tradeoff mana yang paling tepat dari closure dibanding memakai state global?",
+      "question_en": "Which tradeoff is most accurate for closures compared with using global state?",
+      "options_id": [
+        "Closure membuat state lebih lokal dan terenkapsulasi, tetapi pembaca harus memahami apa yang sedang di-capture",
+        "Closure selalu lebih sederhana daripada variabel lokal biasa",
+        "Closure membuat semua variabel otomatis immutable",
+        "Closure menghilangkan kemungkinan bug terkait scope"
+      ],
+      "options_en": [
+        "Closures make state more local and encapsulated, but readers must understand what is being captured",
+        "Closures are always simpler than ordinary local variables",
+        "Closures automatically make all variables immutable",
+        "Closures remove the possibility of scope-related bugs"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa memoization cocok dibangun dengan closure menurut lesson?",
+      "question_en": "Why does memoization fit naturally with closures according to the lesson?",
+      "options_id": [
+        "Karena closure dapat menyimpan cache di scope tertutup yang tetap tersedia antar pemanggilan",
+        "Karena memoization tidak membutuhkan fungsi input sama sekali",
+        "Karena closure selalu lebih cepat daripada map",
+        "Karena cache pada closure otomatis dibagikan ke semua program Go"
+      ],
+      "options_en": [
+        "Because a closure can store a cache in a closed-over scope that remains available across calls",
+        "Because memoization does not need an input function at all",
+        "Because closures are always faster than maps",
+        "Because a closure cache is automatically shared across all Go programs"
+      ],
+      "correct": 0
     }
   ]
 }

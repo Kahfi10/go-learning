@@ -8,70 +8,172 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\n// safeDiv menggunakan recover untuk mencegah crash\nfunc safeDiv(a, b int) (result int, err error) {\n\tdefer func() {\n\t\tif r := recover(); r != nil {\n\t\t\terr = fmt.Errorf(\"pulih dari panic: %v\", r)\n\t\t}\n\t}()\n\tif b == 0 {\n\t\tpanic(\"tidak bisa dibagi dengan nol\")\n\t}\n\treturn a / b, nil\n}\n\nfunc demoDefer() {\n\tfmt.Println(\"demoDefer: mulai\")\n\tdefer fmt.Println(\"demoDefer: defer 1\")\n\tdefer fmt.Println(\"demoDefer: defer 2\")\n\tdefer fmt.Println(\"demoDefer: defer 3\")\n\tfmt.Println(\"demoDefer: selesai\")\n}\n\nfunc main() {\n\t// Demo LIFO defer\n\tdemoDefer()\n\tfmt.Println()\n\n\t// Demo safeDiv\n\tresult, err := safeDiv(10, 3)\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t} else {\n\t\tfmt.Printf(\"10 / 3 = %d\\n\", result)\n\t}\n\n\tresult, err = safeDiv(10, 0)\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t} else {\n\t\tfmt.Printf(\"10 / 0 = %d\\n\", result)\n\t}\n}",
   "quiz": [
     {
-      "question_id": "Dalam urutan apa beberapa pernyataan `defer` dieksekusi di Go?",
-      "question_en": "In what order are multiple `defer` statements executed in Go?",
+      "question_id": "Kapan sebuah `defer` dieksekusi dalam Go?",
+      "question_en": "When is a `defer` executed in Go?",
       "options_id": [
-        "Urutan pendaftaran (FIFO - pertama masuk, pertama keluar)",
-        "Urutan terbalik (LIFO - terakhir masuk, pertama keluar)",
-        "Urutan acak",
-        "Secara bersamaan (paralel)"
+        "Segera setelah baris `defer` dibaca",
+        "Saat blok `if` terdekat selesai",
+        "Saat fungsi yang memuat `defer` selesai",
+        "Saat garbage collector berjalan"
       ],
       "options_en": [
-        "Registration order (FIFO - first in, first out)",
-        "Reverse order (LIFO - last in, first out)",
-        "Random order",
-        "Simultaneously (in parallel)"
-      ],
-      "correct": 1
-    },
-    {
-      "question_id": "Kapan sebaiknya `panic` digunakan dalam program Go?",
-      "question_en": "When should `panic` be used in a Go program?",
-      "options_id": [
-        "Untuk semua kasus error handling sebagai pengganti return error",
-        "Hanya untuk kondisi yang benar-benar tidak bisa dipulihkan (bug pemrograman)",
-        "Saat input pengguna tidak valid",
-        "Sebagai pengganti dari exception handling"
-      ],
-      "options_en": [
-        "For all error handling as a replacement for return errors",
-        "Only for truly unrecoverable conditions (programming bugs)",
-        "When user input is invalid",
-        "As a replacement for exception handling"
-      ],
-      "correct": 1
-    },
-    {
-      "question_id": "Di mana `recover()` harus dipanggil agar bisa menghentikan panic di Go?",
-      "question_en": "Where must `recover()` be called to stop a panic in Go?",
-      "options_id": [
-        "Di fungsi manapun dalam call stack",
-        "Di dalam fungsi `main()`",
-        "Di dalam fungsi yang di-defer",
-        "Di dalam blok `catch`"
-      ],
-      "options_en": [
-        "In any function in the call stack",
-        "Inside the `main()` function",
-        "Inside a deferred function",
-        "Inside a `catch` block"
+        "Immediately after the `defer` line is reached",
+        "When the nearest `if` block finishes",
+        "When the surrounding function completes",
+        "When the garbage collector runs"
       ],
       "correct": 2
     },
     {
-      "question_id": "Penggunaan `defer` yang paling umum dan idiomatik di Go adalah?",
-      "question_en": "The most common and idiomatic use of `defer` in Go is?",
+      "question_id": "Apa urutan output dari `demoDefer()` pada starter code?",
+      "question_en": "What is the output order of `demoDefer()` in the starter code?",
       "options_id": [
-        "Menunda eksekusi fungsi selama 1 detik",
-        "Resource cleanup (menutup file, koneksi, unlock mutex) setelah selesai digunakan",
-        "Menjalankan kode secara paralel",
-        "Menyimpan nilai variabel untuk digunakan nanti"
+        "`mulai`, `defer 1`, `defer 2`, `defer 3`, `selesai`",
+        "`mulai`, `selesai`, `defer 3`, `defer 2`, `defer 1`",
+        "`defer 3`, `defer 2`, `defer 1`, `mulai`, `selesai`",
+        "`mulai`, `selesai`, `defer 1`, `defer 2`, `defer 3`"
       ],
       "options_en": [
-        "Delaying function execution for 1 second",
-        "Resource cleanup (closing files, connections, unlocking mutexes) after use",
-        "Running code in parallel",
-        "Saving variable values for later use"
+        "`start`, `defer 1`, `defer 2`, `defer 3`, `finish`",
+        "`start`, `finish`, `defer 3`, `defer 2`, `defer 1`",
+        "`defer 3`, `defer 2`, `defer 1`, `start`, `finish`",
+        "`start`, `finish`, `defer 1`, `defer 2`, `defer 3`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `defer f.Close()` biasanya ditulis setelah memastikan `os.Open` tidak mengembalikan error?",
+      "question_en": "Why is `defer f.Close()` usually written only after confirming `os.Open` returned no error?",
+      "options_id": [
+        "Karena `defer` tidak boleh dipakai dengan method",
+        "Karena file harus valid dulu sebelum dijadwalkan untuk ditutup",
+        "Karena `Close` otomatis dipanggil oleh runtime saat tidak ada error",
+        "Karena `defer` hanya bekerja untuk variabel global"
+      ],
+      "options_en": [
+        "Because `defer` cannot be used with methods",
+        "Because the file must be valid before scheduling it to be closed",
+        "Because `Close` is automatically called by the runtime when there is no error",
+        "Because `defer` only works for global variables"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa masalah utama dari `defer f.Close()` langsung di dalam loop yang membuka banyak file?",
+      "question_en": "What is the main problem with using `defer f.Close()` directly inside a loop that opens many files?",
+      "options_id": [
+        "`defer` akan dieksekusi di setiap iterasi sebelum body loop selesai",
+        "Semua `Close` tertunda sampai fungsi luar selesai, sehingga resource bisa menumpuk",
+        "`defer` membuat loop menjadi paralel",
+        "Go melarang `defer` di dalam loop pada compile time"
+      ],
+      "options_en": [
+        "`defer` executes on each iteration before the loop body finishes",
+        "All `Close` calls are delayed until the outer function ends, so resources can pile up",
+        "`defer` makes the loop run in parallel",
+        "Go forbids `defer` inside loops at compile time"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa membungkus body loop dalam fungsi anonim memperbaiki pola `defer` di dalam loop?",
+      "question_en": "Why does wrapping the loop body in an anonymous function fix the `defer`-inside-a-loop pattern?",
+      "options_id": [
+        "Karena fungsi anonim berjalan lebih cepat daripada loop biasa",
+        "Karena `defer` lalu dieksekusi saat fungsi anonim itu selesai pada setiap iterasi",
+        "Karena fungsi anonim mengubah `defer` menjadi `goto`",
+        "Karena `defer` tidak lagi memakai stack"
+      ],
+      "options_en": [
+        "Because anonymous functions run faster than normal loops",
+        "Because the `defer` then runs when that anonymous function finishes on each iteration",
+        "Because anonymous functions turn `defer` into `goto`",
+        "Because `defer` no longer uses the stack"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Kapan `panic` sebaiknya dipakai menurut lesson ini?",
+      "question_en": "According to this lesson, when should `panic` be used?",
+      "options_id": [
+        "Untuk seluruh error handling normal sebagai pengganti `return error`",
+        "Untuk kondisi yang benar-benar tidak bisa dipulihkan atau bug pemrograman",
+        "Untuk validasi input pengguna sehari-hari",
+        "Untuk menghentikan loop yang panjang"
+      ],
+      "options_en": [
+        "For all normal error handling instead of `return error`",
+        "For truly unrecoverable conditions or programming bugs",
+        "For ordinary user input validation",
+        "To stop a long loop"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Di mana `recover()` harus dipanggil agar bisa menangkap panic?",
+      "question_en": "Where must `recover()` be called for it to catch a panic?",
+      "options_id": [
+        "Di fungsi biasa mana pun selama masih satu package",
+        "Di dalam `main()` saja",
+        "Di dalam fungsi yang dipanggil oleh `defer`",
+        "Di dalam blok `switch`"
+      ],
+      "options_en": [
+        "In any ordinary function as long as it is in the same package",
+        "Only inside `main()`",
+        "Inside a function invoked by `defer`",
+        "Inside a `switch` block"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Saat panic sedang melakukan unwinding stack, apa yang masih tetap dijalankan?",
+      "question_en": "While a panic is unwinding the stack, what still runs?",
+      "options_id": [
+        "Hanya `return` statement yang sudah tertulis",
+        "Deferred function pada stack frame yang sedang dilepas",
+        "Semua goroutine lain otomatis berhenti",
+        "Hanya `fmt.Println` yang berada setelah panic"
+      ],
+      "options_en": [
+        "Only already-written `return` statements",
+        "Deferred functions on the stack frames being unwound",
+        "All other goroutines automatically stop",
+        "Only `fmt.Println` calls located after the panic"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa hasil logis dari `safeDiv(10, 0)` pada starter code?",
+      "question_en": "What is the logical result of `safeDiv(10, 0)` in the starter code?",
+      "options_id": [
+        "Mengembalikan `0` dan `error` non-nil hasil `recover`",
+        "Program tetap crash karena `recover` tidak bisa dipakai pada pembagian",
+        "Mengembalikan `10` dan `nil`",
+        "Mengembalikan `0` dan `nil`"
+      ],
+      "options_en": [
+        "It returns `0` and a non-nil error produced by `recover`",
+        "The program still crashes because `recover` cannot be used for division",
+        "It returns `10` and `nil`",
+        "It returns `0` and `nil`"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa validasi biasa sering lebih tepat mengembalikan `error` daripada memanggil `panic`?",
+      "question_en": "Why is ordinary validation often better handled by returning an `error` than by calling `panic`?",
+      "options_id": [
+        "Karena `panic` tidak bisa membawa pesan",
+        "Karena input tidak valid biasanya kondisi yang masih bisa ditangani oleh caller",
+        "Karena `error` selalu lebih cepat daripada `panic` di semua kasus",
+        "Karena `panic` hanya boleh dipakai di package `fmt`"
+      ],
+      "options_en": [
+        "Because `panic` cannot carry a message",
+        "Because invalid input is usually a condition the caller can handle",
+        "Because `error` is always faster than `panic` in every case",
+        "Because `panic` may only be used in the `fmt` package"
       ],
       "correct": 1
     }

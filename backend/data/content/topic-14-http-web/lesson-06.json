@@ -8,24 +8,73 @@
   "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"log\"\n\t\"net/http\"\n\t\"time\"\n)\n\n// responseRecorder wraps ResponseWriter to capture the status code\ntype responseRecorder struct {\n\thttp.ResponseWriter\n\tcode int\n}\n\nfunc (rr *responseRecorder) WriteHeader(code int) {\n\trr.code = code\n\trr.ResponseWriter.WriteHeader(code)\n}\n\n// loggingMiddleware logs method, path, status, and duration\nfunc loggingMiddleware(next http.Handler) http.Handler {\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tstart := time.Now()\n\t\trec := &responseRecorder{ResponseWriter: w, code: http.StatusOK}\n\n\t\tnext.ServeHTTP(rec, r)\n\n\t\tlog.Printf(\"%s %s -> %d (%v)\", r.Method, r.URL.Path, rec.code, time.Since(start))\n\t})\n}\n\n// TODO: implement corsMiddleware that:\n// - sets Access-Control-Allow-Origin to \"*\"\n// - sets Access-Control-Allow-Methods\n// - handles OPTIONS preflight with 204\nfunc corsMiddleware(next http.Handler) http.Handler {\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tw.Header().Set(\"Access-Control-Allow-Origin\", \"*\")\n\t\tw.Header().Set(\"Access-Control-Allow-Methods\", \"GET, POST, DELETE, OPTIONS\")\n\t\tw.Header().Set(\"Access-Control-Allow-Headers\", \"Content-Type, Authorization\")\n\n\t\tif r.Method == http.MethodOptions {\n\t\t\tw.WriteHeader(http.StatusNoContent)\n\t\t\treturn\n\t\t}\n\t\tnext.ServeHTTP(w, r)\n\t})\n}\n\nfunc apiHandler(w http.ResponseWriter, r *http.Request) {\n\tw.Header().Set(\"Content-Type\", \"application/json\")\n\tfmt.Fprintln(w, `{\"status\": \"ok\"}`)\n}\n\nfunc main() {\n\tmux := http.NewServeMux()\n\tmux.HandleFunc(\"/api\", apiHandler)\n\n\thandler := corsMiddleware(loggingMiddleware(mux))\n\n\tfmt.Println(\"Server on :8080\")\n\thttp.ListenAndServe(\":8080\", handler)\n}",
   "quiz": [
     {
-      "question_id": "Mengapa perlu membuat wrapper responseWriter untuk menangkap status code di logging middleware?",
-      "question_en": "Why do you need to wrap ResponseWriter to capture the status code in logging middleware?",
-      "options_id": ["http.ResponseWriter tidak menyimpan status code setelah dikirim, perlu dicapture", "Untuk membuat response lebih cepat", "Agar status code bisa diubah setelah dikirim", "Karena status code default selalu 0"],
-      "options_en": ["http.ResponseWriter doesn't store the status code after sending; it needs to be captured", "To make the response faster", "So the status code can be changed after sending", "Because the default status code is always 0"],
+      "question_id": "Mengapa `newResponseWriter(w)` menginisialisasi `statusCode` dengan `http.StatusOK`?",
+      "question_en": "Why does `newResponseWriter(w)` initialize `statusCode` with `http.StatusOK`?",
+      "options_id": ["Agar logging tetap mencatat 200 ketika handler hanya menulis body tanpa memanggil `WriteHeader` secara eksplisit", "Agar semua response dipaksa sukses", "Karena `WriteHeader` tidak pernah dipanggil di Go", "Agar middleware bisa dipakai tanpa `time.Now()`"],
+      "options_en": ["So logging still records 200 when a handler only writes the body without explicitly calling `WriteHeader`", "So every response is forced to succeed", "Because `WriteHeader` is never called in Go", "So the middleware can be used without `time.Now()`"],
       "correct": 0
     },
     {
-      "question_id": "Apa yang dimaksud dengan CORS preflight request?",
-      "question_en": "What is a CORS preflight request?",
-      "options_id": ["Request OPTIONS yang dikirim browser sebelum request aktual untuk memeriksa izin", "Request pertama saat server dimulai", "Request untuk mengecek health server", "Request yang gagal dan perlu dicoba ulang"],
-      "options_en": ["An OPTIONS request sent by the browser before the actual request to check permissions", "The first request when the server starts", "A request to check server health", "A failed request that needs retry"],
+      "question_id": "Jika handler tidak pernah memanggil `WriteHeader` tetapi menulis body, status apa yang akan tercatat oleh wrapper logging ini?",
+      "question_en": "If a handler never calls `WriteHeader` but does write a body, what status will this logging wrapper record?",
+      "options_id": ["0", "200", "201", "Harus panic terlebih dahulu"],
+      "options_en": ["0", "200", "201", "It must panic first"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa alasan utama `ResponseWriter` perlu dibungkus di logging middleware production?",
+      "question_en": "What is the main reason `ResponseWriter` must be wrapped in production logging middleware?",
+      "options_id": ["Agar status code yang ditulis handler bisa dicapture dan dilog", "Agar body response terenkripsi", "Agar request method berubah menjadi string", "Agar middleware bisa memodifikasi route"],
+      "options_en": ["So the status code written by the handler can be captured and logged", "So the response body is encrypted", "So the request method becomes a string", "So the middleware can modify the route"],
       "correct": 0
     },
     {
-      "question_id": "Urutan middleware yang benar untuk: cors → logging → auth → handler?",
-      "question_en": "The correct code order for: cors → logging → auth → handler?",
-      "options_id": ["cors(logging(auth(handler)))", "handler(auth(logging(cors())))", "logging(cors(auth(handler)))", "auth(cors(logging(handler)))"],
-      "options_en": ["cors(logging(auth(handler)))", "handler(auth(logging(cors())))", "logging(cors(auth(handler)))", "auth(cors(logging(handler)))"],
+      "question_id": "Kondisi mana yang membuat auth middleware langsung mengembalikan 401 sebelum `validateToken` dipanggil?",
+      "question_en": "Which condition makes the auth middleware immediately return 401 before `validateToken` is called?",
+      "options_id": ["Method request adalah OPTIONS", "Header `Authorization` tidak memiliki prefix `Bearer `", "Header `Origin` kosong", "Path bukan `/api`"],
+      "options_en": ["The request method is OPTIONS", "The `Authorization` header does not have the `Bearer ` prefix", "The `Origin` header is empty", "The path is not `/api`"],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `strings.TrimPrefix(auth, \"Bearer \")` dipakai setelah `HasPrefix`?",
+      "question_en": "Why is `strings.TrimPrefix(auth, \"Bearer \")` used after `HasPrefix`?",
+      "options_id": ["Untuk mengambil token mentah tanpa skema `Bearer ` sebelum divalidasi", "Untuk menghapus spasi dari semua header", "Untuk mengubah token menjadi context key", "Untuk mengubah unauthorized menjadi invalid token"],
+      "options_en": ["To extract the raw token without the `Bearer ` scheme before validation", "To remove spaces from all headers", "To turn the token into a context key", "To change unauthorized into invalid token"],
+      "correct": 0
+    },
+    {
+      "question_id": "Bagaimana `userID` diteruskan ke handler berikutnya dalam auth middleware?",
+      "question_en": "How is `userID` passed to the next handler in the auth middleware?",
+      "options_id": ["Lewat global variable", "Lewat response header", "Lewat `context.WithValue` lalu `r.WithContext(ctx)`", "Lewat perubahan pada URL path"],
+      "options_en": ["Through a global variable", "Through a response header", "Through `context.WithValue` and then `r.WithContext(ctx)`", "Through a change to the URL path"],
+      "correct": 2
+    },
+    {
+      "question_id": "Jika `allowedOrigins` berisi `\"*\"` dan request datang dari origin `https://app.example`, nilai header `Access-Control-Allow-Origin` apa yang diset oleh kode sample?",
+      "question_en": "If `allowedOrigins` contains `\"*\"` and the request comes from origin `https://app.example`, what `Access-Control-Allow-Origin` value does the sample code set?",
+      "options_id": ["`*`", "String kosong", "`https://app.example`", "`localhost`"],
+      "options_en": ["`*`", "An empty string", "`https://app.example`", "`localhost`"],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa yang dimaksud dengan CORS preflight request pada lesson?",
+      "question_en": "What is a CORS preflight request in the lesson?",
+      "options_id": ["Request OPTIONS yang dikirim browser sebelum request aktual untuk memeriksa izin", "Request pertama saat server start", "Health check internal dari Go runtime", "Retry otomatis setelah status 500"],
+      "options_en": ["An OPTIONS request sent by the browser before the actual request to check permissions", "The first request when the server starts", "An internal health check from the Go runtime", "An automatic retry after status 500"],
+      "correct": 0
+    },
+    {
+      "question_id": "Dalam susunan `handler := cors(loggingMiddleware(mux))`, apa yang terjadi pada request OPTIONS preflight yang ditangani CORS dengan 204?",
+      "question_en": "In `handler := cors(loggingMiddleware(mux))`, what happens to an OPTIONS preflight request that CORS handles with 204?",
+      "options_id": ["CORS memanggil logging lalu mux seperti biasa", "Hanya CORS yang menangani lalu return; logging dan mux tidak dijalankan", "Logging menangani lebih dulu lalu CORS", "Mux menangani lebih dulu baru CORS mengubah status"],
+      "options_en": ["CORS calls logging and then mux as usual", "Only CORS handles it and returns; logging and mux are not run", "Logging handles it first and then CORS", "Mux handles it first and then CORS changes the status"],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `corsMiddleware` didefinisikan sebagai fungsi yang menerima `allowedOrigins []string` lalu mengembalikan middleware?",
+      "question_en": "Why is `corsMiddleware` defined as a function that takes `allowedOrigins []string` and then returns middleware?",
+      "options_id": ["Agar daftar origin di-capture sebagai konfigurasi saat middleware dibuat", "Agar middleware bisa mengubah `http.Request` menjadi slice", "Karena CORS selalu membutuhkan goroutine baru", "Agar `OPTIONS` otomatis berubah menjadi `GET`"],
+      "options_en": ["So the origin list is captured as configuration when the middleware is created", "So the middleware can turn `http.Request` into a slice", "Because CORS always needs a new goroutine", "So `OPTIONS` is automatically changed into `GET`"],
       "correct": 0
     }
   ]

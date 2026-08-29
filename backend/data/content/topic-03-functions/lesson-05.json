@@ -8,55 +8,174 @@
   "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\n// apply menerapkan fungsi ke setiap elemen slice\nfunc apply(nums []int, fn func(int) int) []int {\n\tresult := make([]int, len(nums))\n\tfor i, n := range nums {\n\t\tresult[i] = fn(n)\n\t}\n\treturn result\n}\n\nfunc main() {\n\tnums := []int{1, 2, 3, 4, 5}\n\n\t// Gunakan fungsi bernama\n\tsquare := func(x int) int { return x * x }\n\tdouble := func(x int) int { return x * 2 }\n\n\tfmt.Println(\"Original:\", nums)\n\tfmt.Println(\"Squared: \", apply(nums, square))\n\tfmt.Println(\"Doubled: \", apply(nums, double))\n\n\t// sort.Slice dengan fungsi anonim\n\twords := []string{\"banana\", \"apple\", \"cherry\", \"date\"}\n\tsort.Slice(words, func(i, j int) bool {\n\t\treturn words[i] < words[j]\n\t})\n\tfmt.Println(\"Sorted:\", words)\n}",
   "quiz": [
     {
-      "question_id": "Apa yang dimaksud dengan fungsi sebagai 'first-class citizen' di Go?",
-      "question_en": "What does it mean for functions to be 'first-class citizens' in Go?",
+      "question_id": "Apa inti makna fungsi sebagai first-class citizen di Go?",
+      "question_en": "What is the core meaning of functions being first-class citizens in Go?",
       "options_id": [
-        "Fungsi memiliki prioritas eksekusi lebih tinggi dari operasi lain",
-        "Fungsi hanya bisa dideklarasikan di level package",
-        "Fungsi bisa disimpan dalam variabel, diteruskan sebagai argumen, dan dikembalikan dari fungsi lain",
-        "Fungsi selalu dieksekusi sebelum variabel diinisialisasi"
+        "Fungsi memiliki prioritas eksekusi lebih tinggi dari operator",
+        "Fungsi bisa diperlakukan sebagai nilai: disimpan, diteruskan, dan dikembalikan",
+        "Fungsi hanya valid di package `main`",
+        "Fungsi selalu harus anonim"
       ],
       "options_en": [
-        "Functions have higher execution priority than other operations",
-        "Functions can only be declared at package level",
-        "Functions can be stored in variables, passed as arguments, and returned from other functions",
-        "Functions are always executed before variables are initialized"
-      ],
-      "correct": 2
-    },
-    {
-      "question_id": "Apa tipe dari variabel `fn` jika dideklarasikan sebagai `fn := func(a, b int) int { return a+b }` ?",
-      "question_en": "What is the type of variable `fn` if declared as `fn := func(a, b int) int { return a+b }` ?",
-      "options_id": [
-        "int",
-        "func",
-        "func(int, int) int",
-        "function(int,int)->int"
-      ],
-      "options_en": [
-        "int",
-        "func",
-        "func(int, int) int",
-        "function(int,int)->int"
-      ],
-      "correct": 2
-    },
-    {
-      "question_id": "Fungsi `sort.Slice` di standard library Go menerima fungsi sebagai parameter untuk?",
-      "question_en": "The `sort.Slice` function in Go's standard library accepts a function parameter for?",
-      "options_id": [
-        "Menentukan cara mencetak elemen",
-        "Mendefinisikan logika perbandingan untuk pengurutan",
-        "Menentukan cara menyalin elemen",
-        "Menentukan kapasitas memori yang dibutuhkan"
-      ],
-      "options_en": [
-        "Determining how to print elements",
-        "Defining the comparison logic for sorting",
-        "Determining how to copy elements",
-        "Determining how much memory is needed"
+        "Functions have a higher execution priority than operators",
+        "Functions can be treated as values: stored, passed around, and returned",
+        "Functions are only valid in package `main`",
+        "Functions must always be anonymous"
       ],
       "correct": 1
+    },
+    {
+      "question_id": "Jika `fn := square`, tipe paling spesifik dari `fn` adalah apa?",
+      "question_en": "If `fn := square`, what is the most specific type of `fn`?",
+      "options_id": [
+        "`func`",
+        "`int`",
+        "`func(int) int`",
+        "`square`"
+      ],
+      "options_en": [
+        "`func`",
+        "`int`",
+        "`func(int) int`",
+        "`square`"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa keuntungan membuat type alias fungsi seperti `type MathOp func(int, int) int`?",
+      "question_en": "What is the benefit of defining a function type like `type MathOp func(int, int) int`?",
+      "options_id": [
+        "Membuat signature callback lebih jelas dan dapat diberi nama domain-spesifik",
+        "Menghilangkan kebutuhan return value dari fungsi",
+        "Memaksa semua fungsi aritmetika menjadi method",
+        "Membuat Go tidak perlu memeriksa tipe parameter lagi"
+      ],
+      "options_en": [
+        "It makes callback signatures clearer and gives them a domain-specific name",
+        "It removes the need for return values from functions",
+        "It forces all arithmetic functions to become methods",
+        "It makes Go stop checking parameter types"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa `applyOp(10, 5, add)` valid pada contoh?",
+      "question_en": "Why is `applyOp(10, 5, add)` valid in the example?",
+      "options_id": [
+        "Karena `add` memiliki signature yang cocok dengan tipe `MathOp`",
+        "Karena semua fungsi otomatis bisa diperlakukan sebagai `MathOp` apa pun parameternya",
+        "Karena `applyOp` mengubah `add` menjadi method saat runtime",
+        "Karena `add` adalah built-in Go"
+      ],
+      "options_en": [
+        "Because `add` has a signature that matches the `MathOp` type",
+        "Because every function can automatically be treated as `MathOp` regardless of parameters",
+        "Because `applyOp` turns `add` into a method at runtime",
+        "Because `add` is built into Go"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Pada fungsi `filter`, apa peran parameter `predicate func(int) bool`?",
+      "question_en": "In the `filter` function, what is the role of the `predicate func(int) bool` parameter?",
+      "options_id": [
+        "Menentukan apakah setiap elemen harus dimasukkan ke hasil",
+        "Mengubah slice input menjadi map",
+        "Menentukan kapasitas slice hasil sebelum loop",
+        "Memformat angka menjadi string"
+      ],
+      "options_en": [
+        "It decides whether each element should be included in the result",
+        "It turns the input slice into a map",
+        "It sets the capacity of the result slice before the loop",
+        "It formats numbers as strings"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa `filter(nums, isEven)` dan `filter(nums, isPositive)` menghasilkan slice berbeda dari input yang sama?",
+      "question_en": "Why do `filter(nums, isEven)` and `filter(nums, isPositive)` produce different slices from the same input?",
+      "options_id": [
+        "Karena callback yang diberikan menerapkan kondisi seleksi yang berbeda",
+        "Karena `filter` mengacak elemen setiap kali dipanggil",
+        "Karena fungsi callback selalu memodifikasi slice asli",
+        "Karena Go tidak mengizinkan dua pemanggilan fungsi dengan input sama"
+      ],
+      "options_en": [
+        "Because the callback passed in applies a different selection condition",
+        "Because `filter` randomizes the elements each time it is called",
+        "Because callback functions always modify the original slice",
+        "Because Go does not allow two function calls with the same input"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang ditunjukkan fungsi `multiplier(factor int) func(int) int`?",
+      "question_en": "What does the function `multiplier(factor int) func(int) int` demonstrate?",
+      "options_id": [
+        "Bahwa fungsi dapat mengembalikan fungsi lain yang sudah dikonfigurasi oleh argumen tertentu",
+        "Bahwa fungsi tidak boleh menerima parameter jika mengembalikan fungsi",
+        "Bahwa semua return function harus anonim tanpa body",
+        "Bahwa callback hanya boleh dipakai dengan package `sort`"
+      ],
+      "options_en": [
+        "That a function can return another function configured by a specific argument",
+        "That a function may not accept parameters if it returns a function",
+        "That every returned function must be anonymous with no body",
+        "That callbacks may only be used with the `sort` package"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika `double := multiplier(2)` dan `triple := multiplier(3)`, hasil `double(triple(4))` adalah?",
+      "question_en": "If `double := multiplier(2)` and `triple := multiplier(3)`, what is the result of `double(triple(4))`?",
+      "options_id": [
+        "`8`",
+        "`12`",
+        "`24`",
+        "`32`"
+      ],
+      "options_en": [
+        "`8`",
+        "`12`",
+        "`24`",
+        "`32`"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa `sort.Slice` membutuhkan fungsi pembanding anonim pada contoh?",
+      "question_en": "Why does `sort.Slice` need an anonymous comparison function in the example?",
+      "options_id": [
+        "Untuk menentukan aturan pengurutan antara dua indeks elemen",
+        "Untuk mengonversi semua string menjadi rune lebih dulu",
+        "Untuk menghitung ukuran slice sebelum diurutkan",
+        "Untuk membuat salinan setiap elemen ke heap"
+      ],
+      "options_en": [
+        "To define the ordering rule between two element indexes",
+        "To convert all strings to runes first",
+        "To compute the slice size before sorting",
+        "To copy every element to the heap"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Tradeoff mana yang paling tepat dari first-class functions?",
+      "question_en": "Which tradeoff is most accurate about first-class functions?",
+      "options_id": [
+        "Mereka membuat perilaku lebih fleksibel dan reusable, tetapi pembaca juga harus memahami signature fungsi yang dipertukarkan",
+        "Mereka menghilangkan kebutuhan semua tipe data lain",
+        "Mereka selalu lebih sederhana daripada memanggil fungsi biasa secara langsung",
+        "Mereka membuat callback bebas dari pengecekan tipe"
+      ],
+      "options_en": [
+        "They make behavior more flexible and reusable, but readers must also understand the function signatures being passed around",
+        "They remove the need for all other data types",
+        "They are always simpler than calling regular functions directly",
+        "They make callbacks free from type checking"
+      ],
+      "correct": 0
     }
   ]
 }

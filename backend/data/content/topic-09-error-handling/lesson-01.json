@@ -8,32 +8,174 @@
   "starterCode": "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\n// divide returns a / b, or an error if b is zero\nfunc divide(a, b float64) (float64, error) {\n\t// TODO: return an error if b == 0\n\treturn a / b, nil\n}\n\nfunc main() {\n\tresult, err := divide(10, 0)\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t\treturn\n\t}\n\tfmt.Println(\"Result:\", result)\n\n\t_ = errors.New // hint: use this\n}",
   "quiz": [
     {
-      "question_id": "Apa yang harus diimplementasikan sebuah tipe agar memenuhi interface `error`?",
-      "question_en": "What must a type implement to satisfy the `error` interface?",
-      "options_id": ["Error() string", "Error() error", "String() string", "Err() string"],
-      "options_en": ["Error() string", "Error() error", "String() string", "Err() string"],
+      "question_id": "Apa syarat minimal agar sebuah tipe memenuhi interface `error` di Go?",
+      "question_en": "What is the minimal requirement for a type to satisfy Go's `error` interface?",
+      "options_id": [
+        "Memiliki field `Message string`",
+        "Mengimplementasikan method `Error() string`",
+        "Mengimplementasikan `String() string`",
+        "Dibuat oleh package `errors`"
+      ],
+      "options_en": [
+        "Having a `Message string` field",
+        "Implementing the method `Error() string`",
+        "Implementing `String() string`",
+        "Being created by the `errors` package"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Dalam fungsi `divide(a, b float64) (float64, error)`, apa yang sebaiknya dikembalikan saat `b == 0`?",
+      "question_en": "In `divide(a, b float64) (float64, error)`, what should be returned when `b == 0`?",
+      "options_id": [
+        "`a / b, nil` agar caller memutuskan sendiri",
+        "`0, errors.New(\"division by zero\")`",
+        "`0, false`",
+        "`panic(\"division by zero\")` sebagai pola normal"
+      ],
+      "options_en": [
+        "`a / b, nil` so the caller can decide later",
+        "`0, errors.New(\"division by zero\")`",
+        "`0, false`",
+        "`panic(\"division by zero\")` as the normal pattern"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa pola `(value, error)` penting dalam Go?",
+      "question_en": "Why is the `(value, error)` pattern important in Go?",
+      "options_id": [
+        "Karena Go tidak mendukung return value tunggal",
+        "Karena caller bisa membedakan hasil sukses dari kegagalan secara eksplisit",
+        "Karena error harus selalu menjadi parameter pertama",
+        "Karena ini menggantikan semua kebutuhan logging"
+      ],
+      "options_en": [
+        "Because Go does not support single return values",
+        "Because the caller can explicitly distinguish success from failure",
+        "Because error must always be the first return value",
+        "Because it replaces all logging needs"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa arti `err == nil` setelah pemanggilan fungsi yang mengembalikan error?",
+      "question_en": "What does `err == nil` mean after calling a function that returns an error?",
+      "options_id": [
+        "Fungsi sukses menurut kontrak error-nya",
+        "Nilai hasil utama pasti bukan zero value",
+        "Tidak ada operasi yang dieksekusi",
+        "Compiler menghapus pemeriksaan error"
+      ],
+      "options_en": [
+        "The function succeeded according to its error contract",
+        "The main return value is guaranteed not to be a zero value",
+        "No operation was executed",
+        "The compiler removed error checking"
+      ],
       "correct": 0
     },
     {
-      "question_id": "Fungsi apa yang digunakan untuk membuat error sederhana dengan pesan teks?",
-      "question_en": "Which function creates a simple error with a text message?",
-      "options_id": ["errors.New()", "error.Create()", "fmt.Error()", "errors.Make()"],
-      "options_en": ["errors.New()", "error.Create()", "fmt.Error()", "errors.Make()"],
+      "question_id": "Mengapa `if err != nil` dianggap idiomatis di Go?",
+      "question_en": "Why is `if err != nil` considered idiomatic in Go?",
+      "options_id": [
+        "Karena Go tidak punya if-else",
+        "Karena error ditangani dekat sumbernya dengan alur kontrol yang eksplisit",
+        "Karena error hanya bisa diperiksa sekali",
+        "Karena semua error di Go adalah string"
+      ],
+      "options_en": [
+        "Because Go has no if-else",
+        "Because errors are handled close to their source with explicit control flow",
+        "Because an error can only be checked once",
+        "Because all errors in Go are strings"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa masalah utama dari mengabaikan error dengan `_` menurut lesson ini?",
+      "question_en": "According to this lesson, what is the main problem with ignoring an error using `_`?",
+      "options_id": [
+        "Compiler akan langsung panic",
+        "Kegagalan dapat diam-diam terlewat dan hasil sesudahnya bisa disalahartikan sebagai valid",
+        "Nilai hasil utama otomatis menjadi nil",
+        "Package `errors` tidak bisa dipakai lagi"
+      ],
+      "options_en": [
+        "The compiler will panic immediately",
+        "A failure can be silently missed and later results may be mistaken as valid",
+        "The main return value automatically becomes nil",
+        "The `errors` package can no longer be used"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Kapan `errors.New` paling cocok digunakan?",
+      "question_en": "When is `errors.New` most appropriate to use?",
+      "options_id": [
+        "Saat perlu error sederhana berbasis pesan tanpa data tambahan",
+        "Saat perlu membawa banyak field terstruktur",
+        "Saat perlu wrapping chain otomatis",
+        "Saat ingin membandingkan angka status HTTP"
+      ],
+      "options_en": [
+        "When you need a simple message-based error with no extra structured data",
+        "When you need to carry many structured fields",
+        "When you need automatic wrapping chains",
+        "When you want to compare HTTP status numbers"
+      ],
       "correct": 0
     },
     {
-      "question_id": "Apa nilai yang dikembalikan ketika sebuah fungsi berhasil (tidak ada error)?",
-      "question_en": "What value is returned for error when a function succeeds?",
-      "options_id": ["nil", "0", "\"\"", "false"],
-      "options_en": ["nil", "0", "\"\"", "false"],
-      "correct": 0
+      "question_id": "Apa perbedaan penting antara `Error() string` dan `String() string` dalam konteks error handling?",
+      "question_en": "What is the important difference between `Error() string` and `String() string` in the context of error handling?",
+      "options_id": [
+        "Keduanya membuat tipe memenuhi `error`",
+        "Hanya `Error() string` yang membuat tipe memenuhi interface `error`",
+        "Hanya `String() string` yang bisa dicetak oleh fmt",
+        "`Error() string` hanya valid pada pointer receiver"
+      ],
+      "options_en": [
+        "Both make a type satisfy `error`",
+        "Only `Error() string` makes a type satisfy the `error` interface",
+        "Only `String() string` can be printed by fmt",
+        "`Error() string` is only valid on pointer receivers"
+      ],
+      "correct": 1
     },
     {
-      "question_id": "Bagaimana cara idiomatis memeriksa error di Go?",
-      "question_en": "What is the idiomatic way to check for an error in Go?",
-      "options_id": ["if err != nil { ... }", "try { ... } catch { ... }", "if error(err) { ... }", "err.check()"],
-      "options_en": ["if err != nil { ... }", "try { ... } catch { ... }", "if error(err) { ... }", "err.check()"],
-      "correct": 0
+      "question_id": "Jika sebuah fungsi mengembalikan `(0, nil)`, apa artinya?",
+      "question_en": "If a function returns `(0, nil)`, what does that mean?",
+      "options_id": [
+        "Selalu berarti gagal",
+        "Berarti fungsi sukses, dan `0` adalah nilai hasil yang valid menurut kontrak fungsi tersebut",
+        "Berarti error hilang karena bug runtime",
+        "Tidak valid di Go karena zero value tidak boleh dikembalikan bersama nil error"
+      ],
+      "options_en": [
+        "It always means failure",
+        "It means the function succeeded, and `0` is a valid result according to that function's contract",
+        "It means the error was lost due to a runtime bug",
+        "It is invalid in Go because zero values may not be returned with a nil error"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Pernyataan mana yang paling tepat tentang panic vs error pada lesson ini?",
+      "question_en": "Which statement is most accurate about panic vs error in this lesson?",
+      "options_id": [
+        "Panic adalah mekanisme default untuk kondisi gagal yang bisa diprediksi seperti input nol pada pembagian",
+        "Error biasa lebih cocok untuk kondisi yang caller diharapkan tangani sebagai bagian dari alur normal",
+        "Error hanya dipakai ketika tidak ada return value lain",
+        "Panic dan error setara sehingga bisa dipilih acak"
+      ],
+      "options_en": [
+        "Panic is the default mechanism for predictable failure conditions like division by zero input",
+        "Normal errors are more appropriate for conditions the caller is expected to handle as part of normal flow",
+        "Errors are only used when there is no other return value",
+        "Panic and error are equivalent, so you can choose randomly"
+      ],
+      "correct": 1
     }
   ]
 }

@@ -8,25 +8,74 @@
   "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n)\n\n// BankAccount has a race condition — fix it!\ntype BankAccount struct {\n\t// TODO: add a sync.Mutex field\n\tbalance int\n}\n\nfunc (a *BankAccount) Deposit(amount int) {\n\t// TODO: Lock and Unlock the mutex\n\ta.balance += amount\n}\n\nfunc (a *BankAccount) Balance() int {\n\t// TODO: Lock and Unlock the mutex\n\treturn a.balance\n}\n\nfunc main() {\n\tvar wg sync.WaitGroup\n\taccount := &BankAccount{balance: 0}\n\n\tfor i := 0; i < 100; i++ {\n\t\twg.Add(1)\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\taccount.Deposit(10)\n\t\t}()\n\t}\n\n\twg.Wait()\n\tfmt.Println(\"Balance:\", account.Balance()) // should be 1000\n}",
   "quiz": [
     {
-      "question_id": "Apa yang dimaksud dengan race condition?",
-      "question_en": "What is a race condition?",
-      "options_id": ["Beberapa goroutine mengakses data bersama tanpa sinkronisasi", "Goroutine yang berjalan lebih lambat dari yang lain", "Konflik antara dua goroutine yang sama", "Error saat compile time"],
-      "options_en": ["Multiple goroutines accessing shared data without synchronization", "A goroutine that runs slower than others", "A conflict between two identical goroutines", "An error at compile time"],
+      "question_id": "Mengapa `counter++` bukan operasi yang aman secara concurrent?",
+      "question_en": "Why is `counter++` not safe as a concurrent operation?",
+      "options_id": ["Karena operator `++` hanya berlaku untuk channel", "Karena itu adalah operasi read-modify-write yang tidak atomic", "Karena integer di Go tidak bisa ditulis oleh goroutine", "Karena compiler menghapus operator `++` saat runtime"],
+      "options_en": ["Because the `++` operator only applies to channels", "Because it is a read-modify-write operation that is not atomic", "Because Go integers cannot be written by goroutines", "Because the compiler removes the `++` operator at runtime"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa jaminan inti dari `sync.Mutex`?",
+      "question_en": "What is the core guarantee provided by `sync.Mutex`?",
+      "options_id": ["Hanya satu goroutine yang bisa berada di critical section pada satu waktu", "Semua goroutine bisa membaca dan menulis bersamaan", "Mutex otomatis mendeteksi semua deadlock", "Mutex menggantikan kebutuhan akan `WaitGroup`"],
+      "options_en": ["Only one goroutine can be in the critical section at a time", "All goroutines can read and write simultaneously", "A mutex automatically detects all deadlocks", "A mutex replaces the need for a `WaitGroup`"],
       "correct": 0
     },
     {
-      "question_id": "Perbedaan antara sync.Mutex dan sync.RWMutex adalah?",
-      "question_en": "What is the difference between sync.Mutex and sync.RWMutex?",
-      "options_id": ["RWMutex memungkinkan banyak reader bersamaan tapi hanya satu writer", "RWMutex lebih cepat dalam semua kasus", "Mutex tidak bisa digunakan dengan goroutine", "RWMutex hanya untuk channels"],
-      "options_en": ["RWMutex allows multiple concurrent readers but only one writer", "RWMutex is faster in all cases", "Mutex cannot be used with goroutines", "RWMutex is only for channels"],
+      "question_id": "Mengapa method `Value()` juga mengunci mutex meski hanya membaca?",
+      "question_en": "Why does the `Value()` method also lock the mutex even though it only reads?",
+      "options_id": ["Karena `return` di Go harus berada di dalam mutex", "Karena method pembaca selalu lebih cepat bila memakai lock", "Karena `RWMutex` tidak boleh dipakai untuk read", "Karena pembacaan juga harus disinkronkan jika bisa terjadi bersamaan dengan penulisan"],
+      "options_en": ["Because `return` in Go must happen inside a mutex", "Because reader methods are always faster with a lock", "Because `RWMutex` cannot be used for reads", "Because reads must also be synchronized if they can happen concurrently with writes"],
+      "correct": 3
+    },
+    {
+      "question_id": "Kapan `sync.RWMutex` lebih tepat daripada `sync.Mutex`?",
+      "question_en": "When is `sync.RWMutex` a better fit than `sync.Mutex`?",
+      "options_id": ["Saat data tidak pernah dibaca", "Saat semua operasi adalah write", "Saat data sering dibaca tetapi jarang ditulis", "Saat hanya ada satu goroutine"],
+      "options_en": ["When the data is never read", "When every operation is a write", "When the data is read frequently but written rarely", "When there is only one goroutine"],
+      "correct": 2
+    },
+    {
+      "question_id": "Method mana yang dipakai reader saat menggunakan `sync.RWMutex`?",
+      "question_en": "Which methods does a reader use with `sync.RWMutex`?",
+      "options_id": ["`Lock()` dan `Unlock()` saja", "`RLock()` dan `RUnlock()`", "`Wait()` dan `Done()`", "`Read()` dan `Close()`"],
+      "options_en": ["`Lock()` and `Unlock()` only", "`RLock()` and `RUnlock()`", "`Wait()` and `Done()`", "`Read()` and `Close()`"],
+      "correct": 1
+    },
+    {
+      "question_id": "Perintah mana yang menjalankan race detector saat testing?",
+      "question_en": "Which command runs the race detector during testing?",
+      "options_id": ["`go test ./... -sync`", "`go run -detect main.go`", "`go test -race ./...`", "`go vet -race ./...`"],
+      "options_en": ["`go test ./... -sync`", "`go run -detect main.go`", "`go test -race ./...`", "`go vet -race ./...`"],
+      "correct": 2
+    },
+    {
+      "question_id": "Menurut tabel lesson, pilihan yang lebih tepat untuk transfer ownership data antar goroutine adalah?",
+      "question_en": "According to the lesson table, which choice is more appropriate for transferring data ownership between goroutines?",
+      "options_id": ["Channel", "Mutex", "RWMutex", "`time.Sleep`"],
+      "options_en": ["Channel", "Mutex", "RWMutex", "`time.Sleep`"],
       "correct": 0
     },
     {
-      "question_id": "Flag apa yang digunakan untuk mendeteksi race condition di Go?",
-      "question_en": "Which flag detects race conditions in Go?",
-      "options_id": ["-race", "-sync", "-detect", "-concurrent"],
-      "options_en": ["-race", "-sync", "-detect", "-concurrent"],
-      "correct": 0
+      "question_id": "Menurut tabel lesson, shared cache atau shared state lebih cocok dilindungi dengan?",
+      "question_en": "According to the lesson table, shared cache or shared state is better protected with?",
+      "options_id": ["Buffer channel besar", "Mutex", "Blank import", "WaitGroup"],
+      "options_en": ["A large channel buffer", "Mutex", "A blank import", "A `WaitGroup`"],
+      "correct": 1
+    },
+    {
+      "question_id": "Menurut tabel lesson, counter sederhana biasanya memakai?",
+      "question_en": "According to the lesson table, a simple counter usually uses?",
+      "options_id": ["Channel saja", "RWMutex saja", "`select` dengan `default`", "Mutex atau atomic"],
+      "options_en": ["Only a channel", "Only an `RWMutex`", "A `select` with `default`", "A mutex or atomic operation"],
+      "correct": 3
+    },
+    {
+      "question_id": "Mengapa `defer c.mu.Unlock()` ditempatkan segera setelah `c.mu.Lock()`?",
+      "question_en": "Why is `defer c.mu.Unlock()` placed immediately after `c.mu.Lock()`?",
+      "options_id": ["Agar lock menjadi shared lock", "Agar compiler mengoptimalkan mutex", "Agar lock tetap dilepas meski fungsi return lebih awal atau panic", "Agar method bisa dipanggil tanpa pointer receiver"],
+      "options_en": ["So the lock becomes a shared lock", "So the compiler can optimize the mutex", "So the lock is still released even if the function returns early or panics", "So the method can be called without a pointer receiver"],
+      "correct": 2
     }
   ]
 }

@@ -8,55 +8,174 @@
   "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n)\n\ntype Shape interface {\n\tArea() float64\n\tPerimeter() float64\n}\n\ntype Circle struct {\n\tRadius float64\n}\n\nfunc (c Circle) Area() float64 {\n\treturn math.Pi * c.Radius * c.Radius\n}\n\nfunc (c Circle) Perimeter() float64 {\n\treturn 2 * math.Pi * c.Radius\n}\n\ntype Rectangle struct {\n\tWidth, Height float64\n}\n\nfunc (r Rectangle) Area() float64 {\n\treturn r.Width * r.Height\n}\n\nfunc (r Rectangle) Perimeter() float64 {\n\treturn 2 * (r.Width + r.Height)\n}\n\ntype Triangle struct {\n\tBase, Height float64\n}\n\nfunc (t Triangle) Area() float64 {\n\treturn 0.5 * t.Base * t.Height\n}\n\nfunc (t Triangle) Perimeter() float64 {\n\t// Assume right triangle for simplicity\n\thyp := math.Sqrt(t.Base*t.Base + t.Height*t.Height)\n\treturn t.Base + t.Height + hyp\n}\n\nfunc printShapeInfo(s Shape) {\n\tfmt.Printf(\"Type: %T\\n\", s)\n\tfmt.Printf(\"  Area: %.2f\\n\", s.Area())\n\tfmt.Printf(\"  Perimeter: %.2f\\n\", s.Perimeter())\n}\n\nfunc totalArea(shapes []Shape) float64 {\n\ttotal := 0.0\n\tfor _, s := range shapes {\n\t\ttotal += s.Area()\n\t}\n\treturn total\n}\n\nfunc main() {\n\tshapes := []Shape{\n\t\tCircle{Radius: 5},\n\t\tRectangle{Width: 4, Height: 6},\n\t\tTriangle{Base: 3, Height: 4},\n\t}\n\n\tfor _, s := range shapes {\n\t\tprintShapeInfo(s)\n\t}\n\n\tfmt.Printf(\"\\nTotal area of all shapes: %.2f\\n\", totalArea(shapes))\n}",
   "quiz": [
     {
-      "question_id": "Bagaimana cara sebuah tipe mengimplementasikan interface di Go?",
-      "question_en": "How does a type implement an interface in Go?",
+      "question_id": "Perubahan mana yang membuat `Circle` tidak lagi memenuhi interface `Shape`?",
+      "question_en": "Which change would make `Circle` no longer satisfy the `Shape` interface?",
       "options_id": [
-        "Dengan mendeklarasikan `type MyType implements MyInterface`",
-        "Secara implisit — dengan memiliki semua method yang didefinisikan dalam interface",
-        "Dengan menggunakan keyword `implements`",
-        "Dengan mendaftarkan tipe ke interface secara eksplisit"
+        "Mengubah field `Radius` menjadi `Diameter`",
+        "Mengubah method `Perimeter() float64` menjadi `Perimeter(unit string) float64`",
+        "Menambahkan field baru pada struct `Circle`",
+        "Mengubah urutan deklarasi method di file"
       ],
       "options_en": [
-        "By declaring `type MyType implements MyInterface`",
-        "Implicitly — by having all methods defined in the interface",
-        "By using the `implements` keyword",
-        "By explicitly registering the type with the interface"
+        "Changing the `Radius` field to `Diameter`",
+        "Changing the method `Perimeter() float64` to `Perimeter(unit string) float64`",
+        "Adding a new field to the `Circle` struct",
+        "Changing the order of method declarations in the file"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa yang terjadi jika fungsi `printShapeInfo(s Shape)` dipanggil dengan nilai nil?",
-      "question_en": "What happens if function `printShapeInfo(s Shape)` is called with a nil value?",
+      "question_id": "Mengapa `[]Shape` dapat berisi `Circle`, `Rectangle`, dan `Triangle` sekaligus?",
+      "question_en": "Why can `[]Shape` hold `Circle`, `Rectangle`, and `Triangle` at the same time?",
       "options_id": [
-        "Fungsi berjalan normal",
-        "Terjadi panic saat method dipanggil pada nil interface",
-        "Error kompilasi",
-        "Mengembalikan zero value"
+        "Karena semua struct di Go otomatis convertible satu sama lain",
+        "Karena semua shape harus memiliki field yang identik",
+        "Karena setiap elemen memiliki method set yang memenuhi `Shape`",
+        "Karena slice interface hanya menyimpan pointer"
       ],
       "options_en": [
-        "The function runs normally",
-        "Panic occurs when a method is called on a nil interface",
-        "Compilation error",
-        "Returns zero value"
+        "Because all structs in Go are automatically convertible to each other",
+        "Because all shapes must have identical fields",
+        "Because each element has a method set that satisfies `Shape`",
+        "Because interface slices only store pointers"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Jika sebuah tipe hanya punya `Area() float64` tetapi tidak punya `Perimeter() float64`, apa yang terjadi saat dipakai sebagai `Shape`?",
+      "question_en": "If a type only has `Area() float64` but not `Perimeter() float64`, what happens when it is used as `Shape`?",
+      "options_id": [
+        "Terjadi error kompilasi karena ada method yang hilang",
+        "Terjadi panic saat `Perimeter` dipanggil",
+        "Go memakai zero value sebagai hasil `Perimeter`",
+        "Compiler membuat method yang hilang secara otomatis"
+      ],
+      "options_en": [
+        "A compile-time error occurs because a method is missing",
+        "A panic occurs when `Perimeter` is called",
+        "Go uses the zero value as the `Perimeter` result",
+        "The compiler generates the missing method automatically"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Dalam `func printShapeInfo(s Shape)`, kemampuan apa yang dijamin tersedia pada `s` tanpa mengetahui tipe konkretnya?",
+      "question_en": "In `func printShapeInfo(s Shape)`, which capability is guaranteed to be available on `s` without knowing its concrete type?",
+      "options_id": [
+        "Akses langsung ke field seperti `Radius` atau `Width`",
+        "Method `Area()` dan `Perimeter()`",
+        "Semua method dari `Circle`, `Rectangle`, dan `Triangle` sekaligus",
+        "Konversi otomatis ke tipe konkret mana pun"
+      ],
+      "options_en": [
+        "Direct access to fields like `Radius` or `Width`",
+        "The methods `Area()` and `Perimeter()`",
+        "All methods from `Circle`, `Rectangle`, and `Triangle` at once",
+        "Automatic conversion to any concrete type"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa keuntungan implementasi interface yang implisit di Go dibanding Java?",
-      "question_en": "What is the advantage of Go's implicit interface implementation compared to Java?",
+      "question_id": "Apa makna utama bahwa interface di Go mendefinisikan behavior, bukan data?",
+      "question_en": "What is the main meaning of interfaces in Go defining behavior rather than data?",
       "options_id": [
-        "Lebih cepat saat runtime",
-        "Tipe bisa memenuhi interface yang belum ada saat tipe tersebut dibuat (retroaktif)",
-        "Memerlukan lebih sedikit memori",
-        "Lebih aman dari type errors"
+        "Semua implementer harus menyimpan field yang sama",
+        "Interface menentukan layout memori bersama",
+        "Tipe berbeda boleh punya representasi internal berbeda selama menyediakan method yang diminta",
+        "Interface hanya boleh dipakai oleh struct tanpa field privat"
       ],
       "options_en": [
-        "Faster at runtime",
-        "A type can satisfy interfaces that didn't exist when the type was created (retroactive)",
-        "Requires less memory",
-        "Safer from type errors"
+        "All implementers must store the same fields",
+        "The interface defines a shared memory layout",
+        "Different types may have different internal representations as long as they provide the required methods",
+        "Interfaces may only be used by structs without private fields"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa keuntungan desain dari menerima parameter `Shape` dibanding menerima `Circle` secara langsung?",
+      "question_en": "What is the design advantage of accepting a `Shape` parameter instead of accepting `Circle` directly?",
+      "options_id": [
+        "Fungsi menjadi hanya bisa dipakai oleh value receiver",
+        "Fungsi bisa bekerja dengan tipe apa pun yang memenuhi kontrak tanpa diubah",
+        "Fungsi otomatis lebih cepat",
+        "Fungsi tidak perlu import `math`"
+      ],
+      "options_en": [
+        "The function can only be used by value receivers",
+        "The function can work with any type that satisfies the contract without being changed",
+        "The function automatically becomes faster",
+        "The function no longer needs to import `math`"
       ],
       "correct": 1
+    },
+    {
+      "question_id": "Pernyataan mana yang paling tepat tentang retroactive implementation di Go?",
+      "question_en": "Which statement is most accurate about retroactive implementation in Go?",
+      "options_id": [
+        "Tipe lama harus dikompilasi ulang dengan keyword `implements`",
+        "Interface hanya bisa dipenuhi oleh tipe yang dibuat sesudah interface",
+        "Sebuah tipe dapat memenuhi interface yang didefinisikan terpisah selama signature method cocok",
+        "Compiler menambahkan stub method yang hilang secara otomatis"
+      ],
+      "options_en": [
+        "Older types must be recompiled with an `implements` keyword",
+        "An interface can only be satisfied by types created after the interface",
+        "A type can satisfy an interface defined separately as long as the method signatures match",
+        "The compiler automatically adds missing stub methods"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa yang dicetak oleh `%T` ketika dipakai pada parameter bertipe `Shape` yang berisi `Circle{Radius: 5}`?",
+      "question_en": "What does `%T` print when used on a `Shape` parameter that currently holds `Circle{Radius: 5}`?",
+      "options_id": [
+        "Nama interface `Shape`",
+        "Tipe konkret yang tersimpan, yaitu `main.Circle` atau setara path package",
+        "Alamat memori dari interface",
+        "Daftar semua method pada interface"
+      ],
+      "options_en": [
+        "The interface name `Shape`",
+        "The stored concrete type, such as `main.Circle` or the equivalent package path",
+        "The memory address of the interface",
+        "A list of all methods on the interface"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika `Shape` ditambah method baru `Color() string`, konsekuensi langsungnya apa?",
+      "question_en": "If `Shape` gets a new method `Color() string`, what is the immediate consequence?",
+      "options_id": [
+        "Semua tipe yang sebelumnya memenuhi `Shape` tetap valid tanpa perubahan",
+        "Hanya fungsi yang menerima `Shape` yang perlu diubah",
+        "Compiler memakai empty implementation untuk method baru",
+        "Setiap tipe yang ingin dipakai sebagai `Shape` harus menambahkan `Color() string`"
+      ],
+      "options_en": [
+        "All types that previously satisfied `Shape` stay valid without changes",
+        "Only functions that accept `Shape` need to be changed",
+        "The compiler uses an empty implementation for the new method",
+        "Every type that should be used as `Shape` must add `Color() string`"
+      ],
+      "correct": 3
+    },
+    {
+      "question_id": "Apa yang membedakan implementasi interface Go dari Java/C# sesuai pelajaran ini?",
+      "question_en": "According to this lesson, what distinguishes Go interface implementation from Java/C#?",
+      "options_id": [
+        "Go mewajibkan deklarasi eksplisit `implements`",
+        "Go memakai pewarisan class untuk polimorfisme",
+        "Go memakai pemenuhan implisit berdasarkan method, bukan deklarasi eksplisit",
+        "Go tidak mengizinkan satu tipe memenuhi banyak interface"
+      ],
+      "options_en": [
+        "Go requires an explicit `implements` declaration",
+        "Go uses class inheritance for polymorphism",
+        "Go uses implicit satisfaction based on methods rather than explicit declarations",
+        "Go does not allow one type to satisfy multiple interfaces"
+      ],
+      "correct": 2
     }
   ]
 }

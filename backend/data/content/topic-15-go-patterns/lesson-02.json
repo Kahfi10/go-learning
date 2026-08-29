@@ -8,24 +8,73 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\ntype DatabaseConfig struct {\n\thost     string\n\tport     int\n\tdbName   string\n\tmaxOpen  int\n\tmaxIdle  int\n\tsslMode  string\n}\n\ntype DBOption func(*DatabaseConfig)\n\n// TODO: implement the following options:\n// - WithDBHost(host string) DBOption\n// - WithDBPort(port int) DBOption\n// - WithMaxOpenConns(n int) DBOption\n// - WithMaxIdleConns(n int) DBOption\n// - WithSSLMode(mode string) DBOption\n\nfunc WithDBHost(host string) DBOption {\n\treturn func(c *DatabaseConfig) { c.host = host }\n}\n\nfunc WithDBPort(port int) DBOption {\n\treturn func(c *DatabaseConfig) { c.port = port }\n}\n\nfunc WithMaxOpenConns(n int) DBOption {\n\treturn func(c *DatabaseConfig) { c.maxOpen = n }\n}\n\nfunc WithSSLMode(mode string) DBOption {\n\treturn func(c *DatabaseConfig) { c.sslMode = mode }\n}\n\n// NewDatabase creates a DatabaseConfig with defaults\nfunc NewDatabase(dbName string, opts ...DBOption) *DatabaseConfig {\n\tcfg := &DatabaseConfig{\n\t\thost:    \"localhost\",\n\t\tport:    5432,\n\t\tdbName:  dbName,\n\t\tmaxOpen: 25,\n\t\tmaxIdle: 5,\n\t\tsslMode: \"disable\",\n\t}\n\tfor _, opt := range opts {\n\t\topt(cfg)\n\t}\n\treturn cfg\n}\n\nfunc main() {\n\t// Default config\n\tdb1 := NewDatabase(\"myapp\")\n\tfmt.Printf(\"db1: %+v\\n\", db1)\n\n\t// Custom config\n\tdb2 := NewDatabase(\"production\",\n\t\tWithDBHost(\"db.example.com\"),\n\t\tWithDBPort(5433),\n\t\tWithMaxOpenConns(50),\n\t\tWithSSLMode(\"require\"),\n\t)\n\tfmt.Printf(\"db2: %+v\\n\", db2)\n}",
   "quiz": [
     {
-      "question_id": "Apa tipe dari sebuah functional option untuk struct Server?",
-      "question_en": "What is the type of a functional option for a Server struct?",
-      "options_id": ["func(*Server)", "interface{ Apply(*Server) }", "*Server", "map[string]interface{}"],
-      "options_en": ["func(*Server)", "interface{ Apply(*Server) }", "*Server", "map[string]interface{}"],
+      "question_id": "Masalah utama constructor `NewServer(host, port, timeout, maxConn, tlsEnabled, logger)` pada lesson adalah...",
+      "question_en": "The main problem with the lesson's constructor `NewServer(host, port, timeout, maxConn, tlsEnabled, logger)` is...",
+      "options_id": ["Terlalu sedikit parameter untuk server nyata", "Pemanggil sulit memahami arti posisi argumen opsional dan konstruktor mudah berkembang jadi tidak nyaman", "Go tidak mengizinkan lebih dari tiga parameter", "Parameter boolean membuat code lebih cepat"],
+      "options_en": ["It has too few parameters for a real server", "Callers have trouble understanding positional optional arguments and the constructor becomes awkward as it grows", "Go does not allow more than three parameters", "Boolean parameters make code faster"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa tipe yang benar untuk sebuah option pada pattern ini?",
+      "question_en": "What is the correct type for an option in this pattern?",
+      "options_id": ["`func(*Server)`", "`interface{ Apply(*Server) }`", "`*Server`", "`map[string]any`"],
+      "options_en": ["`func(*Server)`", "`interface{ Apply(*Server) }`", "`*Server`", "`map[string]any`"],
       "correct": 0
     },
     {
-      "question_id": "Keuntungan utama functional options dibanding config struct atau banyak parameter adalah?",
-      "question_en": "The main advantage of functional options over a config struct or many parameters is?",
-      "options_id": ["Backward compatible — menambah opsi baru tidak membreak callers yang ada", "Lebih cepat secara performa", "Tidak membutuhkan dokumentasi", "Semua field otomatis divalidasi"],
-      "options_en": ["Backward compatible — adding new options doesn't break existing callers", "Faster performance", "No documentation needed", "All fields are automatically validated"],
+      "question_id": "Mengapa `WithTLS()` lebih self-documenting daripada memberi argumen `true` dalam constructor panjang?",
+      "question_en": "Why is `WithTLS()` more self-documenting than passing `true` in a long constructor call?",
+      "options_id": ["Karena `WithTLS()` menyatakan intent dengan nama yang jelas, bukan nilai positional yang ambigu", "Karena `true` tidak valid di Go", "Karena option function otomatis membuat sertifikat TLS", "Karena functional options hanya menerima string"],
+      "options_en": ["Because `WithTLS()` states intent clearly by name instead of using an ambiguous positional value", "Because `true` is invalid in Go", "Because an option function automatically creates a TLS certificate", "Because functional options only accept strings"],
       "correct": 0
     },
     {
-      "question_id": "Bagaimana cara NewServer menerapkan semua opsi yang diterima?",
-      "question_en": "How does NewServer apply all the received options?",
-      "options_id": ["Melakukan loop dan memanggil setiap fungsi opsi dengan pointer ke struct", "Menggunakan reflect untuk mengeset field", "Melakukan type assertion untuk setiap opsi", "Menggunakan encoding/json untuk merge"],
-      "options_en": ["Loops and calls each option function with a pointer to the struct", "Uses reflect to set fields", "Does type assertions for each option", "Uses encoding/json to merge"],
+      "question_id": "Dalam `NewServer(host string, opts ...Option)`, apa manfaat `opts ...Option`?",
+      "question_en": "In `NewServer(host string, opts ...Option)`, what is the benefit of `opts ...Option`?",
+      "options_id": ["Caller bisa memberi nol atau banyak opsi secara fleksibel", "Go otomatis menjalankan opsi secara paralel", "Field private jadi exported", "Defaults tidak lagi diperlukan"],
+      "options_en": ["The caller can provide zero or many options flexibly", "Go automatically runs the options in parallel", "Private fields become exported", "Defaults are no longer needed"],
+      "correct": 0
+    },
+    {
+      "question_id": "Urutan dasar di dalam `NewServer` pada lesson adalah...",
+      "question_en": "The basic order inside `NewServer` in the lesson is...",
+      "options_id": ["Buat server dengan defaults, lalu loop setiap option dan panggil `opt(s)`", "Loop option dulu, baru buat server", "Gunakan reflect untuk semua field lalu apply default di akhir", "Semua option dikonversi ke JSON lebih dulu"],
+      "options_en": ["Create the server with defaults, then loop over each option and call `opt(s)`", "Loop over options first, then create the server", "Use reflection for all fields and apply defaults at the end", "Convert all options to JSON first"],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika caller memanggil `NewServer(\"localhost\")` tanpa opsi tambahan, nilai port berapa yang diharapkan dari sample?",
+      "question_en": "If a caller invokes `NewServer(\"localhost\")` with no additional options, what port should be expected from the sample?",
+      "options_id": ["0", "80", "8080", "9090"],
+      "options_en": ["0", "80", "8080", "9090"],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa menambah option baru pada pattern ini cenderung backward compatible?",
+      "question_en": "Why is adding a new option in this pattern usually backward compatible?",
+      "options_id": ["Karena call sites lama tidak perlu menambah argumen positional baru", "Karena compiler menghapus API lama secara otomatis", "Karena semua option berubah menjadi interface kosong", "Karena setiap option baru wajib dipakai semua caller"],
+      "options_en": ["Because old call sites do not need to add a new positional argument", "Because the compiler automatically deletes the old API", "Because every option becomes an empty interface", "Because every caller must use each new option"],
+      "correct": 0
+    },
+    {
+      "question_id": "Manakah pemanggilan yang paling mencerminkan fleksibilitas pattern ini?",
+      "question_en": "Which call best reflects the flexibility of this pattern?",
+      "options_id": ["`NewServer(\"0.0.0.0\", WithPort(9090), WithTimeout(10*time.Second), WithTLS())`", "`NewServer(WithTLS(), 9090, \"0.0.0.0\")`", "`NewServer(true, 9090, nil)`", "`NewServer()`"],
+      "options_en": ["`NewServer(\"0.0.0.0\", WithPort(9090), WithTimeout(10*time.Second), WithTLS())`", "`NewServer(WithTLS(), 9090, \"0.0.0.0\")`", "`NewServer(true, 9090, nil)`", "`NewServer()`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang biasanya dilakukan function seperti `WithMaxConnections(n int)`?",
+      "question_en": "What does a function like `WithMaxConnections(n int)` usually do?",
+      "options_id": ["Mengembalikan function yang memodifikasi field target pada `*Server`", "Langsung menjalankan server", "Mengembalikan `Server` baru tanpa defaults", "Mendaftarkan route HTTP"],
+      "options_en": ["It returns a function that mutates the target field on `*Server`", "It starts the server immediately", "It returns a new `Server` without defaults", "It registers an HTTP route"],
+      "correct": 0
+    },
+    {
+      "question_id": "Tradeoff mana yang paling sesuai dengan lesson: mengapa pattern ini disebut fleksibel dan testable?",
+      "question_en": "Which tradeoff best matches the lesson: why is this pattern described as flexible and testable?",
+      "options_id": ["Karena test dan caller bisa memilih hanya subset opsi yang relevan tanpa harus mengisi semua parameter", "Karena option function menghilangkan semua kebutuhan default", "Karena pattern ini melarang kombinasi opsi berbeda", "Karena pattern ini hanya cocok untuk benchmark"],
+      "options_en": ["Because tests and callers can choose only the subset of options they need without filling every parameter", "Because option functions remove all need for defaults", "Because the pattern forbids different option combinations", "Because the pattern is only suitable for benchmarks"],
       "correct": 0
     }
   ]

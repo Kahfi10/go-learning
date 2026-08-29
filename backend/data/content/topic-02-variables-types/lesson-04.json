@@ -8,72 +8,174 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\nconst (\n\tAppName = \"BelajarGo\"\n\tVersion = \"1.0.0\"\n\tMaxUsers = 100\n)\n\ntype Weekday int\n\nconst (\n\tSunday Weekday = iota\n\tMonday\n\tTuesday\n\tWednesday\n\tThursday\n\tFriday\n\tSaturday\n)\n\nconst (\n\t_  = iota\n\tKB = 1 << (10 * iota)\n\tMB\n\tGB\n)\n\nfunc main() {\n\tfmt.Printf(\"App: %s v%s, MaxUsers: %d\\n\", AppName, Version, MaxUsers)\n\tfmt.Printf(\"Hari ke-1: %d (Monday)\\n\", Monday)\n\tfmt.Printf(\"Hari ke-5: %d (Friday)\\n\", Friday)\n\tfmt.Printf(\"1 KB = %d bytes\\n\", KB)\n\tfmt.Printf(\"1 MB = %d bytes\\n\", MB)\n\tfmt.Printf(\"1 GB = %d bytes\\n\", GB)\n}",
   "quiz": [
     {
-      "question_id": "Nilai awal dari `iota` dalam setiap blok `const` di Go adalah?",
-      "question_en": "What is the starting value of `iota` in each `const` block in Go?",
+      "question_id": "Apa sifat dasar konstanta menurut lesson ini?",
+      "question_en": "What is the fundamental property of constants according to this lesson?",
       "options_id": [
-        "-1",
-        "0",
-        "1",
-        "Tidak tentu"
+        "Nilainya bisa berubah selama runtime",
+        "Dievaluasi saat kompilasi dan tidak dapat diubah setelah dideklarasikan",
+        "Selalu harus bertipe `int`",
+        "Hanya boleh dideklarasikan di dalam fungsi"
       ],
       "options_en": [
-        "-1",
-        "0",
-        "1",
-        "Indeterminate"
+        "Their values can change at runtime",
+        "They are evaluated at compile time and cannot be changed after declaration",
+        "They must always have type `int`",
+        "They may only be declared inside functions"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa perbedaan utama antara 'typed constant' dan 'untyped constant' di Go?",
-      "question_en": "What is the main difference between a 'typed constant' and an 'untyped constant' in Go?",
+      "question_id": "Mengapa `untypedPi` lebih fleksibel daripada `typedPi float64`?",
+      "question_en": "Why is `untypedPi` more flexible than `typedPi float64`?",
       "options_id": [
-        "Typed constant lebih cepat diproses",
-        "Untyped constant lebih fleksibel karena tipenya ditentukan saat digunakan",
-        "Typed constant bisa diubah nilainya",
-        "Untyped constant hanya bisa digunakan untuk angka"
+        "Karena `untypedPi` tidak memiliki nilai",
+        "Karena tipenya ditentukan saat digunakan sehingga dapat cocok dengan lebih dari satu tipe numerik",
+        "Karena `untypedPi` bisa diubah, sedangkan `typedPi` tidak",
+        "Karena `typedPi` hanya berlaku di package `math`"
       ],
       "options_en": [
-        "Typed constants are processed faster",
-        "Untyped constants are more flexible because their type is determined at usage",
-        "Typed constants can have their value changed",
-        "Untyped constants can only be used for numbers"
+        "Because `untypedPi` has no value",
+        "Because its type is determined when used, so it can fit more than one numeric type",
+        "Because `untypedPi` can be changed while `typedPi` cannot",
+        "Because `typedPi` only works in the `math` package"
       ],
       "correct": 1
     },
     {
-      "question_id": "Ekspresi `1 << (10 * iota)` dengan iota=2 menghasilkan nilai berapa?",
-      "question_en": "What value does the expression `1 << (10 * iota)` produce when iota=2?",
+      "question_id": "Manakah assignment yang valid berdasarkan contoh typed vs untyped constant?",
+      "question_en": "Which assignment is valid based on the typed vs untyped constant example?",
       "options_id": [
-        "1024",
-        "1048576",
-        "1073741824",
-        "20"
+        "`var f32 float32 = typedPi`",
+        "`var f32 float32 = untypedPi`",
+        "`typedPi = 4.0`",
+        "`const x = typedPi; x = 5`"
       ],
       "options_en": [
-        "1024",
-        "1048576",
-        "1073741824",
-        "20"
+        "`var f32 float32 = typedPi`",
+        "`var f32 float32 = untypedPi`",
+        "`typedPi = 4.0`",
+        "`const x = typedPi; x = 5`"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa yang terjadi jika Anda mencoba mengubah nilai konstanta setelah dideklarasikan di Go?",
-      "question_en": "What happens if you try to change the value of a constant after declaration in Go?",
+      "question_id": "Nilai awal `iota` pada setiap blok `const` adalah?",
+      "question_en": "What is the starting value of `iota` in each `const` block?",
       "options_id": [
-        "Nilai konstanta berubah sesuai nilai baru",
-        "Program memberikan peringatan runtime",
-        "Kompilasi gagal dengan error",
-        "Nilai baru diabaikan secara diam-diam"
+        "`-1`",
+        "`0`",
+        "`1`",
+        "Tergantung tipe konstanta"
       ],
       "options_en": [
-        "The constant value changes to the new value",
-        "The program gives a runtime warning",
-        "Compilation fails with an error",
-        "The new value is silently ignored"
+        "`-1`",
+        "`0`",
+        "`1`",
+        "It depends on the constant type"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika `Sunday = iota`, berapa nilai `Wednesday` pada contoh enum hari?",
+      "question_en": "If `Sunday = iota`, what is the value of `Wednesday` in the weekday enum example?",
+      "options_id": [
+        "`2`",
+        "`3`",
+        "`4`",
+        "`6`"
+      ],
+      "options_en": [
+        "`2`",
+        "`3`",
+        "`4`",
+        "`6`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `_ = iota` dipakai pada blok ukuran byte?",
+      "question_en": "Why is `_ = iota` used in the byte-size block?",
+      "options_id": [
+        "Untuk mengabaikan nilai awal sehingga konstanta berikutnya mulai dari langkah yang diinginkan",
+        "Untuk menjadikan semua konstanta private",
+        "Untuk mereset `iota` ke nol di tengah blok",
+        "Untuk mengubah operasi shift menjadi pembagian"
+      ],
+      "options_en": [
+        "To discard the initial value so the following constants start at the intended step",
+        "To make all constants private",
+        "To reset `iota` to zero in the middle of the block",
+        "To turn the shift operation into division"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika `KB = 1 << (10 * iota)` berada setelah `_ = iota`, berapa nilai `MB`?",
+      "question_en": "If `KB = 1 << (10 * iota)` appears after `_ = iota`, what is the value of `MB`?",
+      "options_id": [
+        "`1024`",
+        "`2048`",
+        "`1048576`",
+        "`1073741824`"
+      ],
+      "options_en": [
+        "`1024`",
+        "`2048`",
+        "`1048576`",
+        "`1073741824`"
       ],
       "correct": 2
+    },
+    {
+      "question_id": "Apa yang ditunjukkan contoh `type Direction int` bersama `iota`?",
+      "question_en": "What does the `type Direction int` plus `iota` example demonstrate?",
+      "options_id": [
+        "Cara membuat konstanta mirip enum dengan nilai berurutan",
+        "Cara membuat interface baru",
+        "Cara membuat konstanta bisa diubah",
+        "Cara membuat slice otomatis dari konstanta"
+      ],
+      "options_en": [
+        "How to create enum-like constants with sequential values",
+        "How to create a new interface",
+        "How to make constants mutable",
+        "How to automatically build a slice from constants"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang terjadi jika Anda mencoba mengubah nilai konstanta setelah deklarasi?",
+      "question_en": "What happens if you try to change a constant after declaration?",
+      "options_id": [
+        "Nilai baru menggantikan yang lama saat runtime",
+        "Compiler hanya memberi warning",
+        "Kompilasi gagal dengan error",
+        "Go membuat salinan variabel baru"
+      ],
+      "options_en": [
+        "The new value replaces the old one at runtime",
+        "The compiler only gives a warning",
+        "Compilation fails with an error",
+        "Go creates a new variable copy"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Keuntungan konseptual mana yang paling tepat dari named constants seperti `StatusOK` atau `North`?",
+      "question_en": "Which conceptual benefit is most accurate for named constants like `StatusOK` or `North`?",
+      "options_id": [
+        "Membuat makna nilai lebih jelas tanpa kehilangan sifat immutable",
+        "Membuat nilai bisa dimodifikasi lebih aman saat runtime",
+        "Menghapus kebutuhan komentar dan tipe sepenuhnya",
+        "Memastikan semua konstanta disimpan di heap"
+      ],
+      "options_en": [
+        "They make the meaning of values clearer without losing immutability",
+        "They make runtime modification safer",
+        "They remove the need for comments and types entirely",
+        "They ensure all constants are stored on the heap"
+      ],
+      "correct": 0
     }
   ]
 }

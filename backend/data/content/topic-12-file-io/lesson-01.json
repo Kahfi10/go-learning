@@ -8,25 +8,74 @@
   "starterCode": "package main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"os\"\n\t\"strings\"\n)\n\nfunc writeLines(filename string, lines []string) error {\n\t// TODO: create the file, write each line using bufio.Writer, flush\n\t_ = filename\n\t_ = lines\n\treturn nil\n}\n\nfunc countWords(filename string) (int, error) {\n\t// TODO: open the file, use bufio.Scanner to read line by line\n\t// count total words using strings.Fields\n\t_ = strings.Fields\n\treturn 0, nil\n}\n\nfunc main() {\n\tlines := []string{\n\t\t\"Go is an open source programming language\",\n\t\t\"that makes it easy to build simple reliable\",\n\t\t\"and efficient software\",\n\t}\n\n\tfilename := \"temp_test.txt\"\n\n\tif err := writeLines(filename, lines); err != nil {\n\t\tfmt.Println(\"Write error:\", err)\n\t\treturn\n\t}\n\n\tcount, err := countWords(filename)\n\tif err != nil {\n\t\tfmt.Println(\"Read error:\", err)\n\t\treturn\n\t}\n\n\tfmt.Printf(\"Total words: %d\\n\", count) // should be 18\n\tos.Remove(filename)\n}",
   "quiz": [
     {
-      "question_id": "Fungsi mana yang paling efisien untuk membaca seluruh file kecil sekaligus?",
-      "question_en": "Which function is most convenient for reading an entire small file at once?",
-      "options_id": ["os.ReadFile()", "os.Open() + bufio.Scanner", "io.ReadAll()", "ioutil.ReadFile()"],
-      "options_en": ["os.ReadFile()", "os.Open() + bufio.Scanner", "io.ReadAll()", "ioutil.ReadFile()"],
+      "question_id": "Untuk file kecil yang ingin dibaca seluruhnya sekaligus, API mana yang direkomendasikan lesson?",
+      "question_en": "For a small file you want to read entirely at once, which API does the lesson recommend?",
+      "options_id": ["`os.ReadFile`", "`bufio.NewScanner`", "`os.ReadDir`", "`fmt.Fscan`"],
+      "options_en": ["`os.ReadFile`", "`bufio.NewScanner`", "`os.ReadDir`", "`fmt.Fscan`"],
       "correct": 0
     },
     {
-      "question_id": "Mengapa penting memanggil w.Flush() setelah bufio.Writer?",
-      "question_en": "Why is it important to call w.Flush() after using bufio.Writer?",
-      "options_id": ["Memastikan data yang di-buffer ditulis ke disk", "Menutup file secara otomatis", "Membebaskan memori buffer", "Memeriksa error penulisan"],
-      "options_en": ["Ensures buffered data is written to disk", "Automatically closes the file", "Frees the buffer memory", "Checks for write errors"],
+      "question_id": "Mengapa lesson menyarankan `bufio.Scanner` untuk file besar?",
+      "question_en": "Why does the lesson suggest `bufio.Scanner` for large files?",
+      "options_id": ["Karena scanner membaca baris demi baris sehingga lebih efisien daripada memuat seluruh file", "Karena scanner otomatis mengedit file saat dibaca", "Karena scanner selalu lebih cepat dari semua pendekatan I/O lain", "Karena `os.ReadFile` tidak bisa membaca file teks"],
+      "options_en": ["Because a scanner reads line by line and is more efficient than loading the whole file", "Because a scanner automatically edits the file while reading", "Because a scanner is always faster than every other I/O approach", "Because `os.ReadFile` cannot read text files"],
       "correct": 0
     },
     {
-      "question_id": "Apa yang dimaksud dengan `defer file.Close()` setelah membuka file?",
-      "question_en": "What does `defer file.Close()` do after opening a file?",
-      "options_id": ["Menutup file otomatis saat fungsi selesai, meski ada error", "Menutup file segera", "Mencegah file dari dihapus", "Mengunci file untuk penulisan"],
-      "options_en": ["Closes the file automatically when the function ends, even on error", "Closes the file immediately", "Prevents the file from being deleted", "Locks the file for writing"],
+      "question_id": "Apa yang paling penting dari `defer file.Close()` setelah `os.Open` atau `os.Create` berhasil?",
+      "question_en": "What is most important about `defer file.Close()` after `os.Open` or `os.Create` succeeds?",
+      "options_id": ["Menutup file segera sebelum dibaca", "Memastikan file ditutup saat fungsi selesai bahkan jika ada return lebih awal", "Mengubah file menjadi read-only", "Menyinkronkan semua buffer secara otomatis"],
+      "options_en": ["It closes the file immediately before reading", "It ensures the file is closed when the function ends even if there is an early return", "It turns the file into read-only mode", "It automatically syncs every buffer"],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `w.Flush()` diperlukan setelah menulis dengan `bufio.Writer`?",
+      "question_en": "Why is `w.Flush()` required after writing with `bufio.Writer`?",
+      "options_id": ["Agar file tertutup otomatis", "Agar data buffered benar-benar didorong ke file", "Agar permission file berubah menjadi 0644", "Agar scanner bisa membaca file yang sama"],
+      "options_en": ["So the file closes automatically", "So buffered data is actually pushed to the file", "So the file permissions change to 0644", "So a scanner can read the same file"],
+      "correct": 1
+    },
+    {
+      "question_id": "Pada contoh scanner, mengapa perlu memeriksa `scanner.Err()` setelah loop?",
+      "question_en": "In the scanner example, why do you need to check `scanner.Err()` after the loop?",
+      "options_id": ["Untuk mengetahui apakah scanning berhenti karena error I/O, bukan hanya karena EOF", "Karena `Scan()` tidak pernah mengembalikan false saat EOF", "Untuk menutup file secara manual", "Untuk menghitung jumlah byte yang dibaca"],
+      "options_en": ["To know whether scanning stopped because of an I/O error instead of just EOF", "Because `Scan()` never returns false at EOF", "To close the file manually", "To count the number of bytes read"],
       "correct": 0
+    },
+    {
+      "question_id": "Jika sebuah program menulis banyak baris berturut-turut ke file, pilihan mana yang paling sejalan dengan lesson?",
+      "question_en": "If a program writes many lines in succession to a file, which choice best matches the lesson?",
+      "options_id": ["Pakai `bufio.Writer` agar penulisan berulang lebih efisien", "Pakai `os.ReadFile` lebih dulu", "Pakai `os.Environ` untuk menyimpan baris", "Pakai `time.Sleep` di antara setiap `Write`"],
+      "options_en": ["Use `bufio.Writer` so repeated writes are more efficient", "Use `os.ReadFile` first", "Use `os.Environ` to store the lines", "Use `time.Sleep` between each `Write`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa arti permission `0644` pada lesson?",
+      "question_en": "What does the `0644` permission mean in the lesson?",
+      "options_id": ["Owner read+write, group read, others read", "Owner read-only, group write, others execute", "Semua orang read+write+execute", "Hanya owner yang bisa membaca file"],
+      "options_en": ["Owner read+write, group read, others read", "Owner read-only, group write, others execute", "Everyone gets read+write+execute", "Only the owner can read the file"],
+      "correct": 0
+    },
+    {
+      "question_id": "Tradeoff mana yang paling tepat antara `os.ReadFile` dan scanner berdasarkan lesson?",
+      "question_en": "Which tradeoff best captures `os.ReadFile` versus a scanner based on the lesson?",
+      "options_id": ["`os.ReadFile` cocok untuk file kecil, scanner lebih cocok untuk membaca bertahap file besar", "Scanner selalu menggantikan `os.ReadFile` di semua kasus", "`os.ReadFile` hanya boleh dipakai untuk file biner", "Scanner menulis file lebih cepat daripada `bufio.Writer`"],
+      "options_en": ["`os.ReadFile` suits small files, while a scanner is better for incremental reading of large files", "A scanner always replaces `os.ReadFile` in every case", "`os.ReadFile` may only be used for binary files", "A scanner writes files faster than `bufio.Writer`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika `os.Create(\"output.txt\")` berhasil, objek apa yang kemudian dibungkus oleh `bufio.NewWriter` pada contoh?",
+      "question_en": "If `os.Create(\"output.txt\")` succeeds, what object is then wrapped by `bufio.NewWriter` in the example?",
+      "options_id": ["Slice byte hasil `ReadFile`", "String path `output.txt`", "File handle yang dikembalikan `os.Create`", "Scanner yang sudah ada"],
+      "options_en": ["A byte slice returned by `ReadFile`", "The string path `output.txt`", "The file handle returned by `os.Create`", "An existing scanner"],
+      "correct": 2
+    },
+    {
+      "question_id": "Manakah urutan penanganan error yang paling sesuai dengan gaya contoh lesson saat membaca file?",
+      "question_en": "Which error-handling order best matches the style shown in the lesson when reading a file?",
+      "options_id": ["Baca file, abaikan error, cetak isi", "Baca atau buka file, cek `err`, lalu lanjut memproses jika tidak ada error", "Cetak isi dulu lalu cek `err`", "Panggil `Close` sebelum cek `err` hasil `Open`"],
+      "options_en": ["Read the file, ignore the error, then print the contents", "Read or open the file, check `err`, then continue processing only if there is no error", "Print the contents first and then check `err`", "Call `Close` before checking the `err` from `Open`"],
+      "correct": 1
     }
   ]
 }

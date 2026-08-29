@@ -8,24 +8,73 @@
   "starterCode": "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n\t\"testing\"\n)\n\n// EmailSender interface\ntype EmailSender interface {\n\tSend(to, subject, body string) error\n}\n\n// NotificationService uses EmailSender\ntype NotificationService struct {\n\tsender EmailSender\n}\n\nfunc (n *NotificationService) NotifyUser(email, message string) error {\n\tif email == \"\" {\n\t\treturn errors.New(\"email cannot be empty\")\n\t}\n\treturn n.sender.Send(email, \"Notification\", message)\n}\n\n// TODO: create MockEmailSender struct that implements EmailSender\n// It should:\n// - track SendCalls as a slice of structs with To, Subject, Body fields\n// - support a ShouldFail bool field that makes Send return an error\ntype MockEmailSender struct {\n\tSendCalls  []string // store recipient emails\n\tShouldFail bool\n}\n\nfunc (m *MockEmailSender) Send(to, subject, body string) error {\n\tif m.ShouldFail {\n\t\treturn errors.New(\"smtp error\")\n\t}\n\tm.SendCalls = append(m.SendCalls, to)\n\treturn nil\n}\n\nfunc TestNotifyUser_Success(t *testing.T) {\n\tmock := &MockEmailSender{}\n\tsvc := &NotificationService{sender: mock}\n\n\terr := svc.NotifyUser(\"user@example.com\", \"Hello!\")\n\tif err != nil {\n\t\tt.Fatalf(\"unexpected error: %v\", err)\n\t}\n\tif len(mock.SendCalls) != 1 {\n\t\tt.Errorf(\"expected 1 send call, got %d\", len(mock.SendCalls))\n\t}\n}\n\nfunc main() {\n\tt := &testing.T{}\n\tTestNotifyUser_Success(t)\n\tfmt.Println(\"mock test passed\")\n}",
   "quiz": [
     {
-      "question_id": "Mengapa interface membuat kode lebih mudah di-mock?",
-      "question_en": "Why do interfaces make code easier to mock?",
-      "options_id": ["Karena implementasi konkret bisa diganti dengan struct apapun yang memenuhi interface", "Karena interface lebih cepat dari struct", "Karena mock harus mewarisi dari struct asli", "Karena Go punya built-in mock generator"],
-      "options_en": ["Because any struct implementing the interface can replace the concrete implementation", "Because interfaces are faster than structs", "Because mocks must inherit from the real struct", "Because Go has a built-in mock generator"],
+      "question_id": "Mengapa `UserService` menerima `UserRepository` alih-alih `PostgresUserRepo` langsung?",
+      "question_en": "Why does `UserService` accept `UserRepository` instead of `PostgresUserRepo` directly?",
+      "options_id": ["Agar implementasi repository bisa diganti, termasuk mock saat test", "Karena interface selalu lebih cepat", "Karena struct konkret tidak bisa punya method", "Agar database query menjadi asynchronous"],
+      "options_en": ["So the repository implementation can be swapped, including a mock during tests", "Because interfaces are always faster", "Because concrete structs cannot have methods", "So database queries become asynchronous"],
       "correct": 0
     },
     {
-      "question_id": "Bagaimana cara menginject dependency yang bisa di-mock?",
-      "question_en": "How do you inject a mockable dependency?",
-      "options_id": ["Terima interface sebagai parameter atau field struct", "Gunakan variabel global", "Impor package secara langsung", "Gunakan reflect untuk mengganti implementasi"],
-      "options_en": ["Accept an interface as a parameter or struct field", "Use a global variable", "Import the package directly", "Use reflect to swap implementation"],
+      "question_id": "Dalam structural typing Go, kapan `MockUserRepo` bisa menggantikan repository nyata?",
+      "question_en": "In Go's structural typing, when can `MockUserRepo` replace the real repository?",
+      "options_id": ["Hanya jika dideklarasikan `implements UserRepository`", "Saat nama struct diawali `Mock`", "Saat ia memiliki method set yang sama dengan interface yang dibutuhkan", "Hanya di file `_test.go`"],
+      "options_en": ["Only if it is declared with `implements UserRepository`", "When the struct name starts with `Mock`", "When it has the same method set as the required interface", "Only inside `_test.go` files"],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa keuntungan field seperti `FindByIDFunc func(id int) (*User, error)` pada mock?",
+      "question_en": "What is the benefit of a field like `FindByIDFunc func(id int) (*User, error)` on the mock?",
+      "options_id": ["Per test kita bisa mengatur perilaku dependency secara spesifik tanpa mengubah production code", "Go compiler mengisi field itu otomatis", "Itu satu-satunya cara membuat interface", "Field function selalu lebih cepat dari method biasa"],
+      "options_en": ["It lets each test control dependency behavior precisely without changing production code", "The Go compiler fills that field automatically", "It is the only way to create an interface", "Function fields are always faster than normal methods"],
       "correct": 0
     },
     {
-      "question_id": "Apa keuntungan mocking dalam unit test dibanding menggunakan dependensi nyata?",
-      "question_en": "What is the advantage of mocking in unit tests over using real dependencies?",
-      "options_id": ["Test lebih cepat, deterministik, dan tidak bergantung pada infrastruktur eksternal", "Mock selalu lebih akurat", "Mock tidak memerlukan kode tambahan", "Mock otomatis dihasilkan oleh Go compiler"],
-      "options_en": ["Tests are faster, deterministic, and don't depend on external infrastructure", "Mocks are always more accurate", "Mocks require no extra code", "Mocks are automatically generated by the Go compiler"],
+      "question_id": "`SaveCalls []*User` pada mock terutama berguna untuk apa?",
+      "question_en": "What is `SaveCalls []*User` on the mock mainly useful for?",
+      "options_id": ["Menyimpan koneksi database cadangan", "Melacak interaction sehingga test bisa memverifikasi siapa yang disimpan dan berapa kali", "Meng-cache semua user production", "Menghindari kebutuhan akan interface"],
+      "options_en": ["Storing backup database connections", "Tracking interactions so tests can verify what was saved and how many times", "Caching every production user", "Avoiding the need for interfaces"],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `fmt.Errorf` dengan `%w` lebih kuat daripada hanya mencetak error biasa?",
+      "question_en": "Why is `fmt.Errorf` with `%w` stronger than simply printing the error value?",
+      "options_id": ["Karena `%w` menambah konteks sambil tetap membungkus error asli untuk di-unwrapping", "Karena `%w` menghapus error asli dari chain", "Karena `%w` otomatis mengubah error jadi HTTP response", "Karena `%w` membuat function panic"],
+      "options_en": ["Because `%w` adds context while still wrapping the original error for unwrapping", "Because `%w` removes the original error from the chain", "Because `%w` automatically turns the error into an HTTP response", "Because `%w` makes the function panic"],
+      "correct": 0
+    },
+    {
+      "question_id": "Dependency mana yang paling tepat dimock menurut lesson?",
+      "question_en": "Which dependency is the most appropriate to mock according to the lesson?",
+      "options_id": ["Struct data sederhana seperti `User`", "Repository atau service eksternal yang membuat test tidak terisolasi", "Nilai literal seperti `int` dan `string`", "Package `testing` itu sendiri"],
+      "options_en": ["A simple data struct like `User`", "A repository or external service that would make the test non-isolated", "Literal values like `int` and `string`", "The `testing` package itself"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa kualitas unit test yang biasanya meningkat saat memakai mock dibanding DB nyata?",
+      "question_en": "What unit test qualities usually improve when using a mock instead of a real database?",
+      "options_id": ["Test menjadi lebih deterministik, cepat, dan tidak tergantung infrastruktur eksternal", "Test selalu mencakup lebih banyak integrasi", "Test tidak perlu assertion", "Error handling production jadi tidak penting"],
+      "options_en": ["Tests become more deterministic, faster, and independent of external infrastructure", "Tests always cover more integrations", "Tests no longer need assertions", "Production error handling stops mattering"],
+      "correct": 0
+    },
+    {
+      "question_id": "Cara injeksi dependency yang paling sesuai agar mudah di-mock adalah...",
+      "question_en": "What is the most appropriate way to inject a dependency so it is easy to mock?",
+      "options_id": ["Membuat `PostgresUserRepo` langsung di dalam method service", "Menyimpan repository di variabel global", "Menerima interface sebagai field struct atau parameter konstruktor", "Menggunakan `reflect` untuk menukar implementasi saat runtime"],
+      "options_en": ["Constructing `PostgresUserRepo` directly inside the service method", "Storing the repository in a global variable", "Accepting an interface as a struct field or constructor parameter", "Using `reflect` to swap the implementation at runtime"],
+      "correct": 2
+    },
+    {
+      "question_id": "Jika `MockUserRepo.FindByIDFunc` bernilai `nil` pada kode lesson, method `FindByID` mock akan...",
+      "question_en": "If `MockUserRepo.FindByIDFunc` is `nil` in the lesson's code, what will the mock's `FindByID` method do?",
+      "options_id": ["panic karena function field kosong", "mengembalikan `nil, nil`", "mengembalikan user default dengan ID 0", "otomatis memanggil repository production"],
+      "options_en": ["panic because the function field is empty", "return `nil, nil`", "return a default user with ID 0", "automatically call the production repository"],
+      "correct": 1
+    },
+    {
+      "question_id": "Jenis assertion apa yang dimungkinkan oleh mock dengan call tracking, tetapi sulit dilakukan jika hanya memeriksa return value?",
+      "question_en": "What kind of assertion becomes possible with a mock that tracks calls, but is difficult if you only inspect return values?",
+      "options_id": ["Memverifikasi bahwa `Save` dipanggil dengan argumen yang diharapkan", "Memastikan compiler Go versi terbaru", "Mengukur benchmark allocation", "Mengecek syntax highlighting editor"],
+      "options_en": ["Verifying that `Save` was called with the expected argument", "Confirming the Go compiler is the latest version", "Measuring benchmark allocations", "Checking editor syntax highlighting"],
       "correct": 0
     }
   ]

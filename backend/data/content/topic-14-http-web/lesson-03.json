@@ -8,25 +8,74 @@
   "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"log\"\n\t\"net/http\"\n\t\"time\"\n)\n\n// TODO: implement loggingMiddleware that:\n// - logs \"[METHOD] /path\" before calling next\n// - logs the duration after calling next\nfunc loggingMiddleware(next http.Handler) http.Handler {\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tstart := time.Now()\n\t\tlog.Printf(\"%s %s\", r.Method, r.URL.Path)\n\t\tnext.ServeHTTP(w, r)\n\t\tlog.Printf(\"done in %v\", time.Since(start))\n\t})\n}\n\n// TODO: implement recoveryMiddleware that:\n// - uses defer + recover() to catch panics\n// - returns 500 Internal Server Error on panic\nfunc recoveryMiddleware(next http.Handler) http.Handler {\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tdefer func() {\n\t\t\tif err := recover(); err != nil {\n\t\t\t\tlog.Printf(\"panic: %v\", err)\n\t\t\t\thttp.Error(w, \"Internal Server Error\", http.StatusInternalServerError)\n\t\t\t}\n\t\t}()\n\t\tnext.ServeHTTP(w, r)\n\t})\n}\n\nfunc helloHandler(w http.ResponseWriter, r *http.Request) {\n\tfmt.Fprintln(w, \"Hello from handler!\")\n}\n\nfunc panicHandler(w http.ResponseWriter, r *http.Request) {\n\tpanic(\"something went terribly wrong\")\n}\n\nfunc main() {\n\tmux := http.NewServeMux()\n\tmux.HandleFunc(\"/hello\", helloHandler)\n\tmux.HandleFunc(\"/panic\", panicHandler)\n\n\t// Apply both middleware to all routes\n\thandler := loggingMiddleware(recoveryMiddleware(mux))\n\n\tfmt.Println(\"Server on :8080\")\n\thttp.ListenAndServe(\":8080\", handler)\n}",
   "quiz": [
     {
-      "question_id": "Signature yang benar untuk sebuah middleware Go adalah?",
-      "question_en": "What is the correct signature of a Go middleware?",
-      "options_id": ["func(http.Handler) http.Handler", "func(http.ResponseWriter, *http.Request)", "func(next func()) http.Handler", "func middleware(h *http.Handler)"],
-      "options_en": ["func(http.Handler) http.Handler", "func(http.ResponseWriter, *http.Request)", "func(next func()) http.Handler", "func middleware(h *http.Handler)"],
+      "question_id": "Signature mana yang sesuai dengan definisi middleware pada lesson?",
+      "question_en": "Which signature matches the lesson's definition of middleware?",
+      "options_id": ["`func(http.Handler) http.Handler`", "`func(http.ResponseWriter, *http.Request)`", "`func(func()) http.Handler`", "`func(*http.Request) error`"],
+      "options_en": ["`func(http.Handler) http.Handler`", "`func(http.ResponseWriter, *http.Request)`", "`func(func()) http.Handler`", "`func(*http.Request) error`"],
       "correct": 0
     },
     {
-      "question_id": "Apa yang dilakukan `next.ServeHTTP(w, r)` di dalam middleware?",
+      "question_id": "Mengapa middleware pada contoh mengembalikan `http.HandlerFunc(...)`?",
+      "question_en": "Why do the example middlewares return `http.HandlerFunc(...)`?",
+      "options_id": ["Agar handler bisa dijalankan paralel otomatis", "Karena `http.HandlerFunc` mengadaptasi function biasa menjadi `http.Handler`", "Karena `HandlerFunc` wajib untuk autentikasi", "Agar request body tersimpan di context"],
+      "options_en": ["So handlers automatically run in parallel", "Because `http.HandlerFunc` adapts an ordinary function into an `http.Handler`", "Because `HandlerFunc` is mandatory for authentication", "So the request body is stored in context"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa fungsi `next.ServeHTTP(w, r)` di dalam middleware?",
       "question_en": "What does `next.ServeHTTP(w, r)` do inside middleware?",
-      "options_id": ["Meneruskan request ke handler/middleware berikutnya dalam chain", "Mengakhiri request cycle", "Mengirim response ke client", "Membuat request baru"],
-      "options_en": ["Passes the request to the next handler/middleware in the chain", "Ends the request cycle", "Sends a response to the client", "Creates a new request"],
+      "options_id": ["Membuat request baru ke server lain", "Mengubah route pattern saat runtime", "Meneruskan request ke handler atau middleware berikutnya dalam chain", "Menutup koneksi sebelum response dikirim"],
+      "options_en": ["It creates a new request to another server", "It changes the route pattern at runtime", "It passes the request to the next handler or middleware in the chain", "It closes the connection before the response is sent"],
+      "correct": 2
+    },
+    {
+      "question_id": "Jika auth middleware menulis 401 lalu `return` sebelum memanggil `next.ServeHTTP`, apa yang terjadi pada handler berikutnya?",
+      "question_en": "If the auth middleware writes a 401 and then `return`s before calling `next.ServeHTTP`, what happens to the next handler?",
+      "options_id": ["Handler berikutnya tetap berjalan tetapi tidak bisa menulis body", "Handler berikutnya tidak dijalankan", "Semua middleware sebelumnya dibatalkan", "Server otomatis retry request"],
+      "options_en": ["The next handler still runs but cannot write a body", "The next handler does not run", "All previous middlewares are cancelled", "The server automatically retries the request"],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa fungsi `chain` menerapkan middleware dalam loop terbalik?",
+      "question_en": "Why does the `chain` function apply middleware in reverse order?",
+      "options_id": ["Agar middleware pertama yang diberikan menjadi yang pertama menerima request", "Agar middleware terakhir selalu diskip", "Karena `http.Handler` hanya bisa dibungkus sekali", "Untuk menghindari penggunaan context"],
+      "options_en": ["So the first middleware provided is the first one to receive the request", "So the last middleware is always skipped", "Because an `http.Handler` can only be wrapped once", "To avoid using context"],
       "correct": 0
     },
     {
-      "question_id": "Bagaimana cara passing data dari middleware ke handler menggunakan context?",
-      "question_en": "How do you pass data from middleware to a handler using context?",
-      "options_id": ["context.WithValue + r.WithContext(ctx)", "r.SetValue(key, val)", "w.Header().Set(key, val)", "r.Context().Set(key, val)"],
-      "options_en": ["context.WithValue + r.WithContext(ctx)", "r.SetValue(key, val)", "w.Header().Set(key, val)", "r.Context().Set(key, val)"],
+      "question_id": "Dengan pemanggilan `chain(apiHandler, loggingMiddleware, authMiddleware)`, urutan eksekusi request yang benar adalah...",
+      "question_en": "With the call `chain(apiHandler, loggingMiddleware, authMiddleware)`, what is the correct request execution order?",
+      "options_id": ["auth -> logging -> handler", "logging -> auth -> handler", "handler -> logging -> auth", "logging -> handler -> auth"],
+      "options_en": ["auth -> logging -> handler", "logging -> auth -> handler", "handler -> logging -> auth", "logging -> handler -> auth"],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa sample menggunakan `mux.Handle(\"/api/\", chain(...))` dan bukan `HandleFunc`?",
+      "question_en": "Why does the sample use `mux.Handle(\"/api/\", chain(...))` instead of `HandleFunc`?",
+      "options_id": ["Karena hasil `chain(...)` adalah `http.Handler`, bukan function mentah", "Karena `HandleFunc` tidak mendukung path dengan slash", "Karena middleware hanya bisa dipasang pada `Handle`", "Karena `HandleFunc` selalu global"],
+      "options_en": ["Because the result of `chain(...)` is an `http.Handler`, not a raw function", "Because `HandleFunc` does not support paths with slashes", "Because middleware can only be attached to `Handle`", "Because `HandleFunc` is always global"],
       "correct": 0
+    },
+    {
+      "question_id": "Bagaimana data seperti user dapat diteruskan dari middleware ke handler berikutnya?",
+      "question_en": "How can data such as the user be passed from middleware to the next handler?",
+      "options_id": ["Dengan menulisnya ke response header", "Dengan variabel global package", "Dengan mengubah `r.URL.Path`", "Dengan `context.WithValue` lalu `r.WithContext(ctx)`"],
+      "options_en": ["By writing it into a response header", "By using a package-level global variable", "By changing `r.URL.Path`", "By using `context.WithValue` and then `r.WithContext(ctx)`"],
+      "correct": 3
+    },
+    {
+      "question_id": "Apa manfaat konseptual utama middleware dibanding menaruh logging/auth langsung di setiap handler?",
+      "question_en": "What is the main conceptual benefit of middleware compared with putting logging/auth directly in every handler?",
+      "options_id": ["Menambahkan cross-cutting behavior tanpa mengubah handler asli", "Membuat semua route menjadi private", "Menghilangkan kebutuhan router", "Memaksa semua request menjadi JSON"],
+      "options_en": ["It adds cross-cutting behavior without changing the original handler", "It makes all routes private", "It removes the need for a router", "It forces every request to become JSON"],
+      "correct": 0
+    },
+    {
+      "question_id": "Route mana pada sample yang sengaja hanya memakai logging dan tidak memakai auth middleware?",
+      "question_en": "Which route in the sample intentionally uses only logging and not the auth middleware?",
+      "options_id": ["`/api/`", "`/admin/`", "`/`", "`/healthz`"],
+      "options_en": ["`/api/`", "`/admin/`", "`/`", "`/healthz`"],
+      "correct": 2
     }
   ]
 }

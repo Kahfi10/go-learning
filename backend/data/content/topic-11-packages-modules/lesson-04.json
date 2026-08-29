@@ -8,24 +8,73 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\n// This file demonstrates module concepts.\n// In a real project you would have a go.mod file.\n\n// Simulated version info from a hypothetical go.mod\nconst moduleVersion = \"v1.0.0\"\nconst moduleName = \"github.com/example/learngo\"\n\nfunc printModuleInfo() {\n\tfmt.Printf(\"Module: %s\\n\", moduleName)\n\tfmt.Printf(\"Version: %s\\n\", moduleVersion)\n}\n\n// Semantic version parser\nfunc parseVersion(v string) (major, minor, patch int) {\n\t// TODO: parse \"v1.2.3\" format and return 1, 2, 3\n\t// Hint: use fmt.Sscanf(v, \"v%d.%d.%d\", &major, &minor, &patch)\n\tfmt.Sscanf(v, \"v%d.%d.%d\", &major, &minor, &patch)\n\treturn\n}\n\nfunc main() {\n\tprintModuleInfo()\n\n\tmaj, min, pat := parseVersion(\"v2.5.13\")\n\tfmt.Printf(\"Major: %d, Minor: %d, Patch: %d\\n\", maj, min, pat)\n}",
   "quiz": [
     {
-      "question_id": "Perintah apa yang digunakan untuk menambahkan dependensi baru ke Go module?",
-      "question_en": "Which command adds a new dependency to a Go module?",
-      "options_id": ["go get <package>", "go import <package>", "go add <package>", "go install <package>"],
-      "options_en": ["go get <package>", "go import <package>", "go add <package>", "go install <package>"],
+      "question_id": "Perintah mana yang menambahkan dependensi Gin pada versi spesifik `v1.9.1` seperti di lesson?",
+      "question_en": "Which command adds the Gin dependency at the specific version `v1.9.1` as shown in the lesson?",
+      "options_id": ["`go get github.com/gin-gonic/gin`", "`go get github.com/gin-gonic/gin@v1.9.1`", "`go mod add github.com/gin-gonic/gin v1.9.1`", "`go install github.com/gin-gonic/gin@v1.9.1`"],
+      "options_en": ["`go get github.com/gin-gonic/gin`", "`go get github.com/gin-gonic/gin@v1.9.1`", "`go mod add github.com/gin-gonic/gin v1.9.1`", "`go install github.com/gin-gonic/gin@v1.9.1`"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa fungsi utama file `go.mod` menurut lesson?",
+      "question_en": "What is the main role of `go.mod` according to the lesson?",
+      "options_id": ["Menyimpan hash integritas dependency", "Mendefinisikan module dan dependensinya", "Menyimpan seluruh source code vendor", "Menjalankan perintah build otomatis"],
+      "options_en": ["It stores dependency integrity hashes", "It defines the module and its dependencies", "It stores all vendored source code", "It automatically runs build commands"],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika lesson mengatakan `go.sum` berisi hash kriptografis, tradeoff apa yang dibantu file itu tangani?",
+      "question_en": "If the lesson says `go.sum` contains cryptographic hashes, what concern does that file help address?",
+      "options_id": ["Integritas dependency yang diunduh", "Penamaan package lokal", "Urutan eksekusi `init()`", "Ukuran binary release"],
+      "options_en": ["The integrity of downloaded dependencies", "Naming local packages", "The execution order of `init()`", "The size of release binaries"],
       "correct": 0
     },
     {
-      "question_id": "Apa fungsi dari perintah `go mod tidy`?",
-      "question_en": "What does the `go mod tidy` command do?",
-      "options_id": ["Menambahkan dependensi yang hilang dan menghapus yang tidak digunakan", "Mendownload semua dependensi", "Memperbarui semua dependensi ke versi terbaru", "Membuat file go.sum baru"],
-      "options_en": ["Adds missing dependencies and removes unused ones", "Downloads all dependencies", "Updates all dependencies to latest", "Creates a new go.sum file"],
+      "question_id": "Menurut semantic versioning pada lesson, bagian mana yang berubah untuk backward-compatible new features?",
+      "question_en": "According to the semantic versioning section, which part changes for backward-compatible new features?",
+      "options_id": ["PATCH", "MINOR", "MAJOR", "Build metadata"],
+      "options_en": ["PATCH", "MINOR", "MAJOR", "Build metadata"],
+      "correct": 1
+    },
+    {
+      "question_id": "Kapan import path perlu suffix major version seperti `/v2`?",
+      "question_en": "When does an import path need a major version suffix such as `/v2`?",
+      "options_id": ["Saat major version 2 atau lebih", "Saat patch version berubah", "Selalu untuk dependency eksternal", "Hanya di Windows"],
+      "options_en": ["When the major version is 2 or greater", "When the patch version changes", "Always for external dependencies", "Only on Windows"],
       "correct": 0
     },
     {
-      "question_id": "Kapan import path membutuhkan suffix versi major (seperti /v2)?",
-      "question_en": "When does an import path require a major version suffix (like /v2)?",
-      "options_id": ["Ketika major version >= 2", "Ketika minor version berubah", "Selalu", "Hanya untuk package stdlib"],
-      "options_en": ["When major version is >= 2", "When minor version changes", "Always", "Only for stdlib packages"],
+      "question_id": "Kapan `replace github.com/original/lib => ../local-fork` paling masuk akal dipakai?",
+      "question_en": "When does `replace github.com/original/lib => ../local-fork` make the most sense?",
+      "options_id": ["Saat ingin menguji atau mengembangkan terhadap copy lokal dependency", "Saat ingin menghapus dependency dari project", "Saat ingin memaksa semua import menjadi relative path", "Saat ingin menambahkan hash ke `go.sum`"],
+      "options_en": ["When you want to test or develop against a local copy of a dependency", "When you want to remove a dependency from the project", "When you want to force every import into a relative path", "When you want to add hashes to `go.sum`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang dilakukan `go mod tidy` dibanding `go mod download`?",
+      "question_en": "What does `go mod tidy` do compared with `go mod download`?",
+      "options_id": ["`tidy` menyelaraskan daftar dependency yang dipakai, sedangkan `download` hanya mengunduh dependency", "`tidy` dan `download` adalah alias untuk perintah yang sama", "`tidy` hanya membuat vendor directory", "`download` menghapus dependency yang tidak dipakai"],
+      "options_en": ["`tidy` reconciles the dependency list in use, while `download` only fetches dependencies", "`tidy` and `download` are aliases for the same command", "`tidy` only creates the vendor directory", "`download` removes unused dependencies"],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika library merilis breaking changes dari `v1` ke `v2`, apa petunjuk penting yang diberikan lesson untuk pemanggilnya?",
+      "question_en": "If a library ships breaking changes from `v1` to `v2`, what important clue does the lesson give callers?",
+      "options_id": ["Mereka harus mengganti import path menjadi menyertakan `/v2`", "Mereka cukup menjalankan `go mod tidy` tanpa mengubah kode", "Mereka harus memindahkan project ke GOPATH", "Mereka tidak boleh lagi memakai `go get`"],
+      "options_en": ["They must change the import path to include `/v2`", "They only need to run `go mod tidy` without changing code", "They must move the project back into GOPATH", "They may no longer use `go get`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Perintah mana yang menampilkan semua dependency module?",
+      "question_en": "Which command lists all module dependencies?",
+      "options_id": ["`go list -m all`", "`go mod all`", "`go deps`", "`go sum list`"],
+      "options_en": ["`go list -m all`", "`go mod all`", "`go deps`", "`go sum list`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Pernyataan mana yang paling tepat tentang `go mod vendor` menurut lesson?",
+      "question_en": "Which statement is most accurate about `go mod vendor` according to the lesson?",
+      "options_id": ["Perintah itu menyalin dependency ke direktori `vendor/`", "Perintah itu menghapus semua dependency eksternal", "Perintah itu hanya memperbarui `go.sum`", "Perintah itu mengganti module path utama"],
+      "options_en": ["It copies dependencies into the `vendor/` directory", "It removes all external dependencies", "It only updates `go.sum`", "It changes the main module path"],
       "correct": 0
     }
   ]

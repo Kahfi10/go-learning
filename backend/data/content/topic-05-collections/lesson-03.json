@@ -8,45 +8,174 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\nfunc deleteAt(s []int, i int) []int {\n\treturn append(s[:i], s[i+1:]...)\n}\n\nfunc insertAt(s []int, i, val int) []int {\n\ts = append(s, 0)\n\tcopy(s[i+1:], s[i:])\n\ts[i] = val\n\treturn s\n}\n\nfunc reverse(s []int) {\n\tfor i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {\n\t\ts[i], s[j] = s[j], s[i]\n\t}\n}\n\nfunc main() {\n\t// copy\n\tsrc := []int{1, 2, 3, 4, 5}\n\tdst := make([]int, len(src))\n\tcopy(dst, src)\n\tdst[0] = 99\n\tfmt.Println(\"src:\", src)\n\tfmt.Println(\"dst:\", dst)\n\n\t// three-index slicing\n\tarr := []int{0, 1, 2, 3, 4, 5}\n\ts := arr[1:4:5]\n\tfmt.Printf(\"s=%v len=%d cap=%d\\n\", s, len(s), cap(s))\n\n\t// delete element\n\tnums := []int{10, 20, 30, 40, 50}\n\tnums = deleteAt(nums, 2)\n\tfmt.Println(\"After delete:\", nums)\n\n\t// insert element\n\tnums2 := []int{1, 2, 4, 5}\n\tnums2 = insertAt(nums2, 2, 3)\n\tfmt.Println(\"After insert:\", nums2)\n\n\t// reverse\n\tr := []int{1, 2, 3, 4, 5}\n\treverse(r)\n\tfmt.Println(\"Reversed:\", r)\n}",
   "quiz": [
     {
-      "question_id": "Apa yang dilakukan `copy(dst, src)` ketika `len(dst) < len(src)`?",
-      "question_en": "What does `copy(dst, src)` do when `len(dst) < len(src)`?",
+      "question_id": "Apa yang dijamin oleh `copy(dst, src)` tentang relasi memori antara hasil di `dst` dan elemen `src`?",
+      "question_en": "What does `copy(dst, src)` guarantee about the memory relationship between the copied values in `dst` and the elements in `src`?",
       "options_id": [
-        "Error runtime",
-        "Menyalin elemen sebanyak len(dst)",
-        "Menyalin semua elemen src dan memperbesar dst",
-        "Tidak menyalin apapun"
+        "`dst` dan `src` selalu berbagi memori yang sama",
+        "Elemen disalin sehingga perubahan pada `dst` tidak mengubah `src`",
+        "`copy` hanya menyalin header slice, bukan elemennya",
+        "`copy` memindahkan data dan mengosongkan `src`"
       ],
       "options_en": [
-        "Runtime error",
-        "Copies len(dst) elements",
-        "Copies all src elements and grows dst",
-        "Copies nothing"
+        "`dst` and `src` always share the same memory",
+        "The elements are copied so changing `dst` does not change `src`",
+        "`copy` only copies the slice header, not the elements",
+        "`copy` moves the data and empties `src`"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa yang dilakukan `s = append(s[:i], s[i+1:]...)`?",
-      "question_en": "What does `s = append(s[:i], s[i+1:]...)` do?",
+      "question_id": "Jika `len(dst) < len(src)`, berapa banyak elemen yang akan disalin oleh `copy(dst, src)`?",
+      "question_en": "If `len(dst) < len(src)`, how many elements will `copy(dst, src)` copy?",
       "options_id": [
-        "Menyisipkan elemen di indeks i",
-        "Menghapus elemen di indeks i",
-        "Membalik slice dari i ke akhir",
-        "Menyalin slice dari i ke akhir"
+        "`len(src)`",
+        "`len(dst)`",
+        "`cap(dst)`",
+        "Tidak ada, karena ini panic"
       ],
       "options_en": [
-        "Inserts an element at index i",
-        "Deletes the element at index i",
-        "Reverses the slice from i to end",
-        "Copies the slice from i to end"
+        "`len(src)`",
+        "`len(dst)`",
+        "`cap(dst)`",
+        "None, because this panics"
       ],
       "correct": 1
     },
     {
-      "question_id": "Dalam `s := arr[1:4:6]`, berapa nilai `cap(s)`?",
-      "question_en": "In `s := arr[1:4:6]`, what is the value of `cap(s)`?",
-      "options_id": ["3", "4", "5", "6"],
-      "options_en": ["3", "4", "5", "6"],
+      "question_id": "Dalam `s := arr[1:4:5]`, bagaimana menghitung `cap(s)` menurut lesson?",
+      "question_en": "In `s := arr[1:4:5]`, how is `cap(s)` calculated according to the lesson?",
+      "options_id": [
+        "`high - low`",
+        "`len(arr) - high`",
+        "`max - low`",
+        "`max - high`"
+      ],
+      "options_en": [
+        "`high - low`",
+        "`len(arr) - high`",
+        "`max - low`",
+        "`max - high`"
+      ],
       "correct": 2
+    },
+    {
+      "question_id": "Jika `arr := []int{0,1,2,3,4,5}` dan `s := arr[1:4:5]`, berapa `len(s)` dan `cap(s)`?",
+      "question_en": "If `arr := []int{0,1,2,3,4,5}` and `s := arr[1:4:5]`, what are `len(s)` and `cap(s)`?",
+      "options_id": [
+        "`len=4`, `cap=5`",
+        "`len=3`, `cap=4`",
+        "`len=3`, `cap=5`",
+        "`len=4`, `cap=4`"
+      ],
+      "options_en": [
+        "`len=4`, `cap=5`",
+        "`len=3`, `cap=4`",
+        "`len=3`, `cap=5`",
+        "`len=4`, `cap=4`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa manfaat utama three-index slicing dibanding `arr[1:4]` biasa?",
+      "question_en": "What is the main benefit of three-index slicing compared with ordinary `arr[1:4]`?",
+      "options_id": [
+        "Membuat salinan otomatis dari elemen slice",
+        "Membatasi capacity slice turunan agar tidak dengan mudah meluas ke bagian array yang tidak diinginkan",
+        "Mengubah slice menjadi array fixed-size",
+        "Memastikan append tidak pernah realokasi"
+      ],
+      "options_en": [
+        "It automatically makes a copy of the slice elements",
+        "It limits the capacity of the derived slice so it cannot easily extend into unwanted parts of the backing array",
+        "It turns the slice into a fixed-size array",
+        "It guarantees append never reallocates"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa hasil dari `s = append(s[:i], s[i+1:]...)` pada slice?",
+      "question_en": "What is the effect of `s = append(s[:i], s[i+1:]...)` on a slice?",
+      "options_id": [
+        "Menyisipkan nilai kosong di index `i`",
+        "Menghapus elemen di index `i` dengan menyambung bagian sebelum dan sesudahnya",
+        "Menyalin seluruh slice ke buffer baru setiap saat",
+        "Membalik urutan elemen setelah index `i`"
+      ],
+      "options_en": [
+        "It inserts a zero value at index `i`",
+        "It deletes the element at index `i` by joining the parts before and after it",
+        "It always copies the whole slice into a new buffer",
+        "It reverses the elements after index `i`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa fungsi `insertAt` pada lesson memanggil `append(s, 0)` sebelum `copy(s[i+1:], s[i:])`?",
+      "question_en": "Why does the lesson's `insertAt` function call `append(s, 0)` before `copy(s[i+1:], s[i:])`?",
+      "options_id": [
+        "Untuk menambah panjang slice dulu sehingga ada ruang bagi elemen yang akan disisipkan",
+        "Untuk mengurutkan slice sebelum menyisipkan",
+        "Untuk menghapus elemen di akhir secara permanen",
+        "Untuk memastikan semua nilai setelah `i` menjadi nol"
+      ],
+      "options_en": [
+        "To grow the slice first so there is room for the inserted element",
+        "To sort the slice before inserting",
+        "To permanently delete the last element",
+        "To ensure all values after `i` become zero"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Dalam `insertAt`, apa peran `copy(s[i+1:], s[i:])`?",
+      "question_en": "In `insertAt`, what is the role of `copy(s[i+1:], s[i:])`?",
+      "options_id": [
+        "Menggeser elemen mulai dari `i` satu langkah ke kanan",
+        "Menggeser elemen mulai dari `i` satu langkah ke kiri",
+        "Menghapus semua elemen setelah `i`",
+        "Membuat slice baru yang terurut"
+      ],
+      "options_en": [
+        "It shifts the elements starting at `i` one position to the right",
+        "It shifts the elements starting at `i` one position to the left",
+        "It deletes all elements after `i`",
+        "It creates a new sorted slice"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa 2D slice pada lesson dibuat dengan `make([][]int, rows)` lalu setiap baris diinisialisasi lagi?",
+      "question_en": "Why is the 2D slice in the lesson built with `make([][]int, rows)` and then each row initialized separately?",
+      "options_id": [
+        "Karena outer slice hanya menampung header untuk tiap baris, sedangkan isi tiap baris perlu dialokasikan terpisah",
+        "Karena `make` tidak bisa membuat outer slice dan inner slice sekaligus di Go",
+        "Karena inner slice harus selalu punya panjang berbeda",
+        "Karena itu membuat setiap row otomatis terurut"
+      ],
+      "options_en": [
+        "Because the outer slice only holds per-row slice headers, while each row's contents must be allocated separately",
+        "Because `make` cannot create both outer and inner slices in Go",
+        "Because inner slices must always have different lengths",
+        "Because it makes every row automatically sorted"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa algoritme reverse pada lesson menggunakan dua index `i, j := 0, len(s)-1`?",
+      "question_en": "Why does the lesson's reverse algorithm use two indices `i, j := 0, len(s)-1`?",
+      "options_id": [
+        "Untuk menukar elemen dari dua ujung menuju tengah secara in-place",
+        "Untuk membuat salinan kedua sebelum membalik",
+        "Untuk menemukan capacity maksimum slice",
+        "Untuk menghindari semua assignment di dalam loop"
+      ],
+      "options_en": [
+        "To swap elements from both ends toward the middle in place",
+        "To make a second copy before reversing",
+        "To find the maximum slice capacity",
+        "To avoid all assignments inside the loop"
+      ],
+      "correct": 0
     }
   ]
 }

@@ -8,70 +8,172 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\ntype Rectangle struct {\n\tWidth  float64\n\tHeight float64\n}\n\nfunc (r Rectangle) Area() float64 {\n\treturn r.Width * r.Height\n}\n\nfunc (r Rectangle) Perimeter() float64 {\n\treturn 2 * (r.Width + r.Height)\n}\n\nfunc (r *Rectangle) Scale(factor float64) {\n\tr.Width *= factor\n\tr.Height *= factor\n}\n\ntype BankAccount struct {\n\tOwner   string\n\tBalance float64\n}\n\nfunc (b *BankAccount) Deposit(amount float64) {\n\tif amount > 0 {\n\t\tb.Balance += amount\n\t}\n}\n\nfunc (b *BankAccount) Withdraw(amount float64) bool {\n\tif amount > b.Balance {\n\t\treturn false\n\t}\n\tb.Balance -= amount\n\treturn true\n}\n\nfunc (b BankAccount) String() string {\n\treturn fmt.Sprintf(\"Account[%s]: Rp %.2f\", b.Owner, b.Balance)\n}\n\nfunc main() {\n\t// Rectangle methods\n\trect := Rectangle{Width: 6, Height: 4}\n\tfmt.Printf(\"Area: %.1f\\n\", rect.Area())\n\tfmt.Printf(\"Perimeter: %.1f\\n\", rect.Perimeter())\n\trect.Scale(2)\n\tfmt.Printf(\"After scale 2x: %.1f x %.1f\\n\", rect.Width, rect.Height)\n\n\t// BankAccount methods\n\taccount := BankAccount{Owner: \"Alice\", Balance: 1_000_000}\n\taccount.Deposit(500_000)\n\tsuccess := account.Withdraw(200_000)\n\tfmt.Println(account)\n\tfmt.Println(\"Withdrawal success:\", success)\n\n\tfailed := account.Withdraw(5_000_000)\n\tfmt.Println(\"Large withdrawal success:\", failed)\n}",
   "quiz": [
     {
-      "question_id": "Apa perbedaan antara value receiver dan pointer receiver?",
-      "question_en": "What is the difference between a value receiver and a pointer receiver?",
+      "question_id": "Apa perbedaan inti antara value receiver dan pointer receiver?",
+      "question_en": "What is the core difference between a value receiver and a pointer receiver?",
       "options_id": [
-        "Value receiver bisa mengubah nilai asli, pointer receiver tidak",
-        "Pointer receiver bisa mengubah nilai asli, value receiver bekerja pada salinan",
-        "Tidak ada perbedaan fungsional",
-        "Value receiver lebih lambat dari pointer receiver"
+        "Value receiver bekerja pada salinan, pointer receiver dapat memodifikasi nilai asli",
+        "Pointer receiver selalu lebih cepat tanpa pengecualian",
+        "Value receiver hanya untuk struct kecil dengan 2 field",
+        "Tidak ada perbedaan perilaku"
       ],
       "options_en": [
-        "Value receiver can modify the original, pointer receiver cannot",
-        "Pointer receiver can modify the original, value receiver works on a copy",
-        "There is no functional difference",
-        "Value receiver is slower than pointer receiver"
+        "A value receiver works on a copy, while a pointer receiver can modify the original value",
+        "A pointer receiver is always faster with no exceptions",
+        "A value receiver is only for small structs with 2 fields",
+        "There is no behavioral difference"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa `Area()` pada `Rectangle` cocok memakai value receiver dalam lesson?",
+      "question_en": "Why is `Area()` on `Rectangle` a good fit for a value receiver in the lesson?",
+      "options_id": [
+        "Karena method itu hanya membaca data dan tidak perlu mengubah receiver",
+        "Karena value receiver wajib dipakai untuk semua method matematika",
+        "Karena pointer receiver tidak bisa mengembalikan `float64`",
+        "Karena `Rectangle` bukan struct"
+      ],
+      "options_en": [
+        "Because the method only reads data and does not need to mutate the receiver",
+        "Because value receivers are mandatory for all mathematical methods",
+        "Because pointer receivers cannot return `float64`",
+        "Because `Rectangle` is not a struct"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa `Increment()` pada `Counter` harus memakai pointer receiver agar efektif?",
+      "question_en": "Why must `Increment()` on `Counter` use a pointer receiver to be effective?",
+      "options_id": [
+        "Karena hanya pointer receiver yang boleh mengakses field private",
+        "Karena method itu harus mengubah state `count` milik receiver asli, bukan salinannya",
+        "Karena `++` tidak valid pada value receiver",
+        "Karena pointer receiver diperlukan untuk semua method tanpa return value"
+      ],
+      "options_en": [
+        "Because only pointer receivers may access private fields",
+        "Because the method must mutate the original receiver's `count` state rather than a copy",
+        "Because `++` is invalid on a value receiver",
+        "Because pointer receivers are required for all methods without return values"
       ],
       "correct": 1
     },
     {
-      "question_id": "Jika struct `Person` memiliki pointer receiver method `Birthday()`, dapatkah kamu memanggil `person.Birthday()` dimana `person` adalah value (bukan pointer)?",
-      "question_en": "If struct `Person` has a pointer receiver method `Birthday()`, can you call `person.Birthday()` where `person` is a value (not a pointer)?",
+      "question_id": "Apa hasil logis dari urutan `ctr.Increment(); ctr.Increment(); ctr.Add(5); fmt.Println(ctr.Value())` pada lesson?",
+      "question_en": "What is the logical result of the sequence `ctr.Increment(); ctr.Increment(); ctr.Add(5); fmt.Println(ctr.Value())` in the lesson?",
       "options_id": [
-        "Tidak, harus menggunakan `(&person).Birthday()`",
-        "Ya, Go secara otomatis mengambil alamat jika variabel addressable",
-        "Tidak, akan error kompilasi",
-        "Ya, tapi nilai tidak akan berubah"
+        "`0`",
+        "`2`",
+        "`5`",
+        "`7`"
       ],
       "options_en": [
-        "No, you must use `(&person).Birthday()`",
-        "Yes, Go automatically takes the address if the variable is addressable",
-        "No, it will cause a compilation error",
-        "Yes, but the value won't change"
+        "`0`",
+        "`2`",
+        "`5`",
+        "`7`"
+      ],
+      "correct": 3
+    },
+    {
+      "question_id": "Mengapa lesson menyarankan konsistensi jika satu method pada tipe memakai pointer receiver?",
+      "question_en": "Why does the lesson recommend consistency if one method on a type uses a pointer receiver?",
+      "options_id": [
+        "Agar method set dan ekspektasi pemakaian tipe lebih konsisten dan tidak membingungkan",
+        "Karena compiler menolak campuran receiver",
+        "Karena semua value receiver menjadi panic jika dicampur",
+        "Karena pointer receiver satu-satunya yang bisa dipanggil dari interface"
+      ],
+      "options_en": [
+        "So the method set and the expectations for using the type stay consistent and less confusing",
+        "Because the compiler rejects mixed receiver kinds",
+        "Because all value receivers panic if mixed",
+        "Because pointer receivers are the only ones callable from interfaces"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Dalam kasus apa Go bisa mengizinkan pemanggilan `person.Birthday()` walau `Birthday` memakai pointer receiver?",
+      "question_en": "In what case can Go allow calling `person.Birthday()` even though `Birthday` has a pointer receiver?",
+      "options_id": [
+        "Saat `person` adalah variabel addressable sehingga Go bisa mengambil alamatnya otomatis",
+        "Hanya saat `person` berada di package yang sama",
+        "Hanya saat method tidak mengubah field",
+        "Tidak pernah; harus selalu menulis `(&person).Birthday()`"
+      ],
+      "options_en": [
+        "When `person` is an addressable variable so Go can automatically take its address",
+        "Only when `person` is in the same package",
+        "Only when the method does not mutate fields",
+        "Never; you must always write `(&person).Birthday()`"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa pointer receiver sering dipilih untuk struct besar meskipun method hanya membaca?",
+      "question_en": "Why is a pointer receiver often chosen for a large struct even if the method only reads?",
+      "options_id": [
+        "Untuk menghindari penyalinan nilai struct besar pada setiap pemanggilan method",
+        "Karena value receiver tidak bisa mengakses field struct besar",
+        "Karena pointer receiver membuat semua method inline",
+        "Karena hasil return jadi lebih akurat"
+      ],
+      "options_en": [
+        "To avoid copying a large struct value on every method call",
+        "Because value receivers cannot access fields of large structs",
+        "Because pointer receivers make all methods inline",
+        "Because the return value becomes more accurate"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang ditunjukkan oleh method pada `type Celsius float64`?",
+      "question_en": "What is demonstrated by methods on `type Celsius float64`?",
+      "options_id": [
+        "Method di Go hanya bisa ada pada struct anonim",
+        "Method dapat didefinisikan pada named type yang dideklarasikan di package yang sama, tidak hanya struct",
+        "Float64 bawaan otomatis punya semua method temperatur",
+        "Method pada non-struct harus selalu pointer receiver"
+      ],
+      "options_en": [
+        "Methods in Go can only exist on anonymous structs",
+        "Methods can be defined on named types declared in the same package, not just on structs",
+        "Built-in float64 automatically has all temperature methods",
+        "Methods on non-struct types must always use pointer receivers"
       ],
       "correct": 1
     },
     {
-      "question_id": "Dalam situasi mana sebaiknya menggunakan pointer receiver?",
-      "question_en": "In which situation should you use a pointer receiver?",
+      "question_id": "Pada starter code, mengapa `Scale` pada `Rectangle` memakai pointer receiver?",
+      "question_en": "In the starter code, why does `Scale` on `Rectangle` use a pointer receiver?",
       "options_id": [
-        "Selalu, agar kode lebih efisien",
-        "Hanya untuk tipe string",
-        "Ketika method perlu mengubah receiver atau struct berukuran besar",
-        "Hanya ketika interface mengharuskannya"
+        "Karena ia perlu mengubah `Width` dan `Height` milik rectangle asli",
+        "Karena method dengan parameter harus pointer receiver",
+        "Karena value receiver tidak bisa mengalikan float",
+        "Karena `Scale` mengembalikan string"
       ],
       "options_en": [
-        "Always, for maximum efficiency",
-        "Only for string types",
-        "When the method needs to mutate the receiver or the struct is large",
-        "Only when an interface requires it"
+        "Because it needs to mutate the original rectangle's `Width` and `Height`",
+        "Because methods with parameters must use pointer receivers",
+        "Because value receivers cannot multiply floats",
+        "Because `Scale` returns a string"
       ],
-      "correct": 2
+      "correct": 0
     },
     {
-      "question_id": "Bisakah method didefinisikan pada tipe `type Celsius float64`?",
-      "question_en": "Can a method be defined on type `type Celsius float64`?",
+      "question_id": "Pernyataan mana yang paling akurat tentang pemilihan receiver?",
+      "question_en": "Which statement is most accurate about choosing a receiver kind?",
       "options_id": [
-        "Tidak, method hanya bisa didefinisikan pada struct",
-        "Ya, method bisa didefinisikan pada tipe apapun yang didefinisikan dalam package yang sama",
-        "Hanya jika Celsius adalah interface",
-        "Tidak, karena float64 sudah memiliki method sendiri"
+        "Selalu gunakan pointer receiver tanpa mempertimbangkan semantik",
+        "Pilih receiver berdasarkan apakah method perlu mutasi, ukuran tipe, dan konsistensi API",
+        "Selalu gunakan value receiver kecuali compiler menolak",
+        "Receiver tidak berpengaruh pada desain method sama sekali"
       ],
       "options_en": [
-        "No, methods can only be defined on structs",
-        "Yes, methods can be defined on any type defined in the same package",
-        "Only if Celsius is an interface",
-        "No, because float64 already has its own methods"
+        "Always use a pointer receiver without considering semantics",
+        "Choose the receiver based on whether the method needs mutation, the type size, and API consistency",
+        "Always use a value receiver unless the compiler rejects it",
+        "The receiver has no effect on method design at all"
       ],
       "correct": 1
     }

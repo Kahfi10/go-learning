@@ -8,55 +8,174 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\n// Fungsi add: menjumlahkan dua integer\nfunc add(a, b int) int {\n\treturn a + b\n}\n\n// Fungsi greet: membuat pesan sapaan\nfunc greet(name string) string {\n\treturn fmt.Sprintf(\"Hello, %s! Selamat belajar Go!\", name)\n}\n\n// Fungsi calculateArea: menghitung luas persegi panjang\nfunc calculateArea(width, height float64) float64 {\n\treturn width * height\n}\n\nfunc main() {\n\t// Panggil add\n\tresult := add(15, 27)\n\tfmt.Println(\"15 + 27 =\", result)\n\n\t// Panggil greet\n\tmsg := greet(\"Gopher\")\n\tfmt.Println(msg)\n\n\t// Panggil calculateArea\n\tarea := calculateArea(5.5, 3.2)\n\tfmt.Printf(\"Luas: %.2f\\n\", area)\n}",
   "quiz": [
     {
-      "question_id": "Apa kata kunci yang digunakan untuk mendeklarasikan fungsi di Go?",
-      "question_en": "What keyword is used to declare a function in Go?",
+      "question_id": "Manakah deklarasi fungsi Go yang sintaksnya benar untuk menjumlahkan dua `int` dan mengembalikan `int`?",
+      "question_en": "Which Go function declaration is syntactically correct for adding two `int` values and returning an `int`?",
       "options_id": [
-        "function",
-        "def",
-        "fn",
-        "func"
+        "`function add(a, b int) -> int {}`",
+        "`func add(a int, b int) int {}`",
+        "`int add(int a, int b) {}`",
+        "`def add(a, b: int) int {}`"
       ],
       "options_en": [
-        "function",
-        "def",
-        "fn",
-        "func"
-      ],
-      "correct": 3
-    },
-    {
-      "question_id": "Bagaimana cara mendeklarasikan fungsi `add` yang menerima dua parameter `int` dan mengembalikan `int` di Go?",
-      "question_en": "How do you declare an `add` function that takes two `int` parameters and returns an `int` in Go?",
-      "options_id": [
-        "function add(a, b int) -> int { }",
-        "func add(a int, b int) int { }",
-        "def add(a, b: int) int: pass",
-        "int add(int a, int b) { }"
-      ],
-      "options_en": [
-        "function add(a, b int) -> int { }",
-        "func add(a int, b int) int { }",
-        "def add(a, b: int) int: pass",
-        "int add(int a, int b) { }"
+        "`function add(a, b int) -> int {}`",
+        "`func add(a int, b int) int {}`",
+        "`int add(int a, int b) {}`",
+        "`def add(a, b: int) int {}`"
       ],
       "correct": 1
     },
     {
-      "question_id": "Jika beberapa parameter fungsi memiliki tipe yang sama, bagaimana cara yang benar untuk mempersingkat deklarasinya?",
-      "question_en": "If several function parameters share the same type, how can you shorten the declaration?",
+      "question_id": "Apa perbedaan utama antara `greet()` dan `add(a, b int) int` pada contoh lesson?",
+      "question_en": "What is the main difference between `greet()` and `add(a, b int) int` in the lesson examples?",
       "options_id": [
-        "func f(a, b, c) int { }",
-        "func f(a b c int) { }",
-        "func f(a, b, c int) int { }",
-        "func f([a,b,c] int) int { }"
+        "`greet()` punya parameter, `add` tidak",
+        "`greet()` tidak mengembalikan nilai, sedangkan `add` mengembalikan `int`",
+        "`add` hanya bisa dipanggil dari `main`",
+        "`greet()` bukan fungsi yang valid di Go"
       ],
       "options_en": [
-        "func f(a, b, c) int { }",
-        "func f(a b c int) { }",
-        "func f(a, b, c int) int { }",
-        "func f([a,b,c] int) int { }"
+        "`greet()` has parameters, `add` does not",
+        "`greet()` returns no value, while `add` returns an `int`",
+        "`add` can only be called from `main`",
+        "`greet()` is not a valid Go function"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa deklarasi `func multiply(a, b int) int` dianggap bentuk ringkas yang valid?",
+      "question_en": "Why is `func multiply(a, b int) int` considered a valid concise form?",
+      "options_id": [
+        "Karena Go mengizinkan beberapa parameter berbagi tipe yang sama ditulis sekali di akhir kelompok",
+        "Karena Go selalu menghapus tipe parameter pertama",
+        "Karena `multiply` adalah kata kunci bawaan",
+        "Karena return type `int` membuat tipe parameter otomatis diketahui"
+      ],
+      "options_en": [
+        "Because Go allows several parameters with the same type to share a single type written at the end of the group",
+        "Because Go always removes the first parameter type",
+        "Because `multiply` is a built-in keyword",
+        "Because the return type `int` automatically determines the parameter types"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika `sum := add(100, 200)`, nilai apa yang disimpan ke `sum`?",
+      "question_en": "If `sum := add(100, 200)`, what value is stored in `sum`?",
+      "options_id": [
+        "`100`",
+        "`200`",
+        "`300`",
+        "String `\"Sum: 300\"`"
+      ],
+      "options_en": [
+        "`100`",
+        "`200`",
+        "`300`",
+        "The string `\"Sum: 300\"`"
       ],
       "correct": 2
+    },
+    {
+      "question_id": "Kapan lebih masuk akal memakai return value langsung di `fmt.Println(add(3, 4))` daripada menyimpannya dulu ke variabel?",
+      "question_en": "When does it make more sense to use the return value directly in `fmt.Println(add(3, 4))` instead of storing it first in a variable?",
+      "options_id": [
+        "Saat hasil hanya dipakai sekali dan tidak perlu nama terpisah",
+        "Saat fungsi tidak mengembalikan apa pun",
+        "Saat ingin mengubah scope variabel menjadi global",
+        "Saat compiler mewajibkan semua hasil fungsi langsung dicetak"
+      ],
+      "options_en": [
+        "When the result is used only once and does not need a separate name",
+        "When the function returns nothing",
+        "When you want to turn the variable into a global one",
+        "When the compiler requires all function results to be printed directly"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang ditunjukkan contoh `greet(name string) string` tentang fungsi di Go?",
+      "question_en": "What does the example `greet(name string) string` show about functions in Go?",
+      "options_id": [
+        "Fungsi dapat menerima parameter dan mengembalikan nilai dengan tipe tertentu",
+        "Fungsi Go hanya boleh mengembalikan `int`",
+        "Parameter fungsi selalu harus bertipe `any`",
+        "Nama parameter otomatis menjadi global"
+      ],
+      "options_en": [
+        "A function can accept parameters and return a value of a specific type",
+        "Go functions may only return `int`",
+        "Function parameters must always have type `any`",
+        "Parameter names automatically become global"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa variabel `result` di dalam `calculate` tidak bisa diakses dari `main`?",
+      "question_en": "Why can the variable `result` inside `calculate` not be accessed from `main`?",
+      "options_id": [
+        "Karena `result` adalah variabel lokal yang hanya hidup di scope fungsi `calculate`",
+        "Karena hanya variabel bertipe `int` yang bisa diakses lintas fungsi",
+        "Karena `main` tidak boleh membaca return value fungsi lain",
+        "Karena semua variabel dengan nama `result` bersifat private ke package `fmt`"
+      ],
+      "options_en": [
+        "Because `result` is a local variable that exists only within the scope of `calculate`",
+        "Because only `int` variables can be accessed across functions",
+        "Because `main` may not read return values from other functions",
+        "Because all variables named `result` are private to the `fmt` package"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Pada contoh lesson, cara mana yang lebih tepat jika Anda ingin memproses hasil `add` lebih lanjut beberapa kali?",
+      "question_en": "In the lesson examples, which approach is better if you want to process the result of `add` further several times?",
+      "options_id": [
+        "Simpan return value ke variabel terlebih dahulu",
+        "Ganti `add` menjadi `void` function",
+        "Pindahkan body `add` ke dalam `main` setiap kali dipakai",
+        "Gunakan `fmt.Sprintf` sebagai pengganti `add`"
+      ],
+      "options_en": [
+        "Store the return value in a variable first",
+        "Turn `add` into a void function",
+        "Move the body of `add` into `main` each time it is used",
+        "Use `fmt.Sprintf` as a replacement for `add`"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Pernyataan mana yang sesuai dengan ide bahwa fungsi di Go adalah first-class citizen, seperti disebut di awal lesson?",
+      "question_en": "Which statement matches the idea that functions in Go are first-class citizens, as stated at the start of the lesson?",
+      "options_id": [
+        "Fungsi bisa disimpan di variabel, diteruskan sebagai argumen, dan dikembalikan dari fungsi lain",
+        "Fungsi hanya boleh dideklarasikan di dalam `main`",
+        "Fungsi tidak boleh punya parameter dan return sekaligus",
+        "Fungsi selalu dieksekusi saat deklarasi"
+      ],
+      "options_en": [
+        "Functions can be stored in variables, passed as arguments, and returned from other functions",
+        "Functions may only be declared inside `main`",
+        "Functions may not have parameters and a return value at the same time",
+        "Functions are always executed when declared"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika sebuah fungsi tidak memiliki return value, bentuk pemanggilan mana yang paling masuk akal?",
+      "question_en": "If a function has no return value, which calling form makes the most sense?",
+      "options_id": [
+        "Menggunakannya sebagai ekspresi numerik, misalnya `1 + greet()`",
+        "Memanggilnya sebagai statement untuk efek sampingnya, misalnya `greet()`",
+        "Mewajibkan menyimpannya ke variabel `result := greet()`",
+        "Menulis `return greet()` dari fungsi lain yang mengembalikan `int`"
+      ],
+      "options_en": [
+        "Use it as a numeric expression, like `1 + greet()`",
+        "Call it as a statement for its side effect, like `greet()`",
+        "Always store it in a variable like `result := greet()`",
+        "Write `return greet()` from another function that returns `int`"
+      ],
+      "correct": 1
     }
   ]
 }

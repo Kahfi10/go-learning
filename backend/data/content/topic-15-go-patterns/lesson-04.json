@@ -8,24 +8,73 @@
   "starterCode": "package main\n\nimport (\n\t\"embed\"\n\t\"fmt\"\n\t\"strings\"\n)\n\n// Simulate embedded files using embed.FS\n// In a real project, these would be actual files on disk\n\n//go:embed lesson-04.json\nvar selfContent embed.FS\n\nfunc main() {\n\t// Read the embedded file\n\tdata, err := selfContent.ReadFile(\"lesson-04.json\")\n\tif err != nil {\n\t\tfmt.Println(\"Error reading embedded file:\", err)\n\t\treturn\n\t}\n\n\t// Count lines\n\tlines := strings.Split(string(data), \"\\n\")\n\tfmt.Printf(\"Embedded file has %d lines\\n\", len(lines))\n\tfmt.Printf(\"First 80 chars: %.80s...\\n\", string(data))\n\n\t// List all embedded files\n\tentries, _ := selfContent.ReadDir(\".\")\n\tfmt.Println(\"\\nEmbedded files:\")\n\tfor _, e := range entries {\n\t\tinfo, _ := e.Info()\n\t\tfmt.Printf(\"  %s (%d bytes)\\n\", e.Name(), info.Size())\n\t}\n}",
   "quiz": [
     {
-      "question_id": "Directive apa yang digunakan untuk menyematkan file ke binary Go?",
-      "question_en": "Which directive is used to embed a file into a Go binary?",
-      "options_id": ["//go:embed filename", "// embed: filename", "#embed filename", "@embed filename"],
-      "options_en": ["//go:embed filename", "// embed: filename", "#embed filename", "@embed filename"],
+      "question_id": "Kapan file atau direktori dimasukkan ke dalam binary saat memakai package `embed`?",
+      "question_en": "When are files or directories placed into the binary when using the `embed` package?",
+      "options_id": ["Saat compile time", "Saat startup server pertama", "Saat request pertama datang", "Saat `ReadFile` dipanggil"],
+      "options_en": ["At compile time", "At first server startup", "When the first request arrives", "When `ReadFile` is called"],
       "correct": 0
     },
     {
-      "question_id": "Tipe variabel apa yang digunakan untuk menyematkan direktori lengkap?",
-      "question_en": "Which variable type is used to embed a complete directory?",
-      "options_id": ["embed.FS", "embed.Dir", "fs.FS", "[]byte"],
-      "options_en": ["embed.FS", "embed.Dir", "fs.FS", "[]byte"],
+      "question_id": "Directive mana yang benar untuk menyematkan file ke binary Go?",
+      "question_en": "Which directive is correct for embedding a file into a Go binary?",
+      "options_id": ["`//go:embed hello.txt`", "`// embed: hello.txt`", "`#embed hello.txt`", "`@embed hello.txt`"],
+      "options_en": ["`//go:embed hello.txt`", "`// embed: hello.txt`", "`#embed hello.txt`", "`@embed hello.txt`"],
       "correct": 0
     },
     {
-      "question_id": "Keuntungan menyematkan static files ke binary adalah?",
-      "question_en": "What is the advantage of embedding static files into the binary?",
-      "options_id": ["Aplikasi bisa didistribusikan sebagai single binary tanpa file eksternal", "File lebih kecil karena dikompres", "File bisa diubah saat runtime", "Lebih aman dari serangan"],
-      "options_en": ["The application can be distributed as a single binary without external files", "Files are smaller because they are compressed", "Files can be modified at runtime", "More secure from attacks"],
+      "question_id": "Tipe variabel mana yang digunakan lesson untuk menyematkan direktori lengkap?",
+      "question_en": "Which variable type does the lesson use to embed a complete directory?",
+      "options_id": ["`embed.FS`", "`embed.Dir`", "`[]byte`", "`fs.DirEntry`"],
+      "options_en": ["`embed.FS`", "`embed.Dir`", "`[]byte`", "`fs.DirEntry`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa package `embed` mendukung distribusi sebagai single binary?",
+      "question_en": "Why does the `embed` package support single-binary distribution?",
+      "options_id": ["Karena asset ikut disematkan ke binary saat build sehingga tidak perlu file eksternal terpisah", "Karena semua file otomatis dikompres menjadi nol byte", "Karena asset akan diunduh dari internet saat runtime", "Karena `embed` mengganti filesystem OS"],
+      "options_en": ["Because assets are embedded into the binary at build time so separate external files are not required", "Because every file is automatically compressed to zero bytes", "Because assets are downloaded from the internet at runtime", "Because `embed` replaces the OS filesystem"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa contoh HTTP static file memakai `fs.Sub(webDist, \"web/dist\")` sebelum `http.FileServer`?",
+      "question_en": "Why does the static-file HTTP example use `fs.Sub(webDist, \"web/dist\")` before `http.FileServer`?",
+      "options_id": ["Untuk membuat sub-filesystem yang berakar di direktori asset yang ingin diserve", "Untuk mengubah semua file menjadi `[]byte`", "Untuk mengaktifkan CORS", "Untuk mengurutkan file berdasarkan nama"],
+      "options_en": ["To create a sub-filesystem rooted at the asset directory you want to serve", "To turn all files into `[]byte`", "To enable CORS", "To sort files by name"],
+      "correct": 0
+    },
+    {
+      "question_id": "Pasangan API mana yang tepat untuk membaca dan menelusuri isi embedded filesystem pada lesson?",
+      "question_en": "Which API pair is appropriate for reading and traversing an embedded filesystem in the lesson?",
+      "options_id": ["`ReadFile` dan `fs.WalkDir`", "`os.Open` dan `filepath.Glob` saja", "`sql.Open` dan `fs.Sub`", "`fmt.Scanln` dan `http.Get`"],
+      "options_en": ["`ReadFile` and `fs.WalkDir`", "Only `os.Open` and `filepath.Glob`", "`sql.Open` and `fs.Sub`", "`fmt.Scanln` and `http.Get`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa peran `http.FS(dist)` pada contoh `http.FileServer`?",
+      "question_en": "What is the role of `http.FS(dist)` in the `http.FileServer` example?",
+      "options_id": ["Mengadaptasi filesystem menjadi bentuk yang bisa dipakai `http.FileServer`", "Menyimpan file ke disk sementara", "Mengubah handler menjadi middleware", "Membuat route API baru"],
+      "options_en": ["It adapts the filesystem into a form `http.FileServer` can use", "It stores files to temporary disk", "It turns the handler into middleware", "It creates a new API route"],
+      "correct": 0
+    },
+    {
+      "question_id": "Pattern mana yang menunjukkan penyematan beberapa file HTML dari dua lokasi sekaligus?",
+      "question_en": "Which pattern shows embedding multiple HTML files from two locations at once?",
+      "options_id": ["`//go:embed *.html templates/*.html`", "`//go:embed html/**`", "`//go:embed templates` saja", "`//go:embed all:*.html only`"],
+      "options_en": ["`//go:embed *.html templates/*.html`", "`//go:embed html/**`", "`//go:embed templates` only", "`//go:embed all:*.html only`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Menurut catatan lesson, file dengan awalan `.` atau `_` akan bagaimana secara default?",
+      "question_en": "According to the lesson note, what happens by default to files whose names start with `.` or `_`?",
+      "options_id": ["Mereka tidak di-embed kecuali menggunakan prefix `all:`", "Mereka selalu diprioritaskan lebih dulu", "Mereka hanya bisa di-embed sebagai `[]byte`", "Mereka otomatis dihapus dari binary"],
+      "options_en": ["They are not embedded unless you use the `all:` prefix", "They are always prioritized first", "They can only be embedded as `[]byte`", "They are automatically removed from the binary"],
+      "correct": 0
+    },
+    {
+      "question_id": "Kapan prefix `all:` pada `//go:embed all:web/dist` diperlukan?",
+      "question_en": "When is the `all:` prefix in `//go:embed all:web/dist` needed?",
+      "options_id": ["Saat Anda juga ingin menyertakan file yang default-nya diabaikan seperti yang berawalan `.` atau `_`", "Saat ingin compile hanya di Linux", "Saat `embed.FS` tidak bisa menyimpan direktori", "Saat ingin file bisa dimodifikasi saat runtime"],
+      "options_en": ["When you also want to include files that are ignored by default, such as those starting with `.` or `_`", "When you only want to compile on Linux", "When `embed.FS` cannot store directories", "When you want files to be modifiable at runtime"],
       "correct": 0
     }
   ]

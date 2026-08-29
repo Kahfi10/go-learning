@@ -8,70 +8,172 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\t// Slice literal\n\ts := []int{1, 2, 3, 4, 5}\n\tfmt.Println(\"Slice:\", s)\n\tfmt.Println(\"len:\", len(s), \"cap:\", cap(s))\n\n\t// make\n\tm := make([]string, 3, 6)\n\tm[0] = \"Go\"\n\tm[1] = \"is\"\n\tm[2] = \"fun\"\n\tfmt.Println(\"Make slice:\", m, \"len:\", len(m), \"cap:\", cap(m))\n\n\t// append\n\tvar nums []int\n\tfor i := 1; i <= 5; i++ {\n\t\tnums = append(nums, i*10)\n\t\tfmt.Printf(\"append %d: len=%d cap=%d\\n\", i*10, len(nums), cap(nums))\n\t}\n\n\t// nil vs empty slice\n\tvar nilS []int\n\temptyS := []int{}\n\tfmt.Println(\"nil slice == nil:\", nilS == nil)\n\tfmt.Println(\"empty slice == nil:\", emptyS == nil)\n\n\t// slice from array\n\tarr := [5]int{10, 20, 30, 40, 50}\n\tsl := arr[1:4]\n\tfmt.Println(\"Slice from array:\", sl)\n\tsl[0] = 99\n\tfmt.Println(\"Array after modifying slice:\", arr)\n}",
   "quiz": [
     {
-      "question_id": "Apa perbedaan antara `len` dan `cap` pada slice?",
-      "question_en": "What is the difference between `len` and `cap` on a slice?",
+      "question_id": "Menurut lesson, apa sebenarnya sebuah slice di level representasi internal?",
+      "question_en": "According to the lesson, what is a slice at the internal representation level?",
       "options_id": [
-        "len adalah ukuran maksimum, cap adalah ukuran saat ini",
-        "len adalah jumlah elemen saat ini, cap adalah kapasitas sebelum realokasi",
-        "Keduanya sama saja",
-        "cap selalu lebih kecil dari len"
+        "Array yang otomatis berubah ukuran",
+        "Descriptor berisi pointer, length, dan capacity yang menunjuk ke array dasar",
+        "Linked list bawaan runtime",
+        "Map dengan index integer"
       ],
       "options_en": [
-        "len is the maximum size, cap is the current size",
-        "len is the current element count, cap is capacity before reallocation",
-        "They are the same",
-        "cap is always smaller than len"
+        "An array that automatically resizes",
+        "A descriptor containing a pointer, length, and capacity pointing to an underlying array",
+        "A runtime-provided linked list",
+        "A map with integer indices"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa yang terjadi ketika kamu melakukan `append` pada nil slice?",
-      "question_en": "What happens when you `append` to a nil slice?",
+      "question_id": "Apa hasil dari `make([]int, 3, 8)`?",
+      "question_en": "What is the result of `make([]int, 3, 8)`?",
       "options_id": [
-        "Program panic",
-        "Tidak ada yang terjadi",
-        "Slice baru dibuat dan elemen ditambahkan",
-        "Error kompilasi"
+        "Slice `len=3`, `cap=8`, berisi zero value int",
+        "Slice `len=8`, `cap=3`, berisi zero value int",
+        "Array `[8]int` dengan tiga elemen aktif",
+        "Compile error karena capacity tidak boleh lebih besar dari length"
       ],
       "options_en": [
-        "Program panics",
-        "Nothing happens",
-        "A new slice is created and the element is added",
-        "Compilation error"
+        "A slice with `len=3`, `cap=8`, filled with zero-value ints",
+        "A slice with `len=8`, `cap=3`, filled with zero-value ints",
+        "An `[8]int` array with three active elements",
+        "A compile error because capacity cannot exceed length"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa perbedaan `len(s)` dan `cap(s)` yang paling tepat?",
+      "question_en": "What is the most accurate difference between `len(s)` and `cap(s)`?",
+      "options_id": [
+        "`len` adalah kapasitas maksimum, `cap` adalah jumlah elemen saat ini",
+        "`len` adalah jumlah elemen saat ini, `cap` adalah ruang sebelum perlu realokasi",
+        "Keduanya selalu sama untuk semua slice",
+        "`cap` tidak relevan setelah slice dibuat"
+      ],
+      "options_en": [
+        "`len` is the maximum capacity, `cap` is the current element count",
+        "`len` is the current element count, `cap` is the space before reallocation is needed",
+        "They are always the same for every slice",
+        "`cap` is irrelevant after a slice is created"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika `s := make([]int, 3, 6)` lalu `s = append(s, 1)`, nilai mana yang benar?",
+      "question_en": "If `s := make([]int, 3, 6)` and then `s = append(s, 1)`, which values are correct?",
+      "options_id": [
+        "`len=4`, `cap=6`",
+        "`len=6`, `cap=4`",
+        "`len=4`, `cap=4`",
+        "`len=3`, `cap=7`"
+      ],
+      "options_en": [
+        "`len=4`, `cap=6`",
+        "`len=6`, `cap=4`",
+        "`len=4`, `cap=4`",
+        "`len=3`, `cap=7`"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang terjadi saat `append` dipanggil pada nil slice `var s []int`?",
+      "question_en": "What happens when `append` is called on a nil slice `var s []int`?",
+      "options_id": [
+        "Program panic karena nil slice tidak bisa dipakai",
+        "Tidak ada perubahan sampai slice diinisialisasi dengan `make`",
+        "Go membuat slice baru yang valid dan menambahkan elemen",
+        "Compile error karena nil slice hanya bisa dibaca"
+      ],
+      "options_en": [
+        "The program panics because a nil slice cannot be used",
+        "Nothing changes until the slice is initialized with `make`",
+        "Go creates a valid new slice and adds the element",
+        "Compile error because a nil slice can only be read"
       ],
       "correct": 2
     },
     {
-      "question_id": "Apa output dari `make([]int, 3, 8)`?",
-      "question_en": "What does `make([]int, 3, 8)` produce?",
+      "question_id": "Apa arti `append(s, []int{4, 5, 6}...)` pada lesson?",
+      "question_en": "What does `append(s, []int{4, 5, 6}...)` mean in the lesson?",
       "options_id": [
-        "Slice dengan 8 elemen bernilai 3",
-        "Slice dengan len=8, cap=3",
-        "Slice dengan len=3, cap=8, semua elemen 0",
-        "Error kompilasi"
+        "Menambahkan slice sebagai satu elemen tunggal",
+        "Menyebarkan elemen-elemen slice kedua agar ditambahkan satu per satu",
+        "Menggabungkan dua array fixed-size",
+        "Menghapus tiga elemen terakhir dari `s`"
       ],
       "options_en": [
-        "A slice with 8 elements of value 3",
-        "A slice with len=8, cap=3",
-        "A slice with len=3, cap=8, all elements 0",
-        "Compilation error"
+        "It appends the slice as one single element",
+        "It expands the second slice so its elements are appended individually",
+        "It merges two fixed-size arrays",
+        "It deletes the last three elements of `s`"
       ],
-      "correct": 2
+      "correct": 1
     },
     {
-      "question_id": "Jika slice dibuat dari array dengan `s := arr[1:4]`, lalu `s[0]` diubah, apa yang terjadi pada `arr`?",
-      "question_en": "If a slice is created from an array with `s := arr[1:4]`, then `s[0]` is modified, what happens to `arr`?",
+      "question_id": "Mengapa `arr[1:4]` dan hasil slice-nya saling memengaruhi saat elemen diubah?",
+      "question_en": "Why do `arr[1:4]` and the resulting slice affect each other when an element is changed?",
       "options_id": [
-        "arr tidak berubah karena slice adalah salinan",
-        "arr[1] ikut berubah karena slice berbagi memori dengan array",
-        "arr[0] ikut berubah",
-        "Program panic"
+        "Karena slicing membuat salinan penuh array",
+        "Karena slice berbagi underlying array yang sama dengan bagian array asal",
+        "Karena compiler menyinkronkan semua variabel berindeks",
+        "Karena array Go selalu bersifat global"
       ],
       "options_en": [
-        "arr is unchanged because slice is a copy",
-        "arr[1] changes because slice shares memory with the array",
-        "arr[0] changes",
-        "Program panics"
+        "Because slicing makes a full copy of the array",
+        "Because the slice shares the same underlying array segment with the original array",
+        "Because the compiler synchronizes all indexed variables",
+        "Because Go arrays are always global"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa perbedaan penting antara nil slice dan empty slice menurut lesson?",
+      "question_en": "What is an important difference between a nil slice and an empty slice according to the lesson?",
+      "options_id": [
+        "Keduanya identik, termasuk saat dibandingkan dengan `nil`",
+        "Nil slice dapat dibandingkan `== nil`, empty slice literal `[]int{}` tidak",
+        "Empty slice tidak bisa di-append",
+        "Nil slice selalu punya `len=1`"
+      ],
+      "options_en": [
+        "They are identical, including when compared with `nil`",
+        "A nil slice can compare equal to `nil`, while an empty slice literal `[]int{}` does not",
+        "An empty slice cannot be appended to",
+        "A nil slice always has `len=1`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa preallocasi capacity dengan `make` bisa berguna saat tahu perkiraan ukuran data?",
+      "question_en": "Why can preallocating capacity with `make` be useful when you know the approximate data size?",
+      "options_id": [
+        "Karena itu bisa mengurangi jumlah realokasi saat `append` bertambah",
+        "Karena itu membuat slice menjadi immutable",
+        "Karena itu mengubah slice menjadi array",
+        "Karena itu memastikan semua append selesai dalam O(1) terburuk"
+      ],
+      "options_en": [
+        "Because it can reduce the number of reallocations as `append` grows the slice",
+        "Because it makes the slice immutable",
+        "Because it turns the slice into an array",
+        "Because it guarantees every append is worst-case O(1)"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Pernyataan mana yang paling akurat tentang pertumbuhan capacity slice pada lesson?",
+      "question_en": "Which statement is most accurate about slice capacity growth in the lesson?",
+      "options_id": [
+        "Capacity selalu bertambah tepat 1 elemen setiap `append`",
+        "Saat kapasitas habis, Go dapat mengalokasikan array baru yang lebih besar, sering kira-kira dua kali untuk slice kecil",
+        "Capacity tidak pernah berubah setelah slice dibuat",
+        "Growth hanya terjadi jika slice dibuat dengan literal, bukan `make`"
+      ],
+      "options_en": [
+        "Capacity always increases by exactly 1 element on every `append`",
+        "When capacity is exhausted, Go may allocate a larger new array, often roughly doubling for smaller slices",
+        "Capacity never changes after the slice is created",
+        "Growth only happens if the slice was created with a literal, not with `make`"
       ],
       "correct": 1
     }

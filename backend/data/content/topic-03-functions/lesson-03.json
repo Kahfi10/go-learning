@@ -8,55 +8,174 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\n// minMax menggunakan named return values\nfunc minMax(nums []int) (min, max int) {\n\tmin = nums[0]\n\tmax = nums[0]\n\tfor _, n := range nums {\n\t\tif n < min {\n\t\t\tmin = n\n\t\t}\n\t\tif n > max {\n\t\t\tmax = n\n\t\t}\n\t}\n\treturn // naked return\n}\n\n// clamp menggunakan named return\nfunc clamp(val, lo, hi int) (result int, wasClamped bool) {\n\tswitch {\n\tcase val < lo:\n\t\tresult = lo\n\t\twasClamped = true\n\tcase val > hi:\n\t\tresult = hi\n\t\twasClamped = true\n\tdefault:\n\t\tresult = val\n\t}\n\treturn\n}\n\nfunc main() {\n\tnums := []int{5, 2, 8, 1, 9, 3}\n\tmin, max := minMax(nums)\n\tfmt.Printf(\"Min: %d, Max: %d\\n\", min, max)\n\n\tr1, c1 := clamp(150, 0, 100)\n\tfmt.Printf(\"clamp(150,0,100) = %d, clamped=%t\\n\", r1, c1)\n\n\tr2, c2 := clamp(50, 0, 100)\n\tfmt.Printf(\"clamp(50,0,100)  = %d, clamped=%t\\n\", r2, c2)\n}",
   "quiz": [
     {
-      "question_id": "Apa yang dimaksud dengan 'naked return' di Go?",
-      "question_en": "What is a 'naked return' in Go?",
+      "question_id": "Apa arti utama named return values pada tanda tangan fungsi?",
+      "question_en": "What is the main meaning of named return values in a function signature?",
       "options_id": [
-        "Return tanpa nilai apapun dari fungsi void",
-        "Return yang mengembalikan nilai nil",
+        "Return values menjadi variabel lokal yang sudah dideklarasikan",
+        "Fungsi otomatis selalu memakai pointer",
+        "Return values tidak boleh diubah di dalam fungsi",
+        "Fungsi tidak boleh menerima parameter lagi"
+      ],
+      "options_en": [
+        "The return values become pre-declared local variables",
+        "The function automatically always uses pointers",
+        "Return values may not be changed inside the function",
+        "The function may no longer accept parameters"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang dimaksud dengan naked return pada lesson ini?",
+      "question_en": "What is meant by a naked return in this lesson?",
+      "options_id": [
+        "Return dari fungsi tanpa nama",
         "Return tanpa argumen eksplisit yang mengembalikan named return values saat itu",
-        "Return yang melempar error"
+        "Return yang selalu mengembalikan `nil`",
+        "Return yang hanya boleh dipakai di `main`"
       ],
       "options_en": [
-        "A return with no value from a void function",
-        "A return that returns a nil value",
+        "A return from an anonymous function",
         "A return with no explicit arguments that returns the current named return values",
-        "A return that throws an error"
+        "A return that always returns `nil`",
+        "A return that may only be used in `main`"
       ],
-      "correct": 2
+      "correct": 1
     },
     {
-      "question_id": "Untuk jenis fungsi apa penggunaan named return values paling direkomendasikan?",
-      "question_en": "For which type of function is using named return values most recommended?",
+      "question_id": "Mengapa `splitNamed(17)` bisa menghasilkan hasil yang sama dengan `split(17)`?",
+      "question_en": "Why can `splitNamed(17)` produce the same result as `split(17)`?",
       "options_id": [
-        "Fungsi panjang dengan banyak logika kompleks",
-        "Fungsi rekursif",
-        "Fungsi pendek yang membutuhkan dokumentasi singkat",
-        "Fungsi yang tidak mengembalikan nilai"
+        "Karena named return hanya mengubah cara penulisan, bukan logika hasilnya",
+        "Karena semua fungsi Go dengan nama `split` wajib identik",
+        "Karena compiler mengganti semua fungsi menjadi `void`",
+        "Karena `return` kosong selalu mengembalikan angka acak"
       ],
       "options_en": [
-        "Long functions with lots of complex logic",
-        "Recursive functions",
-        "Short functions that need concise documentation",
-        "Functions that don't return values"
+        "Because named returns only change the writing style, not the output logic itself",
+        "Because all Go functions named `split` must be identical",
+        "Because the compiler turns all functions into `void`",
+        "Because an empty `return` always produces random numbers"
       ],
-      "correct": 2
+      "correct": 0
     },
     {
-      "question_id": "Nilai awal dari named return value di Go adalah?",
-      "question_en": "What is the initial value of a named return value in Go?",
+      "question_id": "Nilai awal named return value sebelum diassign adalah apa?",
+      "question_en": "What is the initial value of a named return value before it is assigned?",
       "options_id": [
-        "undefined",
-        "null",
+        "`undefined`",
+        "`null`",
         "Zero value dari tipenya",
-        "Nilai terakhir yang diassign"
+        "Nilai parameter pertama"
       ],
       "options_en": [
-        "undefined",
-        "null",
+        "`undefined`",
+        "`null`",
         "The zero value of its type",
-        "The last assigned value"
+        "The first parameter's value"
       ],
       "correct": 2
+    },
+    {
+      "question_id": "Pada fungsi `clamp`, mengapa `clamped` menjadi `false` saat `val` sudah berada di antara `min` dan `max`?",
+      "question_en": "In the `clamp` function, why does `clamped` become `false` when `val` is already between `min` and `max`?",
+      "options_id": [
+        "Karena di cabang itu nilainya tidak diubah dan `clamped` tetap pada zero value-nya",
+        "Karena semua bool return values selalu `false` setelah `return`",
+        "Karena `result = val` otomatis mereset `clamped`",
+        "Karena naked return tidak bisa mengembalikan `true`"
+      ],
+      "options_en": [
+        "Because in that branch it is never changed, so `clamped` stays at its zero value",
+        "Because all bool return values always become `false` after `return`",
+        "Because `result = val` automatically resets `clamped`",
+        "Because naked returns cannot return `true`"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Kapan lesson menyarankan named returns sebagai pilihan yang baik?",
+      "question_en": "When does the lesson suggest named returns are a good choice?",
+      "options_id": [
+        "Pada fungsi pendek yang mendapat manfaat dokumentasi singkat",
+        "Pada semua fungsi panjang dengan banyak cabang",
+        "Hanya pada recursive function",
+        "Hanya saat tidak ada parameter"
+      ],
+      "options_en": [
+        "For short functions that benefit from concise documentation",
+        "For all long functions with many branches",
+        "Only for recursive functions",
+        "Only when there are no parameters"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa named returns sebaiknya dihindari pada fungsi panjang menurut lesson?",
+      "question_en": "Why should named returns be avoided in long functions according to the lesson?",
+      "options_id": [
+        "Karena sulit melacak nilai apa yang sedang dikembalikan pada berbagai titik return",
+        "Karena Go melarang named returns pada fungsi di atas 10 baris",
+        "Karena named returns selalu lebih lambat secara runtime",
+        "Karena named returns tidak bisa dipakai dengan tipe `error`"
+      ],
+      "options_en": [
+        "Because it becomes harder to track what values are being returned at various return points",
+        "Because Go forbids named returns in functions longer than 10 lines",
+        "Because named returns are always slower at runtime",
+        "Because named returns cannot be used with the `error` type"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Pada `func circleArea(r float64) (area float64)`, manfaat penamaan `area` yang paling relevan adalah apa?",
+      "question_en": "In `func circleArea(r float64) (area float64)`, what is the most relevant benefit of naming `area`?",
+      "options_id": [
+        "Signature langsung mendokumentasikan makna nilai balik",
+        "Membuat fungsi tidak perlu `return` sama sekali",
+        "Mengubah `float64` menjadi konstanta",
+        "Memungkinkan satu fungsi punya dua package"
+      ],
+      "options_en": [
+        "The signature directly documents the meaning of the returned value",
+        "It makes the function no longer need `return` at all",
+        "It turns `float64` into a constant",
+        "It allows one function to belong to two packages"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa tradeoff paling tepat antara `return x, y` dan naked `return` pada fungsi kecil?",
+      "question_en": "What is the most accurate tradeoff between `return x, y` and a naked `return` in a small function?",
+      "options_id": [
+        "Naked return bisa lebih ringkas, tetapi explicit return sering lebih langsung dibaca",
+        "Naked return selalu lebih jelas dalam semua ukuran fungsi",
+        "Explicit return tidak valid bila ada named results",
+        "Keduanya hanya berbeda pada performa runtime"
+      ],
+      "options_en": [
+        "A naked return can be more concise, but an explicit return is often more direct to read",
+        "A naked return is always clearer for every function size",
+        "An explicit return is invalid when named results exist",
+        "The only difference is runtime performance"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika `clamp(150, 0, 100)` dipanggil, pasangan hasil mana yang sesuai contoh?",
+      "question_en": "If `clamp(150, 0, 100)` is called, which result pair matches the example?",
+      "options_id": [
+        "`(150, false)`",
+        "`(100, true)`",
+        "`(0, true)`",
+        "`(100, false)`"
+      ],
+      "options_en": [
+        "`(150, false)`",
+        "`(100, true)`",
+        "`(0, true)`",
+        "`(100, false)`"
+      ],
+      "correct": 1
     }
   ]
 }

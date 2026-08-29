@@ -8,24 +8,173 @@
   "starterCode": "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\n// TODO: Deklarasikan sentinel errors: ErrNotFound dan ErrUnauthorized\n\ntype User struct {\n\tID   int\n\tName string\n}\n\nvar users = map[int]*User{\n\t1: {ID: 1, Name: \"Alice\"},\n\t2: {ID: 2, Name: \"Bob\"},\n}\n\nfunc findUser(id int) (*User, error) {\n\tif id <= 0 {\n\t\t// TODO: return ErrUnauthorized\n\t\treturn nil, errors.New(\"unauthorized\")\n\t}\n\tu, ok := users[id]\n\tif !ok {\n\t\t// TODO: return ErrNotFound\n\t\treturn nil, errors.New(\"not found\")\n\t}\n\treturn u, nil\n}\n\nfunc main() {\n\tfor _, id := range []int{1, 3, -1} {\n\t\tuser, err := findUser(id)\n\t\tif err != nil {\n\t\t\t// TODO: use errors.Is to distinguish between error types\n\t\t\tfmt.Printf(\"ID %d: error = %v\\n\", id, err)\n\t\t\tcontinue\n\t\t}\n\t\tfmt.Printf(\"ID %d: user = %s\\n\", id, user.Name)\n\t}\n}",
   "quiz": [
     {
-      "question_id": "Apa yang dimaksud dengan sentinel error di Go?",
-      "question_en": "What is a sentinel error in Go?",
-      "options_id": ["Nilai error package-level yang bisa dibandingkan dengan errors.Is", "Error yang dilempar dengan panic", "Error yang tidak bisa di-wrap", "Error dari package standard library saja"],
-      "options_en": ["A package-level error value that can be compared with errors.Is", "An error thrown with panic", "An error that cannot be wrapped", "Only errors from the standard library"],
+      "question_id": "Apa karakteristik utama sentinel error?",
+      "question_en": "What is the main characteristic of a sentinel error?",
+      "options_id": [
+        "Ia adalah nilai error yang stabil dan dikenal, biasanya dideklarasikan di level package",
+        "Ia selalu berupa custom struct dengan banyak field",
+        "Ia tidak boleh dibungkus",
+        "Ia hanya boleh dipakai di standard library"
+      ],
+      "options_en": [
+        "It is a stable, known error value, usually declared at package level",
+        "It is always a custom struct with many fields",
+        "It may never be wrapped",
+        "It may only be used in the standard library"
+      ],
       "correct": 0
     },
     {
-      "question_id": "io.EOF adalah contoh dari?",
-      "question_en": "io.EOF is an example of?",
-      "options_id": ["Sentinel error", "Custom error type", "Panic value", "Wrapped error"],
-      "options_en": ["Sentinel error", "Custom error type", "Panic value", "Wrapped error"],
+      "question_id": "Mengapa caller sebaiknya memakai `errors.Is(err, ErrNotFound)` daripada membandingkan `err.Error()` dengan string?",
+      "question_en": "Why should a caller use `errors.Is(err, ErrNotFound)` instead of comparing `err.Error()` to a string?",
+      "options_id": [
+        "Karena string error tidak bisa dicetak",
+        "Karena `errors.Is` tetap bekerja meski error dibungkus dan tidak rapuh terhadap perubahan pesan",
+        "Karena `errors.Is` lebih singkat secara sintaks",
+        "Karena string comparison dilarang di Go"
+      ],
+      "options_en": [
+        "Because error strings cannot be printed",
+        "Because `errors.Is` still works when the error is wrapped and is not brittle against message changes",
+        "Because `errors.Is` is shorter syntax",
+        "Because string comparison is forbidden in Go"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `io.EOF` sering dipakai sebagai contoh sentinel error yang baik?",
+      "question_en": "Why is `io.EOF` often used as a good sentinel error example?",
+      "options_id": [
+        "Karena ia menandai kondisi selesai membaca yang spesifik dan dapat diprediksi",
+        "Karena ia adalah satu-satunya error di package `io`",
+        "Karena ia tidak pernah muncul di runtime",
+        "Karena ia otomatis menyebabkan loop berhenti tanpa cek"
+      ],
+      "options_en": [
+        "Because it marks a specific, predictable end-of-reading condition",
+        "Because it is the only error in the `io` package",
+        "Because it never appears at runtime",
+        "Because it automatically stops a loop without any check"
+      ],
       "correct": 0
     },
     {
-      "question_id": "Mana yang merupakan best practice dalam error handling Go?",
-      "question_en": "Which is a best practice in Go error handling?",
-      "options_id": ["Tambahkan konteks saat wrapping error", "Gunakan panic untuk semua error", "Abaikan error dengan _", "Log error di setiap level fungsi"],
-      "options_en": ["Add context when wrapping errors", "Use panic for all errors", "Ignore errors with _", "Log errors at every function level"],
+      "question_id": "Apa trade-off jika package mengekspos terlalu banyak sentinel errors?",
+      "question_en": "What is the trade-off if a package exposes too many sentinel errors?",
+      "options_id": [
+        "Tidak ada trade-off; makin banyak makin baik",
+        "API publik menjadi lebih sulit diubah karena caller bisa mulai bergantung pada identitas error-error itu",
+        "Compiler akan melarang wrapping",
+        "Sentinel error otomatis berubah menjadi custom error"
+      ],
+      "options_en": [
+        "There is no trade-off; the more the better",
+        "The public API becomes harder to change because callers may start depending on those error identities",
+        "The compiler will forbid wrapping",
+        "Sentinel errors automatically turn into custom errors"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa maksud opaque error pada lesson ini?",
+      "question_en": "What does opaque error mean in this lesson?",
+      "options_id": [
+        "Error yang tidak dapat dicetak",
+        "Error yang menyembunyikan detail internal sehingga caller tidak perlu tahu tipe atau implementasi internalnya",
+        "Error yang selalu nil",
+        "Error yang tidak boleh memiliki konteks"
+      ],
+      "options_en": [
+        "An error that cannot be printed",
+        "An error that hides internal details so callers do not need to know the internal type or implementation",
+        "An error that is always nil",
+        "An error that may not carry context"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa mengembalikan `&internalDBError{...}` langsung dari API publik bisa menjadi desain yang buruk?",
+      "question_en": "Why can returning `&internalDBError{...}` directly from a public API be a poor design?",
+      "options_id": [
+        "Karena custom error dilarang di API publik",
+        "Karena caller jadi harus tahu detail internal yang seharusnya bisa disembunyikan",
+        "Karena custom error tidak bisa di-wrap",
+        "Karena `errors.As` tidak mendukung struct"
+      ],
+      "options_en": [
+        "Because custom errors are forbidden in public APIs",
+        "Because callers then have to know internal details that could have been hidden",
+        "Because custom errors cannot be wrapped",
+        "Because `errors.As` does not support structs"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa arti best practice 'log once, wrap many times'?",
+      "question_en": "What does the best practice 'log once, wrap many times' mean?",
+      "options_id": [
+        "Log di setiap fungsi agar jejaknya lengkap",
+        "Tambahkan konteks di tiap layer, tetapi lakukan logging di level atas agar tidak menduplikasi noise",
+        "Jangan pernah wrap error yang sudah di-log",
+        "Pakai sentinel error untuk semua logging"
+      ],
+      "options_en": [
+        "Log in every function so the trace is complete",
+        "Add context at each layer, but perform logging at the top level to avoid duplicated noise",
+        "Never wrap an error that was already logged",
+        "Use sentinel errors for all logging"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa panic bukan pilihan terbaik untuk kondisi yang bisa dipulihkan?",
+      "question_en": "Why is panic not the best choice for recoverable conditions?",
+      "options_id": [
+        "Karena panic tidak ada di Go",
+        "Karena kondisi seperti itu lebih baik dikomunikasikan sebagai error biasa yang bisa ditangani caller",
+        "Karena panic hanya bisa dipakai di test",
+        "Karena panic otomatis dibungkus menjadi error"
+      ],
+      "options_en": [
+        "Because panic does not exist in Go",
+        "Because such conditions are better communicated as normal errors that callers can handle",
+        "Because panic can only be used in tests",
+        "Because panic is automatically wrapped into an error"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Dalam loop pembacaan, mengapa biasanya ada cek `if errors.Is(err, io.EOF) { break }` sebelum cek error umum lain?",
+      "question_en": "In a read loop, why is there usually a check like `if errors.Is(err, io.EOF) { break }` before other general error checks?",
+      "options_id": [
+        "Karena `io.EOF` adalah kondisi akhir normal, bukan kegagalan yang harus diperlakukan sama seperti error lain",
+        "Karena `io.EOF` selalu panic bila tidak dicek dulu",
+        "Karena tanpa itu buffer menjadi nil",
+        "Karena Go mewajibkan urutan tersebut secara sintaks"
+      ],
+      "options_en": [
+        "Because `io.EOF` is a normal end condition, not a failure that should be treated like other errors",
+        "Because `io.EOF` always panics if not checked first",
+        "Because otherwise the buffer becomes nil",
+        "Because Go requires that order syntactically"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Pernyataan mana yang paling tepat tentang best practices error handling pada lesson ini?",
+      "question_en": "Which statement is most accurate about error handling best practices in this lesson?",
+      "options_id": [
+        "Tangani error secara eksplisit, tambahkan konteks seperlunya, gunakan sentinel untuk kondisi yang diprediksi, dan hindari logging berulang di setiap layer",
+        "Abaikan error kecil agar kode lebih ringkas",
+        "Selalu pakai panic untuk mempercepat debugging",
+        "Bandingkan semua error dengan string agar sederhana"
+      ],
+      "options_en": [
+        "Handle errors explicitly, add context where useful, use sentinels for predictable conditions, and avoid repeated logging at every layer",
+        "Ignore small errors to keep the code short",
+        "Always use panic to speed up debugging",
+        "Compare all errors by string to keep things simple"
+      ],
       "correct": 0
     }
   ]

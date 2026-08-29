@@ -8,24 +8,73 @@
   "starterCode": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"time\"\n)\n\n// processWithContext simulates a long operation that respects context cancellation\nfunc processWithContext(ctx context.Context, steps int) error {\n\tfor i := 1; i <= steps; i++ {\n\t\t// TODO: check if ctx is done using select\n\t\t// If done, return ctx.Err()\n\t\tselect {\n\t\tcase <-ctx.Done():\n\t\t\treturn ctx.Err()\n\t\tdefault:\n\t\t}\n\n\t\t// Simulate work\n\t\ttime.Sleep(200 * time.Millisecond)\n\t\tfmt.Printf(\"Completed step %d/%d\\n\", i, steps)\n\t}\n\treturn nil\n}\n\nfunc main() {\n\t// TODO: create a context with 500ms timeout\n\tctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)\n\tdefer cancel()\n\n\terr := processWithContext(ctx, 5)\n\tif err != nil {\n\t\tswitch err {\n\t\tcase context.DeadlineExceeded:\n\t\t\tfmt.Println(\"Operation timed out\")\n\t\tcase context.Canceled:\n\t\t\tfmt.Println(\"Operation was cancelled\")\n\t\tdefault:\n\t\t\tfmt.Println(\"Error:\", err)\n\t\t}\n\t} else {\n\t\tfmt.Println(\"All steps completed!\")\n\t}\n}",
   "quiz": [
     {
-      "question_id": "Kapan harus menggunakan context.Background()?",
-      "question_en": "When should you use context.Background()?",
-      "options_id": ["Sebagai root context di main, server startup, atau test", "Di dalam setiap handler HTTP", "Hanya ketika tidak ada deadline", "Sebagai pengganti context.TODO()"],
-      "options_en": ["As the root context in main, server startup, or tests", "Inside every HTTP handler", "Only when there is no deadline", "As a replacement for context.TODO()"],
+      "question_id": "Kapan `context.Background()` paling tepat digunakan menurut lesson?",
+      "question_en": "When is `context.Background()` most appropriate according to the lesson?",
+      "options_id": ["Sebagai root context di `main`, startup server, atau test", "Sebagai pengganti context request yang sudah diberikan handler", "Hanya saat ingin timeout 5 detik", "Di dalam struct agar mudah disimpan"],
+      "options_en": ["As the root context in `main`, server startup, or tests", "As a replacement for the request context already provided by a handler", "Only when you want a 5-second timeout", "Inside a struct so it is easy to store"],
       "correct": 0
     },
     {
-      "question_id": "Mengapa defer cancel() harus selalu dipanggil setelah context.WithTimeout?",
-      "question_en": "Why must defer cancel() always be called after context.WithTimeout?",
-      "options_id": ["Untuk membebaskan resources terkait context meski timeout belum tercapai", "Agar timeout bekerja", "Agar context bisa digunakan lagi", "Agar goroutine tidak hang"],
-      "options_en": ["To release context-related resources even if the timeout isn't reached", "So the timeout works", "So the context can be reused", "So goroutines don't hang"],
+      "question_id": "Apa perbedaan utama `context.TODO()` dibanding `context.Background()` pada penjelasan lesson?",
+      "question_en": "What is the main difference between `context.TODO()` and `context.Background()` in the lesson?",
+      "options_id": ["`TODO()` adalah placeholder ketika Anda belum tahu context yang tepat", "`TODO()` otomatis memiliki deadline", "`Background()` selalu panic bila dipass ke goroutine", "Keduanya harus selalu disimpan di struct"],
+      "options_en": ["`TODO()` is a placeholder when you do not yet know the right context", "`TODO()` automatically has a deadline", "`Background()` always panics if passed to a goroutine", "Both must always be stored in a struct"],
       "correct": 0
     },
     {
-      "question_id": "ctx.Done() mengembalikan apa?",
-      "question_en": "What does ctx.Done() return?",
-      "options_id": ["Channel yang ditutup ketika context dibatalkan atau timeout", "Boolean apakah context sudah done", "Error jika context sudah cancel", "Durasi sisa sebelum timeout"],
-      "options_en": ["A channel that is closed when the context is cancelled or timed out", "A boolean whether the context is done", "An error if the context was cancelled", "The remaining duration before timeout"],
+      "question_id": "Mengapa `defer cancel()` tetap dipanggil walau operasi mungkin selesai sebelum timeout?",
+      "question_en": "Why is `defer cancel()` still called even if the operation may finish before the timeout?",
+      "options_id": ["Untuk membebaskan resource terkait context lebih awal sesuai anjuran lesson", "Agar context dapat dipakai ulang untuk request berikutnya", "Agar `ctx.Done()` mengirim nilai boolean `true`", "Karena tanpa itu `http.Client` tidak bisa membaca body"],
+      "options_en": ["To release context-related resources early as recommended by the lesson", "So the context can be reused for the next request", "So `ctx.Done()` sends a boolean `true`", "Because otherwise `http.Client` cannot read the body"],
+      "correct": 0
+    },
+    {
+      "question_id": "Perbedaan inti `WithTimeout` dan `WithDeadline` pada lesson adalah...",
+      "question_en": "The core difference between `WithTimeout` and `WithDeadline` in the lesson is...",
+      "options_id": ["`WithTimeout` menerima durasi relatif, `WithDeadline` menerima waktu absolut", "`WithTimeout` hanya untuk HTTP, `WithDeadline` hanya untuk database", "`WithDeadline` tidak perlu `cancel()`", "`WithTimeout` tidak bisa memicu cancellation"],
+      "options_en": ["`WithTimeout` takes a relative duration, `WithDeadline` takes an absolute time", "`WithTimeout` is only for HTTP and `WithDeadline` only for databases", "`WithDeadline` does not need `cancel()`", "`WithTimeout` cannot trigger cancellation"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa `http.NewRequestWithContext(ctx, ...)` lebih tepat daripada membuat request tanpa context pada contoh timeout?",
+      "question_en": "Why is `http.NewRequestWithContext(ctx, ...)` more appropriate than creating a request without context in the timeout example?",
+      "options_id": ["Agar deadline dan cancellation dari context ikut memengaruhi request HTTP", "Agar request otomatis menjadi POST", "Agar `client.Do` tidak perlu error handling", "Agar body response otomatis menjadi JSON"],
+      "options_en": ["So the context's deadline and cancellation also affect the HTTP request", "So the request automatically becomes POST", "So `client.Do` no longer needs error handling", "So the response body automatically becomes JSON"],
+      "correct": 0
+    },
+    {
+      "question_id": "Pada pola `select` di `longTask`, apa arti case `<-ctx.Done()`?",
+      "question_en": "In the `select` pattern in `longTask`, what does the case `<-ctx.Done()` mean?",
+      "options_id": ["Cek channel yang akan ditutup saat context dibatalkan atau deadline tercapai", "Baca sisa waktu timeout dalam milidetik", "Ambil value request-scoped dari context", "Mulai goroutine baru untuk cleanup"],
+      "options_en": ["Check the channel that will be closed when the context is canceled or its deadline is reached", "Read the remaining timeout in milliseconds", "Pull a request-scoped value from the context", "Start a new goroutine for cleanup"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang dikembalikan `ctx.Err()` setelah cancellation terdeteksi?",
+      "question_en": "What does `ctx.Err()` return after cancellation is detected?",
+      "options_id": ["`context.Canceled` atau `context.DeadlineExceeded` tergantung penyebabnya", "Selalu `nil`", "String path request", "Durasi timeout asli"],
+      "options_en": ["`context.Canceled` or `context.DeadlineExceeded` depending on the cause", "Always `nil`", "The request path as a string", "The original timeout duration"],
+      "correct": 0
+    },
+    {
+      "question_id": "Rule mana yang secara eksplisit disebut lesson tentang penempatan argument context?",
+      "question_en": "Which rule does the lesson explicitly state about where the context argument should go?",
+      "options_id": ["Selalu jadi argumen pertama dan dinamai `ctx`", "Selalu jadi argumen terakhir", "Hanya dipakai pada method receiver", "Harus disimpan di field struct"],
+      "options_en": ["It should always be the first argument and be named `ctx`", "It should always be the last argument", "It is only used on receiver methods", "It must be stored in a struct field"],
+      "correct": 0
+    },
+    {
+      "question_id": "Larangan mana yang juga ditegaskan lesson dalam penggunaan context?",
+      "question_en": "Which prohibition about context usage does the lesson also emphasize?",
+      "options_id": ["Jangan simpan context di struct", "Jangan pernah pass context ke goroutine lain", "Jangan gunakan context pada HTTP sama sekali", "Jangan panggil `cancel()`"],
+      "options_en": ["Do not store a context in a struct", "Never pass a context to another goroutine", "Do not use context with HTTP at all", "Do not call `cancel()`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika `fetchURL` gagal karena timeout context, pemeriksaan mana yang ditunjukkan lesson di caller?",
+      "question_en": "If `fetchURL` fails because of a context timeout, which check does the lesson show in the caller?",
+      "options_id": ["`if ctx.Err() == context.DeadlineExceeded`", "`if err == io.EOF`", "`if resp.StatusCode == 408`", "`if cancel == nil`"],
+      "options_en": ["`if ctx.Err() == context.DeadlineExceeded`", "`if err == io.EOF`", "`if resp.StatusCode == 408`", "`if cancel == nil`"],
       "correct": 0
     }
   ]

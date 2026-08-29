@@ -8,25 +8,74 @@
   "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc producer(jobs chan<- int, n int) {\n\tfor i := 1; i <= n; i++ {\n\t\tfmt.Println(\"producing job\", i)\n\t\tjobs <- i\n\t}\n\tclose(jobs)\n}\n\nfunc consumer(jobs <-chan int) {\n\tfor job := range jobs {\n\t\ttime.Sleep(50 * time.Millisecond)\n\t\tfmt.Println(\"consumed job\", job)\n\t}\n}\n\nfunc main() {\n\t// TODO: create a buffered channel with capacity 3\n\tjobs := make(chan int)\n\n\tgo producer(jobs, 5)\n\tconsumer(jobs)\n\n\tfmt.Println(\"all jobs done\")\n}",
   "quiz": [
     {
-      "question_id": "Kapan send ke buffered channel memblokir?",
-      "question_en": "When does a send to a buffered channel block?",
-      "options_id": ["Ketika buffer penuh", "Ketika buffer kosong", "Selalu memblokir", "Tidak pernah memblokir"],
-      "options_en": ["When the buffer is full", "When the buffer is empty", "Always blocks", "Never blocks"],
+      "question_id": "Apa arti `make(chan string, 2)`?",
+      "question_en": "What does `make(chan string, 2)` mean?",
+      "options_id": ["Membuat buffered channel `string` dengan kapasitas 2", "Membuat unbuffered channel yang sudah berisi 2 string kosong", "Membuat array berisi 2 channel string", "Membuat channel yang hanya boleh di-receive dua kali"],
+      "options_en": ["It creates a buffered `string` channel with capacity 2", "It creates an unbuffered channel already containing 2 empty strings", "It creates an array of 2 string channels", "It creates a channel that may only be received from twice"],
       "correct": 0
     },
     {
-      "question_id": "Apa yang dikembalikan oleh len(ch) pada buffered channel?",
-      "question_en": "What does len(ch) return on a buffered channel?",
-      "options_id": ["Jumlah elemen yang saat ini ada di buffer", "Kapasitas total buffer", "Jumlah goroutine yang menunggu", "Ukuran tipe elemen"],
-      "options_en": ["The number of elements currently in the buffer", "The total buffer capacity", "The number of waiting goroutines", "The size of the element type"],
+      "question_id": "Pada contoh `ch <- \"ping\"; ch <- \"pong\";`, apa yang membuat kedua send pertama tidak memblokir?",
+      "question_en": "In the example `ch <- \"ping\"; ch <- \"pong\";`, what allows the first two sends to avoid blocking?",
+      "options_id": ["Buffer masih memiliki slot kosong untuk menampung nilainya", "Go otomatis membuat goroutine receiver tersembunyi", "`len(ch)` selalu nol pada buffered channel", "Setiap dua send pertama selalu non-blocking apa pun kapasitasnya"],
+      "options_en": ["The buffer still has free slots to hold the values", "Go automatically creates a hidden receiver goroutine", "`len(ch)` is always zero on a buffered channel", "The first two sends are always non-blocking regardless of capacity"],
       "correct": 0
     },
     {
-      "question_id": "Cara membuat buffered channel berkapasitas 5 untuk tipe string?",
-      "question_en": "How do you create a buffered channel with capacity 5 for strings?",
-      "options_id": ["make(chan string, 5)", "make(chan string)[5]", "buffered(chan string, 5)", "make(chan[5] string)"],
-      "options_en": ["make(chan string, 5)", "make(chan string)[5]", "buffered(chan string, 5)", "make(chan[5] string)"],
+      "question_id": "Kapan send ke buffered channel mulai memblokir?",
+      "question_en": "When does a send to a buffered channel start blocking?",
+      "options_id": ["Saat buffer kosong", "Setelah receive pertama terjadi", "Saat buffer penuh", "Tidak pernah pada buffered channel"],
+      "options_en": ["When the buffer is empty", "After the first receive happens", "When the buffer is full", "Never on a buffered channel"],
+      "correct": 2
+    },
+    {
+      "question_id": "Kapan receive dari buffered channel memblokir?",
+      "question_en": "When does a receive from a buffered channel block?",
+      "options_id": ["Saat buffer kosong", "Saat buffer penuh", "Setelah satu send berhasil", "Receive tidak pernah memblokir pada buffered channel"],
+      "options_en": ["When the buffer is empty", "When the buffer is full", "After one send succeeds", "A receive never blocks on a buffered channel"],
       "correct": 0
+    },
+    {
+      "question_id": "Jika `len(ch) == 3` dan `cap(ch) == 5`, berapa banyak nilai lagi yang bisa dikirim tanpa receiver tambahan?",
+      "question_en": "If `len(ch) == 3` and `cap(ch) == 5`, how many more values can be sent without an additional receiver?",
+      "options_id": ["5", "3", "2", "0"],
+      "options_en": ["5", "3", "2", "0"],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa yang dikembalikan `cap(ch)` pada buffered channel?",
+      "question_en": "What does `cap(ch)` return for a buffered channel?",
+      "options_id": ["Jumlah goroutine yang menunggu", "Kapasitas total buffer channel", "Jumlah byte per elemen", "Jumlah receive yang tersisa"],
+      "options_en": ["The number of waiting goroutines", "The total capacity of the channel buffer", "The number of bytes per element", "The number of remaining receives"],
+      "correct": 1
+    },
+    {
+      "question_id": "Dalam pattern semaphore, tujuan `sem <- struct{}{}` sebelum meluncurkan worker adalah?",
+      "question_en": "In the semaphore pattern, what is the purpose of `sem <- struct{}{}` before launching a worker?",
+      "options_id": ["Mengambil satu slot semaphore sehingga jumlah worker concurrent dibatasi", "Menutup channel saat worker dimulai", "Mengosongkan buffer sebelum goroutine dibuat", "Menyalin data ke worker"],
+      "options_en": ["To acquire one semaphore slot so concurrent workers are limited", "To close the channel when the worker starts", "To empty the buffer before the goroutine is created", "To copy data into the worker"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa worker melakukan `defer func() { <-sem }()`?",
+      "question_en": "Why does the worker use `defer func() { <-sem }()`?",
+      "options_id": ["Untuk menambah kapasitas channel satu slot", "Untuk melepas slot semaphore saat worker selesai", "Untuk menerima hasil dari worker lain", "Untuk memastikan worker menjadi goroutine utama"],
+      "options_en": ["To increase the channel capacity by one slot", "To release the semaphore slot when the worker finishes", "To receive results from another worker", "To ensure the worker becomes the main goroutine"],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa loop akhir yang mengirim `cap(sem)` token ke `sem` dapat dipakai untuk menunggu semua worker selesai?",
+      "question_en": "Why can the final loop that sends `cap(sem)` tokens into `sem` be used to wait for all workers to finish?",
+      "options_id": ["Karena `cap(sem)` selalu sama dengan jumlah total worker", "Karena pengiriman akhir baru bisa memenuhi semua slot setelah worker melepaskan tokennya", "Karena `sem` otomatis berubah menjadi `sync.WaitGroup`", "Karena buffered channel selalu menunggu semua goroutine saat program keluar"],
+      "options_en": ["Because `cap(sem)` is always equal to the total number of workers", "Because those final sends can only fill all slots after workers release their tokens", "Because `sem` automatically becomes a `sync.WaitGroup`", "Because buffered channels always wait for all goroutines when the program exits"],
+      "correct": 1
+    },
+    {
+      "question_id": "Situasi mana dari tabel yang paling cocok memakai unbuffered channel daripada buffered?",
+      "question_en": "Which situation from the table is best matched with an unbuffered channel instead of a buffered one?",
+      "options_id": ["Rate limiting atau semaphore", "Batch processing", "Decoupling producer-consumer", "Sinkronisasi ketat (rendezvous)"],
+      "options_en": ["Rate limiting or semaphore", "Batch processing", "Decoupling producer-consumer", "Strict synchronization (rendezvous)"],
+      "correct": 3
     }
   ]
 }

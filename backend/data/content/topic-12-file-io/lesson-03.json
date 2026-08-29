@@ -8,24 +8,73 @@
   "starterCode": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Movie struct {\n\t// TODO: add fields: Title (string), Year (int), Rating (float64), Director (string)\n\t// Add proper json struct tags\n\tTitle    string\n\tYear     int\n\tRating   float64\n\tDirector string\n}\n\nfunc main() {\n\t// TODO: create a Movie struct with values and marshal it to JSON\n\tmovie := Movie{\n\t\tTitle:    \"The Go Gopher Movie\",\n\t\tYear:     2024,\n\t\tRating:   9.5,\n\t\tDirector: \"Rob Pike\",\n\t}\n\n\t// Marshal to JSON\n\tdata, err := json.Marshal(movie)\n\tif err != nil {\n\t\tfmt.Println(\"Marshal error:\", err)\n\t\treturn\n\t}\n\tfmt.Println(string(data))\n\n\t// TODO: unmarshal the JSON back into a new Movie struct and print it\n\tvar decoded Movie\n\tif err := json.Unmarshal(data, &decoded); err != nil {\n\t\tfmt.Println(\"Unmarshal error:\", err)\n\t\treturn\n\t}\n\tfmt.Printf(\"%+v\\n\", decoded)\n}",
   "quiz": [
     {
-      "question_id": "Fungsi apa yang mengubah struct Go menjadi JSON?",
-      "question_en": "Which function converts a Go struct to JSON?",
-      "options_id": ["json.Marshal()", "json.Encode()", "json.Serialize()", "json.Convert()"],
-      "options_en": ["json.Marshal()", "json.Encode()", "json.Serialize()", "json.Convert()"],
+      "question_id": "Fungsi mana yang mengubah struct Go menjadi JSON `[]byte`?",
+      "question_en": "Which function converts a Go struct into JSON `[]byte`?",
+      "options_id": ["`json.Marshal`", "`json.NewEncoder`", "`json.Unmarshal`", "`json.NewDecoder`"],
+      "options_en": ["`json.Marshal`", "`json.NewEncoder`", "`json.Unmarshal`", "`json.NewDecoder`"],
       "correct": 0
     },
     {
-      "question_id": "Apa efek dari tag `json:\"name,omitempty\"` pada sebuah field?",
-      "question_en": "What does the tag `json:\"name,omitempty\"` do to a field?",
-      "options_id": ["Field diabaikan dalam JSON jika nilainya zero value", "Field selalu disertakan dalam JSON", "Field dienkripsi dalam JSON", "Field diganti namanya menjadi 'omitempty'"],
-      "options_en": ["The field is omitted from JSON if its value is the zero value", "The field is always included in JSON", "The field is encrypted in JSON", "The field is renamed to 'omitempty'"],
+      "question_id": "Mengapa field `password` pada struct `Person` tidak muncul dalam output JSON pada contoh?",
+      "question_en": "Why does the `password` field on the `Person` struct not appear in the JSON output in the example?",
+      "options_id": ["Karena field itu unexported sehingga diabaikan oleh `encoding/json`", "Karena field string selalu disembunyikan", "Karena harus diberi tag `json:\"password\"` agar bisa dienkripsi", "Karena `Marshal` hanya menulis field integer"],
+      "options_en": ["Because the field is unexported, so `encoding/json` ignores it", "Because string fields are always hidden", "Because it needs a `json:\"password\"` tag to be encrypted", "Because `Marshal` only writes integer fields"],
       "correct": 0
     },
     {
-      "question_id": "Mengapa json.NewDecoder lebih baik dari json.Unmarshal untuk HTTP response?",
-      "question_en": "Why is json.NewDecoder better than json.Unmarshal for HTTP responses?",
-      "options_id": ["Bisa decode langsung dari io.Reader tanpa membaca semua data ke memori", "Lebih cepat selalu", "Tidak membutuhkan struct tag", "Menghandle error lebih baik"],
-      "options_en": ["Can decode directly from io.Reader without loading all data into memory", "Always faster", "Doesn't require struct tags", "Handles errors better"],
+      "question_id": "Apa efek tag `json:\"email,omitempty\"` pada contoh `Person`?",
+      "question_en": "What is the effect of the `json:\"email,omitempty\"` tag in the `Person` example?",
+      "options_id": ["Field dihilangkan jika nilainya zero value", "Field selalu ditulis dengan nama `omitempty`", "Field dibuat private saat decode", "Field hanya berlaku untuk `MarshalIndent`"],
+      "options_en": ["The field is omitted if its value is the zero value", "The field is always written with the name `omitempty`", "The field becomes private during decode", "The field only applies to `MarshalIndent`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa arti tag `json:\"-\"` pada struct `Product`?",
+      "question_en": "What does the `json:\"-\"` tag mean on the `Product` struct?",
+      "options_id": ["Field selalu diabaikan oleh JSON", "Field hanya dipakai saat decoding", "Field otomatis memakai nama asli struct field", "Field hanya muncul pada pretty-print"],
+      "options_en": ["The field is always ignored by JSON", "The field is only used during decoding", "The field automatically uses the original struct field name", "The field only appears in pretty-printed output"],
+      "correct": 0
+    },
+    {
+      "question_id": "Kapan `json.MarshalIndent` lebih tepat daripada `json.Marshal`?",
+      "question_en": "When is `json.MarshalIndent` more appropriate than `json.Marshal`?",
+      "options_id": ["Saat ingin output JSON yang lebih mudah dibaca manusia", "Saat ingin decode dari HTTP response", "Saat field unexported harus ikut muncul", "Saat output harus selalu lebih kecil ukurannya"],
+      "options_en": ["When you want JSON output that is easier for humans to read", "When you want to decode from an HTTP response", "When unexported fields must also appear", "When the output must always be smaller"],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa `json.NewDecoder(resp.Body).Decode(&user)` cocok untuk HTTP response?",
+      "question_en": "Why is `json.NewDecoder(resp.Body).Decode(&user)` a good fit for an HTTP response?",
+      "options_id": ["Karena bisa decode langsung dari `io.Reader` tanpa membaca seluruh body ke memori lebih dulu", "Karena `Decode` tidak bisa gagal", "Karena HTTP response tidak bisa dipakai dengan `Unmarshal`", "Karena `Decoder` otomatis mengekspor field private"],
+      "options_en": ["Because it can decode directly from an `io.Reader` without first loading the whole body into memory", "Because `Decode` cannot fail", "Because an HTTP response can never be used with `Unmarshal`", "Because `Decoder` automatically exports private fields"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa keuntungan utama `json.NewEncoder(file).Encode(p)` pada contoh file besar?",
+      "question_en": "What is the main advantage of `json.NewEncoder(file).Encode(p)` in the large-file example?",
+      "options_id": ["Bisa menulis langsung ke writer seperti file tanpa perlu menyimpan hasil `Marshal` terpisah", "Selalu menghasilkan JSON tanpa newline", "Menghilangkan kebutuhan untuk `defer file.Close()`", "Membuat semua field menjadi `omitempty`"],
+      "options_en": ["It can write directly to a writer such as a file without storing a separate `Marshal` result first", "It always produces JSON without a newline", "It removes the need for `defer file.Close()`", "It makes every field `omitempty`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Pada `json.Unmarshal([]byte(jsonStr), &p)`, mengapa argumen kedua harus `&p` dan bukan `p`?",
+      "question_en": "In `json.Unmarshal([]byte(jsonStr), &p)`, why must the second argument be `&p` instead of `p`?",
+      "options_id": ["Agar decoder bisa menulis hasil parse ke variabel target", "Agar struct menjadi exported", "Agar JSON berubah menjadi pretty-printed", "Agar field dengan tag `omitempty` ikut terisi"],
+      "options_en": ["So the decoder can write the parsed result into the target variable", "So the struct becomes exported", "So the JSON becomes pretty-printed", "So fields with `omitempty` will also be filled"],
+      "correct": 0
+    },
+    {
+      "question_id": "Tag mana yang mengganti nama field JSON menjadi `in_stock`?",
+      "question_en": "Which tag renames a JSON field to `in_stock`?",
+      "options_id": ["`` `json:\"in_stock\"` ``", "`` `json:\"omitempty\"` ``", "`` `json:\"-\"` ``", "`` `json:\"stock,in\"` ``"],
+      "options_en": ["`` `json:\"in_stock\"` ``", "`` `json:\"omitempty\"` ``", "`` `json:\"-\"` ``", "`` `json:\"stock,in\"` ``"],
+      "correct": 0
+    },
+    {
+      "question_id": "Tradeoff desain apa yang terlihat dari contoh `encoding/json` pada lesson?",
+      "question_en": "What design tradeoff is illustrated by the `encoding/json` examples in the lesson?",
+      "options_id": ["Exported fields dan explicit tags membentuk shape JSON publik, sementara field unexported atau ignored tetap internal", "Semua field struct otomatis harus muncul dalam JSON", "Struct tags hanya dipakai untuk validasi runtime", "Streaming encoder dan decoder hanya berguna untuk data kecil"],
+      "options_en": ["Exported fields and explicit tags define the public JSON shape, while unexported or ignored fields stay internal", "Every struct field must automatically appear in JSON", "Struct tags are only used for runtime validation", "Streaming encoders and decoders are only useful for small data"],
       "correct": 0
     }
   ]

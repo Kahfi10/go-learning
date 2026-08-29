@@ -8,55 +8,74 @@
   "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"runtime\"\n)\n\nfunc main() {\n\tfmt.Println(\"Go version:\", runtime.Version())\n\tfmt.Println(\"OS:\", runtime.GOOS)\n\tfmt.Println(\"Architecture:\", runtime.GOARCH)\n\tfmt.Println(\"NumCPU:\", runtime.NumCPU())\n}",
   "quiz": [
     {
-      "question_id": "Perintah Go CLI mana yang digunakan untuk mengkompilasi dan langsung menjalankan program tanpa menghasilkan file binary?",
-      "question_en": "Which Go CLI command compiles and immediately runs a program without producing a binary file?",
-      "options_id": [
-        "go build",
-        "go run",
-        "go exec",
-        "go start"
-      ],
-      "options_en": [
-        "go build",
-        "go run",
-        "go exec",
-        "go start"
-      ],
+      "question_id": "Skenario mana yang PALING cocok menggunakan `go run main.go`?",
+      "question_en": "Which scenario is the BEST fit for using `go run main.go`?",
+      "options_id": ["Saat ingin membuat binary bernama `myapp` untuk distribusi", "Saat ingin cepat mengompilasi lalu langsung menjalankan program selama development", "Saat ingin memverifikasi checksum dependency", "Saat ingin memformat semua file Go di proyek"],
+      "options_en": ["When you want to produce a binary named `myapp` for distribution", "When you want to compile quickly and run the program immediately during development", "When you want to verify dependency checksums", "When you want to format all Go files in the project"],
       "correct": 1
     },
     {
-      "question_id": "Perintah apa yang digunakan untuk memformat kode Go sesuai standar resmi?",
-      "question_en": "Which command is used to format Go code according to the official standard?",
-      "options_id": [
-        "go lint",
-        "go check",
-        "go fmt",
-        "go style"
-      ],
-      "options_en": [
-        "go lint",
-        "go check",
-        "go fmt",
-        "go style"
-      ],
+      "question_id": "Jika Anda perlu menghasilkan executable bernama `myapp`, perintah mana yang benar?",
+      "question_en": "If you need to produce an executable named `myapp`, which command is correct?",
+      "options_id": ["go run -o myapp main.go", "go build -o myapp main.go", "go test -o myapp main.go", "go fmt -o myapp main.go"],
+      "options_en": ["go run -o myapp main.go", "go build -o myapp main.go", "go test -o myapp main.go", "go fmt -o myapp main.go"],
+      "correct": 1
+    },
+    {
+      "question_id": "Pada output `go version go1.22.0 linux/amd64`, bagian `linux/amd64` menyatakan apa?",
+      "question_en": "In the output `go version go1.22.0 linux/amd64`, what does `linux/amd64` indicate?",
+      "options_id": ["Module path dan checksum", "OS dan arsitektur target", "Nama package dan fungsi main", "Format binary dan tingkat optimisasi"],
+      "options_en": ["The module path and checksum", "The OS and target architecture", "The package name and main function", "The binary format and optimization level"],
+      "correct": 1
+    },
+    {
+      "question_id": "Dalam contoh program, anggota package `runtime` mana yang dipakai untuk menampilkan versi Go, OS, dan arsitektur?",
+      "question_en": "In the example program, which `runtime` members are used to display the Go version, OS, and architecture?",
+      "options_id": ["`runtime.Version()`, `runtime.GOOS`, `runtime.GOARCH`", "`runtime.Build()`, `runtime.OS()`, `runtime.Arch()`", "`runtime.GoVersion()`, `runtime.Platform()`, `runtime.CPU()`", "`runtime.Version`, `runtime.System`, `runtime.Target`"],
+      "options_en": ["`runtime.Version()`, `runtime.GOOS`, `runtime.GOARCH`", "`runtime.Build()`, `runtime.OS()`, `runtime.Arch()`", "`runtime.GoVersion()`, `runtime.Platform()`, `runtime.CPU()`", "`runtime.Version`, `runtime.System`, `runtime.Target`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Di Linux, setelah mengekstrak Go ke `/usr/local/go`, langkah mana dari lesson yang membuat perintah `go` bisa dipanggil dari shell biasa?",
+      "question_en": "On Linux, after extracting Go to `/usr/local/go`, which step from the lesson makes the `go` command available from a normal shell?",
+      "options_id": ["Menjalankan `go fmt ./...`", "Menambahkan `/usr/local/go/bin` ke `PATH`", "Menjalankan `go mod init`", "Menyalin binary ke folder `vendor/`"],
+      "options_en": ["Running `go fmt ./...`", "Adding `/usr/local/go/bin` to `PATH`", "Running `go mod init`", "Copying the binary into the `vendor/` folder"],
+      "correct": 1
+    },
+    {
+      "question_id": "Perintah mana yang fokus pada analisis kode untuk mencari konstruksi mencurigakan, bukan menjalankan program atau test?",
+      "question_en": "Which command focuses on analyzing code for suspicious constructs rather than running the program or tests?",
+      "options_id": ["go build", "go get", "go vet", "go run"],
+      "options_en": ["go build", "go get", "go vet", "go run"],
       "correct": 2
     },
     {
-      "question_id": "Package Go mana yang menyediakan fungsi `runtime.Version()` untuk melihat versi Go?",
-      "question_en": "Which Go package provides the `runtime.Version()` function to check the Go version?",
-      "options_id": [
-        "os",
-        "fmt",
-        "sys",
-        "runtime"
-      ],
-      "options_en": [
-        "os",
-        "fmt",
-        "sys",
-        "runtime"
-      ],
+      "question_id": "Apa manfaat utama `go fmt ./...` pada level proyek?",
+      "question_en": "What is the main benefit of `go fmt ./...` at the project level?",
+      "options_id": ["Menghasilkan coverage report untuk semua package", "Memformat seluruh file Go sesuai gaya standar Go", "Memperbarui dependency ke versi terbaru", "Mengubah semua warning menjadi error"],
+      "options_en": ["It generates a coverage report for all packages", "It formats all Go files according to the standard Go style", "It updates dependencies to their latest versions", "It turns all warnings into errors"],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika Anda ingin output test yang lebih detail per package dan test case, flag mana yang dicontohkan?",
+      "question_en": "If you want more detailed test output per package and test case, which flag was shown?",
+      "options_id": ["-race", "-json", "-short", "-v"],
+      "options_en": ["-race", "-json", "-short", "-v"],
       "correct": 3
+    },
+    {
+      "question_id": "Menurut lesson, perintah `go get github.com/gin-gonic/gin` digunakan untuk?",
+      "question_en": "According to the lesson, what is `go get github.com/gin-gonic/gin` used for?",
+      "options_id": ["Menambahkan dependency ke proyek", "Menjalankan server HTTP dari package `gin`", "Menghapus dependency yang tidak terpakai", "Memverifikasi checksum di `go.sum`"],
+      "options_en": ["Adding a dependency to the project", "Running an HTTP server from the `gin` package", "Removing unused dependencies", "Verifying checksums in `go.sum`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Platform mana yang pada lesson dijelaskan akan menambahkan Go ke `PATH` secara otomatis lewat installer?",
+      "question_en": "Which platform is described in the lesson as adding Go to `PATH` automatically through the installer?",
+      "options_id": ["Linux", "Windows", "macOS dengan Homebrew", "Semua platform memerlukan edit PATH manual"],
+      "options_en": ["Linux", "Windows", "macOS with Homebrew", "All platforms require manual PATH editing"],
+      "correct": 1
     }
   ]
 }

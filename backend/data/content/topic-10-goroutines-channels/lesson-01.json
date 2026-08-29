@@ -8,25 +8,74 @@
   "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc printNumbers() {\n\tfor i := 1; i <= 5; i++ {\n\t\ttime.Sleep(50 * time.Millisecond)\n\t\tfmt.Println(\"number:\", i)\n\t}\n}\n\nfunc printLetters() {\n\tfor _, c := range \"ABCDE\" {\n\t\ttime.Sleep(70 * time.Millisecond)\n\t\tfmt.Printf(\"letter: %c\\n\", c)\n\t}\n}\n\nfunc main() {\n\t// TODO: run printNumbers as a goroutine\n\tprintNumbers()\n\tprintLetters()\n\n\t// Give goroutines time to finish\n\ttime.Sleep(time.Second)\n}",
   "quiz": [
     {
-      "question_id": "Bagaimana cara menjalankan sebuah fungsi sebagai goroutine?",
-      "question_en": "How do you run a function as a goroutine?",
-      "options_id": ["Tambahkan keyword `go` sebelum pemanggilan fungsi", "Gunakan thread.Start(func)", "Panggil runtime.Go(func)", "Gunakan async/await"],
-      "options_en": ["Add the `go` keyword before the function call", "Use thread.Start(func)", "Call runtime.Go(func)", "Use async/await"],
+      "question_id": "Pada loop yang meluncurkan goroutine anonim, mengapa contoh memakai `i := i` sebelum `go func()`?",
+      "question_en": "In the loop that launches anonymous goroutines, why does the example use `i := i` before `go func()`?",
+      "options_id": ["Agar setiap goroutine menangkap salinan nilai `i` untuk iterasi itu", "Agar `i` menjadi variabel global yang dipakai semua goroutine", "Agar semua goroutine otomatis berjalan parallel", "Agar loop berhenti setelah satu iterasi"],
+      "options_en": ["So each goroutine captures its own copy of `i` for that iteration", "So `i` becomes a global variable shared by all goroutines", "So all goroutines automatically run in parallel", "So the loop stops after one iteration"],
       "correct": 0
     },
     {
-      "question_id": "Apa yang terjadi pada goroutine lain ketika main() selesai?",
-      "question_en": "What happens to other goroutines when main() exits?",
-      "options_id": ["Semua goroutine langsung dihentikan", "Goroutine menyelesaikan tugasnya terlebih dahulu", "Goroutine dipindahkan ke background", "Go runtime menunggu semua goroutine selesai"],
-      "options_en": ["All goroutines are immediately terminated", "Goroutines finish their current task first", "Goroutines are moved to background", "The Go runtime waits for all goroutines"],
+      "question_id": "Pernyataan mana yang paling tepat membedakan concurrency dan parallelism di Go?",
+      "question_en": "Which statement best distinguishes concurrency from parallelism in Go?",
+      "options_id": ["Concurrency dan parallelism adalah istilah yang sama", "Concurrency berarti task overlap dalam waktu, sedangkan parallelism berarti benar-benar berjalan serentak di core berbeda", "Parallelism selalu terjadi setiap kali ada dua goroutine", "Concurrency hanya mungkin jika `GOMAXPROCS` lebih dari 1"],
+      "options_en": ["Concurrency and parallelism are the same thing", "Concurrency means tasks overlap in time, while parallelism means they truly run simultaneously on different cores", "Parallelism always happens whenever there are two goroutines", "Concurrency is only possible if `GOMAXPROCS` is greater than 1"],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika `runtime.GOMAXPROCS(1)` dipakai, kondisi mana yang masih mungkin?",
+      "question_en": "If `runtime.GOMAXPROCS(1)` is used, which situation is still possible?",
+      "options_id": ["Dua goroutine tidak bisa berjalan sama sekali", "Dua goroutine tetap bisa concurrent, tetapi tidak parallel di dua core berbeda", "Setiap goroutine otomatis menjadi satu OS thread", "Keyword `go` menjadi tidak valid"],
+      "options_en": ["Two goroutines cannot run at all", "Two goroutines can still be concurrent, but not parallel on two different cores", "Each goroutine automatically becomes one OS thread", "The `go` keyword becomes invalid"],
+      "correct": 1
+    },
+    {
+      "question_id": "Pada potongan `go func() { ... }()`, apa arti pasangan `go` dan `()` itu?",
+      "question_en": "In the snippet `go func() { ... }()`, what do the `go` and `()` together mean?",
+      "options_id": ["Function literal didefinisikan tetapi tidak pernah dipanggil", "Function literal dipanggil nanti ketika `main()` selesai", "Function literal langsung dipanggil sebagai goroutine baru", "`()` hanya diperlukan agar fungsi menjadi exported"],
+      "options_en": ["The function literal is defined but never called", "The function literal is called later when `main()` exits", "The function literal is invoked immediately as a new goroutine", "The `()` is only needed to make the function exported"],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa `time.Sleep` disebut cara yang buruk untuk menunggu goroutine selesai?",
+      "question_en": "Why is `time.Sleep` described as a poor way to wait for goroutines to finish?",
+      "options_id": ["Karena hanya bekerja untuk buffered channel", "Karena durasinya hanya tebakan, bukan sinkronisasi deterministik terhadap pekerjaan yang benar-benar selesai", "Karena `Sleep` selalu menghentikan semua goroutine lain", "Karena `Sleep` membuat program menjadi single-threaded"],
+      "options_en": ["Because it only works for buffered channels", "Because the duration is only a guess, not deterministic synchronization with actual completion", "Because `Sleep` always stops all other goroutines", "Because `Sleep` makes the program single-threaded"],
+      "correct": 1
+    },
+    {
+      "question_id": "Berapa orde memori awal yang disebutkan untuk satu goroutine?",
+      "question_en": "What starting memory size does the lesson mention for a goroutine?",
+      "options_id": ["Sekitar 2KB", "Sekitar 1MB", "Sekitar 8MB seperti OS thread", "Tidak membutuhkan memori sama sekali"],
+      "options_en": ["About 2KB", "About 1MB", "About 8MB like an OS thread", "It needs no memory at all"],
       "correct": 0
     },
     {
-      "question_id": "Berapa besar memori awal yang dibutuhkan satu goroutine?",
-      "question_en": "What is the initial memory footprint of a single goroutine?",
-      "options_id": ["Sekitar 2KB", "Sekitar 1MB", "Sekitar 8MB (sama dengan OS thread)", "Tidak membutuhkan memori"],
-      "options_en": ["Around 2KB", "Around 1MB", "Around 8MB (same as OS thread)", "No memory required"],
-      "correct": 0
+      "question_id": "Jika variabel loop tidak dicapture dengan benar pada goroutine anonim, gejala apa yang paling mungkin muncul?",
+      "question_en": "If the loop variable is not captured correctly in an anonymous goroutine, what symptom is most likely?",
+      "options_id": ["Setiap goroutine pasti mencetak 0,1,2,3,4 secara stabil", "Banyak goroutine bisa mencetak nilai `i` yang sama atau nilai yang tidak sesuai iterasinya", "Program otomatis panic ketika loop selesai", "Compiler otomatis membekukan nilai `i` tanpa bantuan apa pun"],
+      "options_en": ["Every goroutine will reliably print 0,1,2,3,4", "Many goroutines may print the same `i` value or a value that does not match their intended iteration", "The program automatically panics when the loop ends", "The compiler automatically freezes the value of `i` without any help"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa implikasi terpenting dari fakta bahwa `main()` berjalan di main goroutine?",
+      "question_en": "What is the most important implication of the fact that `main()` runs in the main goroutine?",
+      "options_id": ["Goroutine lain otomatis di-wait saat `main()` return", "Semua goroutine lain dihentikan ketika `main()` selesai", "Semua goroutine lain menjadi child process OS", "Keyword `go` hanya boleh dipakai di `main()`"],
+      "options_en": ["Other goroutines are automatically waited for when `main()` returns", "All other goroutines are terminated when `main()` finishes", "All other goroutines become OS child processes", "The `go` keyword may only be used in `main()`"],
+      "correct": 1
+    },
+    {
+      "question_id": "Potongan mana yang benar untuk meluncurkan fungsi `say` secara concurrent?",
+      "question_en": "Which snippet correctly launches the `say` function concurrently?",
+      "options_id": ["`say go(\"hello\")`", "`concurrent say(\"hello\")`", "`go say(\"hello\")`", "`async say(\"hello\")`"],
+      "options_en": ["`say go(\"hello\")`", "`concurrent say(\"hello\")`", "`go say(\"hello\")`", "`async say(\"hello\")`"],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa Go dapat menjalankan ribuan goroutine lebih mudah daripada ribuan OS thread?",
+      "question_en": "Why can Go run thousands of goroutines more easily than thousands of OS threads?",
+      "options_id": ["Karena goroutine tidak memerlukan scheduler", "Karena goroutine tidak memiliki stack", "Karena goroutine dikelola runtime Go dengan overhead awal yang kecil", "Karena goroutine selalu berjalan serial"],
+      "options_en": ["Because goroutines do not need a scheduler", "Because goroutines do not have stacks", "Because goroutines are managed by the Go runtime with small starting overhead", "Because goroutines always run serially"],
+      "correct": 2
     }
   ]
 }

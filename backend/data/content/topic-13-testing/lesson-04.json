@@ -8,25 +8,74 @@
   "starterCode": "package main\n\nimport (\n\t\"strings\"\n\t\"testing\"\n)\n\n// Two implementations of counting vowels\n\n// countVowelsLoop uses a loop\nfunc countVowelsLoop(s string) int {\n\tcount := 0\n\tfor _, c := range strings.ToLower(s) {\n\t\tswitch c {\n\t\tcase 'a', 'e', 'i', 'o', 'u':\n\t\t\tcount++\n\t\t}\n\t}\n\treturn count\n}\n\n// countVowelsMap uses a map lookup\nfunc countVowelsMap(s string) int {\n\tvowels := map[rune]bool{'a': true, 'e': true, 'i': true, 'o': true, 'u': true}\n\tcount := 0\n\tfor _, c := range strings.ToLower(s) {\n\t\tif vowels[c] {\n\t\t\tcount++\n\t\t}\n\t}\n\treturn count\n}\n\nconst testInput = \"The quick brown fox jumps over the lazy dog\"\n\n// TODO: write BenchmarkCountVowelsLoop(b *testing.B)\n// TODO: write BenchmarkCountVowelsMap(b *testing.B)\n// Each should call b.N times in a loop\n\nfunc BenchmarkCountVowelsLoop(b *testing.B) {\n\tfor i := 0; i < b.N; i++ {\n\t\tcountVowelsLoop(testInput)\n\t}\n}\n\nfunc main() {\n\t// Verify correctness\n\tresult := countVowelsLoop(testInput)\n\t_ = result\n\tb := testing.B{}\n\tBenchmarkCountVowelsLoop(&b)\n}",
   "quiz": [
     {
-      "question_id": "Flag apa yang diperlukan untuk menjalankan benchmark di Go?",
-      "question_en": "Which flag is required to run benchmarks in Go?",
-      "options_id": ["-bench", "-perf", "-measure", "-profile"],
-      "options_en": ["-bench", "-perf", "-measure", "-profile"],
+      "question_id": "Fungsi mana yang akan dikenali `go test` sebagai benchmark?",
+      "question_en": "Which function will `go test` recognize as a benchmark?",
+      "options_id": ["`func BenchmarkReverse(b *testing.B)`", "`func TestBenchmarkReverse(t *testing.T)`", "`func BenchReverse()`", "`func BenchmarkReverse(n int)`"],
+      "options_en": ["`func BenchmarkReverse(b *testing.B)`", "`func TestBenchmarkReverse(t *testing.T)`", "`func BenchReverse()`", "`func BenchmarkReverse(n int)`"],
       "correct": 0
     },
     {
-      "question_id": "Apa itu b.N dalam fungsi benchmark?",
-      "question_en": "What is b.N in a benchmark function?",
-      "options_id": ["Jumlah iterasi yang ditentukan secara otomatis oleh Go runtime", "Jumlah goroutine", "Timeout dalam milidetik", "Jumlah CPU core"],
-      "options_en": ["The number of iterations determined automatically by the Go runtime", "The number of goroutines", "Timeout in milliseconds", "The number of CPU cores"],
+      "question_id": "Mengapa body benchmark harus diulang dengan `for i := 0; i < b.N; i++`?",
+      "question_en": "Why must the benchmark body be repeated with `for i := 0; i < b.N; i++`?",
+      "options_id": ["Karena `b.N` adalah jumlah worker", "Karena Go menyesuaikan `b.N` otomatis untuk mendapat pengukuran yang lebih stabil", "Karena loop biasa tidak diizinkan dalam benchmark", "Karena `b.N` selalu sama dengan jumlah CPU"],
+      "options_en": ["Because `b.N` is the number of workers", "Because Go automatically adjusts `b.N` to get a more stable measurement", "Because ordinary loops are not allowed in benchmarks", "Because `b.N` is always equal to the CPU count"],
+      "correct": 1
+    },
+    {
+      "question_id": "Output tambahan apa yang ditampilkan oleh flag `-benchmem`?",
+      "question_en": "What extra output is shown by the `-benchmem` flag?",
+      "options_id": ["Jumlah package yang diuji", "Coverage statement", "Bytes per operation dan allocations per operation", "Hanya timestamp start dan end"],
+      "options_en": ["The number of packages tested", "Coverage statements", "Bytes per operation and allocations per operation", "Only the start and end timestamps"],
+      "correct": 2
+    },
+    {
+      "question_id": "Pada output `BenchmarkReverse-8`, angka `8` menandakan apa menurut legend lesson?",
+      "question_en": "In the output `BenchmarkReverse-8`, what does the `8` mean according to the lesson's legend?",
+      "options_id": ["Jumlah sub-benchmark", "Nilai default `b.N`", "GOMAXPROCS saat benchmark dijalankan", "Versi Go major"],
+      "options_en": ["The number of sub-benchmarks", "The default value of `b.N`", "The GOMAXPROCS value when the benchmark ran", "The Go major version"],
+      "correct": 2
+    },
+    {
+      "question_id": "Dua implementasi menghasilkan `200 ns/op` dan `350 ns/op`. Mana yang lebih cepat per operasi?",
+      "question_en": "Two implementations produce `200 ns/op` and `350 ns/op`. Which one is faster per operation?",
+      "options_id": ["Yang `350 ns/op` karena angkanya lebih besar", "Yang `200 ns/op` karena butuh waktu lebih sedikit per operasi", "Keduanya sama; `ns/op` hanya dekorasi", "Tidak bisa dibandingkan tanpa `-v`"],
+      "options_en": ["The `350 ns/op` one because the number is larger", "The `200 ns/op` one because it takes less time per operation", "They are the same; `ns/op` is only decorative", "They cannot be compared without `-v`"],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `strings.Builder` cenderung mengalahkan `s += \"x\"` di loop konkatenasi?",
+      "question_en": "Why does `strings.Builder` tend to beat `s += \"x\"` in a concatenation loop?",
+      "options_id": ["Karena `Builder` mereuse buffer alih-alih membuat string baru setiap iterasi", "Karena `Builder` selalu melakukan zero allocations", "Karena operator `+` dilarang di benchmark", "Karena `Builder` berjalan paralel"],
+      "options_en": ["Because `Builder` reuses a buffer instead of creating a new string on every iteration", "Because `Builder` always performs zero allocations", "Because the `+` operator is forbidden in benchmarks", "Because `Builder` runs in parallel"],
       "correct": 0
     },
     {
-      "question_id": "Mengapa perlu memanggil b.ResetTimer() sebelum loop benchmark?",
-      "question_en": "Why should you call b.ResetTimer() before the benchmark loop?",
-      "options_id": ["Agar waktu setup tidak masuk ke pengukuran", "Agar benchmark berjalan lebih cepat", "Agar b.N di-reset ke 0", "Agar output lebih bersih"],
-      "options_en": ["So setup time is not included in the measurement", "So the benchmark runs faster", "So b.N is reset to 0", "So the output is cleaner"],
+      "question_id": "Kapan `b.ResetTimer()` paling tepat dipanggil?",
+      "question_en": "When is `b.ResetTimer()` most appropriately called?",
+      "options_id": ["Setelah setup mahal selesai dan tepat sebelum bagian yang ingin diukur", "Sesudah loop benchmark berakhir", "Setiap kali `b.N` berubah", "Hanya bila benchmark gagal"],
+      "options_en": ["After expensive setup finishes and just before the part you want to measure", "After the benchmark loop ends", "Every time `b.N` changes", "Only if the benchmark fails"],
       "correct": 0
+    },
+    {
+      "question_id": "Untuk apa `b.StopTimer()` digunakan?",
+      "question_en": "What is `b.StopTimer()` used for?",
+      "options_id": ["Mengakhiri benchmark sepenuhnya", "Menunda semua goroutine worker", "Menghentikan pengukuran sementara saat menjalankan pekerjaan yang tidak ingin dihitung", "Mereset `b.N` ke nol"],
+      "options_en": ["To end the benchmark entirely", "To pause all worker goroutines", "To temporarily stop measurement while running work you do not want counted", "To reset `b.N` to zero"],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa arti `1 allocs/op` pada output benchmark?",
+      "question_en": "What does `1 allocs/op` mean in benchmark output?",
+      "options_id": ["Total hanya ada 1 alokasi selama seluruh proses benchmark", "Rata-rata ada 1 alokasi heap untuk setiap operasi yang diukur", "Hanya satu goroutine yang dialokasikan", "Benchmark hanya berjalan sekali"],
+      "options_en": ["There was only 1 total allocation during the whole benchmark", "There is an average of 1 heap allocation for each measured operation", "Only one goroutine was allocated", "The benchmark ran only once"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa efek praktis dari `go test -bench=. -benchtime=5s`?",
+      "question_en": "What is the practical effect of `go test -bench=. -benchtime=5s`?",
+      "options_id": ["Setiap operasi harus selesai dalam 5 detik", "Benchmark dijalankan lebih lama agar hasil lebih akurat", "Go mematikan garbage collector selama 5 detik", "Semua benchmark diulang tepat 5 kali"],
+      "options_en": ["Every operation must finish within 5 seconds", "The benchmark runs longer so the results are more accurate", "Go disables the garbage collector for 5 seconds", "All benchmarks are repeated exactly 5 times"],
+      "correct": 1
     }
   ]
 }

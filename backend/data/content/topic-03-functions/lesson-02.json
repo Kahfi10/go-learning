@@ -8,55 +8,174 @@
   "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"errors\"\n)\n\n// divide mengembalikan hasil dan error\nfunc divide(a, b float64) (float64, error) {\n\tif b == 0 {\n\t\treturn 0, errors.New(\"tidak bisa membagi dengan nol\")\n\t}\n\treturn a / b, nil\n}\n\n// swap menukar dua string dan mengembalikan keduanya\nfunc swap(a, b string) (string, string) {\n\treturn b, a\n}\n\nfunc main() {\n\t// Test divide - sukses\n\tresult, err := divide(10, 4)\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t} else {\n\t\tfmt.Printf(\"10 / 4 = %.4f\\n\", result)\n\t}\n\n\t// Test divide - error\n\t_, err = divide(5, 0)\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t}\n\n\t// Test swap\n\tx, y := swap(\"Hello\", \"World\")\n\tfmt.Println(x, y)\n}",
   "quiz": [
     {
-      "question_id": "Bagaimana cara yang benar untuk mendeklarasikan fungsi dengan dua return value di Go?",
-      "question_en": "How do you correctly declare a function with two return values in Go?",
+      "question_id": "Sintaks mana yang benar untuk fungsi yang mengembalikan hasil dan error?",
+      "question_en": "Which syntax is correct for a function that returns a result and an error?",
       "options_id": [
-        "func f() float64, error { }",
-        "func f() [float64, error] { }",
-        "func f() (float64, error) { }",
-        "func f() <float64, error> { }"
+        "`func f() float64, error {}`",
+        "`func f() [float64, error] {}`",
+        "`func f() (float64, error) {}`",
+        "`func f() <float64, error> {}`"
       ],
       "options_en": [
-        "func f() float64, error { }",
-        "func f() [float64, error] { }",
-        "func f() (float64, error) { }",
-        "func f() <float64, error> { }"
+        "`func f() float64, error {}`",
+        "`func f() [float64, error] {}`",
+        "`func f() (float64, error) {}`",
+        "`func f() <float64, error> {}`"
       ],
       "correct": 2
     },
     {
-      "question_id": "Dalam pola error handling Go, jika tidak ada error, nilai apa yang dikembalikan sebagai error?",
-      "question_en": "In Go's error handling pattern, what value is returned as the error when there is no error?",
+      "question_id": "Apa manfaat utama multiple return values pada Go dibanding memaksa satu return saja?",
+      "question_en": "What is the main benefit of multiple return values in Go instead of forcing a single return value?",
       "options_id": [
-        "false",
-        "0",
-        "\"\"",
-        "nil"
+        "Fungsi dapat mengembalikan hasil utama dan informasi tambahan seperti error secara idiomatik",
+        "Go jadi tidak perlu tipe data",
+        "Semua fungsi menjadi variadic otomatis",
+        "Compiler tidak lagi memeriksa nilai balik"
       ],
       "options_en": [
-        "false",
-        "0",
-        "\"\"",
-        "nil"
+        "A function can return the main result and additional information such as an error idiomatically",
+        "Go no longer needs data types",
+        "All functions become variadic automatically",
+        "The compiler stops checking returned values"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Dalam pola `(result, error)`, nilai error apa yang menandakan kasus sukses?",
+      "question_en": "In the `(result, error)` pattern, what error value indicates success?",
+      "options_id": [
+        "`false`",
+        "`0`",
+        "`\"\"`",
+        "`nil`"
+      ],
+      "options_en": [
+        "`false`",
+        "`0`",
+        "`\"\"`",
+        "`nil`"
       ],
       "correct": 3
     },
     {
-      "question_id": "Apa yang dimaksud dengan menggunakan `_` saat menerima multiple return value?",
-      "question_en": "What does using `_` mean when receiving multiple return values?",
+      "question_id": "Pada fungsi `divide`, mengapa kasus `b == 0` mengembalikan `0, error`?",
+      "question_en": "In the `divide` function, why does the `b == 0` case return `0, error`?",
       "options_id": [
-        "Menyimpan nilai ke variabel private",
-        "Menandai nilai sebagai nol",
-        "Mengabaikan/membuang nilai tersebut",
-        "Mengkonversi nilai ke string"
+        "Karena hasil numeriknya tidak valid dan error memberi tahu pemanggil bahwa operasi gagal",
+        "Karena Go mengharuskan semua float gagal menjadi nol permanen",
+        "Karena error hanya boleh dikembalikan bersama angka nol",
+        "Karena `fmt.Errorf` otomatis membagi nilai"
       ],
       "options_en": [
-        "Store the value in a private variable",
-        "Mark the value as zero",
-        "Discard/ignore that value",
-        "Convert the value to a string"
+        "Because the numeric result is not valid and the error tells the caller that the operation failed",
+        "Because Go requires all failed floats to become permanent zeroes",
+        "Because an error may only be returned together with the number zero",
+        "Because `fmt.Errorf` automatically performs division"
       ],
-      "correct": 2
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa lesson menekankan pengecekan `if err != nil` setelah pemanggilan fungsi seperti `divide`?",
+      "question_en": "Why does the lesson emphasize checking `if err != nil` after calling a function like `divide`?",
+      "options_id": [
+        "Karena Go tidak memakai exception sebagai mekanisme utama error handling",
+        "Karena Go tidak memiliki tipe `error` sebenarnya",
+        "Karena error hanya muncul di mode debug",
+        "Karena semua fungsi Go harus selalu gagal sekali dulu"
+      ],
+      "options_en": [
+        "Because Go does not use exceptions as its primary error-handling mechanism",
+        "Because Go does not actually have an `error` type",
+        "Because errors only appear in debug mode",
+        "Because every Go function must fail once first"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Kapan penggunaan `_` saat menerima multiple return value paling masuk akal?",
+      "question_en": "When does using `_` while receiving multiple return values make the most sense?",
+      "options_id": [
+        "Saat salah satu nilai benar-benar tidak diperlukan oleh caller",
+        "Saat ingin menonaktifkan semua error checking di package",
+        "Saat ingin mengubah return type fungsi asal",
+        "Saat ingin menyimpan nilai ke global variable tersembunyi"
+      ],
+      "options_en": [
+        "When one of the values truly is not needed by the caller",
+        "When you want to disable all error checking in the package",
+        "When you want to change the original function's return type",
+        "When you want to store the value in a hidden global variable"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang diabaikan oleh `result, _ := divide(10, 2)`?",
+      "question_en": "What is ignored by `result, _ := divide(10, 2)`?",
+      "options_id": [
+        "Hasil pembagian",
+        "Nilai kedua, yaitu error",
+        "Parameter kedua `b`",
+        "Seluruh pemanggilan fungsi"
+      ],
+      "options_en": [
+        "The division result",
+        "The second value, which is the error",
+        "The second parameter `b`",
+        "The entire function call"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika Anda hanya ingin tahu apakah operasi gagal, bentuk penerimaan mana yang paling sesuai?",
+      "question_en": "If you only want to know whether the operation failed, which receiving form is the best fit?",
+      "options_id": [
+        "`result := divide(10, 0)`",
+        "`_, err := divide(10, 0)`",
+        "`err := divide(10, 0)`",
+        "`divide(_, err)`"
+      ],
+      "options_en": [
+        "`result := divide(10, 0)`",
+        "`_, err := divide(10, 0)`",
+        "`err := divide(10, 0)`",
+        "`divide(_, err)`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang ditunjukkan fungsi `swap(a, b string) (string, string)` pada lesson?",
+      "question_en": "What does the function `swap(a, b string) (string, string)` demonstrate in the lesson?",
+      "options_id": [
+        "Bahwa multiple return tidak hanya untuk error handling, tetapi juga untuk mengembalikan beberapa hasil biasa",
+        "Bahwa semua fungsi yang mengembalikan dua nilai harus punya error",
+        "Bahwa string di Go mutable ketika dikembalikan",
+        "Bahwa fungsi dengan dua hasil tidak bisa dipanggil dari `main`"
+      ],
+      "options_en": [
+        "That multiple return values are not only for error handling but also for returning several normal results",
+        "That every function returning two values must include an error",
+        "That strings in Go become mutable when returned",
+        "That functions with two results cannot be called from `main`"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa pola Go `result, err := ...` dianggap lebih eksplisit daripada exception style pada bahasa lain?",
+      "question_en": "Why is the Go pattern `result, err := ...` considered more explicit than exception style in some other languages?",
+      "options_id": [
+        "Karena caller melihat langsung hasil dan error sebagai nilai yang harus ditangani",
+        "Karena Go menyembunyikan error di balik compiler magic",
+        "Karena pola itu menghilangkan semua cabang kondisi dari kode",
+        "Karena `err` otomatis diperiksa tanpa perlu if statement"
+      ],
+      "options_en": [
+        "Because the caller sees the result and error directly as values that must be handled",
+        "Because Go hides errors behind compiler magic",
+        "Because the pattern removes all conditional branches from the code",
+        "Because `err` is automatically checked without any if statement"
+      ],
+      "correct": 0
     }
   ]
 }

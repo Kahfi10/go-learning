@@ -8,24 +8,73 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\n// Imagine this is in a separate package: stringutil/reverse.go\n// package stringutil\n\n// Reverse returns the string s reversed.\nfunc Reverse(s string) string {\n\trunes := []rune(s)\n\tfor i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {\n\t\trunes[i], runes[j] = runes[j], runes[i]\n\t}\n\treturn string(runes)\n}\n\n// ToUpper returns s in uppercase.\nfunc ToUpper(s string) string {\n\t// TODO: implement using a loop or strings package\n\treturn s\n}\n\nfunc main() {\n\tfmt.Println(Reverse(\"Hello, Gopher!\"))\n\tfmt.Println(ToUpper(\"hello world\"))\n}",
   "quiz": [
     {
-      "question_id": "Apa baris pertama yang harus ada di setiap file Go?",
-      "question_en": "What must be the first line in every Go file?",
-      "options_id": ["Deklarasi package (package nama)", "Import statement", "Fungsi main()", "Komentar file"],
-      "options_en": ["Package declaration (package name)", "Import statement", "The main() function", "A file comment"],
+      "question_id": "Mengapa `main.go` mengimpor `\"myapp/mathutil\"` dan bukan hanya `\"mathutil\"`?",
+      "question_en": "Why does `main.go` import `\"myapp/mathutil\"` instead of just `\"mathutil\"`?",
+      "options_id": ["Karena import path menggabungkan module path dengan direktori package", "Karena semua package Go harus punya karakter slash", "Karena `Add` dan `Multiply` berada di file yang berbeda", "Karena hanya stdlib yang boleh memakai import path pendek"],
+      "options_en": ["Because the import path combines the module path with the package directory", "Because every Go package path must contain a slash", "Because `Add` and `Multiply` are in different files", "Because only the standard library may use short import paths"],
       "correct": 0
     },
     {
-      "question_id": "Kapan fungsi init() dijalankan?",
-      "question_en": "When is the init() function called?",
-      "options_id": ["Secara otomatis saat package di-import", "Hanya ketika dipanggil secara eksplisit", "Setelah main() selesai", "Sebelum kompilasi"],
-      "options_en": ["Automatically when the package is imported", "Only when explicitly called", "After main() finishes", "Before compilation"],
+      "question_id": "Agar `mathutil/multiply.go` berada dalam package yang sama dengan `mathutil/add.go`, deklarasi package mana yang benar?",
+      "question_en": "For `mathutil/multiply.go` to belong to the same package as `mathutil/add.go`, which package declaration is correct?",
+      "options_id": ["`package mathutil`", "`package multiply`", "`package myapp/mathutil`", "`package main`"],
+      "options_en": ["`package mathutil`", "`package multiply`", "`package myapp/mathutil`", "`package main`"],
       "correct": 0
     },
     {
-      "question_id": "Apa konvensi penamaan package yang baik di Go?",
-      "question_en": "What is the Go convention for naming packages?",
-      "options_id": ["Singkat, huruf kecil semua, tanpa underscore", "CamelCase seperti nama fungsi", "Diawali dengan huruf kapital", "Sama dengan nama file .go"],
-      "options_en": ["Short, all lowercase, no underscores", "CamelCase like function names", "Starting with an uppercase letter", "Same as the .go file name"],
+      "question_id": "Mengapa `Add` dan `Multiply` dapat diletakkan di file berbeda tetapi tetap dipakai sebagai satu package?",
+      "question_en": "Why can `Add` and `Multiply` live in different files but still be used as one package?",
+      "options_id": ["Karena Go otomatis menggabungkan semua file menjadi package `main`", "Karena satu package bisa terdiri dari beberapa file selama deklarasi packagenya sama", "Karena setiap direktori hanya boleh berisi dua file Go", "Karena fungsi di file kedua selalu dianggap method dari file pertama"],
+      "options_en": ["Because Go automatically merges all files into package `main`", "Because one package can consist of multiple files as long as they share the same package declaration", "Because each directory may only contain two Go files", "Because functions in the second file are always treated as methods of the first file"],
+      "correct": 1
+    },
+    {
+      "question_id": "Di `main.go`, mengapa pemanggilan yang benar adalah `mathutil.Add(3, 4)` dan bukan langsung `Add(3, 4)`?",
+      "question_en": "In `main.go`, why is the correct call `mathutil.Add(3, 4)` instead of just `Add(3, 4)`?",
+      "options_id": ["Karena fungsi dari package yang diimport diakses melalui nama package", "Karena `Add` hanya boleh dipanggil dari dalam `init()`", "Karena semua fungsi matematika harus diawali nama folder", "Karena tanpa prefix fungsi otomatis menjadi variadic"],
+      "options_en": ["Because functions from an imported package are accessed through the package name", "Because `Add` may only be called from inside `init()`", "Because all math functions must begin with the folder name", "Because without the prefix the function becomes variadic automatically"],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa yang benar tentang `init()` pada package `config` di lesson?",
+      "question_en": "What is true about `init()` in the lesson's `config` package?",
+      "options_id": ["Harus dipanggil manual dari `main()`", "Dijalankan otomatis saat package di-import", "Hanya dijalankan setelah `main()` selesai", "Hanya berjalan jika `GetPort()` dipanggil lebih dulu"],
+      "options_en": ["It must be called manually from `main()`", "It runs automatically when the package is imported", "It only runs after `main()` finishes", "It only runs if `GetPort()` is called first"],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika package `config` di-import tetapi `GetPort()` tidak pernah dipanggil, apa yang tetap terjadi menurut lesson?",
+      "question_en": "If the `config` package is imported but `GetPort()` is never called, what still happens according to the lesson?",
+      "options_id": ["`init()` tetap berjalan dan dapat menginisialisasi state package", "Import diabaikan total oleh runtime", "`defaultPort` otomatis menjadi 0 kembali", "Package baru dijalankan setelah proses selesai"],
+      "options_en": ["`init()` still runs and can initialize package state", "The import is completely ignored by the runtime", "`defaultPort` is automatically reset to 0", "The package only runs after the process exits"],
+      "correct": 0
+    },
+    {
+      "question_id": "Pada contoh `config`, nilai apa yang akan dikembalikan `GetPort()` setelah inisialisasi package?",
+      "question_en": "In the `config` example, what value will `GetPort()` return after package initialization?",
+      "options_id": ["0", "80", "8080", "Nilai acak dari environment"],
+      "options_en": ["0", "80", "8080", "A random value from the environment"],
+      "correct": 2
+    },
+    {
+      "question_id": "Nama package mana yang paling sesuai dengan pedoman lesson?",
+      "question_en": "Which package name best follows the lesson's guideline?",
+      "options_id": ["`MathUtil`", "`math_util`", "`mathutil`", "`MultiplyPackage`"],
+      "options_en": ["`MathUtil`", "`math_util`", "`mathutil`", "`MultiplyPackage`"],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa manfaat utama package menurut lesson?",
+      "question_en": "What is the main benefit of packages according to the lesson?",
+      "options_id": ["Memaksa semua kode berada di satu file", "Memisahkan kode berdasarkan fungsionalitas dan memungkinkan reuse", "Menghapus kebutuhan akan import", "Membuat semua fungsi berjalan lebih cepat"],
+      "options_en": ["They force all code into one file", "They separate code by functionality and enable reuse", "They remove the need for imports", "They make every function run faster"],
+      "correct": 1
+    },
+    {
+      "question_id": "Pernyataan mana yang paling akurat tentang struktur direktori `myapp/` pada contoh?",
+      "question_en": "Which statement is most accurate about the `myapp/` directory structure in the example?",
+      "options_id": ["`go.mod` mengidentifikasi module, lalu subdirektori seperti `mathutil/` menyediakan package yang bisa di-import", "Setiap fungsi harus memiliki direktori sendiri", "File `main.go` tidak boleh hidup di module root", "Hanya file di direktori root yang bisa di-import"],
+      "options_en": ["`go.mod` identifies the module, and subdirectories like `mathutil/` provide packages that can be imported", "Each function must have its own directory", "`main.go` may not live at the module root", "Only files in the root directory can be imported"],
       "correct": 0
     }
   ]

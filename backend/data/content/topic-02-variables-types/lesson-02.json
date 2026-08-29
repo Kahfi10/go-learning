@@ -8,72 +8,174 @@
   "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n)\n\nfunc main() {\n\t// Integer\n\tvar i int = 42\n\tvar i64 int64 = 9_000_000_000\n\tfmt.Printf(\"int: %d, int64: %d\\n\", i, i64)\n\tfmt.Printf(\"MaxInt64: %d\\n\", math.MaxInt64)\n\n\t// Float\n\tvar f64 float64 = 3.14159265358979\n\tfmt.Printf(\"float64: %.10f\\n\", f64)\n\n\t// Boolean\n\tbool1, bool2 := true, false\n\tfmt.Printf(\"AND: %t, OR: %t\\n\", bool1 && bool2, bool1 || bool2)\n\n\t// String\n\ts := \"Hello, Gopher!\"\n\tfmt.Printf(\"string: %s, len: %d\\n\", s, len(s))\n\n\t// Rune dan byte\n\tvar r rune = '\\u4e16' // karakter Cina: 世\n\tfmt.Printf(\"rune: %c (U+%04X)\\n\", r, r)\n}",
   "quiz": [
     {
-      "question_id": "Tipe data `rune` di Go adalah alias untuk tipe apa?",
-      "question_en": "The `rune` data type in Go is an alias for which type?",
+      "question_id": "Pernyataan mana yang paling akurat tentang `int` dibanding `int64` menurut lesson?",
+      "question_en": "Which statement is most accurate about `int` compared with `int64` according to the lesson?",
       "options_id": [
-        "uint8",
-        "int16",
-        "int32",
-        "int64"
+        "`int` selalu 64 bit di semua platform",
+        "`int` bisa 32 atau 64 bit tergantung platform, sedangkan `int64` selalu 64 bit",
+        "`int64` hanya untuk angka negatif",
+        "`int` dan `int64` selalu punya range yang sama"
       ],
       "options_en": [
-        "uint8",
-        "int16",
-        "int32",
-        "int64"
+        "`int` is always 64-bit on all platforms",
+        "`int` can be 32 or 64 bits depending on the platform, while `int64` is always 64-bit",
+        "`int64` is only for negative numbers",
+        "`int` and `int64` always have the same range"
       ],
-      "correct": 2
+      "correct": 1
     },
     {
-      "question_id": "Fungsi `len()` pada string di Go mengembalikan?",
-      "question_en": "What does the `len()` function return for a string in Go?",
+      "question_id": "Mengapa contoh `var b int64 = 9_000_000_000` menggunakan `int64`?",
+      "question_en": "Why does the example `var b int64 = 9_000_000_000` use `int64`?",
       "options_id": [
-        "Jumlah karakter Unicode",
+        "Karena underscore hanya valid pada `int64`",
+        "Karena nilainya jauh melampaui range integer kecil seperti `int8` atau `int16`",
+        "Karena `int64` selalu lebih hemat memori",
+        "Karena hanya `int64` yang dapat dicetak oleh `fmt.Println`"
+      ],
+      "options_en": [
+        "Because underscores are only valid on `int64`",
+        "Because the value far exceeds the range of small integer types like `int8` or `int16`",
+        "Because `int64` always uses less memory",
+        "Because only `int64` can be printed by `fmt.Println`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa fungsi underscore pada literal `9_000_000_000`?",
+      "question_en": "What is the role of the underscore in the literal `9_000_000_000`?",
+      "options_id": [
+        "Mengubah angka menjadi hexadecimal",
+        "Memisahkan digit untuk keterbacaan tanpa mengubah nilainya",
+        "Menandakan tipe `int64` secara eksplisit",
+        "Menambahkan tiga nol di akhir saat runtime"
+      ],
+      "options_en": [
+        "It turns the number into hexadecimal",
+        "It separates digits for readability without changing the value",
+        "It explicitly marks the type as `int64`",
+        "It adds three trailing zeros at runtime"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `float64` lebih direkomendasikan daripada `float32` pada lesson ini?",
+      "question_en": "Why is `float64` more recommended than `float32` in this lesson?",
+      "options_id": [
+        "Karena `float64` memiliki presisi lebih tinggi",
+        "Karena `float32` tidak bisa diprint",
+        "Karena `float64` adalah satu-satunya tipe float di Go",
+        "Karena `float32` hanya berlaku di macOS"
+      ],
+      "options_en": [
+        "Because `float64` has higher precision",
+        "Because `float32` cannot be printed",
+        "Because `float64` is the only float type in Go",
+        "Because `float32` only works on macOS"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Contoh mana yang menunjukkan adanya error presisi floating point?",
+      "question_en": "Which example shows floating-point precision error?",
+      "options_id": [
+        "`fmt.Printf(\"%d\", 42)` menghasilkan `42`",
+        "`float32` 3.14 dapat tercetak seperti `3.1400001`",
+        "`len(\"Go\")` menghasilkan `2`",
+        "`true || false` menghasilkan `true`"
+      ],
+      "options_en": [
+        "`fmt.Printf(\"%d\", 42)` prints `42`",
+        "A `float32` value `3.14` may print like `3.1400001`",
+        "`len(\"Go\")` returns `2`",
+        "`true || false` returns `true`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika `yes := true` dan `no := false`, pernyataan mana yang benar?",
+      "question_en": "If `yes := true` and `no := false`, which statement is correct?",
+      "options_id": [
+        "`yes && no` bernilai `true`",
+        "`yes || no` bernilai `true`",
+        "`!yes` bernilai `true`",
+        "Operator boolean harus bekerja pada integer, bukan bool"
+      ],
+      "options_en": [
+        "`yes && no` is `true`",
+        "`yes || no` is `true`",
+        "`!yes` is `true`",
+        "Boolean operators must work on integers, not bools"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang dikembalikan `len(s)` untuk string menurut lesson?",
+      "question_en": "What does `len(s)` return for a string according to the lesson?",
+      "options_id": [
+        "Jumlah rune Unicode",
         "Jumlah byte",
         "Jumlah kata",
-        "Jumlah rune"
+        "Alamat memori string"
       ],
       "options_en": [
-        "Number of Unicode characters",
-        "Number of bytes",
-        "Number of words",
-        "Number of runes"
+        "The number of Unicode runes",
+        "The number of bytes",
+        "The number of words",
+        "The string's memory address"
       ],
       "correct": 1
     },
     {
-      "question_id": "Tipe float mana yang memiliki presisi lebih tinggi dan lebih direkomendasikan di Go?",
-      "question_en": "Which float type has higher precision and is more recommended in Go?",
+      "question_id": "Apa yang ditunjukkan oleh `s[0]` pada contoh string?",
+      "question_en": "What is shown by `s[0]` in the string example?",
       "options_id": [
-        "float16",
-        "float32",
-        "float64",
-        "float128"
+        "String `H`",
+        "Byte pertama, misalnya `72` untuk `H`",
+        "Seluruh substring `Hello`",
+        "Tipe data string"
       ],
       "options_en": [
-        "float16",
-        "float32",
-        "float64",
-        "float128"
+        "The string `H`",
+        "The first byte, such as `72` for `H`",
+        "The whole substring `Hello`",
+        "The string data type"
       ],
-      "correct": 2
+      "correct": 1
     },
     {
-      "question_id": "Apa yang dimaksud dengan string yang bersifat 'immutable' di Go?",
-      "question_en": "What does it mean that strings are 'immutable' in Go?",
+      "question_id": "Apa arti string bersifat immutable di Go?",
+      "question_en": "What does it mean that strings are immutable in Go?",
       "options_id": [
-        "String tidak bisa dibaca setelah dibuat",
         "String tidak bisa diubah isinya setelah dibuat",
-        "String tidak bisa digabungkan dengan string lain",
-        "String tidak bisa memiliki panjang lebih dari 255 karakter"
+        "String tidak bisa digabungkan",
+        "String tidak bisa memiliki panjang nol",
+        "String selalu berisi ASCII saja"
       ],
       "options_en": [
-        "A string cannot be read after creation",
-        "A string's content cannot be changed after creation",
-        "A string cannot be concatenated with another string",
-        "A string cannot be longer than 255 characters"
+        "A string cannot have its contents changed after creation",
+        "A string cannot be concatenated",
+        "A string cannot have length zero",
+        "A string always contains ASCII only"
       ],
-      "correct": 1
+      "correct": 0
+    },
+    {
+      "question_id": "Pernyataan mana yang benar tentang `rune` dan `byte`?",
+      "question_en": "Which statement about `rune` and `byte` is correct?",
+      "options_id": [
+        "`rune` adalah alias `int32`, `byte` adalah alias `uint8`",
+        "`rune` dan `byte` keduanya alias `string`",
+        "`rune` dipakai hanya untuk angka negatif",
+        "`byte` menyimpan karakter Unicode penuh lebih baik daripada `rune`"
+      ],
+      "options_en": [
+        "`rune` is an alias of `int32`, and `byte` is an alias of `uint8`",
+        "`rune` and `byte` are both aliases of `string`",
+        "`rune` is used only for negative numbers",
+        "`byte` stores full Unicode characters better than `rune`"
+      ],
+      "correct": 0
     }
   ]
 }

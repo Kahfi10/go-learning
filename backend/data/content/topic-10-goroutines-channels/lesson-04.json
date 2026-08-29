@@ -8,25 +8,74 @@
   "starterCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc fetchFromAPI(ch chan<- string, delay time.Duration, result string) {\n\ttime.Sleep(delay)\n\tch <- result\n}\n\nfunc main() {\n\tch := make(chan string)\n\n\tgo fetchFromAPI(ch, 500*time.Millisecond, \"data from API\")\n\n\t// TODO: use select to receive from ch or timeout after 1 second\n\t// Print \"Got: <result>\" if successful, or \"Timed out\" if timeout\n\tselect {\n\tcase result := <-ch:\n\t\tfmt.Println(\"Got:\", result)\n\t}\n}",
   "quiz": [
     {
-      "question_id": "Apa yang terjadi ketika beberapa case dalam select siap bersamaan?",
-      "question_en": "What happens when multiple cases in a select are ready at the same time?",
-      "options_id": ["Go memilih satu secara acak", "Case pertama selalu dipilih", "Semua case dieksekusi", "Program panic"],
-      "options_en": ["Go picks one randomly", "The first case is always chosen", "All cases are executed", "The program panics"],
+      "question_id": "Manakah case yang valid untuk membuat timeout 500ms di dalam `select`?",
+      "question_en": "Which case is valid for creating a 500ms timeout inside a `select`?",
+      "options_id": ["`case time.After(500 * time.Millisecond):`", "`case <-time.After(500 * time.Millisecond):`", "`default <-time.After(500 * time.Millisecond):`", "`case time.Sleep(500 * time.Millisecond):`"],
+      "options_en": ["`case time.After(500 * time.Millisecond):`", "`case <-time.After(500 * time.Millisecond):`", "`default <-time.After(500 * time.Millisecond):`", "`case time.Sleep(500 * time.Millisecond):`"],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang terjadi jika dua case dalam `select` siap pada saat yang sama?",
+      "question_en": "What happens if two cases in a `select` are ready at the same time?",
+      "options_id": ["Case pertama selalu dipilih", "Semua case dieksekusi berurutan", "Go memilih salah satu case yang siap secara acak", "Program panic karena hasilnya ambigu"],
+      "options_en": ["The first case is always chosen", "All cases are executed in order", "Go chooses one of the ready cases at random", "The program panics because the outcome is ambiguous"],
+      "correct": 2
+    },
+    {
+      "question_id": "Jika tidak ada case yang siap dan `select` tidak memiliki `default`, apa yang terjadi?",
+      "question_en": "If no case is ready and the `select` has no `default`, what happens?",
+      "options_id": ["`select` akan memblokir sampai ada operasi channel yang siap", "`select` otomatis melewati bloknya", "Case terakhir dijalankan sebagai fallback", "Semua channel ditutup oleh runtime"],
+      "options_en": ["The `select` blocks until a channel operation becomes ready", "The `select` automatically skips the block", "The last case runs as a fallback", "The runtime closes all channels"],
       "correct": 0
     },
     {
-      "question_id": "Fungsi apa yang digunakan untuk membuat timeout pada select?",
-      "question_en": "Which function is used to create a timeout with select?",
-      "options_id": ["time.After(duration)", "time.Sleep(duration)", "time.Timeout(duration)", "time.NewTimer(duration).C"],
-      "options_en": ["time.After(duration)", "time.Sleep(duration)", "time.Timeout(duration)", "time.NewTimer(duration).C"],
+      "question_id": "Peran `default` dalam `select` adalah?",
+      "question_en": "What is the role of `default` in a `select`?",
+      "options_id": ["Membuat semua case lain memiliki prioritas lebih rendah", "Memaksa receive dari semua channel sekaligus", "Menutup channel yang tidak siap", "Membuat `select` menjadi non-blocking jika tidak ada channel yang siap"],
+      "options_en": ["It makes all other cases lower priority", "It forces receives from all channels at once", "It closes channels that are not ready", "It makes the `select` non-blocking when no channel is ready"],
+      "correct": 3
+    },
+    {
+      "question_id": "Dalam contoh timeout, `slowOperation` tidur 3 detik sementara `time.After` menunggu 2 detik. Branch mana yang diharapkan menang?",
+      "question_en": "In the timeout example, `slowOperation` sleeps 3 seconds while `time.After` waits 2 seconds. Which branch is expected to win?",
+      "options_id": ["Receive dari `ch` lebih dulu", "Branch timeout dieksekusi lebih dulu", "Keduanya dieksekusi", "Hasilnya selalu acak"],
+      "options_en": ["The receive from `ch` happens first", "The timeout branch executes first", "Both branches execute", "The outcome is always random"],
+      "correct": 1
+    },
+    {
+      "question_id": "Pada contoh dua channel dengan delay 1 detik dan 2 detik, pesan mana yang diterima lebih dulu?",
+      "question_en": "In the two-channel example with 1-second and 2-second delays, which message is received first?",
+      "options_id": ["Pesan dari `ch2` (`two`)", "Tidak ada yang bisa diprediksi", "Pesan dari `ch1` (`one`)", "Keduanya pasti diterima pada iterasi pertama loop"],
+      "options_en": ["The message from `ch2` (`two`)", "Nothing can be predicted", "The message from `ch1` (`one`)", "Both are definitely received on the first loop iteration"],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa keuntungan utama `select` dibanding receive tunggal dari satu channel pada lesson ini?",
+      "question_en": "What is the main advantage of `select` over a single receive from one channel in this lesson?",
+      "options_id": ["Bisa menunggu beberapa operasi channel sekaligus", "Mengubah semua channel menjadi buffered", "Menjalankan semua case secara parallel", "Menghilangkan kebutuhan akan goroutine"],
+      "options_en": ["It can wait on multiple channel operations at once", "It converts all channels into buffered ones", "It runs all cases in parallel", "It removes the need for goroutines"],
       "correct": 0
     },
     {
-      "question_id": "Apa kegunaan `default` case dalam select?",
-      "question_en": "What is the purpose of the `default` case in select?",
-      "options_id": ["Membuat select non-blocking — dijalankan jika tidak ada channel yang siap", "Sebagai fallback jika program crash", "Selalu dieksekusi terakhir", "Mengakhiri select loop"],
-      "options_en": ["Makes select non-blocking — runs if no channel is ready", "As a fallback if the program crashes", "Always executes last", "Ends the select loop"],
-      "correct": 0
+      "question_id": "Dalam pola done channel, apa arti `case <-done:`?",
+      "question_en": "In the done-channel pattern, what does `case <-done:` mean?",
+      "options_id": ["Worker harus mengirim sinyal berhenti ke channel", "Worker menerima sinyal pembatalan dan harus berhenti", "Worker mengganti channel `done` dengan channel baru", "Worker hanya boleh berhenti jika channel buffered"],
+      "options_en": ["The worker must send a stop signal into the channel", "The worker receives a cancellation signal and should stop", "The worker replaces the `done` channel with a new one", "The worker may only stop if the channel is buffered"],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa loop pada contoh multi-channel berjalan dua kali?",
+      "question_en": "Why does the loop in the multi-channel example run twice?",
+      "options_id": ["Untuk memaksa `select` memilih `ch1` lalu `ch2` secara berurutan", "Karena setiap `select` selalu harus dipanggil minimal dua kali", "Agar branch `default` sempat jalan", "Untuk menerima dua pesan total, satu dari masing-masing goroutine, lewat dua eksekusi `select`"],
+      "options_en": ["To force `select` to choose `ch1` and then `ch2` in order", "Because every `select` must always be called at least twice", "So the `default` branch gets a chance to run", "To receive two total messages, one from each goroutine, across two `select` executions"],
+      "correct": 3
+    },
+    {
+      "question_id": "Apa yang benar tentang `default` pada pola worker dengan done channel?",
+      "question_en": "What is true about `default` in the worker pattern with a done channel?",
+      "options_id": ["`default` otomatis menutup channel `done`", "`default` memastikan worker selalu berhenti setelah satu iterasi", "`default` memungkinkan worker tetap melakukan pekerjaan saat belum ada sinyal selesai", "`default` membuat channel menjadi send-only"],
+      "options_en": ["`default` automatically closes the `done` channel", "`default` ensures the worker always stops after one iteration", "`default` allows the worker to keep doing work while no done signal has arrived", "`default` makes the channel send-only"],
+      "correct": 2
     }
   ]
 }

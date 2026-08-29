@@ -8,24 +8,173 @@
   "starterCode": "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\n// TODO: Define a custom HTTPError struct with fields:\n// - StatusCode int\n// - Method string\n// - URL string\n// Implement the Error() string method.\n\nfunc makeRequest(method, url string) error {\n\tif url == \"\" {\n\t\t// TODO: return an HTTPError with StatusCode 400\n\t\treturn errors.New(\"bad request\")\n\t}\n\treturn nil\n}\n\nfunc main() {\n\terr := makeRequest(\"GET\", \"\")\n\tif err != nil {\n\t\t// TODO: use errors.As to extract HTTPError and print its StatusCode\n\t\tfmt.Println(err)\n\t}\n}",
   "quiz": [
     {
-      "question_id": "Method apa yang harus diimplementasikan agar sebuah struct menjadi `error` type?",
-      "question_en": "Which method must a struct implement to become an `error` type?",
-      "options_id": ["Error() string", "String() error", "Err() string", "Error() error"],
-      "options_en": ["Error() string", "String() error", "Err() string", "Error() error"],
+      "question_id": "Mengapa custom error type seperti `AppError` berguna dibanding `errors.New`?",
+      "question_en": "Why is a custom error type like `AppError` useful compared with `errors.New`?",
+      "options_id": [
+        "Karena dapat membawa data terstruktur seperti kode, operasi, dan error asal",
+        "Karena tidak perlu method `Error()`",
+        "Karena otomatis bisa dibandingkan dengan `==` untuk semua kasus",
+        "Karena tidak bisa di-wrap"
+      ],
+      "options_en": [
+        "Because it can carry structured data such as codes, operations, and underlying errors",
+        "Because it does not need an `Error()` method",
+        "Because it can automatically be compared with `==` in all cases",
+        "Because it cannot be wrapped"
+      ],
       "correct": 0
     },
     {
-      "question_id": "Mengapa kita perlu mengimplementasikan method Unwrap() pada custom error type?",
-      "question_en": "Why should we implement the Unwrap() method on a custom error type?",
-      "options_id": ["Agar errors.Is dan errors.As bisa menelusuri error chain", "Agar error bisa dicetak", "Agar error bisa dibandingkan dengan ==", "Agar error bisa di-log"],
-      "options_en": ["So errors.Is and errors.As can traverse the error chain", "So the error can be printed", "So the error can be compared with ==", "So the error can be logged"],
+      "question_id": "Apa syarat mutlak agar `AppError` memenuhi interface `error`?",
+      "question_en": "What is the mandatory requirement for `AppError` to satisfy the `error` interface?",
+      "options_id": [
+        "Harus punya field `Code int`",
+        "Harus punya method `Error() string`",
+        "Harus meng-embed `error`",
+        "Harus dibuat dengan `fmt.Errorf`"
+      ],
+      "options_en": [
+        "It must have a `Code int` field",
+        "It must have an `Error() string` method",
+        "It must embed `error`",
+        "It must be created with `fmt.Errorf`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa method `Unwrap() error` penting pada custom error yang membungkus error lain?",
+      "question_en": "Why is the `Unwrap() error` method important on a custom error that wraps another error?",
+      "options_id": [
+        "Agar error itu bisa dicetak oleh `fmt.Println`",
+        "Agar `errors.Is` dan `errors.As` dapat menelusuri ke error asal",
+        "Agar field struct menjadi exported",
+        "Agar custom error bisa dipakai hanya pada test"
+      ],
+      "options_en": [
+        "So the error can be printed by `fmt.Println`",
+        "So `errors.Is` and `errors.As` can traverse to the underlying error",
+        "So the struct fields become exported",
+        "So the custom error can only be used in tests"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa keuntungan caller saat `errors.As(err, &ae)` berhasil untuk `*AppError`?",
+      "question_en": "What advantage does the caller gain when `errors.As(err, &ae)` succeeds for `*AppError`?",
+      "options_id": [
+        "Caller dapat mengakses field seperti `Code` dan `Op` secara type-safe",
+        "Caller dapat mengubah string error global",
+        "Caller tidak perlu lagi memeriksa nil",
+        "Caller dapat menghapus wrapping chain"
+      ],
+      "options_en": [
+        "The caller can access fields like `Code` and `Op` in a type-safe way",
+        "The caller can change the global error string",
+        "The caller no longer needs to check for nil",
+        "The caller can delete the wrapping chain"
+      ],
       "correct": 0
     },
     {
-      "question_id": "Manfaat utama menggunakan custom error type dibanding errors.New adalah?",
-      "question_en": "The main benefit of custom error types over errors.New is?",
-      "options_id": ["Bisa membawa data tambahan seperti kode status, operasi, dll.", "Lebih cepat saat runtime", "Lebih mudah ditulis", "Tidak perlu di-import"],
-      "options_en": ["Can carry additional data like status codes, operations, etc.", "Faster at runtime", "Easier to write", "No import needed"],
+      "question_id": "Jika `Error()` menyertakan `Err` di dalam format string, apa manfaatnya?",
+      "question_en": "If `Error()` includes `Err` in its formatted output, what is the benefit?",
+      "options_id": [
+        "Pesan error menampilkan konteks custom error sekaligus detail error yang dibungkus",
+        "Error menjadi sentinel otomatis",
+        "`Unwrap` tidak lagi diperlukan",
+        "Custom error tidak bisa lagi nil"
+      ],
+      "options_en": [
+        "The error message shows the custom error context together with the wrapped error details",
+        "The error becomes a sentinel automatically",
+        "`Unwrap` is no longer needed",
+        "The custom error can no longer be nil"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Kapan `errors.New` masih lebih tepat daripada custom error type?",
+      "question_en": "When is `errors.New` still more appropriate than a custom error type?",
+      "options_id": [
+        "Saat hanya perlu error sederhana tanpa metadata tambahan",
+        "Saat selalu perlu status code dan operation name",
+        "Saat caller perlu field-field spesifik dari error",
+        "Saat akan memakai `errors.As`"
+      ],
+      "options_en": [
+        "When you only need a simple error with no extra metadata",
+        "When you always need a status code and operation name",
+        "When the caller needs error-specific fields",
+        "When you plan to use `errors.As`"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa trade-off membuat custom error menjadi bagian dari API publik package?",
+      "question_en": "What is the trade-off of making a custom error part of a package's public API?",
+      "options_id": [
+        "Tidak ada trade-off karena custom error selalu internal",
+        "Caller dapat mengandalkan struktur error itu, sehingga perubahan bentuknya nanti bisa menjadi breaking change",
+        "Compiler akan melarang penggunaan wrapping",
+        "Sentinel errors tidak bisa dipakai lagi"
+      ],
+      "options_en": [
+        "There is no trade-off because custom errors are always internal",
+        "Callers can rely on that error structure, so changing its shape later may become a breaking change",
+        "The compiler will forbid wrapping",
+        "Sentinel errors can no longer be used"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa bedanya `errors.As` dengan string parsing terhadap pesan error custom?",
+      "question_en": "How is `errors.As` different from parsing a custom error's message string?",
+      "options_id": [
+        "`errors.As` memakai tipe aktual, bukan format pesan yang rapuh",
+        "`errors.As` hanya bekerja jika pesan mengandung JSON",
+        "String parsing lebih idiomatis di Go",
+        "Keduanya setara persis"
+      ],
+      "options_en": [
+        "`errors.As` uses the actual type, rather than a fragile message format",
+        "`errors.As` only works if the message contains JSON",
+        "String parsing is more idiomatic in Go",
+        "They are exactly equivalent"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika `AppError` membungkus error lain tetapi tidak punya `Unwrap`, apa konsekuensinya?",
+      "question_en": "If `AppError` wraps another error but has no `Unwrap`, what is the consequence?",
+      "options_id": [
+        "`fmt.Println` tidak bisa mencetaknya",
+        "`errors.Is` dan `errors.As` tidak bisa menelusuri ke error di dalamnya melalui chain standar",
+        "Kode tidak akan compile",
+        "Nilai `Code` menjadi nol"
+      ],
+      "options_en": [
+        "`fmt.Println` cannot print it",
+        "`errors.Is` and `errors.As` cannot follow the standard chain to the underlying error",
+        "The code will not compile",
+        "The `Code` value becomes zero"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Pernyataan mana yang paling tepat tentang custom error types dalam Go?",
+      "question_en": "Which statement is most accurate about custom error types in Go?",
+      "options_id": [
+        "Mereka berguna saat error perlu membawa makna terstruktur yang bisa diinspeksi caller",
+        "Mereka hanya dipakai bila `errors.New` deprecated",
+        "Mereka menggantikan kebutuhan wrapping",
+        "Mereka wajib dipakai untuk semua fungsi publik"
+      ],
+      "options_en": [
+        "They are useful when an error needs to carry structured meaning that callers can inspect",
+        "They are only used if `errors.New` is deprecated",
+        "They replace the need for wrapping",
+        "They must be used for every public function"
+      ],
       "correct": 0
     }
   ]

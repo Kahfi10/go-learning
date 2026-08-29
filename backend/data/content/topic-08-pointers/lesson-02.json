@@ -8,55 +8,174 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\ntype Inventory struct {\n\tItems  [100]string\n\tCounts [100]int\n\tSize   int\n}\n\nfunc addItemByValue(inv Inventory, item string, count int) Inventory {\n\t// Must return modified copy\n\tif inv.Size < 100 {\n\t\tinv.Items[inv.Size] = item\n\t\tinv.Counts[inv.Size] = count\n\t\tinv.Size++\n\t}\n\treturn inv\n}\n\nfunc addItemByPointer(inv *Inventory, item string, count int) {\n\t// Modifies directly\n\tif inv.Size < 100 {\n\t\tinv.Items[inv.Size] = item\n\t\tinv.Counts[inv.Size] = count\n\t\tinv.Size++\n\t}\n}\n\ntype Player struct {\n\tName   string\n\tHealth int\n\tScore  int\n}\n\nfunc (p *Player) TakeDamage(d int) {\n\tp.Health -= d\n\tif p.Health < 0 {\n\t\tp.Health = 0\n\t}\n}\n\nfunc (p *Player) Heal(h int) {\n\tp.Health += h\n\tif p.Health > 100 {\n\t\tp.Health = 100\n\t}\n}\n\nfunc (p Player) IsAlive() bool { return p.Health > 0 }\n\nfunc main() {\n\t// Value semantics: must reassign\n\tinv1 := Inventory{}\n\tinv1 = addItemByValue(inv1, \"Sword\", 1)\n\tinv1 = addItemByValue(inv1, \"Shield\", 1)\n\tfmt.Printf(\"Inventory size (value): %d\\n\", inv1.Size)\n\n\t// Pointer semantics: direct modification\n\tinv2 := Inventory{}\n\taddItemByPointer(&inv2, \"Bow\", 1)\n\taddItemByPointer(&inv2, \"Arrow\", 50)\n\tfmt.Printf(\"Inventory size (pointer): %d\\n\", inv2.Size)\n\n\t// Game player demo\n\tplayer := Player{Name: \"Warrior\", Health: 100, Score: 0}\n\tfmt.Printf(\"%s: HP=%d\\n\", player.Name, player.Health)\n\n\tplayer.TakeDamage(40)\n\tfmt.Printf(\"After damage: HP=%d\\n\", player.Health)\n\n\tplayer.Heal(20)\n\tfmt.Printf(\"After heal: HP=%d\\n\", player.Health)\n\n\tplayer.TakeDamage(200) // more than max HP\n\tfmt.Printf(\"After lethal damage: HP=%d, alive=%v\\n\",\n\t\tplayer.Health, player.IsAlive())\n}",
   "quiz": [
     {
-      "question_id": "Jika struct besar dikirim ke fungsi tanpa pointer, apa yang terjadi?",
-      "question_en": "If a large struct is passed to a function without a pointer, what happens?",
+      "question_id": "Apa yang terjadi ketika `Inventory` dikirim ke `addItemByValue`?",
+      "question_en": "What happens when `Inventory` is passed to `addItemByValue`?",
       "options_id": [
-        "Fungsi menerima referensi ke struct asli",
-        "Seluruh struct disalin ke parameter fungsi",
-        "Program panic karena struct terlalu besar",
-        "Hanya field pertama yang disalin"
+        "Fungsi memodifikasi inventory asli secara langsung",
+        "Seluruh nilai `Inventory` disalin, lalu fungsi bekerja pada salinan itu",
+        "Hanya field `Size` yang disalin",
+        "Go otomatis mengubahnya menjadi pointer"
       ],
       "options_en": [
-        "The function receives a reference to the original struct",
-        "The entire struct is copied into the function parameter",
-        "The program panics because the struct is too large",
-        "Only the first field is copied"
+        "The function modifies the original inventory directly",
+        "The entire `Inventory` value is copied, and the function works on that copy",
+        "Only the `Size` field is copied",
+        "Go automatically turns it into a pointer"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa yang dimaksud dengan 'escape analysis' di Go?",
-      "question_en": "What does 'escape analysis' mean in Go?",
+      "question_id": "Mengapa hasil dari `addItemByValue` harus di-assign kembali ke variabel pemanggil?",
+      "question_en": "Why must the result of `addItemByValue` be assigned back to the caller variable?",
       "options_id": [
-        "Analisis untuk mendeteksi memory leak",
-        "Proses compiler menentukan apakah variabel harus di stack atau heap",
-        "Teknik untuk menghindari garbage collection",
-        "Cara Go mengoptimalkan pointer arithmetic"
+        "Karena fungsi mengembalikan pointer yang harus disimpan",
+        "Karena perubahan hanya terjadi pada salinan yang kemudian dikembalikan",
+        "Karena semua fungsi Go wajib mengembalikan nilai baru",
+        "Karena array tidak bisa dimodifikasi di dalam fungsi"
       ],
       "options_en": [
-        "Analysis to detect memory leaks",
-        "Compiler process determining whether a variable should be on stack or heap",
-        "A technique to avoid garbage collection",
-        "How Go optimizes pointer arithmetic"
+        "Because the function returns a pointer that must be stored",
+        "Because the changes happen only on a copy that is then returned",
+        "Because all Go functions must return a new value",
+        "Because arrays cannot be modified inside functions"
       ],
       "correct": 1
     },
     {
-      "question_id": "Kapan sebaiknya menggunakan value semantics daripada pointer semantics?",
-      "question_en": "When should you use value semantics instead of pointer semantics?",
+      "question_id": "Apa keuntungan utama `addItemByPointer(inv *Inventory, ...)` untuk struct besar?",
+      "question_en": "What is the main advantage of `addItemByPointer(inv *Inventory, ...)` for a large struct?",
       "options_id": [
-        "Selalu gunakan pointer untuk performa terbaik",
-        "Untuk data kecil, immutable, atau ketika salinan independen diinginkan",
-        "Hanya untuk tipe built-in seperti int dan string",
-        "Ketika struct memiliki lebih dari 5 field"
+        "Tidak perlu menangani nil pointer",
+        "Tidak perlu menyalin seluruh struct besar untuk setiap pemanggilan",
+        "Membuat data menjadi immutable",
+        "Menghilangkan escape analysis"
       ],
       "options_en": [
-        "Always use pointers for best performance",
-        "For small, immutable data, or when independent copies are desired",
-        "Only for built-in types like int and string",
-        "When a struct has more than 5 fields"
+        "No need to handle nil pointers",
+        "It avoids copying the entire large struct on each call",
+        "It makes the data immutable",
+        "It eliminates escape analysis"
       ],
       "correct": 1
+    },
+    {
+      "question_id": "Mengapa `takeDamageWrong(p Player, damage int)` tidak mengubah health pemain asli?",
+      "question_en": "Why does `takeDamageWrong(p Player, damage int)` not change the original player's health?",
+      "options_id": [
+        "Karena method harus bernama `Mutate`",
+        "Karena `Player` tidak punya pointer receiver",
+        "Karena parameter `p` adalah salinan value, bukan referensi ke nilai asli",
+        "Karena integer tidak bisa dikurangi di Go"
+      ],
+      "options_en": [
+        "Because the method must be named `Mutate`",
+        "Because `Player` does not have a pointer receiver",
+        "Because parameter `p` is a copied value, not a reference to the original",
+        "Because integers cannot be decremented in Go"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Mengapa `TakeDamage` dan `Heal` memakai pointer receiver sementara `IsAlive` memakai value receiver?",
+      "question_en": "Why do `TakeDamage` and `Heal` use pointer receivers while `IsAlive` uses a value receiver?",
+      "options_id": [
+        "Karena semua method yang mengandung if harus pointer receiver",
+        "Karena dua method pertama memutasi state, sedangkan `IsAlive` hanya membaca",
+        "Karena value receiver tidak bisa mengembalikan bool",
+        "Karena pointer receiver selalu lebih cepat tanpa pengecualian"
+      ],
+      "options_en": [
+        "Because all methods containing an if must use pointer receivers",
+        "Because the first two mutate state, while `IsAlive` only reads",
+        "Because value receivers cannot return bool",
+        "Because pointer receivers are always faster with no exceptions"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Kapan value semantics lebih masuk akal daripada pointer semantics?",
+      "question_en": "When do value semantics make more sense than pointer semantics?",
+      "options_id": [
+        "Saat menginginkan salinan independen dan data relatif kecil",
+        "Saat setiap fungsi harus memutasi nilai asli",
+        "Saat ingin menghindari return value",
+        "Saat struct berisi array besar"
+      ],
+      "options_en": [
+        "When you want an independent copy and the data is relatively small",
+        "When every function must mutate the original value",
+        "When you want to avoid return values",
+        "When the struct contains large arrays"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa itu escape analysis dalam konteks lesson ini?",
+      "question_en": "What is escape analysis in the context of this lesson?",
+      "options_id": [
+        "Cara Go mendeteksi semua panic",
+        "Proses compiler untuk memutuskan stack vs heap berdasarkan penggunaan nilai",
+        "Teknik manual developer untuk memindahkan data ke heap",
+        "Analisis untuk memilih antara array dan slice"
+      ],
+      "options_en": [
+        "How Go detects all panics",
+        "The compiler process that decides stack vs heap based on how a value is used",
+        "A manual technique developers use to move data to the heap",
+        "An analysis for choosing between arrays and slices"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Pernyataan mana yang paling tepat tentang performa pointer vs value?",
+      "question_en": "Which statement is most accurate about pointer vs value performance?",
+      "options_id": [
+        "Pointer selalu lebih cepat dalam semua situasi",
+        "Value selalu lebih cepat karena tidak ada dereference",
+        "Pilihan tergantung ukuran data, pola mutasi, dan bagaimana compiler mengelola alokasi",
+        "Keduanya identik karena Go mengoptimalkan semuanya sama"
+      ],
+      "options_en": [
+        "Pointers are always faster in every situation",
+        "Values are always faster because there is no dereference",
+        "The choice depends on data size, mutation patterns, and how the compiler manages allocation",
+        "They are identical because Go optimizes everything the same way"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Jika fungsi perlu mengubah inventory dan caller tidak ingin reassign hasilnya, pendekatan mana yang paling cocok?",
+      "question_en": "If a function needs to change inventory and the caller does not want to reassign the result, which approach is most suitable?",
+      "options_id": [
+        "Gunakan parameter `Inventory` by value",
+        "Gunakan parameter `*Inventory`",
+        "Gunakan `map[string]any`",
+        "Gunakan `[]byte` sebagai pengganti struct"
+      ],
+      "options_en": [
+        "Use an `Inventory` value parameter",
+        "Use a `*Inventory` parameter",
+        "Use `map[string]any`",
+        "Use `[]byte` instead of the struct"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa risiko desain yang muncul saat memakai pointer semantics lebih luas dari yang dibutuhkan?",
+      "question_en": "What design risk appears when using pointer semantics more broadly than needed?",
+      "options_id": [
+        "State bersama menjadi lebih mudah termutasi secara tak sengaja",
+        "Compiler menolak semua method receiver",
+        "Nilai tidak bisa lagi di-return",
+        "Garbage collector dimatikan"
+      ],
+      "options_en": [
+        "Shared state becomes easier to mutate accidentally",
+        "The compiler rejects all method receivers",
+        "Values can no longer be returned",
+        "The garbage collector is disabled"
+      ],
+      "correct": 0
     }
   ]
 }

@@ -8,55 +8,174 @@
   "starterCode": "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\ntype User struct {\n\tid       int\n\tusername string\n\temail    string\n\tactive   bool\n}\n\nvar nextID = 1\n\nfunc NewUser(username, email string) (*User, error) {\n\tif username == \"\" {\n\t\treturn nil, errors.New(\"username cannot be empty\")\n\t}\n\tif len(username) < 3 {\n\t\treturn nil, fmt.Errorf(\"username too short: minimum 3 chars, got %d\", len(username))\n\t}\n\tif email == \"\" {\n\t\treturn nil, errors.New(\"email cannot be empty\")\n\t}\n\tu := &User{\n\t\tid:       nextID,\n\t\tusername: username,\n\t\temail:    email,\n\t\tactive:   true,\n\t}\n\tnextID++\n\treturn u, nil\n}\n\nfunc (u *User) ID() int         { return u.id }\nfunc (u *User) Username() string { return u.username }\nfunc (u *User) Email() string   { return u.email }\nfunc (u *User) IsActive() bool  { return u.active }\nfunc (u *User) Deactivate()     { u.active = false }\n\nfunc (u User) String() string {\n\tstatus := \"active\"\n\tif !u.active {\n\t\tstatus = \"inactive\"\n\t}\n\treturn fmt.Sprintf(\"User{id:%d, username:%s, status:%s}\", u.id, u.username, status)\n}\n\n// Zero-value friendly stack\ntype Stack struct {\n\titems []int\n}\n\nfunc (s *Stack) Push(v int)        { s.items = append(s.items, v) }\nfunc (s *Stack) Len() int          { return len(s.items) }\nfunc (s *Stack) Pop() (int, bool) {\n\tif len(s.items) == 0 {\n\t\treturn 0, false\n\t}\n\tn := len(s.items) - 1\n\tv := s.items[n]\n\ts.items = s.items[:n]\n\treturn v, true\n}\n\nfunc main() {\n\t// Valid user\n\tu1, err := NewUser(\"alice\", \"alice@example.com\")\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t} else {\n\t\tfmt.Println(u1)\n\t}\n\n\t// Invalid user\n\t_, err = NewUser(\"\", \"bob@example.com\")\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t}\n\n\t_, err = NewUser(\"ab\", \"ab@example.com\")\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t}\n\n\t// Zero-value friendly stack\n\tvar s Stack\n\ts.Push(10)\n\ts.Push(20)\n\ts.Push(30)\n\tfmt.Printf(\"Stack len: %d\\n\", s.Len())\n\tfor s.Len() > 0 {\n\t\tv, _ := s.Pop()\n\t\tfmt.Printf(\"Pop: %d\\n\", v)\n\t}\n}",
   "quiz": [
     {
-      "question_id": "Apa konvensi penamaan untuk factory function di Go?",
-      "question_en": "What is the naming convention for factory functions in Go?",
+      "question_id": "Apa konvensi penamaan factory function yang umum di Go?",
+      "question_en": "What is the common naming convention for factory functions in Go?",
       "options_id": [
-        "create<TypeName>()",
-        "New<TypeName>()",
-        "make<TypeName>()",
-        "init<TypeName>()"
+        "`Create<Type>()`",
+        "`New<Type>()`",
+        "`Init<Type>()`",
+        "`Make<Type>()`"
       ],
       "options_en": [
-        "create<TypeName>()",
-        "New<TypeName>()()",
-        "make<TypeName>()",
-        "init<TypeName>()"
+        "`Create<Type>()`",
+        "`New<Type>()`",
+        "`Init<Type>()`",
+        "`Make<Type>()`"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa keuntungan dari zero-value friendly design?",
-      "question_en": "What is the advantage of zero-value friendly design?",
+      "question_id": "Mengapa Go tidak punya constructor bawaan seperti Java/C++ menurut lesson ini?",
+      "question_en": "Why does Go not have built-in constructors like Java/C++ according to this lesson?",
       "options_id": [
-        "Performa yang lebih baik",
-        "Tipe bisa langsung digunakan tanpa inisialisasi eksplisit",
-        "Mengurangi penggunaan memori",
-        "Memungkinkan inheritance"
+        "Karena Go tidak mendukung pembuatan objek",
+        "Untuk menjaga bahasa sederhana, mendorong zero value yang berguna, dan memberi fleksibilitas lewat factory function",
+        "Karena struct Go selalu harus dibuat dengan literal",
+        "Karena constructor akan bentrok dengan garbage collector"
       ],
       "options_en": [
-        "Better performance",
-        "The type can be used immediately without explicit initialization",
-        "Reduced memory usage",
-        "Enables inheritance"
+        "Because Go does not support object creation",
+        "To keep the language simple, encourage useful zero values, and provide flexibility via factory functions",
+        "Because Go structs must always be created with literals",
+        "Because constructors would conflict with the garbage collector"
       ],
       "correct": 1
     },
     {
-      "question_id": "Kapan sebaiknya factory function mengembalikan pointer (`*T`) daripada nilai (`T`)?",
-      "question_en": "When should a factory function return a pointer (`*T`) instead of a value (`T`)?",
+      "question_id": "Apa manfaat utama factory function seperti `NewPerson` dibanding membiarkan caller mengisi field private langsung?",
+      "question_en": "What is the main benefit of a factory function like `NewPerson` compared with letting the caller fill private fields directly?",
       "options_id": [
-        "Selalu kembalikan pointer",
-        "Ketika struct besar atau caller perlu mengubah struct yang sama",
-        "Hanya ketika ada error",
-        "Hanya untuk interface"
+        "Factory function bisa memusatkan validasi dan aturan inisialisasi",
+        "Factory function membuat pointer menjadi immutable",
+        "Factory function menghapus kebutuhan method getter",
+        "Factory function membuat zero value tidak pernah dipakai"
       ],
       "options_en": [
-        "Always return a pointer",
-        "When the struct is large or the caller needs to mutate the same struct",
-        "Only when there is an error",
-        "Only for interfaces"
+        "A factory function can centralize validation and initialization rules",
+        "A factory function makes pointers immutable",
+        "A factory function removes the need for getter methods",
+        "A factory function ensures the zero value is never used"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Mengapa `NewPerson` pada lesson mengembalikan `(*Person, error)` daripada hanya `Person`?",
+      "question_en": "Why does `NewPerson` in the lesson return `(*Person, error)` rather than just `Person`?",
+      "options_id": [
+        "Karena Go tidak bisa mengembalikan struct by value",
+        "Karena pembuatan bisa gagal akibat validasi, dan pointer memudahkan berbagi/mutasi instance yang sama",
+        "Karena semua constructor Go wajib mengembalikan pointer",
+        "Karena `error` hanya bisa dikembalikan bersama pointer"
+      ],
+      "options_en": [
+        "Because Go cannot return structs by value",
+        "Because creation can fail due to validation, and a pointer makes it easy to share/mutate the same instance",
+        "Because all Go constructors must return pointers",
+        "Because `error` can only be returned together with a pointer"
       ],
       "correct": 1
+    },
+    {
+      "question_id": "Apa yang ditunjukkan oleh `DefaultServerOptions()` dalam lesson?",
+      "question_en": "What does `DefaultServerOptions()` illustrate in the lesson?",
+      "options_id": [
+        "Pattern untuk menyediakan konfigurasi default terpusat yang masih bisa diubah caller",
+        "Satu-satunya cara membuat struct config di Go",
+        "Cara menggantikan semua factory function",
+        "Cara membuat field private menjadi public"
+      ],
+      "options_en": [
+        "A pattern for providing centralized default configuration that callers can still adjust",
+        "The only way to create a config struct in Go",
+        "A way to replace all factory functions",
+        "A way to make private fields public"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa keuntungan desain zero-value friendly seperti `var s Stack; s.Push(42)`?",
+      "question_en": "What is the benefit of a zero-value-friendly design like `var s Stack; s.Push(42)`?",
+      "options_id": [
+        "Tipe langsung bisa dipakai tanpa inisialisasi eksplisit tambahan",
+        "Semua method menjadi static",
+        "Tidak perlu lagi pengecekan error",
+        "Semua field otomatis exported"
+      ],
+      "options_en": [
+        "The type is immediately usable without extra explicit initialization",
+        "All methods become static",
+        "Error handling is no longer needed",
+        "All fields become automatically exported"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Kapan lebih masuk akal mengembalikan pointer dari factory function?",
+      "question_en": "When does it make more sense for a factory function to return a pointer?",
+      "options_id": [
+        "Hanya jika struct memiliki lebih dari tiga field",
+        "Saat struct besar atau caller perlu memodifikasi instance yang sama setelah dibuat",
+        "Hanya jika constructor menggunakan `fmt.Errorf`",
+        "Selalu, tanpa pengecualian"
+      ],
+      "options_en": [
+        "Only if the struct has more than three fields",
+        "When the struct is large or the caller needs to modify the same instance after creation",
+        "Only if the constructor uses `fmt.Errorf`",
+        "Always, without exception"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa factory function cocok untuk field private seperti `name`, `age`, dan `email`?",
+      "question_en": "Why is a factory function a good fit for private fields like `name`, `age`, and `email`?",
+      "options_id": [
+        "Karena caller dari package lain tidak bisa mengisi field private secara langsung, sehingga constructor dapat menjaga invariant",
+        "Karena field private tidak punya zero value",
+        "Karena field private selalu harus berupa pointer",
+        "Karena getter tidak bisa dipakai tanpa constructor"
+      ],
+      "options_en": [
+        "Because callers from other packages cannot fill private fields directly, so the constructor can protect invariants",
+        "Because private fields have no zero value",
+        "Because private fields must always be pointers",
+        "Because getters cannot be used without a constructor"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa tradeoff yang paling akurat antara constructor ketat dan zero-value-friendly design?",
+      "question_en": "What is the most accurate tradeoff between a strict constructor and a zero-value-friendly design?",
+      "options_id": [
+        "Constructor ketat memberi kontrol validasi lebih besar, sedangkan zero-value-friendly memberi kemudahan pemakaian langsung",
+        "Keduanya tidak bisa dipakai dalam package yang sama",
+        "Zero-value-friendly selalu lebih aman daripada constructor",
+        "Constructor ketat berarti type tidak boleh punya method"
+      ],
+      "options_en": [
+        "A strict constructor gives stronger validation control, while a zero-value-friendly design gives easier immediate usability",
+        "They cannot both be used in the same package",
+        "Zero-value-friendly is always safer than a constructor",
+        "A strict constructor means the type cannot have methods"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Pernyataan mana yang paling akurat tentang constructor pattern di Go?",
+      "question_en": "Which statement is most accurate about the constructor pattern in Go?",
+      "options_id": [
+        "Itu adalah konvensi berbasis fungsi biasa, bukan fitur bahasa khusus",
+        "Itu keyword khusus yang wajib untuk semua struct exported",
+        "Itu hanya bisa dipakai jika struct punya field private",
+        "Itu menggantikan semua penggunaan literal struct"
+      ],
+      "options_en": [
+        "It is a convention based on ordinary functions, not a special language feature",
+        "It is a special keyword required for all exported structs",
+        "It can only be used if the struct has private fields",
+        "It replaces all struct literal usage"
+      ],
+      "correct": 0
     }
   ]
 }

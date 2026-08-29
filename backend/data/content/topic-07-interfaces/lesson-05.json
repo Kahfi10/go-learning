@@ -8,53 +8,172 @@
   "starterCode": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\n// Custom type implementing fmt.Stringer\ntype Temperature struct {\n\tCelsius float64\n}\n\nfunc (t Temperature) String() string {\n\treturn fmt.Sprintf(\"%.1f°C (%.1f°F)\", t.Celsius, t.Celsius*9/5+32)\n}\n\n// Custom error type\ntype ParseError struct {\n\tInput string\n\tMsg   string\n}\n\nfunc (e *ParseError) Error() string {\n\treturn fmt.Sprintf(\"parse error for %q: %s\", e.Input, e.Msg)\n}\n\n// Function accepting io.Writer\nfunc generateReport(w io.Writer, title string, items []string) {\n\tfmt.Fprintf(w, \"\\n=== %s ===\\n\", title)\n\tfor i, item := range items {\n\t\tfmt.Fprintf(w, \"  %d. %s\\n\", i+1, item)\n\t}\n\tfmt.Fprintf(w, \"Total: %d items\\n\", len(items))\n}\n\n// Custom io.Reader\ntype UpperReader struct {\n\tr io.Reader\n}\n\nfunc NewUpperReader(s string) *UpperReader {\n\treturn &UpperReader{r: strings.NewReader(strings.ToUpper(s))}\n}\n\nfunc (u *UpperReader) Read(p []byte) (int, error) {\n\treturn u.r.Read(p)\n}\n\nfunc main() {\n\t// fmt.Stringer\n\ttemps := []Temperature{{0}, {100}, {37}, {-40}}\n\tfor _, t := range temps {\n\t\tfmt.Println(t)\n\t}\n\n\t// Custom error\n\terr := &ParseError{Input: \"abc\", Msg: \"not a number\"}\n\tfmt.Println(\"\\nError:\", err)\n\n\t// io.Writer — write to multiple targets\n\tvar buf bytes.Buffer\n\titems := []string{\"Go\", \"Rust\", \"Python\", \"TypeScript\"}\n\tgenerateReport(&buf, \"Top Languages\", items)\n\tgenerateReport(nil, \"\", nil) // would need os.Stdout\n\tfmt.Print(buf.String())\n\n\t// Custom io.Reader\n\treader := NewUpperReader(\"hello world from go\")\n\tdata, _ := io.ReadAll(reader)\n\tfmt.Println(\"\\nUpperReader:\", string(data))\n}",
   "quiz": [
     {
-      "question_id": "Apa signature method dari interface `io.Reader`?",
-      "question_en": "What is the method signature of the `io.Reader` interface?",
+      "question_id": "Mengapa `generateReport(w io.Writer, ...)` lebih reusable daripada `generateReport(f *os.File, ...)`?",
+      "question_en": "Why is `generateReport(w io.Writer, ...)` more reusable than `generateReport(f *os.File, ...)`?",
       "options_id": [
-        "Read() []byte",
-        "Read(p []byte) (n int, err error)",
-        "ReadAll() ([]byte, error)",
-        "Read(n int) []byte"
+        "Karena `io.Writer` menjamin ada method `Close`",
+        "Karena fungsi bisa menulis ke file, buffer, HTTP response, atau target lain yang mengimplementasikan `Write`",
+        "Karena `io.Writer` selalu buffered",
+        "Karena `*os.File` tidak bisa menulis string"
       ],
       "options_en": [
-        "Read() []byte",
-        "Read(p []byte) (n int, err error)",
-        "ReadAll() ([]byte, error)",
-        "Read(n int) []byte"
+        "Because `io.Writer` guarantees a `Close` method",
+        "Because the function can write to a file, buffer, HTTP response, or any other target that implements `Write`",
+        "Because `io.Writer` is always buffered",
+        "Because `*os.File` cannot write strings"
       ],
       "correct": 1
     },
     {
-      "question_id": "Apa yang harus diimplementasikan agar tipe kustom ditampilkan dengan format kustom oleh `fmt.Println`?",
-      "question_en": "What must a custom type implement to be displayed with a custom format by `fmt.Println`?",
+      "question_id": "Apa arti signature `Read(p []byte) (n int, err error)` pada `io.Reader`?",
+      "question_en": "What does the signature `Read(p []byte) (n int, err error)` mean for `io.Reader`?",
       "options_id": [
-        "Method `Print() string`",
-        "Method `String() string` dari interface `fmt.Stringer`",
-        "Method `Format() string`",
-        "Method `ToString() string`"
+        "Reader harus mengalokasikan slice baru setiap kali",
+        "Caller memberikan buffer, lalu reader mengisi sebagian dan mengembalikan jumlah byte yang dibaca beserta error",
+        "Reader hanya boleh mengembalikan `io.EOF`",
+        "Method `Read` wajib membaca seluruh input sekaligus"
       ],
       "options_en": [
-        "A `Print() string` method",
-        "A `String() string` method from the `fmt.Stringer` interface",
-        "A `Format() string` method",
-        "A `ToString() string` method"
+        "The reader must allocate a new slice every time",
+        "The caller provides a buffer, then the reader fills part of it and returns the number of bytes read plus an error",
+        "The reader may only return `io.EOF`",
+        "The `Read` method must consume the entire input at once"
       ],
       "correct": 1
     },
     {
-      "question_id": "Mengapa fungsi yang menerima `io.Writer` lebih fleksibel daripada yang menerima `*os.File`?",
-      "question_en": "Why is a function accepting `io.Writer` more flexible than one accepting `*os.File`?",
+      "question_id": "Apa yang seharusnya dikembalikan custom reader ketika tidak ada data lagi untuk dibaca?",
+      "question_en": "What should a custom reader return when there is no more data to read?",
       "options_id": [
-        "io.Writer lebih cepat",
-        "io.Writer bisa berupa file, buffer, HTTP response, atau tipe lain yang mengimplementasikannya",
-        "io.Writer tidak perlu di-close",
-        "io.Writer tidak bisa dipakai untuk file"
+        "`nil, nil`",
+        "`0, nil`",
+        "`0, io.EOF`",
+        "`-1, errors.New(\"done\")`"
       ],
       "options_en": [
-        "io.Writer is faster",
-        "io.Writer can be a file, buffer, HTTP response, or any other implementing type",
-        "io.Writer doesn't need to be closed",
-        "io.Writer cannot be used for files"
+        "`nil, nil`",
+        "`0, nil`",
+        "`0, io.EOF`",
+        "`-1, errors.New(\"done\")`"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa manfaat `bytes.Buffer` ketika sebuah fungsi menerima `io.Writer`?",
+      "question_en": "What is the benefit of `bytes.Buffer` when a function accepts `io.Writer`?",
+      "options_id": [
+        "Mengubah semua output menjadi uppercase",
+        "Memungkinkan output ditangkap di memori tanpa file fisik",
+        "Membuat `fmt.Fprintf` tidak lagi mengembalikan error",
+        "Hanya bisa dipakai untuk binary data"
+      ],
+      "options_en": [
+        "It turns all output into uppercase",
+        "It lets output be captured in memory without a physical file",
+        "It makes `fmt.Fprintf` stop returning errors",
+        "It can only be used for binary data"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Agar `fmt.Println(temp)` memakai format kustom dari `Temperature`, apa yang harus diimplementasikan?",
+      "question_en": "For `fmt.Println(temp)` to use a custom format from `Temperature`, what must be implemented?",
+      "options_id": [
+        "`Format() string`",
+        "`Print() string`",
+        "`String() string`",
+        "`MarshalText() ([]byte, error)`"
+      ],
+      "options_en": [
+        "`Format() string`",
+        "`Print() string`",
+        "`String() string`",
+        "`MarshalText() ([]byte, error)`"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Jika sebuah tipe memiliki method `Write(p []byte) (int, error)` tetapi tidak punya `Read`, interface mana yang dipenuhi?",
+      "question_en": "If a type has the method `Write(p []byte) (int, error)` but no `Read`, which interface does it satisfy?",
+      "options_id": [
+        "`io.Reader`",
+        "`io.Writer`",
+        "Keduanya otomatis",
+        "Tidak satu pun tanpa `Close`"
+      ],
+      "options_en": [
+        "`io.Reader`",
+        "`io.Writer`",
+        "Both automatically",
+        "Neither without `Close`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Apa yang ditunjukkan contoh `UpperReader` tentang desain interface di Go?",
+      "question_en": "What does the `UpperReader` example show about interface design in Go?",
+      "options_id": [
+        "Hanya package `strings` yang boleh membuat reader",
+        "Tipe kustom dapat berintegrasi dengan API stdlib cukup dengan mengimplementasikan interface yang tepat",
+        "Semua reader harus menyimpan string mentah",
+        "Custom reader wajib meng-embed `strings.Reader`"
+      ],
+      "options_en": [
+        "Only the `strings` package may create readers",
+        "A custom type can integrate with stdlib APIs simply by implementing the right interface",
+        "All readers must store raw strings",
+        "A custom reader must embed `strings.Reader`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `defer f.Close()` dianggap praktik penting saat bekerja dengan resource yang juga mengimplementasikan `io.Closer`?",
+      "question_en": "Why is `defer f.Close()` considered important when working with a resource that also implements `io.Closer`?",
+      "options_id": [
+        "Karena semua writer akan panic jika tidak di-close",
+        "Karena `Close` mempercepat pembacaan berikutnya",
+        "Karena resource perlu dibersihkan bahkan saat fungsi return lebih awal",
+        "Karena `defer` mengubah file menjadi buffered I/O"
+      ],
+      "options_en": [
+        "Because all writers will panic if they are not closed",
+        "Because `Close` speeds up the next read",
+        "Because the resource needs to be cleaned up even if the function returns early",
+        "Because `defer` turns the file into buffered I/O"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Apa syarat minimal agar tipe kustom dapat diperlakukan sebagai `error`?",
+      "question_en": "What is the minimal requirement for a custom type to be treated as `error`?",
+      "options_id": [
+        "Memiliki field `Message string`",
+        "Mengimplementasikan `Error() string`",
+        "Mengimplementasikan `String() string`",
+        "Dihasilkan oleh `errors.New`"
+      ],
+      "options_en": [
+        "Having a `Message string` field",
+        "Implementing `Error() string`",
+        "Implementing `String() string`",
+        "Being created by `errors.New`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Method mana yang TIDAK memenuhi kontrak `io.Writer`?",
+      "question_en": "Which method does NOT satisfy the `io.Writer` contract?",
+      "options_id": [
+        "`Write(p []byte) (int, error)`",
+        "`Write(data string) error`",
+        "`Write(p []byte) (n int, err error)`",
+        "`Write(p []byte) (int, error)` pada pointer receiver"
+      ],
+      "options_en": [
+        "`Write(p []byte) (int, error)`",
+        "`Write(data string) error`",
+        "`Write(p []byte) (n int, err error)`",
+        "`Write(p []byte) (int, error)` on a pointer receiver"
       ],
       "correct": 1
     }

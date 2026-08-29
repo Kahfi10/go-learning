@@ -8,55 +8,74 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\n// Contoh struktur go.mod:\n// module github.com/username/myproject\n//\n// go 1.22\n//\n// require (\n//     github.com/gin-gonic/gin v1.9.1\n// )\n\nfunc main() {\n\tfmt.Println(\"Module: github.com/username/myproject\")\n\tfmt.Println(\"Jalankan 'go mod init' untuk memulai modul baru\")\n\tfmt.Println(\"Jalankan 'go mod tidy' untuk merapikan dependency\")\n}",
   "quiz": [
     {
-      "question_id": "Perintah apa yang digunakan untuk menginisialisasi module Go baru di direktori proyek?",
-      "question_en": "Which command initializes a new Go module in a project directory?",
-      "options_id": [
-        "go init",
-        "go new module",
-        "go mod init",
-        "go create module"
-      ],
-      "options_en": [
-        "go init",
-        "go new module",
-        "go mod init",
-        "go create module"
-      ],
-      "correct": 2
-    },
-    {
-      "question_id": "Apa fungsi dari file `go.sum` dalam Go Modules?",
-      "question_en": "What is the purpose of the `go.sum` file in Go Modules?",
-      "options_id": [
-        "Menyimpan source code dependency",
-        "Menyimpan checksum kriptografis untuk memverifikasi integritas dependency",
-        "Menyimpan konfigurasi environment Go",
-        "Menyimpan daftar perintah build"
-      ],
-      "options_en": [
-        "Stores dependency source code",
-        "Stores cryptographic checksums to verify dependency integrity",
-        "Stores Go environment configuration",
-        "Stores a list of build commands"
-      ],
+      "question_id": "Menurut lesson, alasan utama Go Modules penting adalah karena modules menggantikan apa?",
+      "question_en": "According to the lesson, Go Modules became important because they replaced what?",
+      "options_id": ["`GOROOT` sebagai compiler", "`GOPATH` sebagai cara mengelola proyek dan dependency", "`go fmt` sebagai alat formatting", "`go test` sebagai sistem testing"],
+      "options_en": ["`GOROOT` as the compiler", "`GOPATH` as the way to manage projects and dependencies", "`go fmt` as the formatting tool", "`go test` as the testing system"],
       "correct": 1
     },
     {
-      "question_id": "Perintah apa yang menghapus dependency tidak terpakai dan menambahkan dependency yang hilang di go.mod?",
-      "question_en": "Which command removes unused dependencies and adds missing ones to go.mod?",
-      "options_id": [
-        "go mod clean",
-        "go mod sync",
-        "go mod tidy",
-        "go mod fix"
-      ],
-      "options_en": [
-        "go mod clean",
-        "go mod sync",
-        "go mod tidy",
-        "go mod fix"
-      ],
+      "question_id": "Apa hasil langsung dari menjalankan `go mod init github.com/username/myproject` di direktori proyek?",
+      "question_en": "What is the immediate result of running `go mod init github.com/username/myproject` in a project directory?",
+      "options_id": ["Membuat file `go.sum` saja", "Membuat file `go.mod`", "Mengunduh semua dependency internet", "Membuat folder `vendor/` otomatis"],
+      "options_en": ["It creates only a `go.sum` file", "It creates a `go.mod` file", "It downloads every dependency from the internet", "It automatically creates a `vendor/` folder"],
+      "correct": 1
+    },
+    {
+      "question_id": "Pemetaan komponen `go.mod` mana yang benar?",
+      "question_en": "Which mapping of `go.mod` components is correct?",
+      "options_id": ["`module` = checksum, `go` = package name, `require` = OS target", "`module` = path unik modul, `go` = versi minimum Go, `require` = dependency beserta versinya", "`module` = nama binary, `go` = compiler flags, `require` = daftar test", "`module` = vendor folder, `go` = current shell, `require` = import yang unused"],
+      "options_en": ["`module` = checksum, `go` = package name, `require` = OS target", "`module` = unique module path, `go` = minimum Go version, `require` = dependencies with versions", "`module` = binary name, `go` = compiler flags, `require` = test list", "`module` = vendor folder, `go` = current shell, `require` = unused imports"],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa file `go.sum` sebaiknya di-commit dan tidak diedit manual?",
+      "question_en": "Why should `go.sum` be committed and not edited manually?",
+      "options_id": ["Karena file itu menyimpan source code dependency lengkap", "Karena file itu menyimpan checksum kriptografis untuk menjaga integritas dependency", "Karena file itu menentukan nama module saat build", "Karena file itu satu-satunya tempat menulis import"],
+      "options_en": ["Because it stores the full source code of dependencies", "Because it stores cryptographic checksums that protect dependency integrity", "Because it determines the module name during build", "Because it is the only place where imports are written"],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika Anda ingin menambahkan `gin` pada versi tepat `v1.9.1`, perintah mana yang paling sesuai?",
+      "question_en": "If you want to add `gin` at the exact version `v1.9.1`, which command is the best match?",
+      "options_id": ["`go get github.com/gin-gonic/gin`", "`go get github.com/gin-gonic/gin@v1.9.1`", "`go mod tidy github.com/gin-gonic/gin@v1.9.1`", "`go mod verify github.com/gin-gonic/gin@v1.9.1`"],
+      "options_en": ["`go get github.com/gin-gonic/gin`", "`go get github.com/gin-gonic/gin@v1.9.1`", "`go mod tidy github.com/gin-gonic/gin@v1.9.1`", "`go mod verify github.com/gin-gonic/gin@v1.9.1`"],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika tujuan Anda adalah meng-upgrade dependency ke versi terbaru, perintah mana yang dicontohkan?",
+      "question_en": "If your goal is to upgrade a dependency to the latest version, which command was shown?",
+      "options_id": ["`go get -u github.com/gin-gonic/gin`", "`go mod vendor github.com/gin-gonic/gin`", "`go test -u github.com/gin-gonic/gin`", "`go fmt github.com/gin-gonic/gin`"],
+      "options_en": ["`go get -u github.com/gin-gonic/gin`", "`go mod vendor github.com/gin-gonic/gin`", "`go test -u github.com/gin-gonic/gin`", "`go fmt github.com/gin-gonic/gin`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Perintah mana yang menambahkan dependency yang hilang sekaligus menghapus yang tidak terpakai?",
+      "question_en": "Which command adds missing dependencies and removes unused ones?",
+      "options_id": ["`go mod verify`", "`go mod vendor`", "`go mod tidy`", "`go mod clean`"],
+      "options_en": ["`go mod verify`", "`go mod vendor`", "`go mod tidy`", "`go mod clean`"],
       "correct": 2
+    },
+    {
+      "question_id": "Jika tim ingin build offline dengan dependency yang tersalin ke dalam proyek, perintah mana yang relevan?",
+      "question_en": "If the team wants offline builds with dependencies copied into the project, which command is relevant?",
+      "options_id": ["`go mod vendor`", "`go mod verify`", "`go get -u`", "`go mod init`"],
+      "options_en": ["`go mod vendor`", "`go mod verify`", "`go get -u`", "`go mod init`"],
+      "correct": 0
+    },
+    {
+      "question_id": "Perintah mana yang memeriksa apakah dependency yang terunduh cocok dengan checksum di `go.sum`?",
+      "question_en": "Which command checks whether downloaded dependencies match the checksums in `go.sum`?",
+      "options_id": ["`go mod tidy`", "`go mod verify`", "`go get`", "`go build`"],
+      "options_en": ["`go mod tidy`", "`go mod verify`", "`go get`", "`go build`"],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika sebuah proyek baru ingin memakai package eksternal, langkah Go Modules mana yang paling langsung menambahkan dependency tersebut?",
+      "question_en": "If a new project wants to use an external package, which Go Modules step most directly adds that dependency?",
+      "options_id": ["Menjalankan `go get` pada path package", "Mengedit `go.sum` secara manual", "Menjalankan `go fmt ./...`", "Menghapus folder `vendor/`"],
+      "options_en": ["Run `go get` on the package path", "Edit `go.sum` manually", "Run `go fmt ./...`", "Delete the `vendor/` folder"],
+      "correct": 0
     }
   ]
 }

@@ -8,55 +8,174 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\nconst (\n\tEmpty = \".\"\n\tX     = \"X\"\n\tO     = \"O\"\n)\n\nfunc printBoard(board [][]string) {\n\tfmt.Println(\"  0 1 2\")\n\tfor i, row := range board {\n\t\tfmt.Printf(\"%d \", i)\n\t\tfor _, cell := range row {\n\t\t\tfmt.Printf(\"%s \", cell)\n\t\t}\n\t\tfmt.Println()\n\t}\n}\n\nfunc checkWinner(board [][]string) string {\n\tfor _, row := range board {\n\t\tif row[0] != Empty && row[0] == row[1] && row[1] == row[2] {\n\t\t\treturn row[0]\n\t\t}\n\t}\n\tfor col := 0; col < 3; col++ {\n\t\tif board[0][col] != Empty && board[0][col] == board[1][col] && board[1][col] == board[2][col] {\n\t\t\treturn board[0][col]\n\t\t}\n\t}\n\tif board[0][0] != Empty && board[0][0] == board[1][1] && board[1][1] == board[2][2] {\n\t\treturn board[0][0]\n\t}\n\treturn \"\"\n}\n\nfunc main() {\n\t// Create 3x3 board\n\tboard := [][]string{\n\t\t{Empty, Empty, Empty},\n\t\t{Empty, Empty, Empty},\n\t\t{Empty, Empty, Empty},\n\t}\n\n\t// Simulate moves\n\tboard[0][0] = X\n\tboard[1][1] = X\n\tboard[2][2] = X\n\tboard[0][2] = O\n\tboard[1][0] = O\n\n\tprintBoard(board)\n\n\twinner := checkWinner(board)\n\tif winner != \"\" {\n\t\tfmt.Println(\"Winner:\", winner)\n\t} else {\n\t\tfmt.Println(\"No winner yet\")\n\t}\n\n\t// Dynamic 2D slice\n\tmatrix := make([][]int, 4)\n\tfor i := range matrix {\n\t\tmatrix[i] = make([]int, i+1) // jagged\n\t\tfor j := range matrix[i] {\n\t\t\tmatrix[i][j] = (i + 1) * (j + 1)\n\t\t}\n\t}\n\tfmt.Println(\"\\nJagged matrix:\")\n\tfor _, row := range matrix {\n\t\tfmt.Println(row)\n\t}\n}",
   "quiz": [
     {
-      "question_id": "Apa tipe dari 2D slice di Go?",
-      "question_en": "What is the type of a 2D slice in Go?",
+      "question_id": "Apa bentuk tipe umum untuk 2D slice di Go?",
+      "question_en": "What is the general type form for a 2D slice in Go?",
       "options_id": [
-        "[][]T — slice of slices",
-        "[[]]T — array of slice",
-        "[2][]T — array berisi slice",
-        "Tidak ada tipe khusus untuk 2D slice"
+        "`[][]T`",
+        "`[[]]T`",
+        "`[]T[]`",
+        "`matrix[T]`"
       ],
       "options_en": [
-        "[][]T — slice of slices",
-        "[[]]T — array of slice",
-        "[2][]T — fixed array containing slices",
-        "There is no special type for 2D slices"
+        "`[][]T`",
+        "`[[]]T`",
+        "`[]T[]`",
+        "`matrix[T]`"
       ],
       "correct": 0
     },
     {
-      "question_id": "Bisakah baris-baris pada 2D slice di Go memiliki panjang yang berbeda?",
-      "question_en": "Can rows in a Go 2D slice have different lengths?",
+      "question_id": "Pada `matrix := make([][]int, rows)`, apa yang sebenarnya sudah dialokasikan saat itu?",
+      "question_en": "In `matrix := make([][]int, rows)`, what has actually been allocated at that point?",
       "options_id": [
-        "Tidak, semua baris harus memiliki panjang yang sama",
-        "Ya, karena 2D slice adalah slice of slices yang independen",
-        "Hanya jika menggunakan make dengan parameter khusus",
-        "Hanya untuk tipe string"
+        "Seluruh grid integer lengkap dengan semua kolom",
+        "Hanya outer slice berisi `rows` buah inner slice yang masih nil",
+        "Array fixed-size dua dimensi penuh",
+        "Map dari row ke slice"
       ],
       "options_en": [
-        "No, all rows must have the same length",
-        "Yes, because each row is an independent slice",
-        "Only when using make with a special parameter",
-        "Only for string types"
+        "The entire integer grid including all columns",
+        "Only the outer slice containing `rows` inner slices that are still nil",
+        "A full fixed-size two-dimensional array",
+        "A map from row to slice"
       ],
       "correct": 1
     },
     {
-      "question_id": "Mengapa alokasi satu buffer besar lebih efisien daripada alokasi per-baris untuk matrix?",
-      "question_en": "Why is a single large buffer allocation more efficient than per-row allocation for a matrix?",
+      "question_id": "Mengapa loop kedua diperlukan untuk `matrix[i] = make([]int, cols)`?",
+      "question_en": "Why is a second loop needed for `matrix[i] = make([]int, cols)`?",
       "options_id": [
-        "Karena menggunakan lebih sedikit CPU",
-        "Karena data bersebelahan dalam memori, meningkatkan cache hit",
-        "Karena tidak bisa melakukan allocasi per-baris",
-        "Karena ukuran slice menjadi lebih kecil"
+        "Karena setiap baris adalah slice terpisah yang perlu dialokasikan sendiri",
+        "Karena Go mewajibkan dua loop untuk semua alokasi",
+        "Karena 2D slice tidak bisa diiterasi tanpa itu",
+        "Karena inner slice harus selalu berbeda kapasitas"
       ],
       "options_en": [
-        "Because it uses less CPU",
-        "Because data is contiguous in memory, improving cache hit rate",
-        "Because per-row allocation is not possible",
-        "Because the slice size becomes smaller"
+        "Because each row is a separate slice that must be allocated individually",
+        "Because Go requires two loops for all allocations",
+        "Because 2D slices cannot be iterated otherwise",
+        "Because inner slices must always have different capacities"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa keuntungan fleksibilitas dari 2D slice dibanding array 2D fixed-size?",
+      "question_en": "What flexibility advantage does a 2D slice have over a fixed-size 2D array?",
+      "options_id": [
+        "Setiap baris bisa punya panjang berbeda",
+        "Semua akses index menjadi aman tanpa batas",
+        "Semua elemen tersimpan di stack",
+        "2D slice otomatis lebih cepat dalam semua kasus"
+      ],
+      "options_en": [
+        "Each row can have a different length",
+        "All index accesses become automatically bounds-safe",
+        "All elements are stored on the stack",
+        "A 2D slice is automatically faster in every case"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Jika `grid := [][]int{{1,0,0},{0,1,0},{0,0,1}}`, berapa nilai `grid[1][1]`?",
+      "question_en": "If `grid := [][]int{{1,0,0},{0,1,0},{0,0,1}}`, what is `grid[1][1]`?",
+      "options_id": [
+        "`0`",
+        "`1`",
+        "`2`",
+        "Compile error karena nested index tidak didukung"
+      ],
+      "options_en": [
+        "`0`",
+        "`1`",
+        "`2`",
+        "Compile error because nested indexing is not supported"
       ],
       "correct": 1
+    },
+    {
+      "question_id": "Apa pola iterasi yang paling langsung untuk mencetak semua nilai 2D slice?",
+      "question_en": "What is the most direct iteration pattern for printing all values in a 2D slice?",
+      "options_id": [
+        "Satu loop `range` saja pada outer slice tanpa melihat row",
+        "Dua loop bersarang: satu untuk row, satu untuk nilai di dalam row",
+        "Hanya `goto` yang aman untuk 2D slice",
+        "Harus selalu memakai package `sort` dulu"
+      ],
+      "options_en": [
+        "A single outer `range` loop without looking at each row",
+        "Two nested loops: one for rows and one for values within each row",
+        "Only `goto` is safe for 2D slices",
+        "You must always use the `sort` package first"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa jagged slice valid di Go?",
+      "question_en": "Why is a jagged slice valid in Go?",
+      "options_id": [
+        "Karena semua baris dipaksa compiler menjadi panjang sama",
+        "Karena outer slice menyimpan inner slice yang independen satu sama lain",
+        "Karena jagged slice diam-diam diubah menjadi map",
+        "Karena hanya slice of string yang boleh berbeda panjang"
+      ],
+      "options_en": [
+        "Because the compiler forces all rows to have the same length",
+        "Because the outer slice holds inner slices that are independent of one another",
+        "Because jagged slices are silently converted into maps",
+        "Because only slices of strings may differ in length"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Dalam contoh papan Tic-Tac-Toe, representasi mana yang dipakai di bagian lesson inti untuk `Board`?",
+      "question_en": "In the Tic-Tac-Toe example, which representation is used in the core lesson content for `Board`?",
+      "options_id": [
+        "`[][]string`",
+        "`[3][3]string`",
+        "`map[int]map[int]string`",
+        "`[]byte`"
+      ],
+      "options_en": [
+        "`[][]string`",
+        "`[3][3]string`",
+        "`map[int]map[int]string`",
+        "`[]byte`"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa satu alokasi buffer besar bisa lebih efisien untuk matrix?",
+      "question_en": "Why can a single large buffer allocation be more efficient for a matrix?",
+      "options_id": [
+        "Karena data menjadi bersebelahan dalam memori sehingga locality/cache bisa lebih baik",
+        "Karena itu membuat semua row immutable",
+        "Karena Go tidak bisa mengalokasikan per-row",
+        "Karena itu menghapus kebutuhan akan index"
+      ],
+      "options_en": [
+        "Because the data becomes contiguous in memory, improving locality/cache behavior",
+        "Because it makes all rows immutable",
+        "Because Go cannot allocate per-row",
+        "Because it removes the need for indexing"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Tradeoff apa yang paling tepat antara 2D slice biasa dan buffer tunggal berpotongan row?",
+      "question_en": "What is the most accurate tradeoff between an ordinary 2D slice and a single-buffer row-sliced matrix?",
+      "options_id": [
+        "2D slice biasa memberi row independen lebih mudah, buffer tunggal bisa memberi locality memori lebih baik",
+        "Buffer tunggal selalu lebih sederhana untuk resize tiap row secara berbeda",
+        "Keduanya identik dalam tata letak memori dan perilaku",
+        "2D slice biasa tidak bisa dipakai dengan `range`"
+      ],
+      "options_en": [
+        "An ordinary 2D slice makes independently sized rows easier, while a single buffer can provide better memory locality",
+        "A single buffer is always simpler for resizing each row differently",
+        "They are identical in memory layout and behavior",
+        "An ordinary 2D slice cannot be used with `range`"
+      ],
+      "correct": 0
     }
   ]
 }
