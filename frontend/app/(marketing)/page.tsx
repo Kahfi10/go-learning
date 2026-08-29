@@ -10,6 +10,8 @@ import Navbar from "@/components/navigation/Navbar";
 import { cn } from "@/lib/utils";
 import { api, type ExecuteResult } from "@/lib/api";
 
+import { useAuth } from "@/context/AuthContext";
+
 /* ─── Static Data ───────────────────────────────────────── */
 const TOPICS = [
   { n: "01", title: "Getting Started",      color: "#0071E3", level: "Beginner",     lessons: 4  },
@@ -592,11 +594,7 @@ export default function LandingPage() {
             Gratis. Tanpa kartu kredit. Tanpa install.<br />
             Mulai belajar Go dalam 30 detik.
           </p>
-          <Link href="/register"
-            className="group inline-flex items-center gap-2 bg-[#0071E3] text-white text-[16px] font-medium px-8 py-3.5 rounded-full hover:bg-[#0077ED] transition-all shadow-xl shadow-[#0071E3]/20 hover:-translate-y-0.5 active:translate-y-0">
-            Buat Akun Gratis
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-          </Link>
+          <FinalCTAButton />
           <div className="flex flex-wrap items-center justify-center gap-5 mt-7 text-[13px] text-[#86868B]">
             {["Gratis selamanya", "76 lessons", "Bilingual ID/EN", "Tanpa setup"].map((t) => (
               <span key={t} className="flex items-center gap-1.5">
@@ -873,13 +871,25 @@ function FeatureBentoCard({ item, large = false }: { item: typeof FEATURES[numbe
   );
 }
 
+function FinalCTAButton() {
+  const { state } = useAuth();
+  return (
+    <Link href={state.user ? "/modules" : "/register"}
+      className="group inline-flex items-center gap-2 bg-[#0071E3] text-white text-[16px] font-medium px-8 py-3.5 rounded-full hover:bg-[#0077ED] transition-all shadow-xl shadow-[#0071E3]/20 hover:-translate-y-0.5 active:translate-y-0">
+      {state.user ? "Lanjut Belajar" : "Buat Akun Gratis"}
+      <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+    </Link>
+  );
+}
+
 function HeroActions() {
+  const { state } = useAuth();
   return (
     <>
       <div className="hero-cta-row flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 mb-7 w-full max-w-[420px] mx-auto lg:mx-0">
-        <Link href="/modules"
+        <Link href={state.user ? "/modules" : "/register"}
           className="hero-cta-btn group w-full sm:w-auto flex items-center justify-center gap-2 h-[46px] bg-[#0071E3] text-white text-[15px] font-medium px-7 rounded-full border border-transparent hover:bg-[#0077ED] transition-all shadow-sm hover:shadow-md shadow-[#0071E3]/20 whitespace-nowrap">
-          Mulai Belajar Gratis
+          {state.user ? "Lanjut Belajar" : "Mulai Belajar Gratis"}
           <ArrowRight className="w-4 h-4 shrink-0 group-hover:translate-x-1 transition-transform" />
         </Link>
         <Link href="/playground"

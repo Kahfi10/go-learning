@@ -47,6 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const register = useCallback(async (name: string, email: string, password: string) => {
+    // Clear learning state before registering to prevent guest progress from bleeding over
+    clearLearningClientState();
     const user = await api.auth.register({ name: name.trim(), email: email.trim().toLowerCase(), password }) as UserProfile;
     dispatch({ type: "SET_USER", user });
   }, []);
