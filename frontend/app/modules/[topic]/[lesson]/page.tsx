@@ -208,6 +208,15 @@ export default function LessonPage() {
   const totalQuizQuestions = data?.quiz?.length ?? resume.totalQuestions ?? 0;
   const bestQuizScore = getBestQuizScore(topic, lesson) || resume.lastQuizScore || 0;
   const quizPct = totalQuizQuestions > 0 ? Math.round((bestQuizScore / totalQuizQuestions) * 100) : 0;
+  const gradeLabel = totalQuizQuestions === 0
+    ? null
+    : passed && bestQuizScore >= totalQuizQuestions
+      ? "Sempurna"
+      : passed
+        ? "Lulus"
+        : resume.hasOpenedQuiz || done
+          ? "Belum Lulus"
+          : null;
   const completionHint = !done && !resume.hasRunCode && !resume.hasOpenedQuiz
     ? "Jalankan kode atau buka quiz dulu untuk mengaktifkan completion."
     : quizScore !== null
@@ -377,16 +386,17 @@ export default function LessonPage() {
           <main className={cn("flex-1 min-w-0 transition-all duration-200", sidebarOpen ? "lg:ml-60" : "")}>
 
           {/* Desktop: resizable panels */}
-          <div className="hidden lg:flex h-[calc(100vh-92px)] p-3 gap-3">
+          <div className="hidden xl:flex h-[calc(100vh-92px)] p-3 gap-3">
             <PanelGroup direction="horizontal">
-              <Panel defaultSize={54} minSize={35} className="overflow-y-auto rounded-[24px] border border-[#D2D2D7]/40 dark:border-white/8 bg-background shadow-sm" style={{ overflowY: 'auto' }}>
-                <div className="max-w-3xl mx-auto px-8 py-8 xl:px-10">
+              <Panel defaultSize={54} minSize={36} className="overflow-y-auto rounded-[24px] border border-[#D2D2D7]/40 dark:border-white/8 bg-background shadow-sm" style={{ overflowY: 'auto' }}>
+                <div className="w-full max-w-[920px] mx-auto px-5 py-6 sm:px-6 xl:px-8 2xl:px-10">
                   <LessonContent
                     data={data} lang={lang} title={title} content={content}
                     topic={topic} lesson={lesson}
                     activeTab={activeTab} onTabChange={setActiveTab}
                     onComplete={handleComplete} done={done}
                     passed={passed}
+                    gradeLabel={gradeLabel}
                     passingScore={PASSING_SCORE}
                     quizPct={quizPct}
                     completionEnabled={Boolean((resume.hasRunCode || resume.hasOpenedQuiz) && (totalQuizQuestions === 0 || quizPct >= PASSING_SCORE))}
@@ -401,7 +411,7 @@ export default function LessonPage() {
               <PanelResizeHandle className="mx-1 flex items-center justify-center">
                 <div className="h-12 w-[4px] rounded-full bg-[#D2D2D7]/40 hover:bg-[#0071E3]/40 transition-colors cursor-col-resize" />
               </PanelResizeHandle>
-              <Panel defaultSize={46} minSize={30} className="overflow-y-auto rounded-[24px] border border-[#D2D2D7]/40 dark:border-white/8 bg-[#F7F7F8] dark:bg-[#101113] shadow-sm">
+              <Panel defaultSize={46} minSize={34} className="overflow-y-auto rounded-[24px] border border-[#D2D2D7]/40 dark:border-white/8 bg-[#F7F7F8] dark:bg-[#101113] shadow-sm">
                 <div className="sticky top-0 z-10 border-b border-[#D2D2D7]/35 dark:border-white/6 bg-[#F7F7F8]/95 dark:bg-[#101113]/95 backdrop-blur-sm px-5 py-4">
                   <div className="flex items-center justify-between gap-4">
                     <div>
@@ -431,13 +441,14 @@ export default function LessonPage() {
           </div>
 
           {/* Mobile: stacked */}
-          <div className="lg:hidden px-4 py-5 space-y-5">
+          <div className="xl:hidden px-4 py-5 space-y-5">
             <LessonContent
               data={data} lang={lang} title={title} content={content}
               topic={topic} lesson={lesson}
               activeTab={activeTab} onTabChange={setActiveTab}
               onComplete={handleComplete} done={done}
               passed={passed}
+              gradeLabel={gradeLabel}
               passingScore={PASSING_SCORE}
               quizPct={quizPct}
               completionEnabled={Boolean((resume.hasRunCode || resume.hasOpenedQuiz) && (totalQuizQuestions === 0 || quizPct >= PASSING_SCORE))}
@@ -480,7 +491,7 @@ export default function LessonPage() {
             <LessonNav prev={prevLesson} next={nextLesson} topic={topic} lang={lang} currentDone={done} currentPassed={passed} />
           </div>
 
-          <div className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-24px)] max-w-md rounded-full border border-[#D2D2D7]/50 dark:border-white/10 bg-white/92 dark:bg-[#111214]/92 backdrop-blur-xl shadow-[0_12px_30px_rgba(0,0,0,0.12)] px-3 py-2">
+          <div className="xl:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-24px)] max-w-md rounded-full border border-[#D2D2D7]/50 dark:border-white/10 bg-white/92 dark:bg-[#111214]/92 backdrop-blur-xl shadow-[0_12px_30px_rgba(0,0,0,0.12)] px-3 py-2">
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
@@ -551,6 +562,7 @@ function LessonContent({
   completionHint,
   prerequisiteHint,
   passed,
+  gradeLabel,
   passingScore,
   quizPct,
 }: any) {
@@ -666,6 +678,18 @@ function LessonContent({
               <CheckCircle2 className="w-3.5 h-3.5" /> Selesai
             </span>
           )}
+          {gradeLabel && (
+            <span className={cn(
+              "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium",
+              gradeLabel === "Sempurna"
+                ? "bg-[#7C4DFF]/10 text-[#7C4DFF]"
+                : gradeLabel === "Lulus"
+                  ? "bg-[#34C759]/10 text-[#34C759]"
+                  : "bg-[#FF9500]/10 text-[#FF9500]"
+            )}>
+              {gradeLabel}
+            </span>
+          )}
           {prerequisiteHint && (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FF9500]/10 px-3 py-1.5 text-[12px] font-medium text-[#FF9500]">
               <TriangleAlert className="w-3.5 h-3.5" /> Urutan direkomendasikan
@@ -673,7 +697,7 @@ function LessonContent({
           )}
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_240px] lg:items-start">
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_280px] 2xl:grid-cols-[minmax(0,1fr)_300px] xl:items-start">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0071E3] mb-2.5">
               Developer Guide
@@ -689,7 +713,7 @@ function LessonContent({
             )}
           </div>
 
-          <div className="rounded-[16px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white/65 dark:bg-[#17181A] p-4">
+          <div className="rounded-[16px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white/65 dark:bg-[#17181A] p-4 max-xl:max-w-[420px]">
             <div className="flex items-center justify-between gap-3 mb-3">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#86868B]">
                 Progress Membaca
@@ -859,7 +883,7 @@ function LessonContent({
 /* ── Lesson Navigation ───────────────────────────── */
 function LessonNav({ prev, next, topic, lang, currentDone, currentPassed }: any) {
   return (
-    <div className="grid gap-3 pt-8 mt-8 border-t border-[#D2D2D7]/40 sm:grid-cols-2 lg:max-w-2xl">
+    <div className={cn("grid gap-3 pt-8 mt-8 border-t border-[#D2D2D7]/40 lg:max-w-2xl", prev ? "sm:grid-cols-2" : "sm:grid-cols-1 sm:max-w-md") }>
       {prev ? (
         <Link href={`/modules/${topic}/${prev.id}`}
           className="flex items-center gap-3 rounded-[18px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white dark:bg-[#111214] px-4 py-4 text-[13px] transition-colors group hover:border-[#0071E3]/25 hover:bg-[#FAFAFB] dark:hover:bg-[#17181A]">
@@ -871,7 +895,7 @@ function LessonNav({ prev, next, topic, lang, currentDone, currentPassed }: any)
             <p className="font-medium text-foreground truncate">{lang === "id" ? prev.title_id : prev.title_en}</p>
           </div>
         </Link>
-      ) : <div className="hidden sm:block" />}
+      ) : null}
       
       {next ? (
         currentPassed ? (

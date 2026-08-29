@@ -18,7 +18,8 @@ const LEVEL_COLOR: Record<string, string> = {
 export default function TopicPage() {
   const { topic } = useParams<{ topic: string }>();
   const [data, setData] = useState<TopicDetail | null>(null);
-  const { isCompleted, hasPassedLesson, topicProgress, isTopicBookmarked, toggleTopicBookmark } = useProgress();
+  const { isCompleted, hasPassedLesson, topicProgress, getResumeState, getBestQuizScore, isTopicBookmarked, toggleTopicBookmark } = useProgress();
+  const PASSING_SCORE = 70;
 
   useEffect(() => {
     api.topics.get(topic).then(setData).catch(() => {});
@@ -39,11 +40,11 @@ export default function TopicPage() {
 
   const lessonCount = data.lessons?.length ?? 0;
   const prog = topicProgress(topic, lessonCount, data.lessons);
-  const nextLesson = data.lessons?.find((lesson) => !hasPassedLesson(topic, lesson.id)) ?? data.lessons?.[0];
+  const nextLesson = data.lessons?.find((lesson) => !hasPassedLesson(topic, lesson.id, PASSING_SCORE, lesson.quizCount)) ?? data.lessons?.[0];
   const remainingLessons = Math.max(lessonCount - prog.done, 0);
   const remainingMinutes =
     data.lessons?.reduce(
-        (acc, lesson) => acc + (hasPassedLesson(topic, lesson.id) ? 0 : lesson.estimatedMinutes),
+      (acc, lesson) => acc + (hasPassedLesson(topic, lesson.id, PASSING_SCORE, lesson.quizCount) ? 0 : lesson.estimatedMinutes),
       0,
     ) ?? 0;
   const nextLessonHref = `/modules/${topic}/${nextLesson?.id ?? "01"}`;
@@ -208,9 +209,19 @@ export default function TopicPage() {
           <div className="grid gap-4">
             {data.lessons?.map((lesson, idx) => {
               const done = isCompleted(topic, lesson.id);
-              const passed = hasPassedLesson(topic, lesson.id);
+              const passed = hasPassedLesson(topic, lesson.id, PASSING_SCORE, lesson.quizCount);
               const isNext = !passed && lesson.id === nextLesson?.id;
-              const needsPreviousLesson = idx > 0 && !hasPassedLesson(topic, data.lessons[idx - 1].id);
+              const needsPreviousLesson = idx > 0 && !hasPassedLesson(topic, data.lessons[idx - 1].id, PASSING_SCORE, data.lessons[idx - 1].quizCount);
+              const resume = getResumeState(topic, lesson.id);
+              const bestQuizScore = getBestQuizScore(topic, lesson.id);
+              const totalQuestions = lesson.quizCount ?? resume.totalQuestions ?? 0;
+              const isPerfect = passed && totalQuestions > 0 && bestQuizScore >= totalQuestions;
+              const gradeLabel = isPerfect ? "Sempurna" : passed ? "Lulus" : (done || resume.hasOpenedQuiz) ? "Belum Lulus" : null;
+              const gradeClass = isPerfect
+                ? "bg-[#7C4DFF]/10 text-[#7C4DFF]"
+                : passed
+                  ? "bg-[#34C759]/10 text-[#34C759]"
+                  : "bg-[#FF9500]/10 text-[#FF9500]";
 
               const innerContent = (
                 <>
@@ -239,6 +250,11 @@ export default function TopicPage() {
                       >
                         {lesson.title_id}
                       </h3>
+                      {gradeLabel && (
+                        <span className={cn("mt-2 inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium", gradeClass)}>
+                          {gradeLabel}
+                        </span>
+                      )}
                       <p className={cn("mt-1 text-[14px] leading-relaxed", needsPreviousLesson ? "text-[#86868B]/50" : "text-[#86868B]")}>
                         {lesson.title_id} {/* Gunakan title_id karena deskripsi di LessonMeta mungkin belum tersedia secara global */}
                       </p>
