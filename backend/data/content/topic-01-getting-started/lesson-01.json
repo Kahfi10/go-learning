@@ -8,43 +8,162 @@
   "starterCode": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\t// Program Go pertama Anda! / Your first Go program!\n\tfmt.Println(\"Hello, World!\")\n\tfmt.Println(\"Go dibuat oleh Google pada tahun 2009\")\n\tfmt.Println(\"Go was created by Google in 2009\")\n}",
   "quiz": [
     {
-      "question_id": "Siapa saja tiga insinyur yang merancang bahasa pemrograman Go?",
-      "question_en": "Who are the three engineers who designed the Go programming language?",
+      "question_id": "Pernyataan mana yang PALING tepat menjelaskan alasan utama Go dibuat di Google?",
+      "question_en": "Which statement BEST explains why Go was created at Google?",
       "options_id": [
-        "James Gosling, Mike Sheridan, Patrick Naughton",
-        "Robert Griesemer, Rob Pike, Ken Thompson",
-        "Guido van Rossum, Barry Warsaw, Jeremy Hylton",
-        "Linus Torvalds, Andrew Tanenbaum, Dennis Ritchie"
+        "Untuk menggantikan JavaScript di browser modern",
+        "Untuk menyederhanakan pembangunan sistem besar tanpa mengorbankan performa dan kecepatan build",
+        "Untuk menjadi bahasa scripting yang lebih dinamis dari Python",
+        "Untuk fokus pada pengembangan game engine dengan grafik real-time"
       ],
       "options_en": [
-        "James Gosling, Mike Sheridan, Patrick Naughton",
-        "Robert Griesemer, Rob Pike, Ken Thompson",
-        "Guido van Rossum, Barry Warsaw, Jeremy Hylton",
-        "Linus Torvalds, Andrew Tanenbaum, Dennis Ritchie"
+        "To replace JavaScript in modern browsers",
+        "To simplify building large systems without sacrificing performance and build speed",
+        "To become a more dynamic scripting language than Python",
+        "To focus on game engine development with real-time graphics"
       ],
       "correct": 1
     },
     {
-      "question_id": "Pada tahun berapa Go pertama kali diperkenalkan oleh Google?",
-      "question_en": "In what year was Go first introduced by Google?",
-      "options_id": ["2005", "2007", "2009", "2012"],
-      "options_en": ["2005", "2007", "2009", "2012"],
+      "question_id": "Kombinasi perancang Go yang benar adalah?",
+      "question_en": "Which is the correct combination of Go designers?",
+      "options_id": [
+        "Robert Griesemer, Rob Pike, Ken Thompson",
+        "Bjarne Stroustrup, Dennis Ritchie, Rob Pike",
+        "Ken Thompson, Guido van Rossum, Rob Pike",
+        "Robert Griesemer, James Gosling, Brendan Eich"
+      ],
+      "options_en": [
+        "Robert Griesemer, Rob Pike, Ken Thompson",
+        "Bjarne Stroustrup, Dennis Ritchie, Rob Pike",
+        "Ken Thompson, Guido van Rossum, Rob Pike",
+        "Robert Griesemer, James Gosling, Brendan Eich"
+      ],
+      "correct": 0
+    },
+    {
+      "question_id": "Apa konsekuensi praktis dari Go menghasilkan single binary saat deployment?",
+      "question_en": "What is the practical consequence of Go producing a single binary during deployment?",
+      "options_id": [
+        "Aplikasi harus selalu dijalankan di dalam JVM",
+        "Aplikasi tidak perlu runtime Go terpisah di mesin target dalam banyak kasus",
+        "Aplikasi tidak bisa memakai dependency eksternal",
+        "Aplikasi menjadi interpreted, bukan compiled"
+      ],
+      "options_en": [
+        "The application must always run inside a JVM",
+        "The application often does not need a separate Go runtime on the target machine",
+        "The application cannot use external dependencies",
+        "The application becomes interpreted rather than compiled"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Dibanding Python, keunggulan Go yang paling terkait keamanan error saat build adalah?",
+      "question_en": "Compared to Python, which Go advantage is most related to catching errors during build?",
+      "options_id": [
+        "Garbage collection",
+        "Static typing",
+        "Goroutine",
+        "Single binary"
+      ],
+      "options_en": [
+        "Garbage collection",
+        "Static typing",
+        "Goroutine",
+        "Single binary"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika sebuah tim butuh build cepat untuk proyek besar dan concurrent programming bawaan, bahasa mana yang paling sesuai berdasarkan lesson ini?",
+      "question_en": "If a team needs fast builds for a large project and built-in concurrent programming, which language best fits based on this lesson?",
+      "options_id": ["Python", "PHP", "Go", "Ruby"],
+      "options_en": ["Python", "PHP", "Go", "Ruby"],
       "correct": 2
     },
     {
-      "question_id": "Fitur bawaan Go yang memungkinkan pemrograman konkuren secara efisien adalah?",
-      "question_en": "Which built-in Go feature enables efficient concurrent programming?",
+      "question_id": "Dalam program Go yang dapat dieksekusi, fungsi `main()` berperan sebagai?",
+      "question_en": "In an executable Go program, what role does `main()` serve?",
       "options_id": [
-        "Thread dan Mutex",
-        "Async dan Await",
-        "Goroutine dan Channel",
-        "Process dan Semaphore"
+        "Tempat deklarasi package eksternal",
+        "Entry point program saat dieksekusi",
+        "Fungsi untuk formatting output saja",
+        "Penanda bahwa file ini adalah library"
       ],
       "options_en": [
-        "Thread and Mutex",
-        "Async and Await",
-        "Goroutine and Channel",
-        "Process and Semaphore"
+        "A place to declare external packages",
+        "The program entry point when executed",
+        "A function only used for output formatting",
+        "A marker that the file is a library"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Mengapa `package main` wajib ada pada program Go yang ingin dijalankan langsung?",
+      "question_en": "Why must `package main` exist in a Go program that should run directly?",
+      "options_id": [
+        "Karena hanya package main yang boleh memakai import",
+        "Karena compiler mengenal package main sebagai executable package",
+        "Karena package lain tidak mendukung function return",
+        "Karena package main otomatis lebih cepat daripada package lain"
+      ],
+      "options_en": [
+        "Because only package main may use imports",
+        "Because the compiler recognizes package main as an executable package",
+        "Because other packages do not support function returns",
+        "Because package main is automatically faster than other packages"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Contoh berikut mana yang paling sesuai dengan karakter Go sebagai bahasa compiled dan simple syntax?",
+      "question_en": "Which example best matches Go's nature as a compiled language with simple syntax?",
+      "options_id": [
+        "Menjalankan file `.go` selalu butuh interpreter terpisah di production",
+        "Program dapat dikompilasi menjadi executable native dengan sintaks yang relatif ringkas",
+        "Semua concurrency di Go bergantung pada browser event loop",
+        "Error tipe baru diketahui ketika aplikasi sudah berjalan di production"
+      ],
+      "options_en": [
+        "Running `.go` files always requires a separate interpreter in production",
+        "Programs can be compiled into native executables with relatively concise syntax",
+        "All concurrency in Go depends on the browser event loop",
+        "Type errors are only discovered when the app is already running in production"
+      ],
+      "correct": 1
+    },
+    {
+      "question_id": "Jika kamu melihat kode `fmt.Println(\"Hello, World!\")`, package `fmt` digunakan untuk?",
+      "question_en": "If you see `fmt.Println(\"Hello, World!\")`, what is the `fmt` package used for?",
+      "options_id": [
+        "Pengelolaan goroutine dan scheduler runtime",
+        "Operasi file dan direktori",
+        "Input/output dan formatting teks",
+        "Koneksi database dan network socket"
+      ],
+      "options_en": [
+        "Managing goroutines and the runtime scheduler",
+        "File and directory operations",
+        "Input/output and text formatting",
+        "Database connections and network sockets"
+      ],
+      "correct": 2
+    },
+    {
+      "question_id": "Pernyataan mana yang BENAR tentang perbandingan Go vs Java berdasarkan lesson ini?",
+      "question_en": "Which statement is TRUE about Go vs Java based on this lesson?",
+      "options_id": [
+        "Go menghasilkan JVM bytecode seperti Java",
+        "Java selalu memiliki build time lebih cepat daripada Go",
+        "Go cenderung lebih sederhana secara sintaks dan menghasilkan native binary",
+        "Go tidak mendukung static typing, sedangkan Java mendukung"
+      ],
+      "options_en": [
+        "Go produces JVM bytecode like Java",
+        "Java always has faster build times than Go",
+        "Go tends to be syntactically simpler and produces native binaries",
+        "Go does not support static typing, while Java does"
       ],
       "correct": 2
     }

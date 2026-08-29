@@ -107,7 +107,7 @@ export interface Topic {
   lessons?: LessonMeta[];
 }
 export interface LessonMeta {
-  id: string; title_id: string; title_en: string; estimatedMinutes: number;
+  id: string; title_id: string; title_en: string; estimatedMinutes: number; quizCount?: number;
 }
 export interface TopicDetail extends Topic { lessons: LessonMeta[]; }
 export interface QuizOption { question_id: string; question_en: string; options_id: string[]; options_en: string[]; correct: number; }
@@ -131,6 +131,7 @@ export interface LessonResumeState {
   activeTab?: "content" | "discussion";
   hasOpenedQuiz?: boolean;
   hasRunCode?: boolean;
+  passedQuiz?: boolean;
   viewedAt?: string;
   scrollY?: number;
   lastQuizScore?: number;

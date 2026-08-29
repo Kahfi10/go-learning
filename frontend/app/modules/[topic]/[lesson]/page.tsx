@@ -2,12 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import {
-  Bookmark,
-  BookmarkCheck,
-  ChevronLeft, ChevronRight, CheckCircle2, Clock,
-  Languages, Menu, X, MessageCircle, TriangleAlert, Zap,
-} from "lucide-react";
+import { Lock, Play, RotateCcw, Copy, Check, Loader2, Bookmark, BookmarkCheck, ChevronLeft, ChevronRight, CheckCircle2, Clock, Languages, Menu, X, MessageCircle, TriangleAlert, Zap } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import CodeEditor from "@/components/editor/CodeEditor";
 import Quiz from "@/components/lesson/Quiz";
@@ -49,16 +44,21 @@ export default function LessonPage() {
   const initializedLessonKeyRef = useRef<string | null>(null);
   const {
     isCompleted,
+    hasPassedLesson,
     markComplete,
+    recordQuizResult,
     saveCode,
     getLastCode,
     topicProgress,
     getResumeState,
     saveResumeState,
     markLessonViewed,
+    getBestQuizScore,
     isLessonBookmarked,
     toggleLessonBookmark,
   } = useProgress();
+
+  const PASSING_SCORE = 70;
 
   useEffect(() => {
     if (initializedLessonKeyRef.current === null && !state.loading && !state.user) {
@@ -158,6 +158,15 @@ export default function LessonPage() {
       return;
     }
 
+    const totalQuestions = data?.quiz?.length ?? resume.totalQuestions ?? 0;
+    const bestScore = getBestQuizScore(topic, lesson) || resume.lastQuizScore || 0;
+    const percentage = totalQuestions > 0 ? Math.round((bestScore / totalQuestions) * 100) : 0;
+
+    if (totalQuestions > 0 && percentage < PASSING_SCORE) {
+      toast.error(`Skor quiz minimal ${PASSING_SCORE}% untuk menandai lesson selesai.`);
+      return;
+    }
+
     setCompletionLoading(true);
     const code = getLastCode(topic, lesson);
     await markComplete(topic, lesson, code);
@@ -173,17 +182,16 @@ export default function LessonPage() {
 
   async function handleQuizComplete(score: number, total: number) {
     setQuizScore(score);
-    saveResumeState(topic, lesson, {
-      hasOpenedQuiz: true,
-      lastQuizScore: score,
-      totalQuestions: total,
-      viewedAt: new Date().toISOString(),
-    });
+    recordQuizResult(topic, lesson, score, total);
     if (state.user) {
       await api.progress.submitQuiz(lesson, { score, topic_slug: topic, total_questions: total }).catch(() => {});
     }
     if (score === total) {
       toast.success(`Quiz sempurna! +25 XP bonus 🏆`, { duration: 3000 });
+    } else if (Math.round((score / total) * 100) >= PASSING_SCORE) {
+      toast.success(`Lulus quiz dengan skor ${Math.round((score / total) * 100)}%. Lesson berikutnya terbuka.`);
+    } else {
+      toast.error(`Belum lulus. Minimal skor ${PASSING_SCORE}% untuk membuka lesson berikutnya.`);
     }
   }
 
@@ -191,26 +199,31 @@ export default function LessonPage() {
   const currentIdx = lessons.findIndex(l => l.id === lesson);
   const prevLesson = lessons[currentIdx - 1];
   const nextLesson = lessons[currentIdx + 1];
-  const previousLessonIncomplete = currentIdx > 0 ? !isCompleted(topic, lessons[currentIdx - 1].id) : false;
+  const previousLessonIncomplete = currentIdx > 0 ? !hasPassedLesson(topic, lessons[currentIdx - 1].id, PASSING_SCORE) : false;
   const done = isCompleted(topic, lesson);
-  const prog = topicProgress(topic, lessons.length);
+  const passed = hasPassedLesson(topic, lesson, PASSING_SCORE);
+  const prog = topicProgress(topic, lessons.length, lessons);
   const resume = getResumeState(topic, lesson);
   const lessonBookmarked = isLessonBookmarked(topic, lesson);
   const totalQuizQuestions = data?.quiz?.length ?? resume.totalQuestions ?? 0;
+  const bestQuizScore = getBestQuizScore(topic, lesson) || resume.lastQuizScore || 0;
+  const quizPct = totalQuizQuestions > 0 ? Math.round((bestQuizScore / totalQuizQuestions) * 100) : 0;
   const completionHint = !done && !resume.hasRunCode && !resume.hasOpenedQuiz
     ? "Jalankan kode atau buka quiz dulu untuk mengaktifkan completion."
     : quizScore !== null
       ? `Quiz terakhir: ${quizScore}/${totalQuizQuestions}`
+      : done && !passed && totalQuizQuestions > 0
+        ? `Skor terbaikmu ${bestQuizScore}/${totalQuizQuestions} (${quizPct}%). Minimal ${PASSING_SCORE}% untuk lanjut.`
       : resume.hasRunCode
         ? "Editor sudah digunakan. Kamu bisa tandai selesai kapan saja."
         : undefined;
   const prerequisiteHint = previousLessonIncomplete
-    ? `Kamu harus menyelesaikan lesson sebelumnya: ${lessons[currentIdx - 1]?.title_id}`
+    ? `Kamu harus menyelesaikan dan lulus lesson sebelumnya: ${lessons[currentIdx - 1]?.title_id}`
     : null;
 
   useEffect(() => {
     if (previousLessonIncomplete) {
-      toast.error("Kamu harus menyelesaikan lesson sebelumnya terlebih dahulu.");
+      toast.error("Kamu harus menyelesaikan dan lulus lesson sebelumnya terlebih dahulu.");
       router.replace(`/modules/${topic}`);
     }
   }, [previousLessonIncomplete, router, topic]);
@@ -317,7 +330,24 @@ export default function LessonPage() {
               </div>
               {lessons.map((l, i) => {
                 const lDone = isCompleted(topic, l.id);
+                const lPassed = hasPassedLesson(topic, l.id, PASSING_SCORE);
                 const isCurrent = l.id === lesson;
+                const lNeedsPrev = i > 0 && !hasPassedLesson(topic, lessons[i - 1].id, PASSING_SCORE);
+
+                if (lNeedsPrev && !isCurrent) {
+                  return (
+                    <div
+                      key={l.id}
+                      className="lesson-sidebar-item flex items-center gap-2.5 px-4 py-2.5 text-[13px] text-[#86868B]/40 cursor-not-allowed"
+                    >
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] shrink-0 bg-[#F5F5F7]/50 dark:bg-white/5 text-[#86868B]/40">
+                        <Lock className="w-3 h-3" />
+                      </div>
+                      <span className="truncate leading-tight">{lang === "id" ? l.title_id : l.title_en}</span>
+                    </div>
+                  );
+                }
+
                 return (
                   <Link key={l.id} href={`/modules/${topic}/${l.id}`}
                     onClick={() => setSidebarOpen(false)}
@@ -329,11 +359,11 @@ export default function LessonPage() {
                     )}>
                     <div className={cn(
                       "w-5 h-5 rounded-full flex items-center justify-center text-[10px] shrink-0",
-                      lDone ? "bg-[#34C759]/15 text-[#34C759]" :
+                      lPassed ? "bg-[#34C759]/15 text-[#34C759]" :
                       isCurrent ? "bg-[#0071E3]/15 text-[#0071E3]" :
                       "bg-[#F5F5F7] dark:bg-white/8 text-[#86868B]"
                     )}>
-                      {lDone ? "✓" : i + 1}
+                      {lPassed ? "✓" : i + 1}
                     </div>
                     <span className="truncate leading-tight">{lang === "id" ? l.title_id : l.title_en}</span>
                   </Link>
@@ -356,13 +386,16 @@ export default function LessonPage() {
                     topic={topic} lesson={lesson}
                     activeTab={activeTab} onTabChange={setActiveTab}
                     onComplete={handleComplete} done={done}
-                    completionEnabled={Boolean(resume.hasRunCode || resume.hasOpenedQuiz)}
+                    passed={passed}
+                    passingScore={PASSING_SCORE}
+                    quizPct={quizPct}
+                    completionEnabled={Boolean((resume.hasRunCode || resume.hasOpenedQuiz) && (totalQuizQuestions === 0 || quizPct >= PASSING_SCORE))}
                     completionHint={completionHint}
                     prerequisiteHint={prerequisiteHint}
                     onQuizOpen={() => saveResumeState(topic, lesson, { hasOpenedQuiz: true, viewedAt: new Date().toISOString() })}
                     onQuizComplete={handleQuizComplete}
                   />
-                  <LessonNav prev={prevLesson} next={nextLesson} topic={topic} lang={lang} />
+                  <LessonNav prev={prevLesson} next={nextLesson} topic={topic} lang={lang} currentDone={done} currentPassed={passed} />
                 </div>
               </Panel>
               <PanelResizeHandle className="mx-1 flex items-center justify-center">
@@ -385,7 +418,7 @@ export default function LessonPage() {
                     defaultCode={getLastCode(topic, lesson) ?? DEFAULT_CODE_TEMPLATE}
                     onCodeChange={(c) => saveCode(topic, lesson, c)}
                     onRun={() => saveResumeState(topic, lesson, { hasRunCode: true, viewedAt: new Date().toISOString() })}
-                    height="calc(100vh - 340px)"
+                    height="min(56vh, 720px)"
                   />
                   {completionHint && !done && (
                     <div className="mt-4 rounded-[14px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white/80 dark:bg-[#17181A] px-4 py-3">
@@ -404,7 +437,10 @@ export default function LessonPage() {
               topic={topic} lesson={lesson}
               activeTab={activeTab} onTabChange={setActiveTab}
               onComplete={handleComplete} done={done}
-              completionEnabled={Boolean(resume.hasRunCode || resume.hasOpenedQuiz)}
+              passed={passed}
+              passingScore={PASSING_SCORE}
+              quizPct={quizPct}
+              completionEnabled={Boolean((resume.hasRunCode || resume.hasOpenedQuiz) && (totalQuizQuestions === 0 || quizPct >= PASSING_SCORE))}
               completionHint={completionHint}
               prerequisiteHint={prerequisiteHint}
               onQuizOpen={() => saveResumeState(topic, lesson, { hasOpenedQuiz: true, viewedAt: new Date().toISOString() })}
@@ -441,7 +477,7 @@ export default function LessonPage() {
                 </div>
               )}
             </div>
-            <LessonNav prev={prevLesson} next={nextLesson} topic={topic} lang={lang} />
+            <LessonNav prev={prevLesson} next={nextLesson} topic={topic} lang={lang} currentDone={done} currentPassed={passed} />
           </div>
 
           <div className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-24px)] max-w-md rounded-full border border-[#D2D2D7]/50 dark:border-white/10 bg-white/92 dark:bg-[#111214]/92 backdrop-blur-xl shadow-[0_12px_30px_rgba(0,0,0,0.12)] px-3 py-2">
@@ -478,10 +514,10 @@ export default function LessonPage() {
                 <button
                   type="button"
                   onClick={handleComplete}
-                  disabled={!resume.hasRunCode && !resume.hasOpenedQuiz}
+                  disabled={!((resume.hasRunCode || resume.hasOpenedQuiz) && (totalQuizQuestions === 0 || quizPct >= PASSING_SCORE))}
                   className={cn(
                     "flex items-center justify-center gap-1 rounded-full px-3 py-2 text-[12px] font-medium transition-colors",
-                    !resume.hasRunCode && !resume.hasOpenedQuiz
+                    !((resume.hasRunCode || resume.hasOpenedQuiz) && (totalQuizQuestions === 0 || quizPct >= PASSING_SCORE))
                       ? "bg-[#F5F5F7] dark:bg-[#1C1C1E] text-[#86868B]"
                       : "bg-[#34C759] text-white"
                   )}
@@ -514,6 +550,9 @@ function LessonContent({
   completionEnabled,
   completionHint,
   prerequisiteHint,
+  passed,
+  passingScore,
+  quizPct,
 }: any) {
   const proseRef = useRef<HTMLDivElement>(null);
   const lessonSections = useMemo(() => extractSectionTitles(content), [content]);
@@ -764,12 +803,22 @@ function LessonContent({
           {/* Quiz */}
           {data.quiz?.length > 0 && (
             <div className="lesson-tab-panel mt-10">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-1 h-5 bg-[#0071E3] rounded-full" />
-                <p className="font-semibold text-[15px] text-foreground">
-                  {lang === "id" ? "Uji Pemahaman" : "Knowledge Check"}
-                </p>
-                <span className="text-[#86868B] text-[13px]">· {data.quiz.length} soal</span>
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-1 h-5 bg-[#0071E3] rounded-full" />
+                  <p className="font-semibold text-[15px] text-foreground">
+                    {lang === "id" ? "Uji Pemahaman" : "Knowledge Check"}
+                  </p>
+                  <span className="text-[#86868B] text-[13px]">· {data.quiz.length} soal</span>
+                </div>
+                <div className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium self-start sm:self-auto",
+                  passed
+                    ? "bg-[#34C759]/10 text-[#34C759]"
+                    : "bg-[#FF9500]/10 text-[#FF9500]"
+                )}>
+                  {passed ? `Lulus · ${quizPct}%` : `Minimal lulus ${passingScore}%`}
+                </div>
               </div>
               <Quiz
                 questions={data.quiz}
@@ -778,13 +827,14 @@ function LessonContent({
                 lessonId={lesson}
                 onOpen={onQuizOpen}
                 onComplete={onQuizComplete}
+                passingScore={passingScore}
               />
             </div>
           )}
 
           {/* Mark complete CTA (bottom) */}
           {!done && (
-            <div className="lesson-tab-panel mt-10 p-5 bg-[#FAFAFB] dark:bg-[#17181A] rounded-[18px] flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-[#D2D2D7]/35 dark:border-white/6">
+            <div className="lesson-tab-panel mt-10 p-5 bg-[#FAFAFB] dark:bg-[#17181A] rounded-[18px] flex flex-col lg:flex-row lg:items-center justify-between gap-4 border border-[#D2D2D7]/35 dark:border-white/6">
               <div>
                 <p className="font-medium text-[14px] text-foreground">Sudah paham materi ini?</p>
                 <p className="text-[#86868B] text-[12px] mt-0.5">
@@ -807,9 +857,9 @@ function LessonContent({
 }
 
 /* ── Lesson Navigation ───────────────────────────── */
-function LessonNav({ prev, next, topic, lang }: any) {
+function LessonNav({ prev, next, topic, lang, currentDone, currentPassed }: any) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2 pt-8 mt-8 border-t border-[#D2D2D7]/40">
+    <div className="grid gap-3 pt-8 mt-8 border-t border-[#D2D2D7]/40 sm:grid-cols-2 lg:max-w-2xl">
       {prev ? (
         <Link href={`/modules/${topic}/${prev.id}`}
           className="flex items-center gap-3 rounded-[18px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white dark:bg-[#111214] px-4 py-4 text-[13px] transition-colors group hover:border-[#0071E3]/25 hover:bg-[#FAFAFB] dark:hover:bg-[#17181A]">
@@ -822,17 +872,33 @@ function LessonNav({ prev, next, topic, lang }: any) {
           </div>
         </Link>
       ) : <div className="hidden sm:block" />}
+      
       {next ? (
-        <Link href={`/modules/${topic}/${next.id}`}
-          className="flex items-center justify-between gap-3 rounded-[18px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white dark:bg-[#111214] px-4 py-4 text-[13px] font-medium transition-colors group hover:border-[#0071E3]/25 hover:bg-[#FAFAFB] dark:hover:bg-[#17181A]">
-          <div className="min-w-0 text-right sm:text-left ml-auto sm:ml-0 order-2 sm:order-1">
-            <p className="text-[10px] uppercase tracking-wide text-[#86868B]">Berikutnya</p>
-            <p className="text-[#0071E3] truncate">{lang === "id" ? next.title_id : next.title_en}</p>
+        currentPassed ? (
+          <Link href={`/modules/${topic}/${next.id}`}
+            className="flex items-center justify-between gap-3 rounded-[18px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white dark:bg-[#111214] px-4 py-4 text-[13px] font-medium transition-colors group hover:border-[#0071E3]/25 hover:bg-[#FAFAFB] dark:hover:bg-[#17181A]">
+            <div className="min-w-0 text-right sm:text-left ml-auto sm:ml-0 order-2 sm:order-1">
+              <p className="text-[10px] uppercase tracking-wide text-[#86868B]">Berikutnya</p>
+              <p className="text-[#0071E3] truncate">{lang === "id" ? next.title_id : next.title_en}</p>
+            </div>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0071E3]/10 text-[#0071E3] shrink-0 order-1 sm:order-2">
+              <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            </div>
+          </Link>
+        ) : (
+          <div className="flex items-center justify-between gap-3 rounded-[18px] border border-transparent dark:border-white/5 bg-[#F5F5F7]/50 dark:bg-[#111214]/50 px-4 py-4 text-[13px] font-medium cursor-not-allowed">
+            <div className="min-w-0 text-right sm:text-left ml-auto sm:ml-0 order-2 sm:order-1">
+              <p className="text-[10px] uppercase tracking-wide text-[#86868B]/40">Berikutnya</p>
+              <p className="text-[#86868B]/50 truncate">{lang === "id" ? next.title_id : next.title_en}</p>
+              <p className="mt-1 text-[11px] text-[#FF9500]/80">
+                {currentDone ? "Lulus quiz dulu untuk lanjut." : "Selesaikan lesson ini dulu."}
+              </p>
+            </div>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F5F5F7] dark:bg-white/5 text-[#86868B]/40 shrink-0 order-1 sm:order-2">
+              <Lock className="w-4 h-4" />
+            </div>
           </div>
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0071E3]/10 text-[#0071E3] shrink-0 order-1 sm:order-2">
-            <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-          </div>
-        </Link>
+        )
       ) : (
         <Link href={`/modules/${topic}`}
           className="flex items-center justify-center gap-2 rounded-[18px] border border-[#34C759]/20 bg-[#34C759]/8 px-4 py-4 text-[#34C759] text-[13px] font-medium sm:col-start-2">

@@ -95,11 +95,16 @@ func (h *TopicsHandler) lessonSummaries(dir string) []json.RawMessage {
 		if err := json.Unmarshal(data, &lesson); err != nil {
 			continue
 		}
+		quizCount := 0
+		if quiz, ok := lesson["quiz"].([]interface{}); ok {
+			quizCount = len(quiz)
+		}
 		summary := map[string]interface{}{
 			"id":               lesson["id"],
 			"title_id":         lesson["title_id"],
 			"title_en":         lesson["title_en"],
 			"estimatedMinutes": lesson["estimatedMinutes"],
+			"quizCount":        quizCount,
 		}
 		b, _ := json.Marshal(summary)
 		lessons = append(lessons, json.RawMessage(b))

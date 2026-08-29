@@ -76,7 +76,7 @@ export default function DashboardPage() {
   const xpRemaining = stats && hasNextLevel ? Math.max(nextLevelXP - stats.xp, 0) : 0;
 
   const topicCards = topics.map((topic) => {
-    const progress = topicProgress(topic.slug, getLessonCount(topic));
+    const progress = topicProgress(topic.slug, getLessonCount(topic), topic.lessons);
     return { topic, progress };
   });
 

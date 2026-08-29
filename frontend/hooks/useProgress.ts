@@ -104,6 +104,7 @@ export function useProgress() {
   const [bookmarks, setBookmarks] = useState<BookmarkState>(loadBookmarks);
   const [activity, setActivity] = useState<ActivityItem[]>([]);
   const draftSyncTimersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const defaultPassingScore = 70;
 
   const persistBookmarks = useCallback((next: BookmarkState) => {
     setBookmarks(next);
@@ -198,6 +199,10 @@ export function useProgress() {
     return resume[`${topic}/${lesson}`] ?? {};
   }, [resume]);
 
+  const getBestQuizScore = useCallback((topic: string, lesson: string) => {
+    return progress[`${topic}/${lesson}`]?.best_quiz_score ?? 0;
+  }, [progress]);
+
   const saveResumeState = useCallback((topic: string, lesson: string, patch: Partial<LessonResumeState>) => {
     const key = `${topic}/${lesson}`;
     persistResume((prev) => {
@@ -242,12 +247,30 @@ export function useProgress() {
     }
   }, [saveResumeState, state.user]);
 
-  const topicProgress = useCallback((topicSlug: string, totalLessons: number) => {
-    const done = Object.entries(progress).filter(
-      ([key, v]) => key.startsWith(`${topicSlug}/`) && v.completed
-    ).length;
+  const hasPassedLesson = useCallback((topic: string, lesson: string, passingScore = defaultPassingScore, totalQuestionsOverride?: number) => {
+    const key = `${topic}/${lesson}`;
+    const resumeState = getResumeState(topic, lesson);
+    const totalQuestions = totalQuestionsOverride ?? resumeState.totalQuestions ?? 0;
+    const bestScore = progress[key]?.best_quiz_score ?? resumeState.lastQuizScore ?? 0;
+
+    if (!isCompleted(topic, lesson)) return false;
+    if (resumeState.passedQuiz === true) return true;
+    if (totalQuestions <= 0) return true;
+
+    return Math.round((bestScore / totalQuestions) * 100) >= passingScore;
+  }, [defaultPassingScore, getResumeState, isCompleted, progress]);
+
+  const topicProgress = useCallback((topicSlug: string, totalLessons: number, lessons?: Array<{ id: string; quizCount?: number }>) => {
+    const done = lessons?.length
+      ? lessons.filter((lesson) => hasPassedLesson(topicSlug, lesson.id, defaultPassingScore, lesson.quizCount)).length
+      : Object.entries(progress).filter(([key, value]) => {
+          if (!key.startsWith(`${topicSlug}/`) || !value.completed) return false;
+          const [, lesson] = key.split("/");
+          return hasPassedLesson(topicSlug, lesson, defaultPassingScore);
+        }).length;
+
     return { done, total: totalLessons, pct: totalLessons ? Math.round((done / totalLessons) * 100) : 0 };
-  }, [progress]);
+  }, [defaultPassingScore, hasPassedLesson, progress]);
 
   const lessonState = useCallback((topic: string, lesson: string) => {
     const completed = isCompleted(topic, lesson);
@@ -277,6 +300,33 @@ export function useProgress() {
       await api.progress.update(topic, lesson, { completed: true, last_code: code, mark_viewed: true }).catch(() => {});
     }
   }, [saveResumeState, state.user]);
+
+  const recordQuizResult = useCallback((topic: string, lesson: string, score: number, totalQuestions: number) => {
+    const key = `${topic}/${lesson}`;
+    const now = new Date().toISOString();
+
+    saveResumeState(topic, lesson, {
+      hasOpenedQuiz: true,
+      passedQuiz: totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) >= defaultPassingScore : true,
+      lastQuizScore: score,
+      totalQuestions,
+      viewedAt: now,
+    });
+
+    setProgress((prev) => {
+      const updated = {
+        ...prev,
+        [key]: {
+          ...prev[key],
+          completed: prev[key]?.completed ?? false,
+          best_quiz_score: Math.max(prev[key]?.best_quiz_score ?? 0, score),
+          last_viewed_at: now,
+        },
+      };
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  }, [defaultPassingScore, saveResumeState]);
 
   const getLastCode = useCallback((topic: string, lesson: string): string | undefined => {
     const key = codeStorageKey(topic, lesson);
@@ -389,7 +439,10 @@ export function useProgress() {
 
   const getContinueLearning = useCallback((): ContinueLearningItem | null => {
     const items = Object.entries(resume)
-      .filter(([key]) => !progress[key]?.completed)
+      .filter(([key]) => {
+        const [topic, lesson] = key.split("/");
+        return !hasPassedLesson(topic, lesson, defaultPassingScore);
+      })
       .sort((a, b) => {
         const aViewed = a[1]?.viewedAt ? new Date(a[1].viewedAt).getTime() : 0;
         const bViewed = b[1]?.viewedAt ? new Date(b[1].viewedAt).getTime() : 0;
@@ -400,7 +453,7 @@ export function useProgress() {
     if (!key) return null;
     const [topic, lesson] = key.split("/");
     return { topic, lesson, viewedAt: value?.viewedAt };
-  }, [progress, resume]);
+  }, [defaultPassingScore, hasPassedLesson, resume]);
 
   const getRecommendedTopic = useCallback((orderedTopics: string[]): TopicRecommendationItem | null => {
     const continueItem = getContinueLearning();
@@ -415,7 +468,10 @@ export function useProgress() {
 
     const firstUntouched = orderedTopics.find((topic) => {
       const entries = Object.entries(progress).filter(([key]) => key.startsWith(`${topic}/`));
-      return entries.length === 0 || entries.some(([, value]) => !value.completed);
+      return entries.length === 0 || entries.some(([key]) => {
+        const [, lesson] = key.split("/");
+        return !hasPassedLesson(topic, lesson, defaultPassingScore);
+      });
     });
 
     if (firstUntouched) {
@@ -423,7 +479,7 @@ export function useProgress() {
     }
 
     return orderedTopics[0] ? { topic: orderedTopics[0], reason: "Ulangi dari topik awal" } : null;
-  }, [bookmarks.topics, getContinueLearning, progress]);
+  }, [bookmarks.topics, defaultPassingScore, getContinueLearning, hasPassedLesson, progress]);
 
   const getRecentlyViewed = useCallback((limit = 5): ContinueLearningItem[] => {
     return Object.entries(resume)
@@ -446,9 +502,12 @@ export function useProgress() {
     bookmarks,
     activity,
     isCompleted,
+    hasPassedLesson,
     topicProgress,
     lessonState,
     markComplete,
+    recordQuizResult,
+    getBestQuizScore,
     getLastCode,
     saveCode,
     getResumeState,

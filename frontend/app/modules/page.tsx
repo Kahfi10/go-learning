@@ -101,7 +101,7 @@ export default function ModulesPage() {
   const enrichedTopics = useMemo(() => {
     return topics.map((topic) => {
       const lessonCount = getLessonCount(topic);
-      const prog = topicProgress(topic.slug, lessonCount);
+      const prog = topicProgress(topic.slug, lessonCount, topic.lessons);
       const matchedLessons = lessonMatches[topic.slug] ?? [];
       const state = prog.pct === 100 ? "completed" : prog.done > 0 ? "in_progress" : "not_started";
       return { topic, lessonCount, prog, matchedLessons, state };
@@ -132,14 +132,14 @@ export default function ModulesPage() {
   const recentActivity = getRecentActivity(4);
 
   const totalDone = topics.reduce(
-    (acc, topic) => acc + topicProgress(topic.slug, getLessonCount(topic)).done,
+    (acc, topic) => acc + topicProgress(topic.slug, getLessonCount(topic), topic.lessons).done,
     0,
   );
   const totalLessons = topics.reduce((acc, topic) => acc + getLessonCount(topic), 0);
   const overallPct = totalLessons ? Math.round((totalDone / totalLessons) * 100) : 0;
-  const startedTopics = topics.filter((topic) => topicProgress(topic.slug, getLessonCount(topic)).done > 0).length;
+  const startedTopics = topics.filter((topic) => topicProgress(topic.slug, getLessonCount(topic), topic.lessons).done > 0).length;
   const completedTopics = topics.filter(
-    (topic) => topicProgress(topic.slug, getLessonCount(topic)).pct === 100,
+    (topic) => topicProgress(topic.slug, getLessonCount(topic), topic.lessons).pct === 100,
   ).length;
   const hasActiveFilters = Boolean(search) || filter !== "All";
 

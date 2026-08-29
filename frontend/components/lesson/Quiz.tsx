@@ -11,9 +11,10 @@ interface Props {
   lessonId: string;
   onComplete?: (score: number, total: number) => void;
   onOpen?: () => void;
+  passingScore?: number;
 }
 
-export default function Quiz({ questions, lang, topicSlug, lessonId, onComplete, onOpen }: Props) {
+export default function Quiz({ questions, lang, topicSlug, lessonId, onComplete, onOpen, passingScore = 70 }: Props) {
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [answers, setAnswers] = useState<(number | null)[]>(Array(questions.length).fill(null));
@@ -83,14 +84,18 @@ export default function Quiz({ questions, lang, topicSlug, lessonId, onComplete,
   if (showResult) {
     const score = answers.filter((a, i) => a === questions[i].correct).length;
     const pct = Math.round((score / questions.length) * 100);
+    const passed = pct >= passingScore;
     return (
-      <div className="bg-[#FAFAFB] dark:bg-[#17181A] rounded-[18px] p-6 text-center border border-[#D2D2D7]/35 dark:border-white/6 shadow-sm">
-        <div className={cn("text-[48px] font-display font-semibold mb-2", pct === 100 ? "text-[#34C759]" : pct >= 60 ? "text-[#0071E3]" : "text-[#FF453A]")}>
+      <div className="bg-[#FAFAFB] dark:bg-[#17181A] rounded-[18px] p-6 sm:p-8 text-center border border-[#D2D2D7]/35 dark:border-white/6 shadow-sm">
+        <div className={cn("text-[48px] sm:text-[56px] font-display font-semibold mb-2", pct === 100 ? "text-[#34C759]" : passed ? "text-[#0071E3]" : "text-[#FF453A]")}> 
           {pct}%
         </div>
         <p className="text-foreground font-medium mb-1">{score}/{questions.length} jawaban benar</p>
-        <p className="text-[#86868B] text-[13px] mb-6">
-          {pct === 100 ? "Sempurna! +25 XP bonus 🎉" : pct >= 60 ? "Bagus! Kamu paham materinya." : "Coba pelajari ulang materinya."}
+        <p className="text-[#86868B] text-[13px] sm:text-[14px] mb-2">
+          {pct === 100 ? "Sempurna! +25 XP bonus 🎉" : passed ? "Kamu lulus dan boleh lanjut ke lesson berikutnya." : `Belum lulus. Minimal ${passingScore}% untuk membuka lesson berikutnya.`}
+        </p>
+        <p className="text-[#86868B] text-[12px] sm:text-[13px] mb-6">
+          {passed ? "Kalau mau, kamu tetap bisa mengulang quiz untuk memperkuat pemahaman." : "Pelajari ulang materi inti, lalu coba quiz lagi sampai lolos."}
         </p>
         <button onClick={restart}
           className="inline-flex items-center gap-2 text-[#0071E3] text-[14px] font-medium hover:underline">
@@ -101,7 +106,7 @@ export default function Quiz({ questions, lang, topicSlug, lessonId, onComplete,
   }
 
   return (
-    <div className="bg-[#FAFAFB] dark:bg-[#17181A] rounded-[18px] p-6 border border-[#D2D2D7]/35 dark:border-white/6 shadow-sm">
+    <div className="bg-[#FAFAFB] dark:bg-[#17181A] rounded-[18px] p-5 sm:p-6 border border-[#D2D2D7]/35 dark:border-white/6 shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <p className="text-[12px] text-[#86868B] font-medium">
@@ -119,14 +124,14 @@ export default function Quiz({ questions, lang, topicSlug, lessonId, onComplete,
       </div>
 
       {/* Question */}
-      <p className="font-medium text-[16px] text-foreground mb-5 leading-relaxed">{question}</p>
+      <p className="font-medium text-[16px] sm:text-[17px] text-foreground mb-5 leading-relaxed">{question}</p>
 
       {/* Options */}
       <div className="space-y-2.5 mb-5">
         {options.map((opt, idx) => (
           <button key={idx} data-option={idx} onClick={() => handleSelect(idx)}
             className={cn(
-              "w-full text-left px-4 py-3 rounded-[12px] text-[14px] font-medium transition-all border",
+              "w-full text-left px-4 py-3 rounded-[12px] text-[14px] font-medium leading-relaxed transition-all border",
               !isAnswered
                 ? "border-[#D2D2D7]/80 dark:border-white/10 hover:border-[#0071E3]/35 hover:bg-[#0071E3]/4 text-foreground bg-white dark:bg-[#111214]"
                 : idx === q.correct

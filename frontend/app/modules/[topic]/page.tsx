@@ -18,7 +18,7 @@ const LEVEL_COLOR: Record<string, string> = {
 export default function TopicPage() {
   const { topic } = useParams<{ topic: string }>();
   const [data, setData] = useState<TopicDetail | null>(null);
-  const { isCompleted, topicProgress, isTopicBookmarked, toggleTopicBookmark } = useProgress();
+  const { isCompleted, hasPassedLesson, topicProgress, isTopicBookmarked, toggleTopicBookmark } = useProgress();
 
   useEffect(() => {
     api.topics.get(topic).then(setData).catch(() => {});
@@ -38,12 +38,12 @@ export default function TopicPage() {
   }
 
   const lessonCount = data.lessons?.length ?? 0;
-  const prog = topicProgress(topic, lessonCount);
-  const nextLesson = data.lessons?.find((lesson) => !isCompleted(topic, lesson.id)) ?? data.lessons?.[0];
+  const prog = topicProgress(topic, lessonCount, data.lessons);
+  const nextLesson = data.lessons?.find((lesson) => !hasPassedLesson(topic, lesson.id)) ?? data.lessons?.[0];
   const remainingLessons = Math.max(lessonCount - prog.done, 0);
   const remainingMinutes =
     data.lessons?.reduce(
-      (acc, lesson) => acc + (isCompleted(topic, lesson.id) ? 0 : lesson.estimatedMinutes),
+        (acc, lesson) => acc + (hasPassedLesson(topic, lesson.id) ? 0 : lesson.estimatedMinutes),
       0,
     ) ?? 0;
   const nextLessonHref = `/modules/${topic}/${nextLesson?.id ?? "01"}`;
@@ -208,8 +208,9 @@ export default function TopicPage() {
           <div className="grid gap-4">
             {data.lessons?.map((lesson, idx) => {
               const done = isCompleted(topic, lesson.id);
-              const isNext = !done && lesson.id === nextLesson?.id;
-              const needsPreviousLesson = idx > 0 && !isCompleted(topic, data.lessons[idx - 1].id);
+              const passed = hasPassedLesson(topic, lesson.id);
+              const isNext = !passed && lesson.id === nextLesson?.id;
+              const needsPreviousLesson = idx > 0 && !hasPassedLesson(topic, data.lessons[idx - 1].id);
 
               const innerContent = (
                 <>
@@ -217,8 +218,8 @@ export default function TopicPage() {
                     <div
                       className={cn(
                         "flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] text-[16px] font-display font-semibold transition-colors",
-                        done
-                          ? "bg-[#34C759]/15 text-[#30D158]"
+                          passed
+                            ? "bg-[#34C759]/15 text-[#30D158]"
                           : isNext
                             ? "bg-[#0071E3] text-white shadow-md shadow-[#0071E3]/20"
                             : needsPreviousLesson
@@ -226,14 +227,14 @@ export default function TopicPage() {
                               : "bg-[#D2D2D7]/30 dark:bg-white/10 text-[#86868B]",
                       )}
                     >
-                      {done ? <CheckCircle2 className="h-5 w-5" /> : needsPreviousLesson ? <Lock className="h-4 w-4" /> : idx + 1}
+                      {passed ? <CheckCircle2 className="h-5 w-5" /> : needsPreviousLesson ? <Lock className="h-4 w-4" /> : idx + 1}
                     </div>
 
                     <div>
                       <h3
                         className={cn(
                           "font-display text-[19px] font-semibold tracking-tight transition-colors",
-                          done ? "text-foreground" : isNext ? "text-[#0071E3]" : needsPreviousLesson ? "text-[#86868B]/60" : "text-foreground",
+                          passed ? "text-foreground" : isNext ? "text-[#0071E3]" : needsPreviousLesson ? "text-[#86868B]/60" : "text-foreground",
                         )}
                       >
                         {lesson.title_id}
@@ -241,8 +242,11 @@ export default function TopicPage() {
                       <p className={cn("mt-1 text-[14px] leading-relaxed", needsPreviousLesson ? "text-[#86868B]/50" : "text-[#86868B]")}>
                         {lesson.title_id} {/* Gunakan title_id karena deskripsi di LessonMeta mungkin belum tersedia secara global */}
                       </p>
-                      {needsPreviousLesson && !done && (
-                        <p className="mt-2 text-[12px] text-[#FF9500]/80">Selesaikan lesson sebelumnya untuk membuka materi ini.</p>
+                      {!passed && done && (
+                        <p className="mt-2 text-[12px] text-[#FF9500]/80">Lulus quiz dulu untuk membuka lesson berikutnya.</p>
+                      )}
+                      {needsPreviousLesson && !passed && (
+                        <p className="mt-2 text-[12px] text-[#FF9500]/80">Selesaikan dan lulus lesson sebelumnya untuk membuka materi ini.</p>
                       )}
                     </div>
                   </div>

@@ -333,21 +333,21 @@ export default function LeaderboardPage() {
       <Navbar />
 
       <main className="mx-auto max-w-7xl px-4 pb-24 pt-32 sm:px-6">
-        <section className="relative overflow-hidden rounded-[36px] border border-black/[0.06] bg-[#FBFBFD] p-6 shadow-[0_28px_80px_rgba(15,23,42,0.08)] dark:border-white/[0.08] dark:bg-[#0F0F11] dark:shadow-[0_28px_80px_rgba(0,0,0,0.32)] sm:p-8 lg:p-10">
+        <section className="relative overflow-hidden rounded-[36px] border border-black/[0.06] bg-[#FBFBFD] p-5 shadow-[0_28px_80px_rgba(15,23,42,0.08)] dark:border-white/[0.08] dark:bg-[#0F0F11] dark:shadow-[0_28px_80px_rgba(0,0,0,0.32)] sm:p-8 lg:p-10 xl:p-9">
           <div className="pointer-events-none absolute -left-10 top-0 h-48 w-48 rounded-full bg-[#0071E3]/15 blur-3xl" />
           <div className="pointer-events-none absolute right-0 top-10 h-40 w-40 rounded-full bg-[#AF52DE]/12 blur-3xl" />
 
-          <div className="relative grid gap-8 xl:grid-cols-[minmax(0,1.05fr)_360px] xl:items-end">
-            <div className="max-w-3xl">
+          <div className="relative grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-center xl:gap-8 2xl:grid-cols-[minmax(0,1.05fr)_360px]">
+            <div className="max-w-3xl xl:pr-4">
               <div className="inline-flex items-center gap-2 rounded-full border border-[#0071E3]/15 bg-[#0071E3]/8 px-3 py-1.5 text-[12px] font-medium text-[#0071E3] dark:border-[#4AA3FF]/20 dark:bg-[#0071E3]/10 dark:text-[#75B8FF]">
                 <Sparkles className="h-3.5 w-3.5" />
                 Kompetisi dan progres belajar
               </div>
 
-              <h1 className="mt-5 font-display text-[36px] font-semibold tracking-[-0.04em] text-foreground sm:text-[52px] xl:text-[64px] leading-[1.02]">
+              <h1 className="mt-5 font-display text-[34px] font-semibold tracking-[-0.04em] text-foreground sm:text-[48px] xl:text-[58px] 2xl:text-[64px] leading-[1.04]">
                 Leaderboard GoLearn
               </h1>
-              <p className="mt-5 max-w-2xl text-[17px] leading-8 text-[#6E6E73] dark:text-[#A1A1AA] sm:text-[19px]">
+              <p className="mt-4 max-w-2xl text-[16px] leading-7 text-[#6E6E73] dark:text-[#A1A1AA] sm:text-[18px] xl:max-w-xl 2xl:max-w-2xl">
                 Lihat siapa yang paling konsisten belajar, siapa yang sedang melesat paling cepat, dan bagaimana posisi kamu di antara learner lain.
               </p>
 
@@ -405,7 +405,7 @@ export default function LeaderboardPage() {
               </div>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+            <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1 xl:self-stretch">
               {summaryCards.map((card) => (
                 <SummaryCard key={card.label} {...card} />
               ))}
