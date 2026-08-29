@@ -109,8 +109,8 @@ export default function Navbar({ lang = "id" }: { lang?: "id" | "en" }) {
           {state.loading ? (
             <div className="w-7 h-7 rounded-full bg-[#F5F5F7] dark:bg-white/10 animate-pulse" />
           ) : state.user ? (
-            /* Logged-in: avatar → dropdown or link */
-            <Link href="/dashboard" title={state.user.name}
+            /* Logged-in: avatar → link to profile */
+            <Link href={`/profile/${state.user.name}`} title={state.user.name}
               className="w-7 h-7 rounded-full bg-[#0071E3] flex items-center justify-center text-white text-[12px] font-semibold hover:bg-[#0077ED] transition-colors shrink-0">
               {state.user.name.charAt(0).toUpperCase()}
             </Link>
@@ -170,8 +170,8 @@ export default function Navbar({ lang = "id" }: { lang?: "id" | "en" }) {
             {/* Auth mobile */}
             {state.user ? (
               <div className="flex items-center gap-3">
-                <Link href="/dashboard" className="text-[14px] text-foreground flex items-center gap-1.5" onClick={() => setMobileOpen(false)}>
-                  <LayoutDashboard className="w-4 h-4" /> Dashboard
+                <Link href={`/profile/${state.user.name}`} className="text-[14px] text-foreground flex items-center gap-1.5" onClick={() => setMobileOpen(false)}>
+                  <LayoutDashboard className="w-4 h-4" /> Profil
                 </Link>
                 <button onClick={() => { logout(); setMobileOpen(false); }}
                   className="text-[14px] text-[#FF453A] flex items-center gap-1.5">
