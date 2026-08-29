@@ -61,6 +61,15 @@ export default function LessonPage() {
   } = useProgress();
 
   useEffect(() => {
+    if (initializedLessonKeyRef.current === null && !state.loading && !state.user) {
+      toast.error("Silakan masuk terlebih dahulu untuk mengakses materi.");
+      router.replace(`/login?next=/modules/${topic}/${lesson}`);
+      return;
+    }
+  }, [state.loading, state.user, router, topic, lesson]);
+
+  useEffect(() => {
+    if (!state.user) return; // Wait until authed
     api.topics.getLesson(topic, lesson).then(setData).catch(() => {});
     api.topics.get(topic).then(setTopicData).catch(() => {});
 
@@ -84,7 +93,7 @@ export default function LessonPage() {
       setActiveTab(resume.activeTab);
     }
     markLessonViewed(topic, lesson);
-  }, [getResumeState, lesson, markLessonViewed, searchParams, topic]);
+  }, [getResumeState, lesson, markLessonViewed, searchParams, topic, state.user]);
 
   useEffect(() => {
     saveResumeState(topic, lesson, { lang, activeTab });
@@ -196,10 +205,17 @@ export default function LessonPage() {
         ? "Editor sudah digunakan. Kamu bisa tandai selesai kapan saja."
         : undefined;
   const prerequisiteHint = previousLessonIncomplete
-    ? `Sebaiknya selesaikan lesson sebelumnya: ${lessons[currentIdx - 1]?.title_id}`
+    ? `Kamu harus menyelesaikan lesson sebelumnya: ${lessons[currentIdx - 1]?.title_id}`
     : null;
 
-  if (!data) return (
+  useEffect(() => {
+    if (previousLessonIncomplete) {
+      toast.error("Kamu harus menyelesaikan lesson sebelumnya terlebih dahulu.");
+      router.replace(`/modules/${topic}`);
+    }
+  }, [previousLessonIncomplete, router, topic]);
+
+  if (!data || previousLessonIncomplete) return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       <div className="flex-1 flex items-center justify-center">

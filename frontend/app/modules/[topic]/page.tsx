@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowLeft, BookOpen, Bookmark, BookmarkCheck, CheckCircle2, ChevronRight, Clock, TriangleAlert } from "lucide-react";
+import { Lock, ArrowLeft, BookOpen, Bookmark, BookmarkCheck, CheckCircle2, ChevronRight, Clock, TriangleAlert } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import { ProgressBar } from "@/components/ui/progress";
 import { api, type TopicDetail } from "@/lib/api";
@@ -211,6 +211,75 @@ export default function TopicPage() {
               const isNext = !done && lesson.id === nextLesson?.id;
               const needsPreviousLesson = idx > 0 && !isCompleted(topic, data.lessons[idx - 1].id);
 
+              const innerContent = (
+                <>
+                  <div className="flex items-start sm:items-center gap-5">
+                    <div
+                      className={cn(
+                        "flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] text-[16px] font-display font-semibold transition-colors",
+                        done
+                          ? "bg-[#34C759]/15 text-[#30D158]"
+                          : isNext
+                            ? "bg-[#0071E3] text-white shadow-md shadow-[#0071E3]/20"
+                            : needsPreviousLesson
+                              ? "bg-[#D2D2D7]/20 dark:bg-white/5 text-[#86868B]/50"
+                              : "bg-[#D2D2D7]/30 dark:bg-white/10 text-[#86868B]",
+                      )}
+                    >
+                      {done ? <CheckCircle2 className="h-5 w-5" /> : needsPreviousLesson ? <Lock className="h-4 w-4" /> : idx + 1}
+                    </div>
+
+                    <div>
+                      <h3
+                        className={cn(
+                          "font-display text-[19px] font-semibold tracking-tight transition-colors",
+                          done ? "text-foreground" : isNext ? "text-[#0071E3]" : needsPreviousLesson ? "text-[#86868B]/60" : "text-foreground",
+                        )}
+                      >
+                        {lesson.title_id}
+                      </h3>
+                      <p className={cn("mt-1 text-[14px] leading-relaxed", needsPreviousLesson ? "text-[#86868B]/50" : "text-[#86868B]")}>
+                        {lesson.title_id} {/* Gunakan title_id karena deskripsi di LessonMeta mungkin belum tersedia secara global */}
+                      </p>
+                      {needsPreviousLesson && !done && (
+                        <p className="mt-2 text-[12px] text-[#FF9500]/80">Selesaikan lesson sebelumnya untuk membuka materi ini.</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 sm:ml-auto">
+                    <div className={cn("flex items-center gap-1.5 text-[13px] font-medium", needsPreviousLesson ? "text-[#86868B]/40" : "text-[#86868B]")}>
+                      <Clock className="h-4 w-4" />
+                      {lesson.estimatedMinutes} mnt
+                    </div>
+
+                    <div
+                      className={cn(
+                        "flex h-9 w-9 items-center justify-center rounded-full transition-transform",
+                        isNext
+                          ? "bg-[#0071E3]/10 text-[#0071E3] group-hover:translate-x-1"
+                          : needsPreviousLesson
+                            ? "text-[#86868B]/30"
+                            : "text-[#86868B] group-hover:text-foreground group-hover:translate-x-1",
+                      )}
+                    >
+                      {needsPreviousLesson ? <Lock className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                    </div>
+                  </div>
+                </>
+              );
+
+              if (needsPreviousLesson) {
+                return (
+                  <div
+                    key={lesson.id}
+                    className="group relative flex flex-col sm:flex-row sm:items-center justify-between gap-5 rounded-[24px] p-6 transition-all duration-300 bg-[#F5F5F7]/30 dark:bg-[#111214]/30 border border-transparent dark:border-white/5 cursor-not-allowed"
+                  >
+                    {innerContent}
+                  </div>
+                );
+              }
+
               return (
                 <Link
                   key={lesson.id}
@@ -222,55 +291,7 @@ export default function TopicPage() {
                       : "bg-[#F5F5F7]/50 dark:bg-[#111214]/50 hover:bg-white dark:hover:bg-[#1C1C1E] border border-transparent dark:border-white/5 hover:border-[#D2D2D7]/60 dark:hover:border-white/10",
                   )}
                 >
-                  <div className="flex items-start sm:items-center gap-5">
-                    <div
-                      className={cn(
-                        "flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] text-[16px] font-display font-semibold transition-colors",
-                        done
-                          ? "bg-[#34C759]/15 text-[#30D158]"
-                          : isNext
-                            ? "bg-[#0071E3] text-white shadow-md shadow-[#0071E3]/20"
-                            : "bg-[#D2D2D7]/30 dark:bg-white/10 text-[#86868B]",
-                      )}
-                    >
-                      {done ? <CheckCircle2 className="h-5 w-5" /> : idx + 1}
-                    </div>
-
-                    <div>
-                      <h3
-                        className={cn(
-                          "font-display text-[19px] font-semibold tracking-tight transition-colors",
-                          done ? "text-foreground" : isNext ? "text-[#0071E3]" : "text-foreground",
-                        )}
-                      >
-                        {lesson.title_id}
-                      </h3>
-                      <p className="mt-1 text-[14px] text-[#86868B] leading-relaxed">
-                        {lesson.title_id} {/* Gunakan title_id karena deskripsi di LessonMeta mungkin belum tersedia secara global */}
-                      </p>
-                      {needsPreviousLesson && !done && (
-                        <p className="mt-2 text-[12px] text-[#FF9500]">Direkomendasikan menyelesaikan lesson sebelumnya dulu.</p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4 sm:ml-auto">
-                    <div className="flex items-center gap-1.5 text-[13px] font-medium text-[#86868B]">
-                      <Clock className="h-4 w-4" />
-                      {lesson.estimatedMinutes} mnt
-                    </div>
-
-                    <div
-                      className={cn(
-                        "flex h-9 w-9 items-center justify-center rounded-full transition-transform",
-                        isNext
-                          ? "bg-[#0071E3]/10 text-[#0071E3] group-hover:translate-x-1"
-                          : "text-[#86868B] group-hover:text-foreground group-hover:translate-x-1",
-                      )}
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </div>
-                  </div>
+                  {innerContent}
                 </Link>
               );
             })}
