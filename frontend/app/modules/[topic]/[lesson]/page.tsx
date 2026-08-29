@@ -121,26 +121,33 @@ export default function LessonPage() {
   useEffect(() => {
     if (!data) return;
     import("gsap").then(({ gsap }) => {
-      gsap.fromTo(
-        ".lesson-hero",
-        { y: 12, opacity: 0.001 },
-        { y: 0, opacity: 1, duration: 0.45, ease: "expo.out" }
-      );
-      gsap.fromTo(
-        ".lesson-sidebar-item",
-        { x: -8, opacity: 0.001 },
-        { x: 0, opacity: 1, duration: 0.35, ease: "power2.out", stagger: 0.03 }
-      );
+      if (document.querySelector(".lesson-hero")) {
+        gsap.fromTo(
+          ".lesson-hero",
+          { y: 12, opacity: 0.001 },
+          { y: 0, opacity: 1, duration: 0.45, ease: "expo.out" }
+        );
+      }
+
+      if (document.querySelector(".lesson-sidebar-item")) {
+        gsap.fromTo(
+          ".lesson-sidebar-item",
+          { x: -8, opacity: 0.001 },
+          { x: 0, opacity: 1, duration: 0.35, ease: "power2.out", stagger: 0.03 }
+        );
+      }
     });
   }, [data, topic, lesson]);
 
   useEffect(() => {
     import("gsap").then(({ gsap }) => {
-      gsap.fromTo(
-        ".lesson-tab-panel",
-        { y: 10, opacity: 0.001 },
-        { y: 0, opacity: 1, duration: 0.35, ease: "expo.out" }
-      );
+      if (document.querySelector(".lesson-tab-panel")) {
+        gsap.fromTo(
+          ".lesson-tab-panel",
+          { y: 10, opacity: 0.001 },
+          { y: 0, opacity: 1, duration: 0.35, ease: "expo.out" }
+        );
+      }
     });
   }, [activeTab]);
 

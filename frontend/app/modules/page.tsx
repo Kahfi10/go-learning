@@ -36,6 +36,7 @@ export default function ModulesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const {
     topicProgress,
+    hasFailedQuizGate,
     getContinueLearning,
     getRecommendedTopic,
     getRecentlyViewed,
@@ -103,10 +104,11 @@ export default function ModulesPage() {
       const lessonCount = getLessonCount(topic);
       const prog = topicProgress(topic.slug, lessonCount, topic.lessons);
       const matchedLessons = lessonMatches[topic.slug] ?? [];
+      const hasFailedGate = (topic.lessons ?? []).some((lesson) => hasFailedQuizGate(topic.slug, lesson.id, 70, lesson.quizCount));
       const state = prog.pct === 100 ? "completed" : prog.done > 0 ? "in_progress" : "not_started";
-      return { topic, lessonCount, prog, matchedLessons, state };
+      return { topic, lessonCount, prog, matchedLessons, state, hasFailedGate };
     });
-  }, [lessonMatches, topicProgress, topics]);
+  }, [hasFailedQuizGate, lessonMatches, topicProgress, topics]);
 
   const filtered = enrichedTopics.filter(({ topic, matchedLessons }) => {
     const matchLevel = filter === "All" || topic.level === filter;
@@ -362,7 +364,7 @@ export default function ModulesPage() {
               </div>
             ) : (
               <div className="topic-grid flex flex-col gap-4">
-                {filtered.map(({ topic, lessonCount, prog, matchedLessons, state }) => {
+                {filtered.map(({ topic, lessonCount, prog, matchedLessons, state, hasFailedGate }) => {
                   const isStarted = state === "in_progress";
                   const isComplete = state === "completed";
                   const statusLabel = isComplete ? "Selesai" : isStarted ? "Berjalan" : "Mulai";
@@ -442,6 +444,11 @@ export default function ModulesPage() {
                           {isStarted && !isComplete && (
                             <div className="flex items-center gap-1.5 text-[#0071E3] font-semibold">
                               <span>{prog.pct}% Selesai</span>
+                            </div>
+                          )}
+                          {hasFailedGate && (
+                            <div className="flex items-center gap-1.5 text-[#FF9500] font-semibold">
+                              <span>Quiz belum lulus</span>
                             </div>
                           )}
                           {isComplete && (

@@ -203,6 +203,18 @@ export function useProgress() {
     return progress[`${topic}/${lesson}`]?.best_quiz_score ?? 0;
   }, [progress]);
 
+  const hasFailedQuizGate = useCallback((topic: string, lesson: string, passingScore = defaultPassingScore, totalQuestionsOverride?: number) => {
+    const key = `${topic}/${lesson}`;
+    const resumeState = getResumeState(topic, lesson);
+    const totalQuestions = totalQuestionsOverride ?? resumeState.totalQuestions ?? 0;
+    const bestScore = progress[key]?.best_quiz_score ?? resumeState.lastQuizScore ?? 0;
+
+    if (!isCompleted(topic, lesson)) return false;
+    if (totalQuestions <= 0) return false;
+
+    return Math.round((bestScore / totalQuestions) * 100) < passingScore;
+  }, [defaultPassingScore, getResumeState, isCompleted, progress]);
+
   const saveResumeState = useCallback((topic: string, lesson: string, patch: Partial<LessonResumeState>) => {
     const key = `${topic}/${lesson}`;
     persistResume((prev) => {
@@ -503,6 +515,7 @@ export function useProgress() {
     activity,
     isCompleted,
     hasPassedLesson,
+    hasFailedQuizGate,
     topicProgress,
     lessonState,
     markComplete,

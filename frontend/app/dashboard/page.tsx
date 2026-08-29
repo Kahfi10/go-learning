@@ -35,7 +35,7 @@ function getLessonCount(topic: Topic) {
 export default function DashboardPage() {
   const router = useRouter();
   const { state } = useAuth();
-  const { topicProgress, getRecentActivity, bookmarks } = useProgress();
+  const { topicProgress, hasFailedQuizGate, getRecentActivity, bookmarks } = useProgress();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [topics, setTopics] = useState<Topic[]>([]);
 
@@ -94,6 +94,9 @@ export default function DashboardPage() {
   const continueTopic =
     topicCards.find(({ progress }) => progress.done > 0 && progress.pct < 100) ??
     topicCards[0];
+  const continueTopicHasFailedGate = continueTopic
+    ? (continueTopic.topic.lessons ?? []).some((lesson) => hasFailedQuizGate(continueTopic.topic.slug, lesson.id, 70, lesson.quizCount))
+    : false;
   const recentActivity = getRecentActivity(4);
   const bookmarkedCount = bookmarks.topics.length + bookmarks.lessons.length;
 
@@ -398,6 +401,11 @@ export default function DashboardPage() {
                     <p className="text-[14px] leading-relaxed text-[#86868B] mb-4">
                       {continueTopic.progress.done} dari {continueTopic.progress.total} lesson sudah selesai.
                     </p>
+                    {continueTopicHasFailedGate && (
+                      <div className="mb-4 inline-flex items-center rounded-full bg-[#FF9500]/10 px-3 py-1.5 text-[12px] font-medium text-[#FF9500]">
+                        Ada lesson yang tertahan karena quiz belum lulus
+                      </div>
+                    )}
 
                     <div>
                       <div className="mb-2 flex items-center justify-between text-[12px] font-medium text-[#86868B]">
