@@ -129,7 +129,7 @@ export default function TopicPage() {
                   <p className="text-[12px] font-semibold uppercase tracking-[0.15em] text-[#86868B]">
                     Progress Topik
                   </p>
-                  <h2 className="mt-2 font-display text-[36px] font-semibold tracking-tight text-foreground leading-none">
+                  <h2 className="mt-2 font-display text-[36px] font-semibold tracking-tight text-foreground leading-[1.08] pb-[0.04em]">
                     {prog.pct}%
                   </h2>
                 </div>

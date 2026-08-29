@@ -168,11 +168,11 @@ export default function ModulesPage() {
 
             <div className="hidden lg:grid grid-cols-2 gap-4">
               <div className="rounded-[24px] border border-[#D2D2D7]/60 dark:border-white/10 bg-white/50 dark:bg-[#111214]/50 p-6 flex flex-col justify-center items-center text-center">
-                <p className="font-display text-[40px] font-bold text-foreground leading-none mb-1">{topics.length}</p>
+                <p className="font-display text-[40px] font-bold text-foreground leading-[1.08] mb-1 pb-[0.04em]">{topics.length}</p>
                 <p className="text-[13px] font-medium text-[#86868B]">Topik Tersedia</p>
               </div>
               <div className="rounded-[24px] border border-[#D2D2D7]/60 dark:border-white/10 bg-white/50 dark:bg-[#111214]/50 p-6 flex flex-col justify-center items-center text-center">
-                <p className="font-display text-[40px] font-bold text-[#0071E3] leading-none mb-1">{totalLessons}</p>
+                <p className="font-display text-[40px] font-bold text-[#0071E3] leading-[1.08] mb-1 pb-[0.04em]">{totalLessons}</p>
                 <p className="text-[13px] font-medium text-[#86868B]">Total Lessons</p>
               </div>
               <div className="rounded-[24px] border border-[#D2D2D7]/60 dark:border-white/10 bg-white/50 dark:bg-[#111214]/50 p-6 flex flex-col justify-center items-center text-center col-span-2 relative overflow-hidden">
@@ -180,7 +180,7 @@ export default function ModulesPage() {
                 <div className="relative z-10 flex items-center justify-between w-full px-4">
                   <div className="text-left">
                     <p className="text-[12px] font-semibold uppercase tracking-wider text-[#86868B] mb-1">Progress Keseluruhan</p>
-                    <p className="font-display text-[32px] font-bold text-foreground leading-none">{overallPct}%</p>
+                    <p className="font-display text-[32px] font-bold text-foreground leading-[1.08] pb-[0.04em]">{overallPct}%</p>
                   </div>
                   <ProgressBar value={overallPct} className="w-1/2" />
                 </div>
@@ -401,7 +401,7 @@ export default function ModulesPage() {
 
                       {/* Middle: Content */}
                       <div className="flex-1 flex flex-col justify-center min-w-0 sm:ml-2">
-                        <h2 className="font-display text-[20px] sm:text-[22px] font-semibold tracking-tight text-foreground group-hover:text-[#0071E3] transition-colors leading-snug truncate mb-2">
+                        <h2 className="font-display text-[20px] sm:text-[22px] font-semibold tracking-tight text-foreground group-hover:text-[#0071E3] transition-colors leading-[1.14] truncate mb-2 pb-[0.08em]">
                           {topic.title_id}
                         </h2>
                         <p className="text-[14px] leading-relaxed text-[#86868B] line-clamp-2 mb-4">

@@ -116,7 +116,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="min-w-0">
-                  <h1 className="font-display text-[32px] font-semibold tracking-tight text-foreground sm:text-[40px] xl:text-[44px]">
+                  <h1 className="font-display text-[32px] font-semibold tracking-tight text-foreground sm:text-[40px] xl:text-[44px] leading-[1.14] pb-[0.08em]">
                     {profileName}
                   </h1>
                   <p className="mt-2 text-[16px] text-[#86868B]">

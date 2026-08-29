@@ -165,7 +165,7 @@ function SpotlightCard({
         <div className="mt-6 flex items-center gap-4">
           <Avatar entry={entry} size={compact ? "sm" : "lg"} />
           <div className="min-w-0">
-            <h3 className={cn("truncate font-display font-semibold tracking-tight text-foreground", compact ? "text-[22px]" : "text-[30px] sm:text-[34px]")}>{entry.name}</h3>
+            <h3 className={cn("truncate font-display font-semibold tracking-tight text-foreground leading-[1.14] pb-[0.08em]", compact ? "text-[22px]" : "text-[30px] sm:text-[34px]")}>{entry.name}</h3>
             <p className="mt-1 text-[13px] text-[#86868B]">
               Level {entry.level} · {levelName(entry.level)}
             </p>

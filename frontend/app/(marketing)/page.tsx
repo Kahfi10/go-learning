@@ -407,7 +407,7 @@ export default function LandingPage() {
 
                 {/* Content */}
                 <div className="relative z-10">
-                  <p className="font-display font-bold tracking-[-0.03em] leading-none mb-5"
+                  <p className="font-display font-bold tracking-[-0.03em] leading-[1.04] pb-[0.04em] mb-5"
                     style={{
                       color: w.color,
                       fontSize: "clamp(56px, 8vw, 88px)",
@@ -1019,7 +1019,7 @@ function HeroCodePreview() {
         </div>
         <div>
           <p className="text-[10px] font-semibold text-[#86868B] uppercase tracking-wider mb-0.5">Lesson Selesai</p>
-          <p className="text-[13px] font-display font-semibold text-foreground leading-none">+50 XP</p>
+          <p className="text-[13px] font-display font-semibold text-foreground leading-[1.1] pb-[0.04em]">+50 XP</p>
         </div>
       </div>
 

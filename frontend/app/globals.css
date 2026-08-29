@@ -108,7 +108,23 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   letter-spacing: -0.02em;
-  line-height: 1.1;
+  line-height: 1.16;
+}
+
+.font-display {
+  line-height: 1.14;
+  padding-bottom: 0.06em;
+}
+
+.truncate.font-display,
+h1.truncate,
+h2.truncate,
+h3.truncate,
+h4.truncate,
+h5.truncate,
+h6.truncate {
+  display: block;
+  padding-bottom: 0.08em;
 }
 
 code, pre, kbd {
