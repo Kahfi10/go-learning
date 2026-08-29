@@ -27,6 +27,21 @@ func main() {
 }
 `;
 
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const media = window.matchMedia(query);
+    const onChange = () => setMatches(media.matches);
+    onChange();
+    media.addEventListener("change", onChange);
+    return () => media.removeEventListener("change", onChange);
+  }, [query]);
+
+  return matches;
+}
+
 export default function LessonPage() {
   const { topic, lesson } = useParams<{ topic: string; lesson: string }>();
   const router = useRouter();
@@ -42,6 +57,7 @@ export default function LessonPage() {
   const [completionLoading, setCompletionLoading] = useState(false);
   const [showMobileEditor, setShowMobileEditor] = useState(false);
   const initializedLessonKeyRef = useRef<string | null>(null);
+  const desktopContentScrollRef = useRef<HTMLDivElement>(null);
   const {
     isCompleted,
     hasPassedLesson,
@@ -59,6 +75,7 @@ export default function LessonPage() {
   } = useProgress();
 
   const PASSING_SCORE = 70;
+  const isDesktopLayout = useMediaQuery("(min-width: 1280px)");
 
   useEffect(() => {
     if (initializedLessonKeyRef.current === null && !state.loading && !state.user) {
@@ -215,6 +232,7 @@ export default function LessonPage() {
   const totalQuizQuestions = data?.quiz?.length ?? resume.totalQuestions ?? 0;
   const bestQuizScore = getBestQuizScore(topic, lesson) || resume.lastQuizScore || 0;
   const quizPct = totalQuizQuestions > 0 ? Math.round((bestQuizScore / totalQuizQuestions) * 100) : 0;
+  const completionEnabled = Boolean((resume.hasRunCode || resume.hasOpenedQuiz) && (totalQuizQuestions === 0 || quizPct >= PASSING_SCORE));
   const gradeLabel = totalQuizQuestions === 0
     ? null
     : passed && bestQuizScore >= totalQuizQuestions
@@ -316,7 +334,7 @@ export default function LessonPage() {
               size="sm"
               onClick={handleComplete}
               loading={completionLoading}
-              disabled={!((resume.hasRunCode || resume.hasOpenedQuiz) && (totalQuizQuestions === 0 || quizPct >= PASSING_SCORE))}
+              disabled={!completionEnabled}
               className="complete-btn text-[11px] px-3 py-1"
             >
               Tandai Selesai
@@ -392,113 +410,116 @@ export default function LessonPage() {
         {/* Content */}
           <main className={cn("flex-1 min-w-0 transition-all duration-200", sidebarOpen ? "lg:ml-60" : "")}>
 
-          {/* Desktop: resizable panels */}
-          <div className="hidden xl:flex h-[calc(100vh-92px)] p-3 gap-3">
-            <PanelGroup direction="horizontal">
-              <Panel defaultSize={54} minSize={36} className="overflow-y-auto rounded-[24px] border border-[#D2D2D7]/40 dark:border-white/8 bg-background shadow-sm" style={{ overflowY: 'auto' }}>
-                <div className="w-full max-w-[920px] mx-auto px-5 py-6 sm:px-6 xl:px-8 2xl:px-10">
-                  <LessonContent
-                    data={data} lang={lang} title={title} content={content}
-                    topic={topic} lesson={lesson}
-                    activeTab={activeTab} onTabChange={setActiveTab}
-                    onComplete={handleComplete} done={done}
-                    passed={passed}
-                    gradeLabel={gradeLabel}
-                    passingScore={PASSING_SCORE}
-                    quizPct={quizPct}
-                    completionEnabled={Boolean((resume.hasRunCode || resume.hasOpenedQuiz) && (totalQuizQuestions === 0 || quizPct >= PASSING_SCORE))}
-                    completionHint={completionHint}
-                    prerequisiteHint={prerequisiteHint}
-                    onQuizOpen={() => saveResumeState(topic, lesson, { hasOpenedQuiz: true, viewedAt: new Date().toISOString() })}
-                    onQuizComplete={handleQuizComplete}
-                  />
-                  <LessonNav prev={prevLesson} next={nextLesson} topic={topic} lang={lang} currentDone={done} currentPassed={passed} />
-                </div>
-              </Panel>
-              <PanelResizeHandle className="mx-1 flex items-center justify-center">
-                <div className="h-12 w-[4px] rounded-full bg-[#D2D2D7]/40 hover:bg-[#0071E3]/40 transition-colors cursor-col-resize" />
-              </PanelResizeHandle>
-              <Panel defaultSize={46} minSize={34} className="overflow-y-auto rounded-[24px] border border-[#D2D2D7]/40 dark:border-white/8 bg-[#F7F7F8] dark:bg-[#101113] shadow-sm">
-                <div className="sticky top-0 z-10 border-b border-[#D2D2D7]/35 dark:border-white/6 bg-[#F7F7F8]/95 dark:bg-[#101113]/95 backdrop-blur-sm px-5 py-4">
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <p className="text-[11px] font-semibold text-[#86868B] uppercase tracking-widest">Editor Workspace</p>
-                      <p className="mt-1 text-[14px] font-medium text-foreground">Eksperimen langsung di samping materi</p>
-                    </div>
-                    <div className="flex items-center gap-1 text-[11px] text-[#86868B] shrink-0">
-                      <Clock className="w-3 h-3" /> {data.estimatedMinutes} mnt
+          {isDesktopLayout ? (
+            <div className="h-[calc(100vh-92px)] p-3 gap-3 flex">
+              <PanelGroup direction="horizontal">
+                <Panel defaultSize={54} minSize={36} className="overflow-hidden rounded-[24px] border border-[#D2D2D7]/40 dark:border-white/8 bg-background shadow-sm">
+                  <div ref={desktopContentScrollRef} className="h-full overflow-y-auto">
+                    <div className="w-full max-w-[920px] mx-auto px-5 py-6 sm:px-6 xl:px-8 2xl:px-10">
+                      <LessonContent
+                        data={data} lang={lang} title={title} content={content}
+                        topic={topic} lesson={lesson}
+                        scrollContainerRef={desktopContentScrollRef}
+                        activeTab={activeTab} onTabChange={setActiveTab}
+                        onComplete={handleComplete} done={done}
+                        passed={passed}
+                        gradeLabel={gradeLabel}
+                        passingScore={PASSING_SCORE}
+                        quizPct={quizPct}
+                        completionEnabled={completionEnabled}
+                        completionHint={completionHint}
+                        prerequisiteHint={prerequisiteHint}
+                        onQuizOpen={() => saveResumeState(topic, lesson, { hasOpenedQuiz: true, viewedAt: new Date().toISOString() })}
+                        onQuizComplete={handleQuizComplete}
+                      />
+                      <LessonNav prev={prevLesson} next={nextLesson} topic={topic} lang={lang} currentDone={done} currentPassed={passed} />
                     </div>
                   </div>
-                </div>
-                <div className="p-5">
-                  <CodeEditor
-                    defaultCode={getLastCode(topic, lesson) ?? DEFAULT_CODE_TEMPLATE}
-                    onCodeChange={(c) => saveCode(topic, lesson, c)}
-                    onRun={() => saveResumeState(topic, lesson, { hasRunCode: true, viewedAt: new Date().toISOString() })}
-                    height="min(56vh, 720px)"
-                  />
-                  {completionHint && !done && (
-                    <div className="mt-4 rounded-[14px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white/80 dark:bg-[#17181A] px-4 py-3">
-                      <p className="text-[12px] leading-relaxed text-[#86868B]">{completionHint}</p>
+                </Panel>
+                <PanelResizeHandle className="mx-1 flex items-center justify-center">
+                  <div className="h-12 w-[4px] rounded-full bg-[#D2D2D7]/40 hover:bg-[#0071E3]/40 transition-colors cursor-col-resize" />
+                </PanelResizeHandle>
+                <Panel defaultSize={46} minSize={34} className="overflow-y-auto rounded-[24px] border border-[#D2D2D7]/40 dark:border-white/8 bg-[#F7F7F8] dark:bg-[#101113] shadow-sm">
+                  <div className="sticky top-0 z-10 border-b border-[#D2D2D7]/35 dark:border-white/6 bg-[#F7F7F8]/95 dark:bg-[#101113]/95 backdrop-blur-sm px-5 py-4">
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-[11px] font-semibold text-[#86868B] uppercase tracking-widest">Editor Workspace</p>
+                        <p className="mt-1 text-[14px] font-medium text-foreground">Eksperimen langsung di samping materi</p>
+                      </div>
+                      <div className="flex items-center gap-1 text-[11px] text-[#86868B] shrink-0">
+                        <Clock className="w-3 h-3" /> {data.estimatedMinutes} mnt
+                      </div>
                     </div>
-                  )}
-                </div>
-              </Panel>
-            </PanelGroup>
-          </div>
-
-          {/* Mobile: stacked */}
-          <div className="xl:hidden px-4 py-5 space-y-5">
-            <LessonContent
-              data={data} lang={lang} title={title} content={content}
-              topic={topic} lesson={lesson}
-              activeTab={activeTab} onTabChange={setActiveTab}
-              onComplete={handleComplete} done={done}
-              passed={passed}
-              gradeLabel={gradeLabel}
-              passingScore={PASSING_SCORE}
-              quizPct={quizPct}
-              completionEnabled={Boolean((resume.hasRunCode || resume.hasOpenedQuiz) && (totalQuizQuestions === 0 || quizPct >= PASSING_SCORE))}
-              completionHint={completionHint}
-              prerequisiteHint={prerequisiteHint}
-              onQuizOpen={() => saveResumeState(topic, lesson, { hasOpenedQuiz: true, viewedAt: new Date().toISOString() })}
-              onQuizComplete={handleQuizComplete}
-            />
-            <div className="rounded-[20px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white dark:bg-[#111214] shadow-sm overflow-hidden">
-              <button
-                type="button"
-                onClick={() => setShowMobileEditor((prev) => !prev)}
-                className="w-full flex items-center justify-between gap-4 px-4 py-4 text-left"
-              >
-                <div>
-                  <p className="text-[11px] font-semibold text-[#86868B] uppercase tracking-widest">Editor Go</p>
-                  <p className="mt-1 text-[14px] font-medium text-foreground">
-                    {showMobileEditor ? "Sembunyikan editor" : "Buka editor latihan"}
-                  </p>
-                </div>
-                <ChevronRight className={cn("w-4 h-4 text-[#86868B] transition-transform", showMobileEditor && "rotate-90")} />
-              </button>
-
-              {showMobileEditor && (
-                <div className="border-t border-[#D2D2D7]/35 dark:border-white/6 p-4">
-                  <CodeEditor
-                    defaultCode={getLastCode(topic, lesson) ?? DEFAULT_CODE_TEMPLATE}
-                    onCodeChange={(c) => saveCode(topic, lesson, c)}
-                    onRun={() => saveResumeState(topic, lesson, { hasRunCode: true, viewedAt: new Date().toISOString() })}
-                    height="320px"
-                  />
-                  {completionHint && !done && (
-                    <div className="mt-4 rounded-[14px] border border-[#D2D2D7]/35 dark:border-white/6 bg-[#F7F7F8] dark:bg-[#17181A] px-4 py-3">
-                      <p className="text-[12px] leading-relaxed text-[#86868B]">{completionHint}</p>
-                    </div>
-                  )}
-                </div>
-              )}
+                  </div>
+                  <div className="p-5">
+                    <CodeEditor
+                      defaultCode={getLastCode(topic, lesson) ?? DEFAULT_CODE_TEMPLATE}
+                      onCodeChange={(c) => saveCode(topic, lesson, c)}
+                      onRun={() => saveResumeState(topic, lesson, { hasRunCode: true, viewedAt: new Date().toISOString() })}
+                      height="min(56vh, 720px)"
+                    />
+                    {completionHint && !done && (
+                      <div className="mt-4 rounded-[14px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white/80 dark:bg-[#17181A] px-4 py-3">
+                        <p className="text-[12px] leading-relaxed text-[#86868B]">{completionHint}</p>
+                      </div>
+                    )}
+                  </div>
+                </Panel>
+              </PanelGroup>
             </div>
-            <LessonNav prev={prevLesson} next={nextLesson} topic={topic} lang={lang} currentDone={done} currentPassed={passed} />
-          </div>
+          ) : (
+            <div className="px-4 py-5 space-y-5">
+              <LessonContent
+                data={data} lang={lang} title={title} content={content}
+                topic={topic} lesson={lesson}
+                activeTab={activeTab} onTabChange={setActiveTab}
+                onComplete={handleComplete} done={done}
+                passed={passed}
+                gradeLabel={gradeLabel}
+                passingScore={PASSING_SCORE}
+                quizPct={quizPct}
+                completionEnabled={completionEnabled}
+                completionHint={completionHint}
+                prerequisiteHint={prerequisiteHint}
+                onQuizOpen={() => saveResumeState(topic, lesson, { hasOpenedQuiz: true, viewedAt: new Date().toISOString() })}
+                onQuizComplete={handleQuizComplete}
+              />
+              <div className="rounded-[20px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white dark:bg-[#111214] shadow-sm overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setShowMobileEditor((prev) => !prev)}
+                  className="w-full flex items-center justify-between gap-4 px-4 py-4 text-left"
+                >
+                  <div>
+                    <p className="text-[11px] font-semibold text-[#86868B] uppercase tracking-widest">Editor Go</p>
+                    <p className="mt-1 text-[14px] font-medium text-foreground">
+                      {showMobileEditor ? "Sembunyikan editor" : "Buka editor latihan"}
+                    </p>
+                  </div>
+                  <ChevronRight className={cn("w-4 h-4 text-[#86868B] transition-transform", showMobileEditor && "rotate-90")} />
+                </button>
 
-          <div className="xl:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-24px)] max-w-md rounded-full border border-[#D2D2D7]/50 dark:border-white/10 bg-white/92 dark:bg-[#111214]/92 backdrop-blur-xl shadow-[0_12px_30px_rgba(0,0,0,0.12)] px-3 py-2">
+                {showMobileEditor && (
+                  <div className="border-t border-[#D2D2D7]/35 dark:border-white/6 p-4">
+                    <CodeEditor
+                      defaultCode={getLastCode(topic, lesson) ?? DEFAULT_CODE_TEMPLATE}
+                      onCodeChange={(c) => saveCode(topic, lesson, c)}
+                      onRun={() => saveResumeState(topic, lesson, { hasRunCode: true, viewedAt: new Date().toISOString() })}
+                      height="320px"
+                    />
+                    {completionHint && !done && (
+                      <div className="mt-4 rounded-[14px] border border-[#D2D2D7]/35 dark:border-white/6 bg-[#F7F7F8] dark:bg-[#17181A] px-4 py-3">
+                        <p className="text-[12px] leading-relaxed text-[#86868B]">{completionHint}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              <LessonNav prev={prevLesson} next={nextLesson} topic={topic} lang={lang} currentDone={done} currentPassed={passed} />
+            </div>
+          )}
+
+          {!isDesktopLayout && <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-24px)] max-w-md rounded-full border border-[#D2D2D7]/50 dark:border-white/10 bg-white/92 dark:bg-[#111214]/92 backdrop-blur-xl shadow-[0_12px_30px_rgba(0,0,0,0.12)] px-3 py-2">
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
@@ -544,7 +565,7 @@ export default function LessonPage() {
                 </button>
               )}
             </div>
-          </div>
+          </div>}
         </main>
       </div>
     </div>
@@ -572,6 +593,7 @@ function LessonContent({
   gradeLabel,
   passingScore,
   quizPct,
+  scrollContainerRef,
 }: any) {
   const proseRef = useRef<HTMLDivElement>(null);
   const lessonSections = useMemo(() => extractSectionTitles(content), [content]);
@@ -611,6 +633,7 @@ function LessonContent({
   useEffect(() => {
     const root = proseRef.current;
     if (!root) return;
+    const scrollContainer = scrollContainerRef?.current ?? null;
 
     const headings = Array.from(root.querySelectorAll<HTMLElement>("h2"));
     if (headings.length === 0) {
@@ -625,19 +648,24 @@ function LessonContent({
     });
 
     const onScroll = () => {
-      const viewportHeight = window.innerHeight;
-      const doc = document.documentElement;
-      const maxScrollable = Math.max(doc.scrollHeight - viewportHeight, 1);
-      const nextProgress = Math.max(0, Math.min(100, Math.round((window.scrollY / maxScrollable) * 100)));
+      const viewportHeight = scrollContainer?.clientHeight ?? window.innerHeight;
+      const scrollTop = scrollContainer?.scrollTop ?? window.scrollY;
+      const maxScrollable = scrollContainer
+        ? Math.max(scrollContainer.scrollHeight - scrollContainer.clientHeight, 1)
+        : Math.max(document.documentElement.scrollHeight - viewportHeight, 1);
+      const nextProgress = Math.max(0, Math.min(100, Math.round((scrollTop / maxScrollable) * 100)));
       setReadingProgress(nextProgress);
+
+      const containerTop = scrollContainer?.getBoundingClientRect().top ?? 0;
 
       const current = headings.reduce<{ id: string; label: string; top: number } | null>((closest, heading) => {
         const rect = heading.getBoundingClientRect();
-        if (rect.top > viewportHeight * 0.3) return closest;
+        const relativeTop = scrollContainer ? rect.top - containerTop : rect.top;
+        if (relativeTop > viewportHeight * 0.3) return closest;
         return {
           id: heading.id,
           label: heading.textContent ?? "",
-          top: rect.top,
+          top: relativeTop,
         };
       }, null);
 
@@ -647,16 +675,29 @@ function LessonContent({
     };
 
     onScroll();
+    if (scrollContainer) {
+      scrollContainer.addEventListener("scroll", onScroll, { passive: true });
+      return () => scrollContainer.removeEventListener("scroll", onScroll);
+    }
+
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [content]);
+  }, [content, scrollContainerRef]);
 
   function scrollToSection(index: number) {
     const root = proseRef.current;
+    const scrollContainer = scrollContainerRef?.current ?? null;
     if (!root) return;
     const headings = Array.from(root.querySelectorAll<HTMLElement>("h2"));
     const target = headings[index];
     if (!target) return;
+    if (scrollContainer) {
+      const containerTop = scrollContainer.getBoundingClientRect().top;
+      const y = scrollContainer.scrollTop + target.getBoundingClientRect().top - containerTop - 24;
+      scrollContainer.scrollTo({ top: y, behavior: "smooth" });
+      return;
+    }
+
     const y = window.scrollY + target.getBoundingClientRect().top - 112;
     window.scrollTo({ top: y, behavior: "smooth" });
   }

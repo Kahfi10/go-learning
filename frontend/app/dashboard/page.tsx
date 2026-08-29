@@ -402,7 +402,7 @@ export default function DashboardPage() {
                       {continueTopic.progress.done} dari {continueTopic.progress.total} lesson sudah selesai.
                     </p>
                     {continueTopicHasFailedGate && (
-                      <div className="mb-4 inline-flex items-center rounded-full bg-[#FF9500]/10 px-3 py-1.5 text-[12px] font-medium text-[#FF9500]">
+                      <div title="Beberapa lesson belum membuka lanjutan karena skor quiz masih di bawah batas lulus" className="mb-4 inline-flex items-center rounded-full bg-[#FF9500]/10 px-3 py-1.5 text-[12px] font-medium text-[#FF9500]">
                         Ada lesson yang tertahan karena quiz belum lulus
                       </div>
                     )}
@@ -429,7 +429,7 @@ export default function DashboardPage() {
                       href={`/modules/${continueTopic.topic.slug}`}
                       className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0071E3] px-6 py-3 text-[14px] font-medium text-white shadow-sm transition-colors hover:bg-[#0077ED]"
                     >
-                      {continueTopic.progress.done > 0 ? "Lanjutkan Belajar" : "Mulai Belajar"}
+                      {continueTopicHasFailedGate ? "Perbaiki Quiz" : continueTopic.progress.done > 0 ? "Lanjutkan Belajar" : "Mulai Belajar"}
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                     <div className="inline-flex items-center justify-center rounded-full bg-[#F5F5F7] dark:bg-[#1C1C1E] px-5 py-3 text-[13px] font-medium text-[#86868B] border border-transparent dark:border-white/5">

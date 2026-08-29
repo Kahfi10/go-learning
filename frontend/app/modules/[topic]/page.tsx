@@ -257,7 +257,9 @@ export default function TopicPage() {
                         {lesson.title_id}
                       </h3>
                       {gradeLabel && (
-                        <span className={cn("mt-2 inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium", gradeClass)}>
+                        <span
+                          title={gradeLabel === "Belum Lulus" ? `Skor quiz belum mencapai ${PASSING_SCORE}%` : undefined}
+                          className={cn("mt-2 inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium", gradeClass)}>
                           {gradeLabel}
                         </span>
                       )}
@@ -268,7 +270,7 @@ export default function TopicPage() {
                         <p className="mt-2 text-[12px] text-[#FF9500]/80">Lulus quiz dulu untuk membuka lesson berikutnya.</p>
                       )}
                       {needsPreviousLesson && !passed && (
-                        <p className="mt-2 text-[12px] text-[#FF9500]/80">
+                        <p title="Lesson ini akan terbuka setelah lesson sebelumnya lulus quiz" className="mt-2 text-[12px] text-[#FF9500]/80">
                           {previousTotalQuestions > 0 && previousResume?.hasOpenedQuiz
                             ? `Terkunci karena skor lesson sebelumnya masih ${previousQuizPct}%. Minimal ${PASSING_SCORE}% untuk lanjut.`
                             : "Selesaikan dan lulus lesson sebelumnya untuk membuka materi ini."}
