@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import {
   Award,
+  CalendarDays,
   BookOpen,
+  CheckCircle2,
   Cpu,
   Crown,
   Flame,
@@ -21,7 +23,7 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import { useAuth } from "@/context/AuthContext";
-import { api, type Badge, type UserStats } from "@/lib/api";
+import { api, type ActivityItem, type Badge, type UserStats } from "@/lib/api";
 import { LEVEL_NAMES, formatXP, xpToLevel } from "@/lib/utils";
 
 const BADGE_ICON_MAP: Record<string, LucideIcon> = {
@@ -42,17 +44,27 @@ const BADGE_ICON_MAP: Record<string, LucideIcon> = {
   shield: Shield,
 };
 
+function toLocalDateKey(value: Date | string) {
+  const date = typeof value === "string" ? new Date(value) : value;
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export default function ProfilePage() {
   const { username } = useParams<{ username: string }>();
   const { state } = useAuth();
   const [badges, setBadges] = useState<Badge[]>([]);
   const [stats, setStats] = useState<UserStats | null>(null);
+  const [activity, setActivity] = useState<ActivityItem[]>([]);
   const isMe = state.user?.name === username || username === "me";
 
   useEffect(() => {
     if (state.user && isMe) {
       api.progress.stats().then(setStats).catch(() => {});
       api.progress.badges().then(setBadges).catch(() => {});
+      api.progress.activity().then(setActivity).catch(() => setActivity([]));
     }
   }, [state.user, isMe]);
 
@@ -60,6 +72,38 @@ export default function ProfilePage() {
   const level = stats ? xpToLevel(stats.xp) : 1;
   const earnedBadges = badges.filter((badge) => badge.earned).length;
   const profileName = user?.name ?? username;
+  const recentActivity = activity.slice(0, 6);
+
+  const contributionData = useMemo(() => {
+    const days = Array.from({ length: 28 }, (_, index) => {
+      const date = new Date();
+      date.setHours(0, 0, 0, 0);
+      date.setDate(date.getDate() - (27 - index));
+      return {
+        key: toLocalDateKey(date),
+        label: date,
+        count: 0,
+      };
+    });
+
+    const map = new Map(days.map((day) => [day.key, day]));
+    for (const item of activity) {
+      const stamp = item.completed_at ?? item.last_viewed_at;
+      if (!stamp) continue;
+      const date = new Date(stamp);
+      date.setHours(0, 0, 0, 0);
+      const key = toLocalDateKey(date);
+      const entry = map.get(key);
+      if (entry) {
+        entry.count += item.completed ? 2 : 1;
+      }
+    }
+
+    return days;
+  }, [activity]);
+
+  const todayContribution = contributionData[contributionData.length - 1]?.count ?? 0;
+  const activeDays = contributionData.filter((item) => item.count > 0).length;
   
   if (state.loading) {
     return (
@@ -224,6 +268,129 @@ export default function ProfilePage() {
             })}
           </section>
         )}
+
+        <section className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_0.75fr]">
+          <article className="rounded-[30px] border border-black/[0.06] bg-[#FBFBFD] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.07)] dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_24px_60px_rgba(0,0,0,0.28)] sm:p-7">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B]">
+                  Contribution
+                </p>
+                <h2 className="mt-2 font-display text-[28px] font-semibold tracking-tight text-foreground">
+                  Ritme belajar 28 hari terakhir
+                </h2>
+                <p className="mt-2 max-w-2xl text-[14px] leading-6 text-[#86868B]">
+                  Aktivitas dihitung dari lesson yang dibuka dan diselesaikan, lalu dikelompokkan ke hari lokal agar kontribusi hari ini terbaca dengan benar.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <span className="rounded-full bg-[#F5F5F7] dark:bg-[#1C1C1E] px-3 py-1.5 text-[12px] font-medium text-[#86868B]">
+                  {activeDays} hari aktif
+                </span>
+                <span className={todayContribution > 0 ? "rounded-full bg-[#34C759]/10 px-3 py-1.5 text-[12px] font-medium text-[#34C759]" : "rounded-full bg-[#F5F5F7] dark:bg-[#1C1C1E] px-3 py-1.5 text-[12px] font-medium text-[#86868B]"}>
+                  {todayContribution > 0 ? `Hari ini aktif (${todayContribution})` : "Belum ada kontribusi hari ini"}
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <div className="grid grid-cols-7 gap-2 sm:grid-cols-14">
+                {contributionData.map((day) => {
+                  const intensity = day.count >= 3 ? "bg-[#0071E3]" : day.count === 2 ? "bg-[#56A8FF]" : day.count === 1 ? "bg-[#CFE5FF] dark:bg-[#1E3A5F]" : "bg-[#EEF0F3] dark:bg-white/[0.06]";
+                  const isToday = day.key === toLocalDateKey(new Date());
+                  return (
+                    <div key={day.key} className="flex flex-col items-center gap-1.5">
+                      <div
+                        title={`${day.label.toLocaleDateString("id-ID")}: ${day.count} kontribusi`}
+                        className={`h-8 w-full rounded-[10px] border ${isToday ? "border-[#0071E3]/40" : "border-transparent"} ${intensity}`}
+                      />
+                      <span className="text-[10px] text-[#86868B]">{day.label.getDate()}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </article>
+
+          <article className="rounded-[30px] border border-black/[0.06] bg-[#FBFBFD] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.07)] dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_24px_60px_rgba(0,0,0,0.28)] sm:p-7">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B]">
+                  Hari Ini
+                </p>
+                <h2 className="mt-2 font-display text-[28px] font-semibold tracking-tight text-foreground">
+                  {todayContribution > 0 ? "Ada progres hari ini" : "Belum bergerak hari ini"}
+                </h2>
+              </div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-[16px] bg-[#0071E3]/10 text-[#0071E3]">
+                <CalendarDays className="h-5 w-5" />
+              </div>
+            </div>
+            <p className="mt-4 text-[14px] leading-6 text-[#86868B]">
+              {todayContribution > 0
+                ? `Sudah ada ${todayContribution} kontribusi tercatat hari ini.`
+                : "Buka atau selesaikan lesson untuk menyalakan contribution hari ini."}
+            </p>
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <div className="rounded-[20px] bg-black/[0.03] p-4 dark:bg-white/[0.05]">
+                <p className="text-[11px] uppercase tracking-[0.16em] text-[#86868B]">Hari Aktif</p>
+                <p className="mt-2 font-display text-[24px] font-semibold tracking-tight text-foreground">{activeDays}</p>
+              </div>
+              <div className="rounded-[20px] bg-black/[0.03] p-4 dark:bg-white/[0.05]">
+                <p className="text-[11px] uppercase tracking-[0.16em] text-[#86868B]">Kontribusi Hari Ini</p>
+                <p className="mt-2 font-display text-[24px] font-semibold tracking-tight text-foreground">{todayContribution}</p>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section className="mt-6 rounded-[30px] border border-black/[0.06] bg-[#FBFBFD] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.07)] dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_24px_60px_rgba(0,0,0,0.28)] sm:p-7">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B]">
+                Aktivitas
+              </p>
+              <h2 className="mt-2 font-display text-[28px] font-semibold tracking-tight text-foreground">
+                Jejak belajar terbaru
+              </h2>
+            </div>
+            <div className="rounded-full bg-black/[0.03] px-4 py-2 text-[13px] font-medium text-foreground dark:bg-white/[0.05]">
+              {recentActivity.length} event terbaru
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {recentActivity.length > 0 ? recentActivity.map((item) => {
+              const stamp = item.completed_at ?? item.last_viewed_at;
+              return (
+                <article key={`${item.topic_slug}/${item.lesson_id}/${stamp ?? "event"}`} className="rounded-[20px] border border-black/[0.06] bg-white/80 p-4 dark:border-white/[0.08] dark:bg-white/[0.04]">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#86868B]">{item.topic_slug}</p>
+                      <p className="mt-1 text-[15px] font-semibold text-foreground">Lesson {item.lesson_id}</p>
+                    </div>
+                    <span className={item.completed ? "rounded-full bg-[#34C759]/10 px-2.5 py-1 text-[11px] font-medium text-[#34C759]" : "rounded-full bg-[#0071E3]/10 px-2.5 py-1 text-[11px] font-medium text-[#0071E3]"}>
+                      {item.completed ? "Selesai" : "Dilihat"}
+                    </span>
+                  </div>
+                  <p className="mt-3 text-[13px] leading-6 text-[#86868B]">
+                    {stamp ? new Date(stamp).toLocaleString("id-ID") : "Baru saja"}
+                  </p>
+                  {(item.topic_bookmarked || item.lesson_bookmarked) && (
+                    <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F7] dark:bg-[#1C1C1E] px-3 py-1 text-[11px] font-medium text-[#86868B]">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-[#0071E3]" /> Tersimpan di bookmark
+                    </div>
+                  )}
+                </article>
+              );
+            }) : (
+              <div className="sm:col-span-2 xl:col-span-3 rounded-[24px] border border-dashed border-black/[0.08] bg-black/[0.02] px-6 py-14 text-center text-[14px] text-[#86868B] dark:border-white/[0.1] dark:bg-white/[0.03]">
+                Aktivitas akan muncul setelah kamu mulai membuka atau menyelesaikan lesson.
+              </div>
+            )}
+          </div>
+        </section>
 
         <section className="mt-6 rounded-[30px] border border-black/[0.06] bg-[#FBFBFD] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.07)] dark:border-white/[0.08] dark:bg-[#101012] dark:shadow-[0_24px_60px_rgba(0,0,0,0.28)] sm:p-7">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

@@ -370,7 +370,7 @@ export default function DashboardPage() {
 
           <div className="flex h-full flex-col gap-5">
             {continueTopic ? (
-              <article className="relative flex-1 overflow-hidden rounded-[28px] border border-[#D2D2D7]/60 bg-white p-6 sm:p-8 shadow-sm dark:border-white/10 dark:bg-[#111214]">
+              <article className={continueTopicHasFailedGate ? "relative flex-1 overflow-hidden rounded-[28px] border border-[#FF9500]/25 bg-[#FFFDF9] p-6 sm:p-8 shadow-sm dark:border-[#FF9500]/15 dark:bg-[#141110]" : "relative flex-1 overflow-hidden rounded-[28px] border border-[#D2D2D7]/60 bg-white p-6 sm:p-8 shadow-sm dark:border-white/10 dark:bg-[#111214]"}>
                 <div
                   className="pointer-events-none absolute inset-x-0 top-0 h-28 blur-[40px] opacity-20"
                   style={{ backgroundColor: continueTopic.topic.color }}

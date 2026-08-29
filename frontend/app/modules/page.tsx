@@ -369,12 +369,20 @@ export default function ModulesPage() {
                   const isComplete = state === "completed";
                   const statusLabel = isComplete ? "Selesai" : isStarted ? "Berjalan" : "Mulai";
                   const bookmarked = isTopicBookmarked(topic.slug);
+                  const progressTone = hasFailedGate
+                    ? "border-[#FF9500]/25 bg-[#FFF8F1] dark:bg-[#1A1410]"
+                    : isComplete
+                      ? "border-[#34C759]/20 bg-[#F7FFF8] dark:bg-[#101811]"
+                      : "";
 
                   return (
                     <Link
                       key={topic.slug}
                       href={`/modules/${topic.slug}`}
-                      className="topic-grid-card group relative flex flex-col sm:flex-row gap-5 p-5 sm:p-6 rounded-[24px] bg-white dark:bg-[#111214] border border-[#D2D2D7]/60 dark:border-white/10 transition-all duration-300 hover:shadow-[0_12px_30px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_12px_30px_rgba(0,0,0,0.2)] hover:border-black/[0.08] dark:hover:border-white/20 hover:-translate-y-0.5 overflow-hidden"
+                      className={cn(
+                        "topic-grid-card group relative flex flex-col sm:flex-row gap-5 p-5 sm:p-6 rounded-[24px] bg-white dark:bg-[#111214] border border-[#D2D2D7]/60 dark:border-white/10 transition-all duration-300 hover:shadow-[0_12px_30px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_12px_30px_rgba(0,0,0,0.2)] hover:border-black/[0.08] dark:hover:border-white/20 hover:-translate-y-0.5 overflow-hidden",
+                        progressTone,
+                      )}
                     >
                       {/* Left: Icon & Meta Stack */}
                       <div className="shrink-0 flex sm:flex-col items-center justify-between sm:justify-start gap-4 sm:gap-3 w-full sm:w-[72px]">
@@ -447,8 +455,8 @@ export default function ModulesPage() {
                             </div>
                           )}
                           {hasFailedGate && (
-                            <div className="flex items-center gap-1.5 text-[#FF9500] font-semibold">
-                              <span>Quiz belum lulus</span>
+                            <div title="Ada lesson di topik ini yang masih tertahan karena skor quiz belum mencapai batas lulus" className="flex items-center gap-1.5 text-[#FF9500] font-semibold">
+                              <span>Perlu ulang quiz</span>
                             </div>
                           )}
                           {isComplete && (
