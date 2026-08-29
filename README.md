@@ -182,13 +182,13 @@ Catatan:
 
 ```bash
 # Connect to postgres and run:
-psql postgres://golearn:golearn_secret@localhost:5432/golearn -f backend/internal/db/migrations/001_users.sql
-psql postgres://golearn:golearn_secret@localhost:5432/golearn -f backend/internal/db/migrations/002_progress.sql
-psql postgres://golearn:golearn_secret@localhost:5432/golearn -f backend/internal/db/migrations/003_badges.sql
-psql postgres://golearn:golearn_secret@localhost:5432/golearn -f backend/internal/db/migrations/004_discussions.sql
-psql postgres://golearn:golearn_secret@localhost:5432/golearn -f backend/internal/db/migrations/005_indexes.sql
-psql postgres://golearn:golearn_secret@localhost:5432/golearn -f backend/internal/db/migrations/006_bookmarks_activity.sql
-psql postgres://golearn:golearn_secret@localhost:5432/golearn -f backend/internal/db/migrations/007_oauth_identities.sql
+psql postgres://app_user:change_me_local_dev_password@localhost:5432/golearn -f backend/internal/db/migrations/001_users.sql
+psql postgres://app_user:change_me_local_dev_password@localhost:5432/golearn -f backend/internal/db/migrations/002_progress.sql
+psql postgres://app_user:change_me_local_dev_password@localhost:5432/golearn -f backend/internal/db/migrations/003_badges.sql
+psql postgres://app_user:change_me_local_dev_password@localhost:5432/golearn -f backend/internal/db/migrations/004_discussions.sql
+psql postgres://app_user:change_me_local_dev_password@localhost:5432/golearn -f backend/internal/db/migrations/005_indexes.sql
+psql postgres://app_user:change_me_local_dev_password@localhost:5432/golearn -f backend/internal/db/migrations/006_bookmarks_activity.sql
+psql postgres://app_user:change_me_local_dev_password@localhost:5432/golearn -f backend/internal/db/migrations/007_oauth_identities.sql
 ```
 
 ### 4. Run locally (dev)

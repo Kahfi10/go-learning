@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_DB: golearn
       POSTGRES_USER: golearn
-      POSTGRES_PASSWORD: golearn_secret
+      POSTGRES_PASSWORD: change_me_local_dev_password
     ports:
       - "5433:5432"
     volumes:
@@ -30,7 +30,7 @@ services:
         condition: service_healthy
     environment:
       PORT: 8080
-      DB_URL: postgres://golearn:golearn_secret@postgres:5432/golearn?sslmode=disable
+      DB_URL: postgres://golearn:change_me_local_dev_password@postgres:5432/golearn?sslmode=disable
       JWT_SECRET: ${JWT_SECRET:-supersecretkey_change_in_production}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-refresh_supersecret_change_in_production}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
