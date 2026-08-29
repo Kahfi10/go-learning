@@ -26,10 +26,23 @@ function LoginPageInner() {
     const raw = searchParams.get("next");
     return raw && raw.startsWith("/") && !raw.startsWith("//") ? raw : "/dashboard";
   }, [searchParams]);
+  const authError = searchParams.get("auth_error");
 
   useEffect(() => {
     api.auth.providers().then(setProviders).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (!authError) return;
+    const message = authError === "oauth_account_conflict"
+      ? "Email ini sudah terdaftar dengan metode login lain. Gunakan metode asal untuk masuk."
+      : authError === "oauth_email_not_verified"
+        ? "OAuth ditolak karena email akun belum terverifikasi oleh provider."
+        : authError === "oauth_state_mismatch" || authError === "invalid_oauth_state"
+          ? "Sesi login OAuth tidak valid atau sudah kedaluwarsa. Silakan coba lagi."
+          : "Login OAuth gagal. Silakan coba lagi.";
+    toast.error(message);
+  }, [authError]);
 
   useEffect(() => {
     if (!state.loading && state.user) {
@@ -138,7 +151,7 @@ function LoginPageInner() {
 
               <div className="space-y-3">
                 <a
-                  href={providers.google ? `${process.env.NEXT_PUBLIC_API_URL}/api/auth/google` : undefined}
+                  href={providers.google ? `${process.env.NEXT_PUBLIC_API_URL}/api/auth/google?next=${encodeURIComponent(nextPath)}` : undefined}
                   aria-disabled={!providers.google}
                   onClick={(e) => {
                     if (providers.google) return;
@@ -156,7 +169,7 @@ function LoginPageInner() {
                   Lanjutkan dengan Google
                 </a>
                 <a
-                  href={providers.github ? `${process.env.NEXT_PUBLIC_API_URL}/api/auth/github` : undefined}
+                  href={providers.github ? `${process.env.NEXT_PUBLIC_API_URL}/api/auth/github?next=${encodeURIComponent(nextPath)}` : undefined}
                   aria-disabled={!providers.github}
                   onClick={(e) => {
                     if (providers.github) return;

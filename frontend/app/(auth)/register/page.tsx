@@ -27,10 +27,23 @@ function RegisterPageInner() {
     const raw = searchParams.get("next");
     return raw && raw.startsWith("/") && !raw.startsWith("//") ? raw : "/modules";
   }, [searchParams]);
+  const authError = searchParams.get("auth_error");
 
   useEffect(() => {
     api.auth.providers().then(setProviders).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (!authError) return;
+    const message = authError === "oauth_account_conflict"
+      ? "Email ini sudah terhubung ke akun lain atau metode login lain. Gunakan login yang sesuai."
+      : authError === "oauth_email_not_verified"
+        ? "Registrasi OAuth ditolak karena email akun belum terverifikasi oleh provider."
+        : authError === "oauth_state_mismatch" || authError === "invalid_oauth_state"
+          ? "Sesi OAuth tidak valid atau sudah kedaluwarsa. Silakan coba lagi."
+          : "Registrasi OAuth gagal. Silakan coba lagi.";
+    toast.error(message);
+  }, [authError]);
 
   useEffect(() => {
     if (!state.loading && state.user) {
@@ -144,7 +157,7 @@ function RegisterPageInner() {
 
               <div className="space-y-3">
                 <a
-                  href={providers.google ? `${process.env.NEXT_PUBLIC_API_URL}/api/auth/google` : undefined}
+                  href={providers.google ? `${process.env.NEXT_PUBLIC_API_URL}/api/auth/google?next=${encodeURIComponent(nextPath)}` : undefined}
                   aria-disabled={!providers.google}
                   onClick={(e) => {
                     if (providers.google) return;
@@ -162,7 +175,7 @@ function RegisterPageInner() {
                   Daftar dengan Google
                 </a>
                 <a
-                  href={providers.github ? `${process.env.NEXT_PUBLIC_API_URL}/api/auth/github` : undefined}
+                  href={providers.github ? `${process.env.NEXT_PUBLIC_API_URL}/api/auth/github?next=${encodeURIComponent(nextPath)}` : undefined}
                   aria-disabled={!providers.github}
                   onClick={(e) => {
                     if (providers.github) return;
