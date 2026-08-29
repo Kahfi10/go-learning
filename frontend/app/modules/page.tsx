@@ -203,15 +203,22 @@ export default function ModulesPage() {
                   Lanjutkan dari lesson terakhir yang kamu buka. Draft code dan context lesson tetap tersimpan.
                 </p>
                 {recentlyViewed.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {recentlyViewed.map((item) => (
-                      <span
-                        key={`${item.topic}/${item.lesson}`}
-                        className="rounded-full bg-[#F5F5F7] dark:bg-[#1C1C1E] px-3 py-1.5 text-[12px] font-medium text-[#86868B]"
-                      >
-                        {item.topic}/{item.lesson}
-                      </span>
-                    ))}
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {recentlyViewed.map((item) => {
+                      const tObj = topics.find((t) => t.slug === item.topic);
+                      const tName = tObj ? tObj.title_id : item.topic;
+                      return (
+                        <Link
+                          key={`${item.topic}/${item.lesson}`}
+                          href={`/modules/${item.topic}/${item.lesson}`}
+                          className="group inline-flex items-center gap-1.5 rounded-full border border-black/5 bg-[#F5F5F7] px-3.5 py-1.5 text-[12px] font-medium text-[#86868B] transition-colors hover:bg-[#EBEBED] hover:text-foreground dark:border-white/5 dark:bg-[#1C1C1E] dark:hover:bg-[#2C2C2E]"
+                        >
+                          <span className="max-w-[130px] sm:max-w-[160px] truncate text-[#3A3A3C] dark:text-[#D1D1D6] group-hover:text-foreground">{tName}</span>
+                          <span className="text-black/15 dark:text-white/15">/</span>
+                          <span>Lesson {item.lesson.replace(/^0+/, '')}</span>
+                        </Link>
+                      );
+                    })}
                   </div>
                 )}
               </div>
