@@ -55,7 +55,7 @@ export default function PlaygroundPage() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-10 pt-32">
+      <main className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 md:px-8 pb-10 pt-32">
         <section className="relative w-full mb-12 sm:mb-16">
           <div className="grid xl:grid-cols-[minmax(0,1fr)_320px] gap-8 xl:gap-12 2xl:grid-cols-[1fr_auto] 2xl:gap-16 items-end">
             <div className="max-w-2xl">

@@ -150,7 +150,7 @@ export default function ModulesPage() {
       <Navbar />
 
       <main className="pb-24 pt-32 sm:pt-40">
-        <section className="mx-auto max-w-7xl px-4 sm:px-6 mb-16 sm:mb-24 relative overflow-hidden">
+        <section className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 md:px-8 mb-16 sm:mb-24 relative overflow-hidden">
           <div className="absolute top-1/2 right-10 -translate-y-1/2 w-72 h-72 rounded-full bg-[#0071E3]/5 blur-3xl pointer-events-none hidden lg:block" />
           <div className="absolute top-0 right-40 w-56 h-56 rounded-full bg-[#34C759]/5 blur-3xl pointer-events-none hidden lg:block" />
           
@@ -192,7 +192,7 @@ export default function ModulesPage() {
         </section>
 
         {continueTopic && continueLearning && (
-          <section className="mx-auto max-w-7xl px-4 sm:px-6 mb-10 sm:mb-12">
+          <section className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 md:px-8 mb-10 sm:mb-12">
             <div className="rounded-[28px] border border-[#D2D2D7]/60 dark:border-white/10 bg-white dark:bg-[#111214] p-6 sm:p-7 shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-6">
               <div>
                 <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#0071E3] mb-2">
@@ -236,7 +236,7 @@ export default function ModulesPage() {
         )}
 
         {recommendedTopic && (!continueTopic || recommendedTopic.slug !== continueTopic.slug) && (
-          <section className="mx-auto max-w-7xl px-4 sm:px-6 mb-10 sm:mb-12">
+          <section className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 md:px-8 mb-10 sm:mb-12">
             <div className="rounded-[24px] border border-[#D2D2D7]/50 dark:border-white/8 bg-[#F7FAFF] dark:bg-[#101722] p-5 sm:p-6 flex flex-col xl:flex-row xl:items-center justify-between gap-5">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#0071E3] mb-2">Rekomendasi Berikutnya</p>
@@ -252,7 +252,7 @@ export default function ModulesPage() {
         )}
 
         {recentActivity.length > 0 && (
-          <section className="mx-auto max-w-7xl px-4 sm:px-6 mb-10 sm:mb-12">
+          <section className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 md:px-8 mb-10 sm:mb-12">
             <div className="rounded-[24px] border border-[#D2D2D7]/50 dark:border-white/8 bg-[#FAFAFB] dark:bg-[#111214] p-5 sm:p-6">
               <div className="flex items-center justify-between gap-4 mb-4">
                 <div>
@@ -286,7 +286,7 @@ export default function ModulesPage() {
 
         {/* ── Tabs & Search Bar ── */}
         <section className="sticky top-[52px] z-30 bg-background/95 backdrop-blur-xl border-b border-[#D2D2D7]/40 dark:border-white/10 shadow-sm transition-all mb-12 sm:mb-16">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 flex flex-col md:flex-row md:items-center justify-between gap-4 py-4">
+          <div className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 md:px-8 flex flex-col md:flex-row md:items-center justify-between gap-4 py-4">
             
             {/* Minimalist Tabs */}
             <div className="flex items-center gap-6 overflow-x-auto no-scrollbar">
@@ -321,7 +321,7 @@ export default function ModulesPage() {
         </section>
 
         {/* ── Topics List (Rows instead of Grid) ── */}
-        <section className="mx-auto max-w-5xl px-4 sm:px-6">
+        <section className="mx-auto w-full max-w-[1200px] xl:max-w-[1400px] px-4 sm:px-6 md:px-8">
             {isLoading ? (
               <div className="grid gap-4">
                 {Array.from({ length: 5 }).map((_, index) => (

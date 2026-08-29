@@ -143,7 +143,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="mx-auto max-w-6xl px-4 sm:px-6 pb-24 pt-24">
+      <main className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 md:px-8 pb-24 pt-24">
         <section className="relative overflow-hidden rounded-[32px] border border-black/[0.06] bg-[#FBFBFD] p-8 shadow-[0_28px_80px_rgba(15,23,42,0.08)] dark:border-white/[0.08] dark:bg-[#0F0F11] dark:shadow-[0_28px_80px_rgba(0,0,0,0.32)] sm:p-10">
           <div className="pointer-events-none absolute -left-10 top-0 h-48 w-48 rounded-full bg-[#0071E3]/15 blur-3xl" />
           <div className="pointer-events-none absolute right-0 top-8 h-40 w-40 rounded-full bg-[#AF52DE]/10 blur-3xl" />
