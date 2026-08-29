@@ -145,7 +145,7 @@ export default function DashboardPage() {
           <div className="pointer-events-none absolute -left-10 top-0 h-48 w-48 rounded-full bg-[#0071E3]/15 blur-3xl" />
           <div className="pointer-events-none absolute right-0 top-10 h-40 w-40 rounded-full bg-[#AF52DE]/12 blur-3xl" />
 
-          <div className="relative grid gap-8 xl:grid-cols-[minmax(0,1.16fr)_320px] xl:items-start">
+          <div className="relative grid gap-8 2xl:grid-cols-[minmax(0,1.16fr)_320px] 2xl:items-start">
             <div className="max-w-2xl">
               <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#86868B]">
                 Dashboard
@@ -284,7 +284,7 @@ export default function DashboardPage() {
           })}
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(320px,1fr)] lg:items-stretch">
+        <section className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,1fr)] xl:items-stretch">
           <article className="relative overflow-hidden rounded-[28px] border border-[#D2D2D7]/60 bg-white p-6 sm:p-8 shadow-sm dark:border-white/10 dark:bg-[#111214]">
             <div className="relative flex h-full flex-col">
               <div className="flex flex-wrap items-start justify-between gap-4 mb-6">

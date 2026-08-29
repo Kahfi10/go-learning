@@ -101,7 +101,7 @@ export default function SettingsPage() {
           </h1>
         </div>
 
-        <div className="grid md:grid-cols-[240px_1fr] gap-8 md:gap-12">
+        <div className="grid xl:grid-cols-[240px_1fr] gap-8 xl:gap-12">
           
           {/* Sidebar Tabs */}
           <aside className="space-y-1">

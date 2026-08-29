@@ -697,7 +697,7 @@ function LessonContent({
           )}
         </div>
 
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_280px] 2xl:grid-cols-[minmax(0,1fr)_300px] xl:items-start">
+        <div className="grid gap-5 2xl:grid-cols-[minmax(0,1fr)_280px] 2xl:items-start">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0071E3] mb-2.5">
               Developer Guide
@@ -713,7 +713,7 @@ function LessonContent({
             )}
           </div>
 
-          <div className="rounded-[16px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white/65 dark:bg-[#17181A] p-4 max-xl:max-w-[420px]">
+          <div className="rounded-[16px] border border-[#D2D2D7]/35 dark:border-white/6 bg-white/65 dark:bg-[#17181A] p-4 max-w-[420px] 2xl:max-w-none">
             <div className="flex items-center justify-between gap-3 mb-3">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#86868B]">
                 Progress Membaca

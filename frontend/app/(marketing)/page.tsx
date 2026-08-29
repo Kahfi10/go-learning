@@ -320,14 +320,14 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           HERO  — Full Screen Split
       ══════════════════════════════════════════ */}
-      <section className="relative min-h-[100svh] w-full flex flex-col lg:flex-row overflow-hidden border-b border-[#D2D2D7]/40 dark:border-white/10">
+      <section className="relative min-h-[100svh] w-full flex flex-col xl:flex-row overflow-hidden border-b border-[#D2D2D7]/40 dark:border-white/10">
         <div aria-hidden className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
           <div className="w-[600px] sm:w-[900px] h-[400px] sm:h-[500px] rounded-full bg-[#0071E3]/6 blur-[100px] sm:blur-[120px]" />
         </div>
         
         {/* ── Left Half: Text Content ── */}
-        <div className="relative z-10 flex-1 flex flex-col justify-center px-6 sm:px-12 xl:px-20 pt-32 pb-12 lg:py-24 max-w-[45%]">
-          <div className="w-full max-w-[580px] mx-auto lg:ml-auto lg:mr-8 xl:mr-12 text-center lg:text-left">
+        <div className="relative z-10 flex-1 flex flex-col justify-center px-6 sm:px-12 xl:px-20 pt-32 pb-12 xl:py-24 xl:max-w-[45%]">
+          <div className="w-full max-w-[580px] mx-auto xl:ml-auto xl:mr-8 2xl:mr-12 text-center xl:text-left">
             
             <h1 className="hero-title font-display font-semibold leading-[1.05] tracking-[-0.04em] text-foreground mb-6 sm:mb-8" style={{ fontSize: "clamp(42px, 5.5vw, 76px)" }}>
               <span className="hero-title-line block">Kuasai Go.</span>
@@ -344,8 +344,8 @@ export default function LandingPage() {
         </div>
 
         {/* ── Right Half: Code Preview ── */}
-        <div className="relative z-10 flex-1 flex flex-col justify-center px-6 sm:px-12 xl:px-20 pb-20 pt-10 lg:py-24 max-w-[55%]">
-          <div className="w-full max-w-[720px] mx-auto lg:mr-auto lg:ml-8 xl:ml-12 relative z-10 flex justify-center lg:justify-start">
+        <div className="relative z-10 flex-1 flex flex-col justify-center px-6 sm:px-12 xl:px-20 pb-20 pt-10 xl:py-24 xl:max-w-[55%]">
+          <div className="w-full max-w-[720px] mx-auto xl:mr-auto xl:ml-8 2xl:ml-12 relative z-10 flex justify-center xl:justify-start">
             <HeroCodePreview />
           </div>
         </div>
