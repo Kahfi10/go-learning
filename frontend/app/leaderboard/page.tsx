@@ -101,7 +101,7 @@ function SummaryCard({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#86868B]">{label}</p>
-          <p className="mt-2 text-[13px] leading-6 text-[#86868B]">{note}</p>
+          <p className="mt-2 text-[13px] leading-5 text-[#86868B]">{note}</p>
         </div>
         <div
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl"
@@ -110,7 +110,7 @@ function SummaryCard({
           <Icon className="h-5 w-5" style={{ color: accent }} />
         </div>
       </div>
-      <p className="mt-5 font-display text-[28px] font-semibold tracking-tight text-foreground">{value}</p>
+      <p className="mt-4 font-display text-[28px] font-semibold tracking-tight text-foreground">{value}</p>
     </article>
   );
 }
@@ -196,7 +196,7 @@ function SpotlightCard({
         </div>
 
         {!compact && (
-          <div className="mt-auto pt-6">
+          <div className="mt-auto pt-5">
             <p className="text-[13px] leading-6 text-[#6E6E73] dark:text-[#A1A1AA]">
               Memimpin periode {periodLabel.toLowerCase()} dengan kombinasi XP, lesson selesai, dan ritme belajar yang paling konsisten.
             </p>
@@ -303,6 +303,10 @@ export default function LeaderboardPage() {
   const meEntry = data.find((entry) => state.user?.id === entry.id);
   const leader = data[0];
   const challengers = data.slice(1, 3);
+  const participantCount = data.length;
+  const isSparse = participantCount <= 2;
+  const isMedium = participantCount >= 3 && participantCount <= 8;
+  const isCrowded = participantCount >= 9;
 
   const summaryCards = [
     {
@@ -510,14 +514,17 @@ export default function LeaderboardPage() {
                   </h2>
                 </div>
                 <p className="text-[13px] text-[#86868B]">
-                  Layout ini tetap stabil meski peserta masih sedikit.
+                  {isSparse ? "Mode spotlight untuk peserta yang masih sedikit." : isMedium ? "Podium dan ranking ringkas untuk kompetisi yang mulai hidup." : "Layout dipadatkan untuk menjaga ranking tetap nyaman dibaca."}
                 </p>
               </div>
 
               {leader && challengers.length > 0 ? (
-                <div className="grid gap-5 xl:grid-cols-[minmax(0,1.08fr)_0.92fr] xl:items-stretch">
+                <div className={cn(
+                  "grid gap-5 xl:items-stretch",
+                  isMedium ? "xl:grid-cols-[minmax(0,1.05fr)_0.95fr]" : "xl:grid-cols-[minmax(0,1.08fr)_0.92fr]",
+                )}>
                   <SpotlightCard entry={leader} isMe={state.user?.id === leader.id} periodLabel={periodLabel} />
-                  <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-1">
+                  <div className={cn("grid gap-5", isSparse ? "sm:grid-cols-1" : "sm:grid-cols-2 xl:grid-cols-1")}>
                     {challengers.map((entry) => (
                       <SpotlightCard
                         key={entry.id}
@@ -530,7 +537,7 @@ export default function LeaderboardPage() {
                   </div>
                 </div>
               ) : leader ? (
-                <div className="mx-auto max-w-4xl">
+                <div className={cn("mx-auto", isSparse ? "max-w-3xl" : "max-w-4xl")}>
                   <SpotlightCard entry={leader} isMe={state.user?.id === leader.id} periodLabel={periodLabel} />
                 </div>
               ) : null}
@@ -560,7 +567,7 @@ export default function LeaderboardPage() {
                 <span className="text-right">Streak</span>
               </div>
 
-              <div className="space-y-3">
+              <div className={cn("space-y-3", isCrowded && "space-y-2") }>
                 {data.map((entry) => (
                   <RankRow key={entry.id} entry={entry} isMe={state.user?.id === entry.id} />
                 ))}
