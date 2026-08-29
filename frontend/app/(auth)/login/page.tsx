@@ -181,6 +181,9 @@ function LoginPageInner() {
                   <Github className="h-4 w-4" />
                   Lanjutkan dengan GitHub
                 </a>
+                <p className="text-[12px] leading-6 text-[#86868B] px-1">
+                  Jika emailmu sebelumnya dibuat dengan password biasa, gunakan login email. Demi keamanan, akun local tidak otomatis digabung dengan login Google atau GitHub.
+                </p>
               </div>
 
               <div className="relative my-7">

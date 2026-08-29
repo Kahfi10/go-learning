@@ -12,6 +12,7 @@ import Link from "next/link";
 export default function SettingsPage() {
   const { state, refresh } = useAuth();
   const router = useRouter();
+  const isLocalAccount = (state.user?.provider ?? "local") === "local";
 
   const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
 
@@ -219,7 +220,14 @@ export default function SettingsPage() {
             {activeTab === "security" && (
               <div className="animate-in fade-in duration-300">
                 <h2 className="text-[20px] font-semibold text-foreground mb-6">Ubah Password</h2>
-                
+                {!isLocalAccount ? (
+                  <div className="rounded-[20px] border border-[#D2D2D7]/50 dark:border-white/10 bg-[#F7F7F8] dark:bg-[#17181A] p-5">
+                    <p className="text-[14px] font-medium text-foreground">Akun ini masuk lewat provider eksternal.</p>
+                    <p className="mt-2 text-[13px] leading-6 text-[#86868B]">
+                      Password tidak dikelola di GoLearn untuk akun Google atau GitHub. Untuk mengubah akses akun, silakan kelola langsung dari provider login yang kamu gunakan.
+                    </p>
+                  </div>
+                ) : (
                 <form onSubmit={handleSecuritySubmit} className="space-y-6">
                   <div>
                     <label className="block text-[13px] font-medium text-[#1D1D1F] dark:text-[#F5F5F7] mb-2">Password Saat Ini</label>
@@ -268,6 +276,7 @@ export default function SettingsPage() {
                     </button>
                   </div>
                 </form>
+                )}
               </div>
             )}
 

@@ -187,6 +187,9 @@ function RegisterPageInner() {
                   <Github className="h-4 w-4" />
                   Daftar dengan GitHub
                 </a>
+                <p className="text-[12px] leading-6 text-[#86868B] px-1">
+                  Untuk keamanan, akun yang dibuat dengan email/password dan akun yang dibuat lewat Google atau GitHub tidak otomatis digabung hanya berdasarkan email yang sama.
+                </p>
               </div>
 
               <div className="relative my-7">

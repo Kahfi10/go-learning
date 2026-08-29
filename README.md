@@ -37,6 +37,7 @@ Platform pembelajaran Go interaktif, bilingual (ID/EN), terinspirasi Apple HIG d
 - Auth, executor, and discussion endpoints have lightweight rate limiting.
 - JSON API endpoints use stricter request body parsing and body-size limits.
 - Code execution has concurrency throttling and output truncation to reduce abuse.
+- Google/GitHub OAuth now uses server-side state validation, verified-email checks, safe relative redirects, and conservative account-linking rules.
 
 ## Quick Start
 
@@ -51,7 +52,7 @@ Platform pembelajaran Go interaktif, bilingual (ID/EN), terinspirasi Apple HIG d
 git clone https://github.com/Kahfi10/go-learning.git
 cd go-learning
 cp .env.example .env
-# Edit .env — set JWT_SECRET, GOOGLE/GITHUB OAuth keys
+# Edit .env — set JWT_SECRET and OAuth keys if needed
 ```
 
 ### 2. Run with Docker Compose
@@ -63,6 +64,102 @@ docker compose up -d
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8080
 - PostgreSQL: localhost:5432
+
+## OAuth Setup
+
+### Local development
+
+Local development in this repo commonly uses:
+
+- Frontend: `http://localhost:3006`
+- Backend: `http://localhost:8081`
+
+Set these values in `.env`:
+
+```env
+FRONTEND_URL=http://localhost:3006
+NEXT_PUBLIC_API_URL=http://localhost:8081
+
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+GITHUB_CLIENT_ID=...
+GITHUB_CLIENT_SECRET=...
+```
+
+Register these callback URLs in the providers:
+
+- Google redirect URI:
+  - `http://localhost:8081/api/auth/google/callback`
+- GitHub callback URL:
+  - `http://localhost:8081/api/auth/github/callback`
+
+### Production single-domain setup
+
+If frontend and backend are served under one HTTPS origin, for example:
+
+- `https://your-subdomain.duckdns.org/` -> frontend
+- `https://your-subdomain.duckdns.org/api/*` -> backend
+
+then configure:
+
+```env
+FRONTEND_URL=https://your-subdomain.duckdns.org
+AUTH_COOKIE_DOMAIN=your-subdomain.duckdns.org
+AUTH_COOKIE_SECURE=true
+AUTH_COOKIE_SAMESITE=lax
+```
+
+Provider callback URLs should point to the backend callback routes on that same origin:
+
+- Google redirect URI:
+  - `https://your-subdomain.duckdns.org/api/auth/google/callback`
+- GitHub callback URL:
+  - `https://your-subdomain.duckdns.org/api/auth/github/callback`
+
+### Important behavior
+
+- OAuth login requires a verified email from the provider.
+- Safe redirects only allow internal app paths like `/dashboard` or `/modules/...`.
+- Local email/password accounts are not automatically merged with Google/GitHub accounts only because the email matches. This prevents unsafe account takeover/linking behavior.
+
+## Production Deploy (Oracle + DuckDNS)
+
+Disarankan menggunakan satu domain DuckDNS dengan reverse proxy supaya frontend dan backend berbagi origin yang sama:
+
+- `https://your-subdomain.duckdns.org/` -> frontend
+- `https://your-subdomain.duckdns.org/api/*` -> backend
+
+Langkah umum:
+
+1. Salin file env production:
+
+```bash
+cp .env.prod.example .env.prod
+```
+
+2. Isi nilai:
+- `APP_DOMAIN`
+- `CERTBOT_EMAIL`
+- `POSTGRES_PASSWORD`
+- `JWT_SECRET`
+- `JWT_REFRESH_SECRET`
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` jika OAuth Google dipakai
+- `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` jika OAuth GitHub dipakai
+
+3. Jalankan compose production:
+
+```bash
+docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
+```
+
+4. Buka firewall Oracle Cloud untuk:
+- TCP 80
+- TCP 443
+
+Catatan:
+- Backend sekarang auto-run migrations saat start.
+- Untuk production single-domain, `NEXT_PUBLIC_API_URL` diarahkan ke `https://${APP_DOMAIN}/api`.
+- Auth cookie sudah mendukung mode production via env (`AUTH_COOKIE_*`).
 
 ## Auth Cookie Config
 
@@ -90,6 +187,8 @@ psql postgres://golearn:golearn_secret@localhost:5432/golearn -f backend/interna
 psql postgres://golearn:golearn_secret@localhost:5432/golearn -f backend/internal/db/migrations/003_badges.sql
 psql postgres://golearn:golearn_secret@localhost:5432/golearn -f backend/internal/db/migrations/004_discussions.sql
 psql postgres://golearn:golearn_secret@localhost:5432/golearn -f backend/internal/db/migrations/005_indexes.sql
+psql postgres://golearn:golearn_secret@localhost:5432/golearn -f backend/internal/db/migrations/006_bookmarks_activity.sql
+psql postgres://golearn:golearn_secret@localhost:5432/golearn -f backend/internal/db/migrations/007_oauth_identities.sql
 ```
 
 ### 4. Run locally (dev)

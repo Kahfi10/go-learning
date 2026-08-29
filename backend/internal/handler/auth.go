@@ -173,6 +173,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	setTokenCookieWithConfig(w, "", time.Unix(0, 0), -1)
+	clearOAuthStateCookie(w)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"message": "logged out"})
 }
@@ -216,6 +217,13 @@ func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var exists bool
+	err = h.db.QueryRow(r.Context(), `SELECT EXISTS(SELECT 1 FROM users WHERE id = $1)`, userID).Scan(&exists)
+	if err != nil || !exists {
+		jsonError(w, "user not found", http.StatusUnauthorized)
+		return
+	}
+
 	newToken, err := generateJWT(userID, os.Getenv("JWT_SECRET"), 24*time.Hour)
 	if err != nil {
 		jsonError(w, "internal error", http.StatusInternalServerError)
@@ -246,13 +254,13 @@ func (h *AuthHandler) GitHubCallback(w http.ResponseWriter, r *http.Request) {
 
 func (h *AuthHandler) Me(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
-	var id, name, email, langPref string
+	var id, name, email, langPref, provider string
 	var avatarURL *string
 	var xp, streak int
 	err := h.db.QueryRow(r.Context(),
-		`SELECT id, name, email, lang_pref, avatar_url, xp, streak_days FROM users WHERE id = $1`,
+		`SELECT id, name, email, lang_pref, avatar_url, xp, streak_days, provider FROM users WHERE id = $1`,
 		userID,
-	).Scan(&id, &name, &email, &langPref, &avatarURL, &xp, &streak)
+	).Scan(&id, &name, &email, &langPref, &avatarURL, &xp, &streak, &provider)
 	if err != nil {
 		jsonError(w, "user not found", http.StatusNotFound)
 		return
@@ -266,6 +274,7 @@ func (h *AuthHandler) Me(w http.ResponseWriter, r *http.Request) {
 		"avatar_url": avatarURL,
 		"xp":         xp,
 		"streak":     streak,
+		"provider":   provider,
 	})
 }
 
@@ -276,6 +285,16 @@ func (h *AuthHandler) UpdateMe(w http.ResponseWriter, r *http.Request) {
 		LangPref string `json:"lang_pref"`
 	}
 	if !decodeJSONBody(w, r, &req, 32<<10) {
+		return
+	}
+	req.Name = strings.TrimSpace(req.Name)
+	req.LangPref = strings.TrimSpace(strings.ToLower(req.LangPref))
+	if req.LangPref != "" && req.LangPref != "id" && req.LangPref != "en" {
+		jsonError(w, "lang_pref must be 'id' or 'en'", http.StatusBadRequest)
+		return
+	}
+	if req.Name == "" && req.LangPref == "" {
+		jsonError(w, "no profile fields to update", http.StatusBadRequest)
 		return
 	}
 	_, err := h.db.Exec(r.Context(),

@@ -89,7 +89,7 @@ export const api = {
 export interface UserProfile {
   id: string; name: string; email: string;
   avatar_url?: string; lang_pref: "id" | "en";
-  xp: number; streak: number; token?: string;
+  xp: number; streak: number; provider?: string; token?: string;
 }
 export interface AuthProviders {
   local: boolean;
