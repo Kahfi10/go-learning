@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Share2, Check, ChevronDown } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import CodeEditor from "@/components/editor/CodeEditor";
 import { api, type Template } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { gsap } from "gsap";
 
 const QUICK_FACTS = [
   "Eksekusi instan",
@@ -19,8 +20,29 @@ export default function PlaygroundPage() {
   const [code, setCode] = useState(`package main\n\nimport "fmt"\n\nfunc main() {\n\tfmt.Println("Hello, GoLearn Playground!")\n}`);
   const [copied, setCopied] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
+  const editorContainerRef = useRef<HTMLElement>(null);
+  const leftColRef = useRef<HTMLDivElement>(null);
+  const rightColRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Initial load animations
+    const ctx = gsap.context(() => {
+      gsap.fromTo(leftColRef.current,
+        { opacity: 0, x: -30 },
+        { opacity: 1, x: 0, duration: 0.8, ease: "power3.out", delay: 0.1 }
+      );
+      
+      gsap.fromTo(rightColRef.current,
+        { opacity: 0, x: 30 },
+        { opacity: 1, x: 0, duration: 0.8, ease: "power3.out", delay: 0.2 }
+      );
+
+      gsap.fromTo(editorContainerRef.current,
+        { opacity: 0, y: 40 },
+        { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", delay: 0.3 }
+      );
+    });
+
     api.playground.templates().then(setTemplates).catch(() => {});
 
     if (typeof window !== "undefined") {
@@ -33,6 +55,8 @@ export default function PlaygroundPage() {
         } catch {}
       }
     }
+
+    return () => ctx.revert(); // Cleanup GSAP
   }, []);
 
   function loadTemplate(t: Template) {
@@ -55,10 +79,10 @@ export default function PlaygroundPage() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 md:px-8 pb-10 pt-32">
+      <main className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 md:px-8 pb-10 pt-32 overflow-x-hidden">
         <section className="relative w-full mb-12 sm:mb-16">
           <div className="grid xl:grid-cols-[minmax(0,1fr)_320px] gap-8 xl:gap-12 2xl:grid-cols-[1fr_auto] 2xl:gap-16 items-end">
-            <div className="max-w-2xl">
+            <div ref={leftColRef} className="max-w-2xl opacity-0">
               <p className="text-[#0071E3] text-[13px] font-semibold uppercase tracking-[0.2em] mb-3">
                 Playground
               </p>
@@ -82,7 +106,7 @@ export default function PlaygroundPage() {
               </div>
             </div>
 
-            <div className="w-full xl:w-[320px] 2xl:w-[340px] bg-white dark:bg-[#111214] rounded-[24px] p-6 sm:p-7 border border-[#D2D2D7]/60 dark:border-white/10 shadow-sm">
+            <div ref={rightColRef} className="w-full xl:w-[320px] 2xl:w-[340px] bg-white dark:bg-[#111214] rounded-[24px] p-6 sm:p-7 border border-[#D2D2D7]/60 dark:border-white/10 shadow-sm opacity-0">
               <div className="flex items-start justify-between gap-4 mb-5">
                 <div>
                   <p className="text-[12px] font-semibold uppercase tracking-[0.15em] text-[#86868B]">
@@ -157,7 +181,7 @@ export default function PlaygroundPage() {
           </div>
         </section>
 
-        <section className="rounded-[28px] border border-[#D2D2D7]/60 dark:border-white/10 bg-white dark:bg-[#111214] p-5 sm:p-6 shadow-sm">
+        <section ref={editorContainerRef} className="rounded-[28px] border border-[#D2D2D7]/60 dark:border-white/10 bg-white dark:bg-[#111214] p-5 sm:p-6 shadow-sm opacity-0">
           <div className="flex flex-col gap-3 border-b border-[#D2D2D7]/40 dark:border-white/5 pb-4 sm:flex-row sm:items-end sm:justify-between mb-5">
             <div>
               <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B]">
