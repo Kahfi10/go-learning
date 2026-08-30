@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { Share2, Check, ChevronDown } from "lucide-react";
+import { Share2, Check, ChevronDown, Terminal, Loader2 } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import CodeEditor from "@/components/editor/CodeEditor";
 import { api, type Template } from "@/lib/api";
@@ -20,12 +20,23 @@ export default function PlaygroundPage() {
   const [code, setCode] = useState(`package main\n\nimport "fmt"\n\nfunc main() {\n\tfmt.Println("Hello, GoLearn Playground!")\n}`);
   const [copied, setCopied] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [isBooting, setIsBooting] = useState(true);
   const editorContainerRef = useRef<HTMLElement>(null);
   const leftColRef = useRef<HTMLDivElement>(null);
   const rightColRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Initial load animations
+    // Artificial 1-second delay for booting effect
+    const timer = setTimeout(() => {
+      setIsBooting(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (isBooting) return;
+
+    // Initial load animations after boot
     const ctx = gsap.context(() => {
       gsap.fromTo(leftColRef.current,
         { opacity: 0, x: -30 },
@@ -57,7 +68,7 @@ export default function PlaygroundPage() {
     }
 
     return () => ctx.revert(); // Cleanup GSAP
-  }, []);
+  }, [isBooting]);
 
   function loadTemplate(t: Template) {
     setCode(t.code);
@@ -73,6 +84,25 @@ export default function PlaygroundPage() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
     toast.success("Link berhasil disalin!");
+  }
+
+  if (isBooting) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <Navbar />
+        <main className="flex-1 flex flex-col items-center justify-center pb-20">
+          <div className="w-16 h-16 bg-[#0071E3]/10 rounded-[20px] flex items-center justify-center mb-6 animate-pulse">
+            <Terminal className="w-8 h-8 text-[#0071E3]" />
+          </div>
+          <div className="flex items-center gap-3">
+            <Loader2 className="w-4 h-4 text-[#86868B] animate-spin" />
+            <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#86868B]">
+              Booting Workspace...
+            </p>
+          </div>
+        </main>
+      </div>
+    );
   }
 
   return (
