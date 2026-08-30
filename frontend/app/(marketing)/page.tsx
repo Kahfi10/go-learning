@@ -3,23 +3,18 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight, Code2, BookOpen, Trophy, Users,
-  Zap, CheckCircle, Play, ChevronRight,
-  Terminal, Cpu, Globe,
+  CheckCircle, Play, ChevronRight,
+  Terminal,
 } from "lucide-react";
-import Navbar from "@/components/navigation/Navbar";
 import NavbarPill from "@/components/navigation/variants/NavbarPill";
-import NavbarMonospace from "@/components/navigation/variants/NavbarMonospace";
-import NavbarDualTier from "@/components/navigation/variants/NavbarDualTier";
 import { cn } from "@/lib/utils";
 import { api, type ExecuteResult } from "@/lib/api";
 
 import { useAuth } from "@/context/AuthContext";
-import WhyGoSticky from "@/components/marketing/WhyGoSticky";
 import WhyGoSandbox from "@/components/marketing/WhyGoSandbox";
 import CommunityClosingSection from "@/components/marketing/CommunityClosingSection";
 import EcosystemOrbitSection from "@/components/marketing/EcosystemOrbitSection";
 import EditorialFooter from "@/components/marketing/EditorialFooter";
-import WhyGoAsymmetrical from "@/components/marketing/WhyGoAsymmetrical";
 
 /* â”€â”€â”€ Static Data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const TOPICS = [
@@ -38,13 +33,6 @@ const TOPICS = [
   { n: "13", title: "Testing in Go",        color: "#32D74B", level: "Advanced",     lessons: 5  },
   { n: "14", title: "HTTP & Web",           color: "#FF9F0A", level: "Advanced",     lessons: 6  },
   { n: "15", title: "Go Patterns",          color: "#FF2D55", level: "Advanced",     lessons: 5  },
-];
-
-const WHY_GO = [
-  { icon: Zap,      stat: "10x",   label: "Lebih cepat dari Python",   sub: "Compiled, statically typed",          color: "#0071E3" },
-  { icon: Cpu,      stat: "1M+",   label: "Goroutines sekaligus",       sub: "Concurrency built-in",                color: "#34C759" },
-  { icon: Terminal, stat: "<10s",  label: "Build time proyek besar",    sub: "Compiler tercepat di kelasnya",       color: "#FF9500" },
-  { icon: Globe,    stat: "Top 5", label: "Bahasa paling dicari",       sub: "Docker, K8s, Cloudflare pakai Go",   color: "#AF52DE" },
 ];
 
 const HOW_STEPS = [
@@ -288,10 +276,151 @@ export default function LandingPage() {
   }, []);
 
     return (
-      <div ref={containerRef} className="bg-background overflow-x-hidden pt-20">
-        <NavbarPill />
+    <div ref={containerRef} className="bg-background overflow-x-hidden pt-20">
+      <NavbarPill />
 
-            <CommunityClosingSection />
+      {/* ── Hero Section ── */}
+      <section className="relative min-h-[calc(100vh-80px)] flex items-center justify-center px-6 sm:px-10 py-16 sm:py-24 overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="w-[700px] h-[700px] rounded-full bg-[#0071E3]/[0.05] blur-[140px]" />
+        </div>
+        <div className="mx-auto w-full max-w-screen-xl relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+            <div className="text-center lg:text-left">
+              <div className="hero-title-line inline-flex items-center gap-2 bg-[#0071E3]/10 text-[#0071E3] text-[12px] font-semibold uppercase tracking-[0.15em] px-3.5 py-1.5 rounded-full mb-6">
+                <BookOpen className="w-3.5 h-3.5" /> Platform Belajar Go #1 Indonesia
+              </div>
+              <h1 className="font-display font-bold tracking-tight text-foreground mb-5 leading-[1.05]"
+                style={{ fontSize: "clamp(40px, 5.5vw, 72px)" }}>
+                <span className="hero-title-line block">Kuasai Go.</span>
+                <span className="hero-title-line block text-[#0071E3]">Bangun Masa Depan.</span>
+              </h1>
+              <p className="hero-sub text-[#86868B] text-[16px] sm:text-[18px] leading-relaxed max-w-[480px] mx-auto lg:mx-0 mb-8">
+                Platform pembelajaran Go interaktif dengan editor browser, 76 lessons, quiz, gamifikasi XP, dan komunitas — semua gratis.
+              </p>
+              <HeroActions />
+            </div>
+            <div className="flex justify-center lg:justify-end">
+              <HeroCodePreview />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Stats Section ── */}
+      <section id="stats-section" className="py-16 sm:py-24 px-6 sm:px-10 border-y border-[#D2D2D7]/50 dark:border-white/[0.06]">
+        <div className="mx-auto max-w-screen-xl grid grid-cols-2 md:grid-cols-4 gap-8">
+          {[
+            { label: "Lessons Tersedia", num: 76, suffix: "+" },
+            { label: "Topik Terstruktur", num: 15, suffix: "" },
+            { label: "Quiz Questions",   num: 300, suffix: "+" },
+            { label: "Level Gamifikasi", num: 10, suffix: "" },
+          ].map((s) => (
+            <div key={s.label} className="stat-col text-center">
+              <p className="font-display font-bold text-foreground mb-1 leading-none"
+                style={{ fontSize: "clamp(40px, 5vw, 64px)" }}>
+                <span className="stat-num" data-target={s.num}>0</span>
+                <span>{s.suffix}</span>
+              </p>
+              <p className="text-[#86868B] text-[14px]">{s.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Topics Carousel ── */}
+      <section className="py-20 sm:py-32 overflow-hidden">
+        <div className="mx-auto max-w-screen-xl px-6 sm:px-10 mb-10 sm:mb-14">
+          <p className="text-[#0071E3] text-[12px] font-semibold uppercase tracking-[0.2em] mb-3">Kurikulum</p>
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <h2 className="font-display font-semibold tracking-tight text-foreground leading-tight"
+              style={{ fontSize: "clamp(32px, 4.5vw, 56px)" }}>
+              15 topik, dari Gopher<br className="hidden sm:block" /> Pemula ke Production.
+            </h2>
+            <Link href="/modules" className="shrink-0 flex items-center gap-1.5 text-[#0071E3] text-[14px] font-medium hover:underline">
+              Lihat semua <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+        <DragScroll>
+          <div id="topics-track" className="flex gap-4 px-6 sm:px-10 pb-4" style={{ width: "max-content" }}>
+            {TOPICS.map((t, i) => <TopicCard key={t.n} topic={t} index={i} />)}
+          </div>
+        </DragScroll>
+      </section>
+
+      {/* ── Code Showcase ── */}
+      <section className="py-20 sm:py-28 px-6 sm:px-10 bg-[#F5F5F7] dark:bg-[#0A0A0A]">
+        <div className="mx-auto max-w-screen-xl">
+          <div className="text-center mb-10 sm:mb-14">
+            <p className="text-[#0071E3] text-[12px] font-semibold uppercase tracking-[0.2em] mb-3">Live Editor</p>
+            <h2 className="font-display font-semibold tracking-tight text-foreground"
+              style={{ fontSize: "clamp(30px, 4vw, 52px)" }}>
+              Tulis Go, jalankan langsung di browser.
+            </h2>
+          </div>
+          <div className="max-w-[720px] mx-auto">
+            <CodeShowcase tabs={CODE_TABS} />
+          </div>
+        </div>
+      </section>
+
+      {/* ── How It Works ── */}
+      <section className="py-20 sm:py-32 px-6 sm:px-10">
+        <div className="mx-auto max-w-screen-xl">
+          <div className="text-center mb-14 sm:mb-20">
+            <p className="text-[#0071E3] text-[12px] font-semibold uppercase tracking-[0.2em] mb-3">Cara Kerja</p>
+            <h2 className="font-display font-semibold tracking-tight text-foreground"
+              style={{ fontSize: "clamp(30px, 4vw, 52px)" }}>
+              Empat langkah menuju Go mastery.
+            </h2>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-5 max-w-4xl mx-auto">
+            {HOW_STEPS.map((step) => (
+              <div key={step.n} className="how-step rounded-[24px] p-7 sm:p-8 bg-[#F5F5F7] dark:bg-[#111214] border border-[#D2D2D7]/60 dark:border-white/[0.07]">
+                <p className="font-mono text-[11px] text-[#86868B] tracking-[0.2em] mb-4">{step.n}</p>
+                <h3 className="font-display font-semibold text-[22px] sm:text-[26px] text-foreground mb-2">{step.title}</h3>
+                <p className="text-[#86868B] text-[14px] leading-relaxed">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Features ── */}
+      <section className="py-20 sm:py-32 px-6 sm:px-10 bg-[#F5F5F7] dark:bg-[#0A0A0A]">
+        <div className="mx-auto max-w-screen-xl">
+          <div className="text-center mb-10 sm:mb-14">
+            <p className="text-[#0071E3] text-[12px] font-semibold uppercase tracking-[0.2em] mb-3">Fitur</p>
+            <h2 className="font-display font-semibold tracking-tight text-foreground"
+              style={{ fontSize: "clamp(30px, 4vw, 52px)" }}>
+              Semua yang dibutuhkan untuk belajar Go.
+            </h2>
+          </div>
+          <FeatureSection items={FEATURES} />
+        </div>
+      </section>
+
+      {/* ── Why Go Sandbox ── */}
+      <WhyGoSandbox />
+
+      {/* ── FAQ ── */}
+      <section className="py-20 sm:py-32 px-6 sm:px-10">
+        <div className="mx-auto max-w-screen-xl">
+          <div className="text-center mb-12 max-w-3xl mx-auto">
+            <p className="text-[#0071E3] text-[12px] font-semibold uppercase tracking-[0.2em] mb-3">FAQ</p>
+            <h2 className="font-display font-semibold tracking-tight text-foreground"
+              style={{ fontSize: "clamp(30px, 4vw, 52px)" }}>
+              Pertanyaan yang sering ditanyakan.
+            </h2>
+          </div>
+          <div className="faq-list flex flex-col gap-3 max-w-3xl mx-auto">
+            {FAQS.map((faq, i) => <FaqItem key={i} q={faq.q} a={faq.a} />)}
+          </div>
+        </div>
+      </section>
+
+      <CommunityClosingSection />
       <EcosystemOrbitSection />
       <EditorialFooter />
     </div>
@@ -525,17 +654,6 @@ function FeatureBentoCard({ item, large = false }: { item: typeof FEATURES[numbe
         ))}
       </div>
     </div>
-  );
-}
-
-function FinalCTAButton() {
-  const { state } = useAuth();
-  return (
-    <Link href={state.user ? "/modules" : "/register"}
-      className="group inline-flex items-center gap-2 bg-[#0071E3] text-white text-[16px] font-medium px-8 py-3.5 rounded-full hover:bg-[#0077ED] transition-all shadow-xl shadow-[#0071E3]/20 hover:-translate-y-0.5 active:translate-y-0">
-      {state.user ? "Lanjut Belajar" : "Buat Akun Gratis"}
-      <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-    </Link>
   );
 }
 

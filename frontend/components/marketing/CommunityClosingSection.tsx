@@ -1,51 +1,60 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { cn } from "@/lib/utils";
 
-gsap.registerPlugin(ScrollTrigger);
+const AVATAR_BG = ["#0071E3", "#34C759", "#FF9500", "#AF52DE", "#FF453A", "#5AC8FA", "#30D158", "#FFD60A"];
+const AVATAR_LABEL = ["G", "O", "P", "H", "E", "R", ">", "_"];
 
 export default function CommunityClosingSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Rotate the entire ring slowly
-      gsap.to(ringRef.current, {
-        rotation: 45,
-        ease: "none",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 1,
-        }
-      });
+    let ctx: any;
+    let mounted = true;
 
-      // Text reveal animation
-      gsap.fromTo(".reveal-ln", 
-        { y: "100%" },
-        { 
-          y: "0%", duration: 1, stagger: 0.1, ease: "power4.out",
-          scrollTrigger: { trigger: sectionRef.current, start: "top 75%", once: true }
-        }
-      );
-      
-      // Reveal stats
-      gsap.fromTo(".gsap-reveal-stat", 
-        { y: 30, opacity: 0 },
-        { 
-          y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out",
-          scrollTrigger: { trigger: ".stats-grid", start: "top 85%", once: true }
-        }
-      );
+    (async () => {
+      const { gsap } = await import("gsap");
+      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+      if (!mounted) return;
+      gsap.registerPlugin(ScrollTrigger);
 
-    }, sectionRef);
+      ctx = gsap.context(() => {
+        gsap.to(ringRef.current, {
+          rotation: 45,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1,
+          },
+        });
 
-    return () => ctx.revert();
+        gsap.fromTo(
+          ".reveal-ln",
+          { y: "100%" },
+          {
+            y: "0%", duration: 1, stagger: 0.1, ease: "power4.out",
+            scrollTrigger: { trigger: sectionRef.current, start: "top 75%", once: true },
+          }
+        );
+
+        gsap.fromTo(
+          ".gsap-reveal-stat",
+          { y: 30, opacity: 0 },
+          {
+            y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out",
+            scrollTrigger: { trigger: ".stats-grid", start: "top 85%", once: true },
+          }
+        );
+      }, sectionRef);
+    })();
+
+    return () => {
+      mounted = false;
+      ctx?.revert();
+    };
   }, []);
 
   return (
@@ -79,7 +88,14 @@ export default function CommunityClosingSection() {
                   className="absolute w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-[3px] border-[#050505] bg-[#1C1C1E]"
                   style={{ top: `${y}%`, left: `${x}%`, transform: 'translate(-50%, -50%)' }}
                 >
-                  <img src={`https://i.pravatar.cc/150?img=${i + 20}`} alt="Community" className="w-full h-full object-cover grayscale opacity-80" />
+                  <div
+                    className="w-full h-full flex items-center justify-center"
+                    style={{ backgroundColor: AVATAR_BG[i % AVATAR_BG.length] }}
+                  >
+                    <span className="text-white text-[18px] font-mono font-bold select-none">
+                      {AVATAR_LABEL[i % AVATAR_LABEL.length]}
+                    </span>
+                  </div>
                 </div>
               );
             })}
