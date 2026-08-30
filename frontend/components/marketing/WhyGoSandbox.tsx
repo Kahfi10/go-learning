@@ -14,41 +14,45 @@ const CODE_EXAMPLES = [
 
 import (
     "fmt"
-    "time"
+    "sync"
 )
 
-func processTask(id int) {
-    fmt.Printf("Task %d is running\\n", id)
-}
-
 func main() {
-    // Menjalankan 100,000 task secara bersamaan
-    for i := 1; i <= 100000; i++ {
-        go processTask(i) 
+    var wg sync.WaitGroup
+
+    for i := 1; i <= 1_000_000; i++ {
+        wg.Add(1)
+        go func(id int) {
+            defer wg.Done()
+            fmt.Printf("task %d done\\n", id)
+        }(i)
     }
 
-    time.Sleep(1 * time.Second)
-    fmt.Println("All tasks processed lightning fast!")
+    wg.Wait()
+    fmt.Println("all done!")
 }`,
   },
   {
     id: "simplicity",
     label: "02. Simplicity",
     title: "Web Server 5 Baris",
-    desc: "Tidak butuh framework raksasa atau konfigurasi rumit. Standard library Go sudah siap produksi.",
+    desc: "Tidak butuh framework raksasa. Standard library Go sudah siap produksi.",
     code: `package main
 
 import (
+    "fmt"
     "net/http"
 )
 
+func handler(
+    w http.ResponseWriter,
+    r *http.Request,
+) {
+    fmt.Fprintln(w, "Hello, World!")
+}
+
 func main() {
-    // Web server super cepat bawaan Go
-    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        w.Write([]byte("Hello, World!"))
-    })
-    
-    // Siap melayani jutaan request di port 8080
+    http.HandleFunc("/", handler)
     http.ListenAndServe(":8080", nil)
 }`,
   },
@@ -56,23 +60,23 @@ func main() {
     id: "performance",
     label: "03. Performance",
     title: "Kecepatan setara C++",
-    desc: "Go dikompilasi langsung ke bahasa mesin (machine code), mengeksekusi algoritma tanpa overhead interpreter.",
+    desc: "Go dikompilasi langsung ke bahasa mesin, tanpa overhead interpreter.",
     code: `package main
 
 import "fmt"
 
-func fibonacci(n int) int {
+func fib(n int) int {
     if n <= 1 {
         return n
     }
-    return fibonacci(n-1) + fibonacci(n-2)
+    return fib(n-1) + fib(n-2)
 }
 
 func main() {
-    // Dikompilasi jadi single binary executable
-    // Berjalan secepat aplikasi native C/C++
-    result := fibonacci(40)
-    fmt.Println("Result:", result)
+    // Compiled to native machine code
+    // As fast as C / C++
+    result := fib(40)
+    fmt.Println("result:", result)
 }`,
   },
 ];
@@ -126,7 +130,7 @@ export default function WhyGoSandbox() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-[320px_1fr] xl:grid-cols-[360px_1fr] gap-8 lg:gap-10 xl:gap-14 items-start w-full">
+        <div className="grid lg:grid-cols-[280px_1fr] xl:grid-cols-[300px_1fr] gap-6 lg:gap-10 xl:gap-12 items-start w-full">
           
           {/* Left: Interactive Tabs */}
           <div className="flex flex-row lg:flex-col overflow-x-auto no-scrollbar gap-2 pb-4 lg:pb-0 lg:sticky lg:top-32">
@@ -137,7 +141,7 @@ export default function WhyGoSandbox() {
                   key={ex.id}
                   onClick={() => setActiveId(ex.id)}
                   className={cn(
-                    "text-left px-5 py-4 rounded-[16px] transition-all duration-300 min-w-[240px] lg:min-w-0 flex-shrink-0 border",
+                    "text-left px-5 py-4 rounded-[16px] transition-all duration-300 min-w-[220px] lg:min-w-0 flex-shrink-0 border",
                     isActive
                       ? "bg-white dark:bg-[#1C1C1E] border-[#D2D2D7]/80 dark:border-white/10"
                       : "bg-transparent border-transparent hover:bg-black/[0.03] dark:hover:bg-white/[0.03] opacity-50 hover:opacity-80"
@@ -146,11 +150,11 @@ export default function WhyGoSandbox() {
                   <p className={cn("text-[11px] font-semibold tracking-widest uppercase mb-1.5", isActive ? "text-[#0071E3]" : "text-[#86868B]")}>
                     {ex.label}
                   </p>
-                  <h3 className="font-display font-semibold text-[19px] text-foreground mb-1.5 leading-tight">
+                  <h3 className="font-display font-semibold text-[18px] text-foreground mb-1.5 leading-tight">
                     {ex.title}
                   </h3>
                   {isActive && (
-                    <p className="text-[13px] text-[#86868B] leading-relaxed hidden lg:block mt-2">
+                    <p className="text-[12px] text-[#86868B] leading-relaxed hidden lg:block mt-2">
                       {ex.desc}
                     </p>
                   )}
@@ -160,7 +164,7 @@ export default function WhyGoSandbox() {
           </div>
 
           {/* Right: macOS Style Code Editor — full width of column */}
-          <div className="relative rounded-[24px] border border-black/10 dark:border-white/10 bg-[#1C1C1E] shadow-[0_30px_80px_rgba(0,0,0,0.35)] overflow-hidden w-full">
+          <div className="relative rounded-[24px] border border-black/10 dark:border-white/10 bg-[#1C1C1E] shadow-[0_30px_80px_rgba(0,0,0,0.35)] w-full" style={{ minWidth: 0 }}>
             <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent pointer-events-none" />
             
             {/* Toolbar */}
@@ -183,8 +187,8 @@ export default function WhyGoSandbox() {
             </div>
 
             {/* Editor Area */}
-            <div className="p-8 sm:p-10 min-h-[520px] overflow-x-auto relative">
-              <pre className="font-mono text-[14px] sm:text-[15px] leading-loose text-[#E5E5EA] whitespace-pre">
+            <div className="p-8 sm:p-10 min-h-[520px] relative overflow-x-auto rounded-b-[24px]">
+              <pre className="font-mono text-[14px] sm:text-[15px] leading-loose text-[#E5E5EA] whitespace-pre min-w-max">
                 <code>
                   {typedCode}
                   {isTyping && <span className="inline-block w-2 h-[1em] bg-white/70 animate-pulse ml-0.5 align-middle" />}
