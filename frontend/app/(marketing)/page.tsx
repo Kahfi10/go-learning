@@ -240,33 +240,6 @@ export default function LandingPage() {
           });
         });
 
-        /* Why-go Section Entrance */
-        gsap.fromTo(".why-header > *",
-          { y: 30, opacity: 0 },
-          {
-            y: 0, opacity: 1, stagger: 0.1, duration: 0.8, ease: "expo.out",
-            scrollTrigger: { trigger: "#why-go-section", start: "top 80%", once: true }
-          }
-        );
-
-        /* Why-go cards stagger */
-        gsap.fromTo(".why-card",
-          { y: 60, opacity: 0, scale: 0.95 },
-          {
-            y: 0, opacity: 1, scale: 1, stagger: 0.12, duration: 0.8, ease: "expo.out",
-            scrollTrigger: { trigger: ".why-grid", start: "top 85%", once: true },
-          }
-        );
-
-        /* Trust Banner */
-        gsap.fromTo(".trust-banner-item",
-          { y: 20, opacity: 0 },
-          {
-            y: 0, opacity: 1, stagger: 0.05, duration: 0.6, ease: "expo.out",
-            scrollTrigger: { trigger: ".trust-banner", start: "top 95%", once: true }
-          }
-        );
-
         /* How-steps alternating */
         document.querySelectorAll<HTMLElement>(".how-step").forEach((el, i) => {
           gsap.fromTo(el,
@@ -304,15 +277,6 @@ export default function LandingPage() {
           {
             y: 0, opacity: 1, stagger: 0.06, duration: 0.5, ease: "expo.out",
             scrollTrigger: { trigger: ".faq-list", start: "top 85%", once: true },
-          }
-        );
-
-        /* Final CTA */
-        gsap.fromTo(".final-cta",
-          { y: 28, opacity: 0 },
-          {
-            y: 0, opacity: 1, duration: 0.8, ease: "expo.out",
-            scrollTrigger: { trigger: ".final-cta", start: "top 85%", once: true },
           }
         );
 
@@ -743,6 +707,8 @@ function slugFromTitle(title: string): string {
   };
   return map[title] ?? title.toLowerCase().replace(/\s+/g, "-");
 }
+
+
 
 
 
