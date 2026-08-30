@@ -58,7 +58,7 @@ export default function PreFooterGallery() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative w-full overflow-hidden bg-[#FBFBFD] dark:bg-[#0A0A0A] pt-24 sm:pt-32 pb-48 sm:pb-64">
+    <section ref={sectionRef} className="relative w-full overflow-hidden bg-background pt-24 sm:pt-32 pb-64 sm:pb-80">
       
       {/* Background Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-[#0071E3]/5 rounded-full blur-[120px] pointer-events-none" />
@@ -96,18 +96,17 @@ export default function PreFooterGallery() {
       </div>
 
       {/* The Giant Orbital Ring */}
-      <div className="absolute left-1/2 -bottom-[800px] sm:-bottom-[1400px] w-[1200px] sm:w-[2400px] h-[1200px] sm:h-[2400px] -translate-x-1/2 pointer-events-none z-0">
+      <div className="absolute left-1/2 bottom-0 w-[1200px] sm:w-[2400px] h-[600px] sm:h-[1200px] -translate-x-1/2 pointer-events-none z-0">
         
         {/* Ring Border */}
-        <div ref={ringRef} className="absolute inset-0 rounded-full border-[1.5px] border-[#D2D2D7]/60 dark:border-white/10" style={{ width: '100%', height: '100%' }}>
+        <div ref={ringRef} className="absolute left-0 top-0 rounded-full border-[1px] border-black/10 dark:border-white/10" style={{ width: '100%', height: '200%' }}>
           
           {/* Avatars spread along the top arc */}
-          {Array.from({ length: 18 }).map((_, i) => {
-            // Spread avatars over a specific angle range (e.g., -90 to -270 degrees)
-            // So they are at the "top" of the circle
-            const startAngle = 180;
-            const endAngle = 360;
-            const step = (endAngle - startAngle) / 18;
+          {Array.from({ length: 14 }).map((_, i) => {
+            // Spread avatars over a specific angle range
+            const startAngle = 200;
+            const endAngle = 340;
+            const step = (endAngle - startAngle) / 14;
             const angle = startAngle + (i * step);
             
             const radius = 50; 
@@ -117,7 +116,7 @@ export default function PreFooterGallery() {
             return (
               <div 
                 key={i}
-                className="absolute w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] border-4 border-[#FBFBFD] dark:border-[#0A0A0A] bg-white dark:bg-[#111214]"
+                className="absolute w-14 h-14 sm:w-20 sm:h-20 rounded-full overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] border-4 border-background bg-white dark:bg-[#111214]"
                 style={{
                   top: `${y}%`,
                   left: `${x}%`,
