@@ -11,6 +11,9 @@ import { cn } from "@/lib/utils";
 import { api, type ExecuteResult } from "@/lib/api";
 
 import { useAuth } from "@/context/AuthContext";
+import WhyGoSticky from "@/components/marketing/WhyGoSticky";
+import WhyGoSandbox from "@/components/marketing/WhyGoSandbox";
+import WhyGoAsymmetrical from "@/components/marketing/WhyGoAsymmetrical";
 
 /* ─── Static Data ───────────────────────────────────────── */
 const TOPICS = [
@@ -379,66 +382,10 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           WHY GO — Premium Bento (Fullscreen)
       ══════════════════════════════════════════ */}
-      <section id="why-go-section" className="py-24 sm:py-32 px-4 sm:px-6 bg-[#F5F5F7] dark:bg-[#0A0A0A] min-h-[100svh] flex flex-col justify-center">
-        <div className="mx-auto max-w-7xl w-full">
-          
-          <div className="why-header text-center mb-16 sm:mb-20 max-w-3xl mx-auto">
-            <p className="text-[#86868B] text-[12px] sm:text-[14px] font-semibold uppercase tracking-[0.2em] mb-4 sm:mb-5">Mengapa Go?</p>
-            <h2 className="font-display font-semibold tracking-[-0.03em] text-foreground leading-[1.1] text-balance"
-              style={{ fontSize: "clamp(40px, 6vw, 64px)" }}>
-              Bahasa yang dibangun untuk masa depan.
-            </h2>
-          </div>
+      <WhyGoSticky />
+      <WhyGoSandbox />
+      <WhyGoAsymmetrical />
 
-          {/* Bento Grid */}
-          <div className="why-grid grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
-            {WHY_GO.map((w) => (
-              <div key={w.label}
-                className="why-card relative bg-white dark:bg-[#1C1C1E] rounded-[32px] p-10 sm:p-14 flex flex-col justify-between group hover:-translate-y-1.5 transition-all duration-500 overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] ring-1 ring-[#D2D2D7]/50 dark:ring-white/10 min-h-[280px] sm:min-h-[340px]"
-              >
-                {/* Background subtle glow */}
-                <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-[100px] opacity-30 group-hover:opacity-60 transition-opacity duration-700 pointer-events-none" style={{ backgroundColor: w.color }} />
-                
-                {/* Icon */}
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl flex items-center justify-center shrink-0 mb-10 relative z-10"
-                  style={{ backgroundColor: w.color + "15" }}>
-                  <w.icon className="w-8 h-8 sm:w-10 sm:h-10" style={{ color: w.color }} />
-                </div>
-
-                {/* Content */}
-                <div className="relative z-10">
-                  <p className="font-display font-bold tracking-[-0.03em] leading-[1.04] pb-[0.04em] mb-5"
-                    style={{
-                      color: w.color,
-                      fontSize: "clamp(56px, 8vw, 88px)",
-                    }}>
-                    {w.stat}
-                  </p>
-                  <h3 className="font-semibold text-[20px] sm:text-[24px] text-foreground mb-3">{w.label}</h3>
-                  <p className="text-[#86868B] text-[16px] sm:text-[18px] leading-relaxed max-w-[85%]">{w.sub}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Trust Banner */}
-          <div className="trust-banner mt-24 sm:mt-32 pt-12 border-t border-[#D2D2D7]/60 dark:border-white/10 text-center">
-            <p className="trust-banner-item text-[#86868B] text-[13px] sm:text-[14px] font-medium tracking-widest uppercase mb-8">Infrastruktur dunia dibangun dengan Go</p>
-            <div className="flex flex-wrap items-center justify-center gap-x-10 sm:gap-x-16 gap-y-8 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-              {["Google", "Docker", "Kubernetes", "Cloudflare", "Uber", "Dropbox"].map((c) => (
-                <span key={c} className="trust-banner-item font-display font-bold text-[24px] sm:text-[32px] tracking-tight text-foreground/80 hover:text-foreground transition-colors">
-                  {c}
-                </span>
-              ))}
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════
-          HOW IT WORKS — Fullscreen 2x2 Layout
-      ══════════════════════════════════════════ */}
       <section className="py-24 sm:py-32 px-4 sm:px-6 flex flex-col justify-center overflow-visible border-t border-[#D2D2D7]/40 dark:border-white/10">
         <div className="mx-auto max-w-7xl w-full">
           <div className="mb-16 sm:mb-20 text-center">
