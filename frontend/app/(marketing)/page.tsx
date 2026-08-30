@@ -281,8 +281,8 @@ export default function LandingPage() {
       <NavbarPill />
 
       {/* ── Hero Section ── */}
-      <section className="relative h-[calc(100vh-80px)] min-h-[600px] flex items-center overflow-hidden px-6 sm:px-10">
-        {/* layered background: radial glow + subtle dot grid */}
+      <section className="relative h-[calc(100vh-80px)] min-h-[620px] overflow-hidden px-6 sm:px-10">
+        {/* layered background */}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute inset-0"
             style={{ background: "radial-gradient(ellipse 900px 700px at 60% 45%, rgba(0,113,227,0.055) 0%, transparent 65%)" }}
@@ -297,52 +297,56 @@ export default function LandingPage() {
           />
         </div>
 
-        <div className="mx-auto w-full max-w-screen-xl relative z-10 h-full flex items-center">
-          <div className="w-full grid lg:grid-cols-[1fr_1.35fr] gap-8 lg:gap-12 items-center">
+        {/* Full-height grid — left text | right GIF */}
+        <div className="relative z-10 h-full mx-auto w-full max-w-screen-xl">
+          <div className="h-full grid lg:grid-cols-[1fr_1.5fr] gap-8 lg:gap-10">
 
             {/* ── Left column ── */}
-            <div className="text-center lg:text-left py-12 lg:py-0">
+            <div className="flex items-center py-12 lg:py-0 text-center lg:text-left">
+              <div className="w-full">
 
-              {/* Chapter label */}
-              <p className="hero-title-line inline-flex items-center gap-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-[#86868B] mb-5">
-                <span className="text-[#0071E3] font-bold">01</span>
-                <span>Hero · Platform Go</span>
-                <span className="hidden lg:block w-10 h-px bg-[#D2D2D7]/60 dark:bg-white/10 shrink-0" />
-              </p>
+                {/* Chapter label */}
+                <p className="hero-title-line inline-flex items-center gap-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-[#86868B] mb-5">
+                  <span className="text-[#0071E3] font-bold">01</span>
+                  <span>Hero · Platform Go</span>
+                  <span className="hidden lg:block w-10 h-px bg-[#D2D2D7]/60 dark:bg-white/10 shrink-0" />
+                </p>
 
-              {/* Oversized title */}
-              <h1 className="font-display font-bold text-foreground"
-                style={{ fontSize: "clamp(56px, 7.5vw, 108px)", letterSpacing: "-0.055em", lineHeight: "0.88", marginBottom: "22px" }}>
-                <span className="hero-title-line block">KUASAI</span>
-                <span className="hero-title-line block text-[#0071E3]">GO.</span>
-              </h1>
+                {/* Oversized title */}
+                <h1 className="font-display font-bold text-foreground"
+                  style={{ fontSize: "clamp(52px, 6.5vw, 96px)", letterSpacing: "-0.055em", lineHeight: "0.88", marginBottom: "20px" }}>
+                  <span className="hero-title-line block">KUASAI</span>
+                  <span className="hero-title-line block text-[#0071E3]">GO.</span>
+                </h1>
 
-              {/* Italic tagline */}
-              <p className="hero-sub italic text-[#6E6E73] leading-relaxed max-w-[480px] mx-auto lg:mx-0 mb-8"
-                style={{ fontSize: "clamp(16px, 1.6vw, 19px)" }}>
-                Bangun masa depan dengan bahasa yang paling banyak dicari developer dunia.
-              </p>
+                {/* Italic tagline */}
+                <p className="hero-sub italic text-[#6E6E73] leading-relaxed max-w-[460px] mx-auto lg:mx-0 mb-7"
+                  style={{ fontSize: "clamp(16px, 1.5vw, 18px)" }}>
+                  Bangun masa depan dengan bahasa yang paling banyak dicari developer dunia.
+                </p>
 
-              <HeroActions />
+                <HeroActions />
 
-              {/* Stats row */}
-              <div className="flex border-t border-[#D2D2D7]/50 dark:border-white/[0.07] pt-6 mt-6 max-w-[460px] mx-auto lg:mx-0">
-                {[
-                  { n: "76+",  l: "Lessons" },
-                  { n: "15",   l: "Topik"   },
-                  { n: "300+", l: "Quiz"    },
-                  { n: "10",   l: "Level"   },
-                ].map((s, i) => (
-                  <div key={i} className="hero-stats-item flex-1 pr-4 border-r border-[#D2D2D7]/50 dark:border-white/[0.07] mr-4 last:border-r-0 last:pr-0 last:mr-0">
-                    <p className="font-display font-bold text-foreground" style={{ fontSize: "clamp(18px, 2vw, 26px)", letterSpacing: "-0.04em", lineHeight: "1" }}>{s.n}</p>
-                    <p className="text-[#86868B] text-[10px] uppercase tracking-[0.08em] font-semibold mt-1">{s.l}</p>
-                  </div>
-                ))}
+                {/* Stats row */}
+                <div className="flex border-t border-[#D2D2D7]/50 dark:border-white/[0.07] pt-5 mt-5 max-w-[440px] mx-auto lg:mx-0">
+                  {[
+                    { n: "76+",  l: "Lessons" },
+                    { n: "15",   l: "Topik"   },
+                    { n: "300+", l: "Quiz"    },
+                    { n: "10",   l: "Level"   },
+                  ].map((s, i) => (
+                    <div key={i} className="hero-stats-item flex-1 pr-4 border-r border-[#D2D2D7]/50 dark:border-white/[0.07] mr-4 last:border-r-0 last:pr-0 last:mr-0">
+                      <p className="font-display font-bold text-foreground" style={{ fontSize: "clamp(18px, 1.8vw, 24px)", letterSpacing: "-0.04em", lineHeight: "1" }}>{s.n}</p>
+                      <p className="text-[#86868B] text-[10px] uppercase tracking-[0.08em] font-semibold mt-1">{s.l}</p>
+                    </div>
+                  ))}
+                </div>
+
               </div>
             </div>
 
-            {/* ── Right column: GIF preview (fills column width) ── */}
-            <div className="hidden lg:flex items-center justify-end py-8">
+            {/* ── Right column: GIF fills full section height ── */}
+            <div className="hidden lg:block h-full py-8 pr-2">
               <HeroCodePreview />
             </div>
 
@@ -817,21 +821,21 @@ function HeroCodePreview() {
   }, []);
 
   return (
-    <div ref={containerRef} className="hero-code-window relative w-full perspective-[1200px]">
-      
-      {/* ── Main Frame ── */}
-      <div className="parallax-main relative z-10 bg-white dark:bg-[#1C1C1E] p-2 sm:p-2.5 rounded-[24px] shadow-2xl ring-1 ring-[#D2D2D7]/50 dark:ring-white/10">
-        <div className="bg-[#F5F5F7] dark:bg-[#0A0A0A] rounded-[16px] overflow-hidden">
+    <div ref={containerRef} className="hero-code-window relative w-full h-full perspective-[1200px]">
+
+      {/* Main Frame — fills full column height */}
+      <div className="parallax-main relative z-10 bg-white dark:bg-[#1C1C1E] p-2.5 rounded-[24px] shadow-2xl ring-1 ring-[#D2D2D7]/50 dark:ring-white/10 h-full">
+        <div className="bg-[#F5F5F7] dark:bg-[#0A0A0A] rounded-[18px] overflow-hidden h-full">
           <img
             src="/hero-gif.gif"
             alt="GoLearn Platform"
-            className="w-full h-auto object-cover block"
+            className="w-full h-full object-cover object-top block"
           />
         </div>
       </div>
 
-      {/* Floating Badge 1 — top right */}
-      <div className="parallax-badge-1 absolute -top-5 -right-5 z-20 bg-white/90 dark:bg-[#2C2C2E]/90 backdrop-blur-md px-4 py-3 rounded-2xl shadow-xl ring-1 ring-[#D2D2D7]/60 dark:ring-white/10 flex items-center gap-3">
+      {/* Floating Badge 1 — top right, inside frame */}
+      <div className="parallax-badge-1 absolute top-5 right-5 z-20 bg-white/90 dark:bg-[#2C2C2E]/90 backdrop-blur-md px-4 py-3 rounded-2xl shadow-xl ring-1 ring-[#D2D2D7]/60 dark:ring-white/10 flex items-center gap-3">
         <div className="w-8 h-8 rounded-full bg-[#34C759]/15 flex items-center justify-center">
           <Trophy className="w-4 h-4 text-[#30D158]" />
         </div>
@@ -841,8 +845,8 @@ function HeroCodePreview() {
         </div>
       </div>
 
-      {/* Floating Badge 2 — bottom left */}
-      <div className="parallax-badge-2 absolute -bottom-5 -left-5 z-20 bg-white/90 dark:bg-[#2C2C2E]/90 backdrop-blur-md px-4 py-3 rounded-2xl shadow-xl ring-1 ring-[#D2D2D7]/60 dark:ring-white/10 flex items-center gap-3">
+      {/* Floating Badge 2 — bottom left, inside frame */}
+      <div className="parallax-badge-2 absolute bottom-10 left-5 z-20 bg-white/90 dark:bg-[#2C2C2E]/90 backdrop-blur-md px-4 py-3 rounded-2xl shadow-xl ring-1 ring-[#D2D2D7]/60 dark:ring-white/10 flex items-center gap-3">
         <div className="w-8 h-8 rounded-full bg-[#0071E3]/15 flex items-center justify-center">
           <Terminal className="w-4 h-4 text-[#0071E3]" />
         </div>
