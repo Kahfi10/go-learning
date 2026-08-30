@@ -382,9 +382,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           WHY GO — Premium Bento (Fullscreen)
       ══════════════════════════════════════════ */}
-      <WhyGoSticky />
       <WhyGoSandbox />
-      <WhyGoAsymmetrical />
 
       <section className="py-24 sm:py-32 px-4 sm:px-6 flex flex-col justify-center overflow-visible border-t border-[#D2D2D7]/40 dark:border-white/10">
         <div className="mx-auto max-w-7xl w-full">

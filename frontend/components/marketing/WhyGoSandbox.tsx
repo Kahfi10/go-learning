@@ -126,7 +126,7 @@ export default function WhyGoSandbox() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-[300px_1fr] gap-8 lg:gap-12 items-start max-w-5xl mx-auto">
+        <div className="grid lg:grid-cols-[380px_1fr] xl:grid-cols-[420px_1fr] gap-8 lg:gap-12 xl:gap-16 items-start max-w-[1200px] mx-auto w-full">
           
           {/* Left: Interactive Tabs */}
           <div className="flex flex-row lg:flex-col overflow-x-auto no-scrollbar gap-3 lg:gap-4 pb-4 lg:pb-0">
@@ -160,7 +160,7 @@ export default function WhyGoSandbox() {
           </div>
 
           {/* Right: macOS Style Code Editor */}
-          <div className="relative rounded-[24px] border border-black/10 dark:border-white/10 bg-[#1C1C1E] shadow-[0_30px_80px_rgba(0,0,0,0.4)] overflow-hidden">
+            <div className="relative rounded-[24px] border border-black/10 dark:border-white/10 bg-[#1C1C1E] shadow-[0_30px_80px_rgba(0,0,0,0.4)] overflow-hidden w-full lg:w-[120%] xl:w-[130%] z-20">
             <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent pointer-events-none" />
             
             {/* Toolbar */}
@@ -183,8 +183,8 @@ export default function WhyGoSandbox() {
             </div>
 
             {/* Editor Area */}
-            <div className="p-6 sm:p-8 min-h-[380px] overflow-x-auto relative">
-              <pre className="font-mono text-[14px] sm:text-[15px] leading-relaxed text-[#E5E5EA]">
+            <div className="p-8 sm:p-10 min-h-[460px] overflow-x-auto relative">
+              <pre className="font-mono text-[15px] sm:text-[16px] leading-loose text-[#E5E5EA]">
                 <code>
                   {typedCode}
                   {isTyping && <span className="inline-block w-2 h-[1em] bg-white/70 animate-pulse ml-0.5 align-middle" />}
