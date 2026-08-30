@@ -101,9 +101,9 @@ export default function PreFooterGallery() {
               {Array.from({ length: 12 }).map((_, i) => {
                 const angle = (i * (360 / 12));
                 const radius = 50; // 50% = edge of the circle
-                // Calculate position using basic trigonometry
-                const x = 50 + radius * Math.cos(angle * (Math.PI / 180));
-                const y = 50 + radius * Math.sin(angle * (Math.PI / 180));
+                // Calculate position using basic trigonometry and fix hydration rounding error by capping decimals
+                const x = Number((50 + radius * Math.cos(angle * (Math.PI / 180))).toFixed(5));
+                const y = Number((50 + radius * Math.sin(angle * (Math.PI / 180))).toFixed(5));
                 
                 return (
                   <div 
