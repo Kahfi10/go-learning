@@ -143,10 +143,6 @@ export default function WhyGoSandbox() {
                       : "bg-transparent border-transparent hover:bg-black/[0.03] dark:hover:bg-white/[0.03] opacity-50 hover:opacity-80"
                   )}
                 >
-                  {/* Active left accent bar */}
-                  {isActive && (
-                    <span className="absolute left-0 top-3 bottom-3 w-[3px] rounded-full bg-[#0071E3]" />
-                  )}
                   <p className={cn("text-[11px] font-semibold tracking-widest uppercase mb-1.5", isActive ? "text-[#0071E3]" : "text-[#86868B]")}>
                     {ex.label}
                   </p>
