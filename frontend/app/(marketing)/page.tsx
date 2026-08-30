@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
@@ -18,7 +18,7 @@ import WhyGoSticky from "@/components/marketing/WhyGoSticky";
 import WhyGoSandbox from "@/components/marketing/WhyGoSandbox";
 import WhyGoAsymmetrical from "@/components/marketing/WhyGoAsymmetrical";
 
-/* ─── Static Data ───────────────────────────────────────── */
+/* â”€â”€â”€ Static Data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const TOPICS = [
   { n: "01", title: "Getting Started",      color: "#0071E3", level: "Beginner",     lessons: 4  },
   { n: "02", title: "Variables & Types",    color: "#34C759", level: "Beginner",     lessons: 5  },
@@ -47,7 +47,7 @@ const WHY_GO = [
 const HOW_STEPS = [
   { n: "01", title: "Pilih topik",       desc: "15 topik terstruktur dari dasar hingga production patterns." },
   { n: "02", title: "Baca & pahami",     desc: "Konten bilingual (ID/EN) dengan penjelasan mendalam dan contoh nyata." },
-  { n: "03", title: "Langsung coding",   desc: "Editor Monaco embedded — jalankan Go di browser tanpa install apapun." },
+  { n: "03", title: "Langsung coding",   desc: "Editor Monaco embedded â€” jalankan Go di browser tanpa install apapun." },
   { n: "04", title: "Uji pemahaman",     desc: "Quiz per lesson, kumpulkan XP, naik level, dan bersaing di leaderboard." },
 ];
 
@@ -90,7 +90,7 @@ import (
 
 func worker(id int, wg *sync.WaitGroup) {
     defer wg.Done()
-    fmt.Printf("Worker %d ✓\\n", id)
+    fmt.Printf("Worker %d âœ“\\n", id)
 }
 
 func main() {
@@ -101,7 +101,7 @@ func main() {
     }
     wg.Wait()
 }`,
-    output: "Worker 1 ✓\nWorker 3 ✓\nWorker 2 ✓",
+    output: "Worker 1 âœ“\nWorker 3 âœ“\nWorker 2 âœ“",
   },
   {
     label: "Interface",
@@ -175,12 +175,14 @@ func main() {
 const FAQS = [
   { q: "Apakah GoLearn benar-benar gratis?",           a: "Ya, 100% gratis. Semua 76 lessons, quiz, editor, dan fitur komunitas dapat diakses tanpa biaya apapun." },
   { q: "Perlu install Go dulu?",                        a: "Tidak perlu. Editor Monaco di browser terhubung langsung ke sandbox executor kami. Tulis dan jalankan kode tanpa setup." },
-  { q: "Konten tersedia dalam bahasa Indonesia?",       a: "Ya. Semua lesson tersedia bilingual — toggle antara Bahasa Indonesia dan English kapan saja di setiap lesson." },
+  { q: "Konten tersedia dalam bahasa Indonesia?",       a: "Ya. Semua lesson tersedia bilingual â€” toggle antara Bahasa Indonesia dan English kapan saja di setiap lesson." },
   { q: "Cocok untuk pemula yang belum kenal Go?",       a: "Sangat cocok. Topik 1-7 dirancang khusus untuk pemula, mulai dari instalasi dan Hello World." },
-  { q: "Berapa lama menyelesaikan seluruh kurikulum?",  a: "Sekitar 30–40 jam belajar total. Bisa diselesaikan dalam 2–4 minggu dengan belajar 1–2 jam per hari." },
+  { q: "Berapa lama menyelesaikan seluruh kurikulum?",  a: "Sekitar 30â€“40 jam belajar total. Bisa diselesaikan dalam 2â€“4 minggu dengan belajar 1â€“2 jam per hari." },
 ];
 
-/* ─── Page ──────────────────────────────────────────────── */
+/* â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+import PreFooterGallery from "@/components/marketing/PreFooterGallery";
+
 export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -195,7 +197,7 @@ export default function LandingPage() {
 
       ctx = gsap.context(() => {
 
-        /* Hero timeline — smoother, more premium */
+        /* Hero timeline â€” smoother, more premium */
         const heroTl = gsap.timeline({ delay: 0.04 });
         heroTl
           .fromTo(".hero-title-line", { y: 24, opacity: 0.001 }, { y: 0, opacity: 1, duration: 0.7, ease: "expo.out", stagger: 0.06 })
@@ -323,15 +325,15 @@ export default function LandingPage() {
       <div ref={containerRef} className="bg-background overflow-x-hidden pt-20">
         <NavbarPill />
 
-      {/* ══════════════════════════════════════════
-          HERO  — Full Screen Split
-      ══════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+          HERO  â€” Full Screen Split
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section className="relative min-h-[100svh] w-full flex flex-col xl:flex-row overflow-hidden border-b border-[#D2D2D7]/40 dark:border-white/10">
         <div aria-hidden className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
           <div className="w-[600px] sm:w-[900px] h-[400px] sm:h-[500px] rounded-full bg-[#0071E3]/6 blur-[100px] sm:blur-[120px]" />
         </div>
         
-        {/* ── Left Half: Text Content ── */}
+        {/* â”€â”€ Left Half: Text Content â”€â”€ */}
         <div className="relative z-10 flex-1 flex flex-col justify-center px-6 sm:px-12 xl:px-20 pt-32 pb-12 xl:py-24 xl:max-w-[45%]">
           <div className="w-full max-w-[580px] mx-auto xl:ml-auto xl:mr-8 2xl:mr-12 text-center xl:text-left">
             
@@ -349,7 +351,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* ── Right Half: Code Preview ── */}
+        {/* â”€â”€ Right Half: Code Preview â”€â”€ */}
         <div className="relative z-10 flex-1 flex flex-col justify-center px-6 sm:px-12 xl:px-20 pb-20 pt-10 xl:py-24 xl:max-w-[55%]">
           <div className="w-full max-w-[720px] mx-auto xl:mr-auto xl:ml-8 2xl:ml-12 relative z-10 flex justify-center xl:justify-start">
             <HeroCodePreview />
@@ -357,9 +359,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           STATS
-      ══════════════════════════════════════════ */}
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section id="stats-section" className="py-16 sm:py-24 border-t border-[#D2D2D7]/40">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-6 md:gap-x-0 divide-x-0 md:divide-x divide-[#D2D2D7]/40 dark:divide-white/10">
@@ -382,9 +384,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════
-          WHY GO — Premium Bento (Fullscreen)
-      ══════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+          WHY GO â€” Premium Bento (Fullscreen)
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <WhyGoSandbox />
 
       <section className="py-24 sm:py-32 px-4 sm:px-6 flex flex-col justify-center overflow-visible border-t border-[#D2D2D7]/40 dark:border-white/10">
@@ -397,7 +399,7 @@ export default function LandingPage() {
             </h2>
           </div>
 
-          {/* 2×2 grid desktop, 1 col mobile */}
+          {/* 2Ã—2 grid desktop, 1 col mobile */}
           <div className="grid lg:grid-cols-2 gap-5 sm:gap-8">
             {HOW_STEPS.map((s, i) => (
               <div key={s.n}
@@ -416,9 +418,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           CODE SHOWCASE
-      ══════════════════════════════════════════ */}
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section className="py-16 sm:py-20 px-4 sm:px-6 bg-[#F5F5F7] dark:bg-[#0A0A0A]">
         <div className="mx-auto max-w-4xl">
           <div className="mb-10">
@@ -431,11 +433,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════
-          TOPICS — rich cards + GSAP stagger + hover tilt
-      ══════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+          TOPICS â€” rich cards + GSAP stagger + hover tilt
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section className="pt-16 sm:pt-20 pb-24 sm:pb-28 bg-[#F5F5F7] dark:bg-[#0A0A0A] overflow-visible relative z-10">
-        {/* Header — split into 2 stable rows to avoid overlap */}
+        {/* Header â€” split into 2 stable rows to avoid overlap */}
         <div className="px-4 sm:px-6 max-w-6xl mx-auto mb-10 sm:mb-12">
           <div className="flex items-end justify-between gap-4 flex-wrap mb-4">
             <div>
@@ -444,7 +446,7 @@ export default function LandingPage() {
                 className="font-display font-semibold tracking-[-0.03em] text-foreground"
                 style={{ fontSize: "clamp(22px, 3.5vw, 44px)" }}
               >
-                15 topik · 76 lessons
+                15 topik Â· 76 lessons
               </h2>
             </div>
             <Link
@@ -491,9 +493,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           FEATURES DEEP DIVE
-      ══════════════════════════════════════════ */}
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section className="py-16 sm:py-20 px-4 sm:px-6 relative z-0">
         <div className="mx-auto max-w-5xl">
           <div className="mb-10 sm:mb-12">
@@ -509,9 +511,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           FAQ
-      ══════════════════════════════════════════ */}
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section className="py-16 sm:py-20 px-4 sm:px-6 bg-[#F5F5F7] dark:bg-[#0A0A0A]">
         <div className="mx-auto max-w-3xl">
           <div className="mb-10">
@@ -526,9 +528,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           FINAL CTA
-      ══════════════════════════════════════════ */}
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section className="py-28 px-6 relative overflow-hidden">
         <div aria-hidden className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div className="w-[700px] h-[300px] rounded-full bg-[#0071E3]/5 blur-[100px]" />
@@ -553,7 +555,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Footer ── */}
+      {/* â”€â”€ Footer â”€â”€ */}
       <footer className="border-t border-[#D2D2D7]/40 py-12 px-6">
         <div className="mx-auto max-w-5xl">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8 mb-8">
@@ -577,10 +579,10 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="border-t border-[#D2D2D7]/40 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-[#86868B] text-[13px]">© 2026 GoLearn. Dibuat untuk Go learners Indonesia.</p>
+            <p className="text-[#86868B] text-[13px]">Â© 2026 GoLearn. Dibuat untuk Go learners Indonesia.</p>
             <Link href="https://github.com/Kahfi10/go-learning"
               className="text-[#86868B] text-[13px] hover:text-foreground transition-colors">
-              GitHub →
+              GitHub â†’
             </Link>
           </div>
         </div>
@@ -589,7 +591,7 @@ export default function LandingPage() {
   );
 }
 
-/* ─── Sub-components ─────────────────────────────────────── */
+/* â”€â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function CodeShowcase({ tabs }: { tabs: typeof CODE_TABS }) {
   const [active, setActive] = useState(0);
   return (
@@ -646,7 +648,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   );
 }
 
-/* ── DragScroll — mouse drag to scroll horizontally ── */
+/* â”€â”€ DragScroll â€” mouse drag to scroll horizontally â”€â”€ */
 function DragScroll({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
@@ -949,7 +951,7 @@ function HeroCodePreview() {
   return (
     <div ref={containerRef} className="hero-code-window relative w-full max-w-[640px] mx-auto perspective-[1200px]">
       
-      {/* ── Main Frame ── */}
+      {/* â”€â”€ Main Frame â”€â”€ */}
       <div className="parallax-main relative z-10 bg-white dark:bg-[#1C1C1E] p-2 sm:p-2.5 rounded-[24px] shadow-2xl ring-1 ring-[#D2D2D7]/50 dark:ring-white/10">
         <div className="bg-[#F5F5F7] dark:bg-[#0A0A0A] rounded-[16px] overflow-hidden">
           <img
@@ -960,7 +962,7 @@ function HeroCodePreview() {
         </div>
       </div>
 
-      {/* ── Floating Badge 1 (Top Right) ── */}
+      {/* â”€â”€ Floating Badge 1 (Top Right) â”€â”€ */}
       <div className="parallax-badge-1 absolute -top-4 -right-4 sm:-top-6 sm:-right-6 z-20 bg-white/90 dark:bg-[#2C2C2E]/90 backdrop-blur-md px-3.5 py-2.5 rounded-2xl shadow-xl ring-1 ring-[#D2D2D7]/60 dark:ring-white/10 flex items-center gap-2.5">
         <div className="w-7 h-7 rounded-full bg-[#34C759]/15 flex items-center justify-center">
           <Trophy className="w-3.5 h-3.5 text-[#30D158]" />
@@ -971,7 +973,7 @@ function HeroCodePreview() {
         </div>
       </div>
 
-      {/* ── Floating Badge 2 (Bottom Left) ── */}
+      {/* â”€â”€ Floating Badge 2 (Bottom Left) â”€â”€ */}
       <div className="parallax-badge-2 absolute -bottom-3 -left-3 sm:-bottom-5 sm:-left-5 z-20 bg-white/90 dark:bg-[#2C2C2E]/90 backdrop-blur-md px-3.5 py-2.5 rounded-2xl shadow-xl ring-1 ring-[#D2D2D7]/60 dark:ring-white/10 flex items-center gap-2.5">
         <div className="w-7 h-7 rounded-full bg-[#0071E3]/15 flex items-center justify-center">
           <Terminal className="w-3.5 h-3.5 text-[#0071E3]" />
@@ -998,3 +1000,6 @@ function slugFromTitle(title: string): string {
   };
   return map[title] ?? title.toLowerCase().replace(/\s+/g, "-");
 }
+
+
+
