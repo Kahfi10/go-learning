@@ -556,6 +556,8 @@ export default function LandingPage() {
       </section>
 
       {/* â”€â”€ Footer â”€â”€ */}
+        <PreFooterGallery />
+
       <footer className="border-t border-[#D2D2D7]/40 py-12 px-6">
         <div className="mx-auto max-w-5xl">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8 mb-8">
@@ -1000,6 +1002,9 @@ function slugFromTitle(title: string): string {
   };
   return map[title] ?? title.toLowerCase().replace(/\s+/g, "-");
 }
+
+
+
 
 
 
