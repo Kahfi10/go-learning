@@ -7,6 +7,9 @@ import {
   Terminal, Cpu, Globe,
 } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
+import NavbarPill from "@/components/navigation/variants/NavbarPill";
+import NavbarMonospace from "@/components/navigation/variants/NavbarMonospace";
+import NavbarDualTier from "@/components/navigation/variants/NavbarDualTier";
 import { cn } from "@/lib/utils";
 import { api, type ExecuteResult } from "@/lib/api";
 
@@ -316,9 +319,9 @@ export default function LandingPage() {
     return () => ctx?.revert();
   }, []);
 
-  return (
-    <div ref={containerRef} className="bg-background overflow-x-hidden">
-      <Navbar />
+    return (
+      <div ref={containerRef} className="bg-background overflow-x-hidden pt-20">
+        <NavbarPill />
 
       {/* ══════════════════════════════════════════
           HERO  — Full Screen Split
