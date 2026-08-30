@@ -116,7 +116,7 @@ export default function WhyGoSandbox() {
         
         <div className="why-header text-center mb-16 max-w-3xl mx-auto">
           <p className="text-[#0071E3] text-[12px] sm:text-[14px] font-semibold uppercase tracking-[0.2em] mb-4 sm:mb-5">
-            Konsep 2: Code Demo
+            Mengapa Go?
           </p>
           <h2 className="font-display font-semibold tracking-[-0.03em] text-foreground leading-[1.1] text-balance mb-5" style={{ fontSize: "clamp(36px, 5vw, 56px)" }}>
             Talk is cheap. <br/> Show me the code.
@@ -129,7 +129,7 @@ export default function WhyGoSandbox() {
         <div className="grid lg:grid-cols-[380px_1fr] xl:grid-cols-[420px_1fr] gap-8 lg:gap-12 xl:gap-16 items-start max-w-[1200px] mx-auto w-full">
           
           {/* Left: Interactive Tabs */}
-          <div className="flex flex-row lg:flex-col overflow-x-auto no-scrollbar gap-3 lg:gap-4 pb-4 lg:pb-0">
+          <div className="flex flex-row lg:flex-col overflow-x-auto no-scrollbar gap-2 lg:gap-2 pb-4 lg:pb-0">
             {CODE_EXAMPLES.map((ex) => {
               const isActive = activeId === ex.id;
               return (
@@ -137,20 +137,24 @@ export default function WhyGoSandbox() {
                   key={ex.id}
                   onClick={() => setActiveId(ex.id)}
                   className={cn(
-                    "text-left p-5 rounded-[20px] transition-all duration-300 min-w-[240px] lg:min-w-0 flex-shrink-0 border",
+                    "text-left px-5 py-4 rounded-[16px] transition-all duration-300 min-w-[240px] lg:min-w-0 flex-shrink-0 border relative",
                     isActive
-                      ? "bg-white dark:bg-[#1C1C1E] border-[#0071E3]/20 shadow-[0_12px_30px_rgba(0,113,227,0.12)]"
-                      : "bg-transparent border-transparent hover:bg-black/5 dark:hover:bg-white/5 opacity-60 hover:opacity-100"
+                      ? "bg-white dark:bg-[#1C1C1E] border-[#D2D2D7]/80 dark:border-white/10"
+                      : "bg-transparent border-transparent hover:bg-black/[0.03] dark:hover:bg-white/[0.03] opacity-50 hover:opacity-80"
                   )}
                 >
-                  <p className={cn("text-[12px] font-semibold tracking-widest uppercase mb-2", isActive ? "text-[#0071E3]" : "text-[#86868B]")}>
+                  {/* Active left accent bar */}
+                  {isActive && (
+                    <span className="absolute left-0 top-3 bottom-3 w-[3px] rounded-full bg-[#0071E3]" />
+                  )}
+                  <p className={cn("text-[11px] font-semibold tracking-widest uppercase mb-1.5", isActive ? "text-[#0071E3]" : "text-[#86868B]")}>
                     {ex.label}
                   </p>
-                  <h3 className="font-display font-semibold text-[20px] text-foreground mb-2 leading-tight">
+                  <h3 className="font-display font-semibold text-[19px] text-foreground mb-1.5 leading-tight">
                     {ex.title}
                   </h3>
                   {isActive && (
-                    <p className="text-[13px] text-[#86868B] leading-relaxed hidden lg:block">
+                    <p className="text-[13px] text-[#86868B] leading-relaxed hidden lg:block mt-2">
                       {ex.desc}
                     </p>
                   )}
