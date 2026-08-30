@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
+import NextTopLoader from 'nextjs-toploader';
 import { AuthProvider } from "@/context/AuthContext";
 import CommandSearch from "@/components/search/CommandSearch";
 import "./globals.css";
@@ -20,6 +21,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="id" suppressHydrationWarning data-scroll-behavior="smooth">
       <body>
+        <NextTopLoader 
+          color="#0071E3" 
+          initialPosition={0.08} 
+          crawlSpeed={200} 
+          height={3} 
+          crawl={true} 
+          showSpinner={false} 
+          easing="ease" 
+          speed={200} 
+          shadow="0 0 10px #0071E3,0 0 5px #0071E3" 
+        />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange={false}>
           <AuthProvider>
             {children}
