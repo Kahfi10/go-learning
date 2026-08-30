@@ -1,8 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Terminal, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const CODE_EXAMPLES = [
   {
@@ -86,8 +90,48 @@ export default function WhyGoSandbox() {
   const [typedCode, setTypedCode] = useState("");
   const [isTyping, setIsTyping] = useState(true);
   const [copied, setCopied] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
 
   const activeExample = CODE_EXAMPLES.find((ex) => ex.id === activeId) ?? CODE_EXAMPLES[0];
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Header animation
+      gsap.fromTo(headerRef.current,
+        { y: 30, opacity: 0 },
+        {
+          y: 0, opacity: 1, duration: 0.8, ease: "power3.out",
+          scrollTrigger: { trigger: sectionRef.current, start: "top 80%", once: true }
+        }
+      );
+
+      // Tabs stagger animation
+      if (tabsRef.current) {
+        const tabs = tabsRef.current.children;
+        gsap.fromTo(tabs,
+          { x: -30, opacity: 0 },
+          {
+            x: 0, opacity: 1, duration: 0.6, ease: "power3.out", stagger: 0.1,
+            scrollTrigger: { trigger: sectionRef.current, start: "top 75%", once: true }
+          }
+        );
+      }
+
+      // Editor slide up animation
+      gsap.fromTo(editorRef.current,
+        { y: 50, opacity: 0 },
+        {
+          y: 0, opacity: 1, duration: 0.8, ease: "power3.out", delay: 0.3,
+          scrollTrigger: { trigger: sectionRef.current, start: "top 75%", once: true }
+        }
+      );
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   useEffect(() => {
     setTypedCode("");
@@ -115,10 +159,10 @@ export default function WhyGoSandbox() {
   };
 
   return (
-    <section className="py-24 sm:py-32 px-4 sm:px-6 bg-[#FBFBFD] dark:bg-[#0A0A0A] min-h-screen flex flex-col justify-center overflow-hidden">
+    <section ref={sectionRef} className="py-24 sm:py-32 px-4 sm:px-6 bg-[#FBFBFD] dark:bg-[#0A0A0A] min-h-screen flex flex-col justify-center overflow-hidden">
       <div className="mx-auto w-full max-w-screen-xl relative z-10">
         
-        <div className="why-header text-center mb-16 max-w-3xl mx-auto">
+        <div ref={headerRef} className="text-center mb-16 max-w-3xl mx-auto opacity-0">
           <p className="text-[#0071E3] text-[12px] sm:text-[14px] font-semibold uppercase tracking-[0.2em] mb-4 sm:mb-5">
             Mengapa Go?
           </p>
@@ -133,7 +177,7 @@ export default function WhyGoSandbox() {
         <div className="grid lg:grid-cols-[280px_1fr] xl:grid-cols-[300px_1fr] gap-6 lg:gap-10 xl:gap-12 items-start w-full">
           
           {/* Left: Interactive Tabs */}
-          <div className="flex flex-row lg:flex-col overflow-x-auto no-scrollbar gap-2 pb-4 lg:pb-0 lg:sticky lg:top-32">
+          <div ref={tabsRef} className="flex flex-row lg:flex-col overflow-x-auto no-scrollbar gap-2 pb-4 lg:pb-0 lg:sticky lg:top-32">
             {CODE_EXAMPLES.map((ex) => {
               const isActive = activeId === ex.id;
               return (
@@ -164,7 +208,7 @@ export default function WhyGoSandbox() {
           </div>
 
           {/* Right: macOS Style Code Editor — full width of column */}
-          <div className="relative rounded-[24px] border border-black/10 dark:border-white/10 bg-[#1C1C1E] shadow-[0_30px_80px_rgba(0,0,0,0.35)] w-full" style={{ minWidth: 0 }}>
+          <div ref={editorRef} className="relative rounded-[24px] border border-black/10 dark:border-white/10 bg-[#1C1C1E] shadow-[0_30px_80px_rgba(0,0,0,0.35)] w-full opacity-0" style={{ minWidth: 0 }}>
             <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent pointer-events-none" />
             
             {/* Toolbar */}
