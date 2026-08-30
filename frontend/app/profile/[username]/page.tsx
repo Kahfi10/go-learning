@@ -159,12 +159,12 @@ export default function ProfilePage() {
                   {profileName?.charAt(0).toUpperCase() ?? "G"}
                 </div>
 
-                <div className="min-w-0">
-                  <h1 className="font-display text-[32px] font-semibold tracking-tight text-foreground sm:text-[40px] xl:text-[44px] leading-[1.14] pb-[0.08em]">
+                <div className="min-w-0 flex-1">
+                  <h1 className="font-display text-[32px] sm:text-[40px] xl:text-[44px] font-semibold tracking-tight text-foreground leading-[1.14] pb-[0.08em] truncate">
                     {profileName}
                   </h1>
-                  <p className="mt-2 text-[16px] text-[#86868B]">
-                    Level {level} · {LEVEL_NAMES[level]}
+                  <p className="mt-2 text-[16px] text-[#86868B] truncate">
+                    Level {level} • {LEVEL_NAMES[level]}
                   </p>
                   {user?.email && (
                     <p className="mt-1 truncate text-[14px] text-[#86868B]">{user.email}</p>

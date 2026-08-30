@@ -159,7 +159,7 @@ export default function ModulesPage() {
               <p className="text-[#0071E3] text-[13px] font-semibold uppercase tracking-[0.2em] mb-1">
                 Katalog Pembelajaran
               </p>
-              <h1 className="font-display text-[44px] sm:text-[60px] lg:text-[72px] font-semibold tracking-[-0.04em] text-foreground leading-[1.05]">
+              <h1 className="font-display text-[40px] sm:text-[52px] lg:text-[64px] xl:text-[72px] font-semibold tracking-[-0.04em] text-foreground leading-[1.05]">
                 Belajar Go.<br />
                 Topik demi topik.
               </h1>
