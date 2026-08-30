@@ -2,7 +2,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowRight, Code2, BookOpen, Trophy, Users,
+  ArrowRight, Code2, Trophy, Users,
   CheckCircle, Play, ChevronRight,
   Terminal,
 } from "lucide-react";
@@ -194,6 +194,7 @@ export default function LandingPage() {
           .fromTo(".hero-sub", { y: 14, opacity: 0.001 }, { y: 0, opacity: 1, duration: 0.55, ease: "power3.out" }, "-=0.24")
           .fromTo(".hero-cta-row", { y: 10, opacity: 0.001 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, "-=0.18")
           .fromTo(".hero-trust > *", { y: 6, opacity: 0.001 }, { y: 0, opacity: 1, duration: 0.38, ease: "power2.out", stagger: 0.03 }, "-=0.16")
+          .fromTo(".hero-stats-item", { y: 12, opacity: 0.001 }, { y: 0, opacity: 1, duration: 0.38, ease: "power2.out", stagger: 0.04 }, "-=0.1")
           .fromTo(".hero-code-window", { x: 18, y: 6, opacity: 0.001 }, { x: 0, y: 0, opacity: 1, duration: 0.75, ease: "expo.out" }, "-=0.42");
 
         /* Breathing float after entrance */
@@ -280,29 +281,71 @@ export default function LandingPage() {
       <NavbarPill />
 
       {/* ── Hero Section ── */}
-      <section className="relative min-h-[calc(100vh-80px)] flex items-center justify-center px-6 sm:px-10 py-16 sm:py-24 overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="w-[700px] h-[700px] rounded-full bg-[#0071E3]/[0.05] blur-[140px]" />
+      <section className="relative min-h-[calc(100vh-80px)] flex items-center overflow-hidden px-6 sm:px-10">
+        {/* layered background: radial glow + subtle dot grid */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute inset-0"
+            style={{ background: "radial-gradient(ellipse 900px 700px at 58% 42%, rgba(0,113,227,0.055) 0%, transparent 65%)" }}
+          />
+          <div className="absolute inset-0 dark:opacity-0"
+            style={{
+              backgroundImage: "linear-gradient(rgba(0,113,227,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,113,227,0.025) 1px, transparent 1px)",
+              backgroundSize: "48px 48px",
+              WebkitMaskImage: "radial-gradient(ellipse 80% 80% at 55% 45%, black 20%, transparent 70%)",
+              maskImage: "radial-gradient(ellipse 80% 80% at 55% 45%, black 20%, transparent 70%)",
+            }}
+          />
         </div>
-        <div className="mx-auto w-full max-w-screen-xl relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+
+        <div className="mx-auto w-full max-w-screen-xl relative z-10 py-20 sm:py-24">
+          <div className="grid lg:grid-cols-[1fr_1.1fr] gap-10 lg:gap-16 items-center">
+
+            {/* ── Left column ── */}
             <div className="text-center lg:text-left">
-              <div className="hero-title-line inline-flex items-center gap-2 bg-[#0071E3]/10 text-[#0071E3] text-[12px] font-semibold uppercase tracking-[0.15em] px-3.5 py-1.5 rounded-full mb-6">
-                <BookOpen className="w-3.5 h-3.5" /> Platform Belajar Go #1 Indonesia
-              </div>
-              <h1 className="font-display font-bold tracking-tight text-foreground mb-5 leading-[1.05]"
-                style={{ fontSize: "clamp(40px, 5.5vw, 72px)" }}>
-                <span className="hero-title-line block">Kuasai Go.</span>
-                <span className="hero-title-line block text-[#0071E3]">Bangun Masa Depan.</span>
-              </h1>
-              <p className="hero-sub text-[#86868B] text-[16px] sm:text-[18px] leading-relaxed max-w-[480px] mx-auto lg:mx-0 mb-8">
-                Platform pembelajaran Go interaktif dengan editor browser, 76 lessons, quiz, gamifikasi XP, dan komunitas — semua gratis.
+
+              {/* Chapter label */}
+              <p className="hero-title-line inline-flex items-center gap-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-[#86868B] mb-5">
+                <span className="text-[#0071E3] font-bold">01</span>
+                <span>Hero · Platform Go</span>
+                <span className="hidden lg:block w-10 h-px bg-[#D2D2D7]/60 dark:bg-white/10 shrink-0" />
               </p>
+
+              {/* Oversized title */}
+              <h1 className="font-display font-bold text-foreground"
+                style={{ fontSize: "clamp(58px, 8vw, 112px)", letterSpacing: "-0.055em", lineHeight: "0.88", marginBottom: "22px" }}>
+                <span className="hero-title-line block">KUASAI</span>
+                <span className="hero-title-line block text-[#0071E3]">GO.</span>
+              </h1>
+
+              {/* Italic tagline */}
+              <p className="hero-sub italic text-[#6E6E73] leading-relaxed max-w-[500px] mx-auto lg:mx-0 mb-8"
+                style={{ fontSize: "clamp(17px, 1.8vw, 20px)" }}>
+                Bangun masa depan dengan bahasa yang paling banyak dicari developer dunia.
+              </p>
+
               <HeroActions />
+
+              {/* Stats row */}
+              <div className="flex border-t border-[#D2D2D7]/50 dark:border-white/[0.07] pt-6 mt-6 max-w-[500px] mx-auto lg:mx-0">
+                {[
+                  { n: "76+",  l: "Lessons" },
+                  { n: "15",   l: "Topik"   },
+                  { n: "300+", l: "Quiz"    },
+                  { n: "10",   l: "Level"   },
+                ].map((s, i) => (
+                  <div key={i} className="hero-stats-item flex-1 pr-4 sm:pr-5 border-r border-[#D2D2D7]/50 dark:border-white/[0.07] mr-4 sm:mr-5 last:border-r-0 last:pr-0 last:mr-0">
+                    <p className="font-display font-bold text-foreground" style={{ fontSize: "clamp(20px, 2.2vw, 28px)", letterSpacing: "-0.04em", lineHeight: "1" }}>{s.n}</p>
+                    <p className="text-[#86868B] text-[10px] uppercase tracking-[0.08em] font-semibold mt-1">{s.l}</p>
+                  </div>
+                ))}
+              </div>
             </div>
+
+            {/* ── Right column: GIF preview ── */}
             <div className="flex justify-center lg:justify-end">
               <HeroCodePreview />
             </div>
+
           </div>
         </div>
       </section>
@@ -673,7 +716,7 @@ function HeroActions() {
         </Link>
       </div>
       <div className="hero-trust flex flex-wrap justify-center lg:justify-start gap-x-5 gap-y-2 text-[13px] text-[#86868B]">
-        {["Gratis selamanya", "Tanpa install", "Bilingual ID/EN", "76 lessons"].map((t) => (
+        {["Gratis selamanya", "Tanpa install", "Bilingual ID/EN"].map((t) => (
           <span key={t} className="flex items-center gap-1.5">
             <CheckCircle className="w-3.5 h-3.5 text-[#34C759] shrink-0" />{t}
           </span>
