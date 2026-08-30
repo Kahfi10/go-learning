@@ -126,10 +126,10 @@ export default function WhyGoSandbox() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-[380px_1fr] xl:grid-cols-[420px_1fr] gap-8 lg:gap-12 xl:gap-16 items-start max-w-[1200px] mx-auto w-full">
+        <div className="grid lg:grid-cols-[320px_1fr] xl:grid-cols-[360px_1fr] gap-8 lg:gap-10 xl:gap-14 items-start w-full">
           
           {/* Left: Interactive Tabs */}
-          <div className="flex flex-row lg:flex-col overflow-x-auto no-scrollbar gap-2 lg:gap-2 pb-4 lg:pb-0">
+          <div className="flex flex-row lg:flex-col overflow-x-auto no-scrollbar gap-2 pb-4 lg:pb-0 lg:sticky lg:top-32">
             {CODE_EXAMPLES.map((ex) => {
               const isActive = activeId === ex.id;
               return (
@@ -137,7 +137,7 @@ export default function WhyGoSandbox() {
                   key={ex.id}
                   onClick={() => setActiveId(ex.id)}
                   className={cn(
-                    "text-left px-5 py-4 rounded-[16px] transition-all duration-300 min-w-[240px] lg:min-w-0 flex-shrink-0 border relative",
+                    "text-left px-5 py-4 rounded-[16px] transition-all duration-300 min-w-[240px] lg:min-w-0 flex-shrink-0 border",
                     isActive
                       ? "bg-white dark:bg-[#1C1C1E] border-[#D2D2D7]/80 dark:border-white/10"
                       : "bg-transparent border-transparent hover:bg-black/[0.03] dark:hover:bg-white/[0.03] opacity-50 hover:opacity-80"
@@ -159,8 +159,8 @@ export default function WhyGoSandbox() {
             })}
           </div>
 
-          {/* Right: macOS Style Code Editor */}
-            <div className="relative rounded-[24px] border border-black/10 dark:border-white/10 bg-[#1C1C1E] shadow-[0_30px_80px_rgba(0,0,0,0.4)] overflow-hidden w-full lg:w-[120%] xl:w-[130%] z-20">
+          {/* Right: macOS Style Code Editor — full width of column */}
+          <div className="relative rounded-[24px] border border-black/10 dark:border-white/10 bg-[#1C1C1E] shadow-[0_30px_80px_rgba(0,0,0,0.35)] overflow-hidden w-full">
             <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent pointer-events-none" />
             
             {/* Toolbar */}
@@ -183,8 +183,8 @@ export default function WhyGoSandbox() {
             </div>
 
             {/* Editor Area */}
-            <div className="p-8 sm:p-10 min-h-[460px] overflow-x-auto relative">
-              <pre className="font-mono text-[15px] sm:text-[16px] leading-loose text-[#E5E5EA]">
+            <div className="p-8 sm:p-10 min-h-[520px] overflow-x-auto relative">
+              <pre className="font-mono text-[14px] sm:text-[15px] leading-loose text-[#E5E5EA] whitespace-pre">
                 <code>
                   {typedCode}
                   {isTyping && <span className="inline-block w-2 h-[1em] bg-white/70 animate-pulse ml-0.5 align-middle" />}
