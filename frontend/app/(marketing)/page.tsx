@@ -297,9 +297,9 @@ export default function LandingPage() {
           />
         </div>
 
-        {/* Full-height grid — left text | right GIF */}
-        <div className="relative z-10 h-full mx-auto w-full max-w-screen-xl">
-          <div className="h-full grid lg:grid-cols-[1fr_1.5fr] gap-8 lg:gap-10">
+        {/* Content — vertically centered in fullscreen section */}
+        <div className="relative z-10 h-full mx-auto w-full max-w-screen-xl flex items-center">
+          <div className="w-full grid lg:grid-cols-[1fr_1.5fr] gap-8 lg:gap-10 items-center">
 
             {/* ── Left column ── */}
             <div className="flex items-center py-12 lg:py-0 text-center lg:text-left">
@@ -345,8 +345,8 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* ── Right column: GIF fills full section height ── */}
-            <div className="hidden lg:block h-full py-8 pr-2">
+            {/* ── Right column: GIF natural aspect ratio, centered ── */}
+            <div className="hidden lg:flex items-center justify-end py-10 pr-2">
               <HeroCodePreview />
             </div>
 
@@ -821,21 +821,21 @@ function HeroCodePreview() {
   }, []);
 
   return (
-    <div ref={containerRef} className="hero-code-window relative w-full h-full perspective-[1200px]">
+    <div ref={containerRef} className="hero-code-window relative w-full perspective-[1200px]">
 
-      {/* Main Frame — fills full column height */}
-      <div className="parallax-main relative z-10 bg-white dark:bg-[#1C1C1E] p-2.5 rounded-[24px] shadow-2xl ring-1 ring-[#D2D2D7]/50 dark:ring-white/10 h-full">
-        <div className="bg-[#F5F5F7] dark:bg-[#0A0A0A] rounded-[18px] overflow-hidden h-full">
+      {/* Main Frame — natural aspect ratio */}
+      <div className="parallax-main relative z-10 bg-white dark:bg-[#1C1C1E] p-2.5 rounded-[24px] shadow-2xl ring-1 ring-[#D2D2D7]/50 dark:ring-white/10">
+        <div className="bg-[#F5F5F7] dark:bg-[#0A0A0A] rounded-[18px] overflow-hidden">
           <img
             src="/hero-gif.gif"
             alt="GoLearn Platform"
-            className="w-full h-full object-cover object-top block"
+            className="w-full h-auto block"
           />
         </div>
       </div>
 
-      {/* Floating Badge 1 — top right, inside frame */}
-      <div className="parallax-badge-1 absolute top-5 right-5 z-20 bg-white/90 dark:bg-[#2C2C2E]/90 backdrop-blur-md px-4 py-3 rounded-2xl shadow-xl ring-1 ring-[#D2D2D7]/60 dark:ring-white/10 flex items-center gap-3">
+      {/* Floating Badge 1 — top right */}
+      <div className="parallax-badge-1 absolute -top-5 -right-5 z-20 bg-white/90 dark:bg-[#2C2C2E]/90 backdrop-blur-md px-4 py-3 rounded-2xl shadow-xl ring-1 ring-[#D2D2D7]/60 dark:ring-white/10 flex items-center gap-3">
         <div className="w-8 h-8 rounded-full bg-[#34C759]/15 flex items-center justify-center">
           <Trophy className="w-4 h-4 text-[#30D158]" />
         </div>
@@ -845,8 +845,8 @@ function HeroCodePreview() {
         </div>
       </div>
 
-      {/* Floating Badge 2 — bottom left, inside frame */}
-      <div className="parallax-badge-2 absolute bottom-10 left-5 z-20 bg-white/90 dark:bg-[#2C2C2E]/90 backdrop-blur-md px-4 py-3 rounded-2xl shadow-xl ring-1 ring-[#D2D2D7]/60 dark:ring-white/10 flex items-center gap-3">
+      {/* Floating Badge 2 — bottom left */}
+      <div className="parallax-badge-2 absolute -bottom-5 -left-5 z-20 bg-white/90 dark:bg-[#2C2C2E]/90 backdrop-blur-md px-4 py-3 rounded-2xl shadow-xl ring-1 ring-[#D2D2D7]/60 dark:ring-white/10 flex items-center gap-3">
         <div className="w-8 h-8 rounded-full bg-[#0071E3]/15 flex items-center justify-center">
           <Terminal className="w-4 h-4 text-[#0071E3]" />
         </div>
