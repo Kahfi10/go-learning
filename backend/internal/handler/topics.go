@@ -70,8 +70,10 @@ func (h *TopicsHandler) GetTopic(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var meta map[string]interface{}
-	json.Unmarshal(metaData, &meta)
-	meta["lessons"] = h.lessonSummaries(dir)
+	if err := json.Unmarshal(metaData, &meta); err != nil {
+		jsonError(w, "meta parse error", http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(meta)
@@ -143,7 +145,7 @@ func (h *TopicsHandler) GetLesson(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(data)
+	_, _ = w.Write(data)
 }
 
 func (h *TopicsHandler) Search(w http.ResponseWriter, r *http.Request) {

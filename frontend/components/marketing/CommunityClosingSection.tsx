@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const AVATAR_BG = ["#0071E3", "#34C759", "#FF9500", "#AF52DE", "#FF453A", "#5AC8FA", "#30D158", "#FFD60A"];
 const AVATAR_LABEL = ["G", "O", "P", "H", "E", "R", ">", "_"];
@@ -10,17 +12,9 @@ export default function CommunityClosingSection() {
   const ringRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let ctx: any;
-    let mounted = true;
-
-    (async () => {
-      const { gsap } = await import("gsap");
-      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-      if (!mounted) return;
-      gsap.registerPlugin(ScrollTrigger);
-
-      ctx = gsap.context(() => {
-        gsap.to(ringRef.current, {
+    gsap.registerPlugin(ScrollTrigger);
+    let ctx = gsap.context(() => {
+      gsap.to(ringRef.current, {
           rotation: 45,
           ease: "none",
           scrollTrigger: {
@@ -49,12 +43,8 @@ export default function CommunityClosingSection() {
           }
         );
       }, sectionRef);
-    })();
 
-    return () => {
-      mounted = false;
-      ctx?.revert();
-    };
+    return () => ctx.revert();
   }, []);
 
   return (

@@ -109,7 +109,7 @@ func (h *ProgressHandler) UpdateProgress(w http.ResponseWriter, r *http.Request)
 
 	// Award XP if completed
 	if req.Completed && !wasCompleted {
-		h.db.Exec(r.Context(), `UPDATE users SET xp = xp + 50 WHERE id = $1`, userID)
+		_, _ = h.db.Exec(r.Context(), `UPDATE users SET xp = xp + 50 WHERE id = $1`, userID)
 		h.updateStreak(r, userID)
 	}
 
@@ -189,7 +189,7 @@ func (h *ProgressHandler) SubmitQuiz(w http.ResponseWriter, r *http.Request) {
 	}
 	newPerfect := req.Score == maxScore && (previousBest == nil || *previousBest < maxScore)
 	if newPerfect {
-		h.db.Exec(r.Context(), `UPDATE users SET xp = xp + 25 WHERE id = $1`, userID)
+		_, _ = h.db.Exec(r.Context(), `UPDATE users SET xp = xp + 25 WHERE id = $1`, userID)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -263,9 +263,9 @@ func (h *ProgressHandler) updateStreak(r *http.Request, userID string) {
 	if lastActive == nil || lastActive.Before(today) {
 		yesterday := today.Add(-24 * time.Hour)
 		if lastActive != nil && lastActive.Equal(yesterday) {
-			h.db.Exec(r.Context(), `UPDATE users SET streak_days = streak_days + 1, last_active = $1 WHERE id = $2`, today, userID)
+			_, _ = h.db.Exec(r.Context(), `UPDATE users SET streak_days = streak_days + 1, last_active = $1 WHERE id = $2`, today, userID)
 		} else {
-			h.db.Exec(r.Context(), `UPDATE users SET streak_days = 1, last_active = $1 WHERE id = $2`, today, userID)
+			_, _ = h.db.Exec(r.Context(), `UPDATE users SET streak_days = 1, last_active = $1 WHERE id = $2`, today, userID)
 		}
 	}
 }

@@ -3,9 +3,6 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { cn } from "@/lib/utils";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const ORBIT_ITEMS = [
   { name: "Docker", icon: "docker" },
@@ -23,27 +20,28 @@ export default function EcosystemOrbitSection() {
   const ringRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Rotating orbit
+    gsap.registerPlugin(ScrollTrigger);
+    let ctx = gsap.context(() => {
       gsap.to(ringRef.current, {
-        rotation: -45,
-        ease: "none",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 1.5,
-        }
-      });
+          rotation: -45,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1.5,
+          },
+        });
 
-      gsap.fromTo(".reveal-eco-ln", 
-        { y: "100%" },
-        { 
-          y: "0%", duration: 1, stagger: 0.1, ease: "power4.out",
-          scrollTrigger: { trigger: sectionRef.current, start: "top 75%", once: true }
-        }
-      );
-    }, sectionRef);
+        gsap.fromTo(
+          ".reveal-eco-ln",
+          { y: "100%" },
+          {
+            y: "0%", duration: 1, stagger: 0.1, ease: "power4.out",
+            scrollTrigger: { trigger: sectionRef.current, start: "top 75%", once: true },
+          }
+        );
+      }, sectionRef);
 
     return () => ctx.revert();
   }, []);

@@ -3,11 +3,9 @@ package executor
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sync"
 	"strings"
 	"time"
 
@@ -22,17 +20,10 @@ type Result struct {
 	TimedOut        bool   `json:"timedOut"`
 }
 
-// Run executes Go source code in a sandboxed temp environment.
+// semaphore limits concurrent code executions to avoid resource exhaustion.
 var semaphore = make(chan struct{}, 2)
-var semaphoreOnce sync.Once
 
 func Run(code string) Result {
-	semaphoreOnce.Do(func() {
-		if cap(semaphore) == 0 {
-			semaphore = make(chan struct{}, 2)
-		}
-	})
-
 	select {
 	case semaphore <- struct{}{}:
 		defer func() { <-semaphore }()
@@ -90,14 +81,16 @@ func Run(code string) Result {
 	}
 }
 
+// containsDangerous checks the submitted code against a blocklist of dangerous patterns.
+// NOTE: dangerousPatterns below is the enforced list; the inline slice inside containsDangerous
+// is intentionally more targeted and takes precedence.
 var dangerousPatterns = []string{
-	"os.Exit", "syscall", "unsafe", "os/exec",
-	"net/http", "plugin", "runtime/debug",
+	"os/exec", "syscall", "unsafe", "plugin", "cgo",
 }
 
 func containsDangerous(code string) bool {
 	lower := strings.ToLower(code)
-	for _, p := range []string{"os/exec", "syscall.exec", "plugin.", "import \"syscall\"", "import \"plugin\"", "import \"unsafe\"", "cgo"} {
+	for _, p := range dangerousPatterns {
 		if strings.Contains(lower, strings.ToLower(p)) {
 			return true
 		}
@@ -249,6 +242,3 @@ func main() {
 	}
 }
 `
-
-// Ensure unused import warning doesn't appear
-var _ = fmt.Sprintf

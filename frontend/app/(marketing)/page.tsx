@@ -1,6 +1,8 @@
 ﻿"use client";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   ArrowRight, Code2, Trophy, Users,
   CheckCircle, Play, ChevronRight,
@@ -11,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { api, type ExecuteResult } from "@/lib/api";
 
 import { useAuth } from "@/context/AuthContext";
+import WhyGoSticky from "@/components/marketing/WhyGoSticky";
 import WhyGoSandbox from "@/components/marketing/WhyGoSandbox";
 import CommunityClosingSection from "@/components/marketing/CommunityClosingSection";
 import EcosystemOrbitSection from "@/components/marketing/EcosystemOrbitSection";
@@ -177,15 +180,8 @@ export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    let ctx: any;
-    let mounted = true;
-    const init = async () => {
-      const { gsap }        = await import("gsap");
-      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-      if (!mounted) return;
-      gsap.registerPlugin(ScrollTrigger);
-
-      ctx = gsap.context(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    let ctx = gsap.context(() => {
 
         /* Hero timeline â€” smoother, more premium */
         const heroTl = gsap.timeline({ delay: 0.04 });
@@ -207,28 +203,6 @@ export default function LandingPage() {
           delay: 1.3,
         });
 
-        /* Stats count-up & Entrance */
-        gsap.fromTo(".stat-col",
-          { y: 40, opacity: 0 },
-          {
-            y: 0, opacity: 1, stagger: 0.1, duration: 0.8, ease: "expo.out",
-            scrollTrigger: { trigger: "#stats-section", start: "top 85%", once: true }
-          }
-        );
-
-        document.querySelectorAll<HTMLElement>(".stat-num").forEach((el) => {
-          const target = parseInt(el.getAttribute("data-target") ?? "0");
-          const obj = { val: 0 };
-          ScrollTrigger.create({
-            trigger: el, start: "top 85%", once: true,
-            onEnter: () => gsap.to(obj, {
-              val: target, duration: 1.8, ease: "power3.out",
-              snap: { val: 1 },
-              onUpdate() { el.textContent = Math.round(obj.val).toLocaleString(); },
-            }),
-          });
-        });
-
         /* How-steps alternating */
         document.querySelectorAll<HTMLElement>(".how-step").forEach((el, i) => {
           gsap.fromTo(el,
@@ -245,7 +219,7 @@ export default function LandingPage() {
           { y: 30, scale: 0.94, opacity: 0 },
           {
             y: 0, scale: 1, opacity: 1, stagger: 0.05, duration: 0.6, ease: "expo.out",
-            scrollTrigger: { trigger: "#topics-track", start: "top 85%", once: true },
+            scrollTrigger: { trigger: "#topics-section", start: "top 85%", once: true },
           }
         );
 
@@ -270,14 +244,12 @@ export default function LandingPage() {
         );
 
       }, containerRef);
-    };
 
-    init();
-    return () => ctx?.revert();
+    return () => ctx.revert();
   }, []);
 
     return (
-    <div ref={containerRef} className="bg-background overflow-x-hidden pt-20">
+    <div ref={containerRef} className="bg-background overflow-x-clip pt-20">
       <NavbarPill />
 
       {/* ── Hero Section ── */}
@@ -354,29 +326,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Stats Section ── */}
-      <section id="stats-section" className="py-16 sm:py-24 px-6 sm:px-10 border-y border-[#D2D2D7]/50 dark:border-white/[0.06]">
-        <div className="mx-auto max-w-screen-xl grid grid-cols-2 md:grid-cols-4 gap-8">
-          {[
-            { label: "Lessons Tersedia", num: 76, suffix: "+" },
-            { label: "Topik Terstruktur", num: 15, suffix: "" },
-            { label: "Quiz Questions",   num: 300, suffix: "+" },
-            { label: "Level Gamifikasi", num: 10, suffix: "" },
-          ].map((s) => (
-            <div key={s.label} className="stat-col text-center">
-              <p className="font-display font-bold text-foreground mb-1 leading-none"
-                style={{ fontSize: "clamp(40px, 5vw, 64px)" }}>
-                <span className="stat-num" data-target={s.num}>0</span>
-                <span>{s.suffix}</span>
-              </p>
-              <p className="text-[#86868B] text-[14px]">{s.label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* ── Why Go Sticky Scroll ── */}
+      <WhyGoSticky />
 
       {/* ── Topics Carousel ── */}
-      <section className="py-20 sm:py-32 overflow-hidden">
+      <section id="topics-section" className="py-20 sm:py-32 overflow-hidden">
         <div className="mx-auto max-w-screen-xl px-6 sm:px-10 mb-10 sm:mb-14">
           <p className="text-[#0071E3] text-[12px] font-semibold uppercase tracking-[0.2em] mb-3">Kurikulum</p>
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">

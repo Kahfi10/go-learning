@@ -278,3 +278,10 @@ code, pre, kbd {
 .animate-page-in {
   animation: page-fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+.ln-mask { display: block; overflow: hidden; }
+.ln { display: block; will-change: transform; }
+.e-lh { --off: 0.5em; }
+.e-lh .ln-mask .ln { margin-bottom: calc(var(--off) * -1); margin-top: calc(var(--off) * -1); padding-bottom: calc(var(--off) / 2); padding-top: calc(var(--off) / 2); }
+.e-lh .ln-mask:first-child .ln { margin-top: calc(var(--off) * -0.5); }
+.e-lh .ln-mask:last-child .ln { margin-bottom: calc(var(--off) * -0.5); }

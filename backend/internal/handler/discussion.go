@@ -112,11 +112,23 @@ func (h *DiscussionHandler) ToggleUpvote(w http.ResponseWriter, r *http.Request)
 	).Scan(&exists)
 
 	if exists {
-		h.db.Exec(r.Context(), `DELETE FROM comment_upvotes WHERE user_id=$1 AND comment_id=$2`, userID, commentID)
-		h.db.Exec(r.Context(), `UPDATE comments SET upvotes = upvotes - 1 WHERE id=$1`, commentID)
+		if _, err := h.db.Exec(r.Context(), `DELETE FROM comment_upvotes WHERE user_id=$1 AND comment_id=$2`, userID, commentID); err != nil {
+			jsonError(w, "failed to remove upvote", http.StatusInternalServerError)
+			return
+		}
+		if _, err := h.db.Exec(r.Context(), `UPDATE comments SET upvotes = upvotes - 1 WHERE id=$1`, commentID); err != nil {
+			jsonError(w, "failed to update upvote count", http.StatusInternalServerError)
+			return
+		}
 	} else {
-		h.db.Exec(r.Context(), `INSERT INTO comment_upvotes (user_id, comment_id) VALUES ($1,$2)`, userID, commentID)
-		h.db.Exec(r.Context(), `UPDATE comments SET upvotes = upvotes + 1 WHERE id=$1`, commentID)
+		if _, err := h.db.Exec(r.Context(), `INSERT INTO comment_upvotes (user_id, comment_id) VALUES ($1,$2)`, userID, commentID); err != nil {
+			jsonError(w, "failed to add upvote", http.StatusInternalServerError)
+			return
+		}
+		if _, err := h.db.Exec(r.Context(), `UPDATE comments SET upvotes = upvotes + 1 WHERE id=$1`, commentID); err != nil {
+			jsonError(w, "failed to update upvote count", http.StatusInternalServerError)
+			return
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")

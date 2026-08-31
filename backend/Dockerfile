@@ -6,7 +6,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/server ./cmd/server
 
 FROM alpine:3.19
-RUN apk add --no-cache go ca-certificates
+RUN apk add --no-cache ca-certificates
 WORKDIR /app
 COPY --from=builder /app/server .
 COPY data/ ./data/

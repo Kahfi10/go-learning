@@ -6,8 +6,6 @@ import { cn } from "@/lib/utils";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger);
-
 const CODE_EXAMPLES = [
   {
     id: "concurrency",
@@ -98,37 +96,35 @@ export default function WhyGoSandbox() {
   const activeExample = CODE_EXAMPLES.find((ex) => ex.id === activeId) ?? CODE_EXAMPLES[0];
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Header animation
+    gsap.registerPlugin(ScrollTrigger);
+    let ctx = gsap.context(() => {
       gsap.fromTo(headerRef.current,
-        { y: 30, opacity: 0 },
-        {
-          y: 0, opacity: 1, duration: 0.8, ease: "power3.out",
-          scrollTrigger: { trigger: sectionRef.current, start: "top 80%", once: true }
-        }
-      );
-
-      // Tabs stagger animation
-      if (tabsRef.current) {
-        const tabs = tabsRef.current.children;
-        gsap.fromTo(tabs,
-          { x: -30, opacity: 0 },
+          { y: 30, opacity: 0 },
           {
-            x: 0, opacity: 1, duration: 0.6, ease: "power3.out", stagger: 0.1,
-            scrollTrigger: { trigger: sectionRef.current, start: "top 75%", once: true }
+            y: 0, opacity: 1, duration: 0.8, ease: "power3.out",
+            scrollTrigger: { trigger: sectionRef.current, start: "top 80%", once: true },
           }
         );
-      }
 
-      // Editor slide up animation
-      gsap.fromTo(editorRef.current,
-        { y: 50, opacity: 0 },
-        {
-          y: 0, opacity: 1, duration: 0.8, ease: "power3.out", delay: 0.3,
-          scrollTrigger: { trigger: sectionRef.current, start: "top 75%", once: true }
+        if (tabsRef.current) {
+          const tabs = tabsRef.current.children;
+          gsap.fromTo(tabs,
+            { x: -30, opacity: 0 },
+            {
+              x: 0, opacity: 1, duration: 0.6, ease: "power3.out", stagger: 0.1,
+              scrollTrigger: { trigger: sectionRef.current, start: "top 75%", once: true },
+            }
+          );
         }
-      );
-    }, sectionRef);
+
+        gsap.fromTo(editorRef.current,
+          { y: 50, opacity: 0 },
+          {
+            y: 0, opacity: 1, duration: 0.8, ease: "power3.out", delay: 0.3,
+            scrollTrigger: { trigger: sectionRef.current, start: "top 75%", once: true },
+          }
+        );
+      }, sectionRef);
 
     return () => ctx.revert();
   }, []);
