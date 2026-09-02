@@ -56,10 +56,10 @@ export default function CommunityClosingSection() {
           <p className="absolute left-0 top-1.5 text-[14px] text-[#86868B] tracking-[-0.02em] font-sans">
             Komunitas & Proses
           </p>
-          <h2 className="font-display text-[40px] sm:text-[60px] xl:text-[80px] font-semibold tracking-[-0.03em] leading-[0.9] text-center max-w-[990px] mx-auto sm:indent-[125px] e-lh">
-            <span className="ln-mask"><span className="ln reveal-ln">Belajar Go dibentuk</span></span>
-            <span className="ln-mask"><span className="ln reveal-ln">oleh praktik, ritme, dan</span></span>
-            <span className="ln-mask"><span className="ln reveal-ln">komunitas open-source.</span></span>
+          <h2 className="font-display text-[40px] sm:text-[60px] xl:text-[80px] font-semibold tracking-[-0.03em] leading-[1.1] text-center max-w-[990px] mx-auto sm:indent-[125px]">
+            <span className="block overflow-hidden pb-3 -mb-3"><span className="block reveal-ln">Belajar Go dibentuk</span></span>
+            <span className="block overflow-hidden pb-3 -mb-3"><span className="block reveal-ln">oleh praktik, ritme, dan</span></span>
+            <span className="block overflow-hidden pb-3"><span className="block reveal-ln">komunitas open-source.</span></span>
           </h2>
         </div>
 
@@ -98,15 +98,15 @@ export default function CommunityClosingSection() {
 
         {/* Descriptions */}
         <div className="flex flex-col md:flex-row gap-8 sm:gap-20 text-center mb-[80px] sm:mb-[150px]">
-          <p className="text-[16px] sm:text-[18px] text-[#86868B] max-w-[356px] leading-relaxed e-lh">
-            <span className="ln-mask"><span className="ln reveal-ln">Pendekatan desain pembelajaran yang</span></span>
-            <span className="ln-mask"><span className="ln reveal-ln">berpusat pada eksekusi kode nyata dan</span></span>
-            <span className="ln-mask"><span className="ln reveal-ln">pemecahan masalah langsung di browser.</span></span>
+          <p className="text-[16px] sm:text-[18px] text-[#86868B] max-w-[356px] leading-[1.6]">
+            <span className="block overflow-hidden pb-2 -mb-2"><span className="block reveal-ln">Pendekatan desain pembelajaran yang</span></span>
+            <span className="block overflow-hidden pb-2 -mb-2"><span className="block reveal-ln">berpusat pada eksekusi kode nyata dan</span></span>
+            <span className="block overflow-hidden pb-2"><span className="block reveal-ln">pemecahan masalah langsung di browser.</span></span>
           </p>
-          <p className="text-[16px] sm:text-[18px] text-[#86868B] max-w-[356px] leading-relaxed e-lh">
-            <span className="ln-mask"><span className="ln reveal-ln">Kurikulum terstruktur untuk pemula </span></span>
-            <span className="ln-mask"><span className="ln reveal-ln">hingga pola desain siap produksi untuk</span></span>
-            <span className="ln-mask"><span className="ln reveal-ln">kebutuhan backend modern.</span></span>
+          <p className="text-[16px] sm:text-[18px] text-[#86868B] max-w-[356px] leading-[1.6]">
+            <span className="block overflow-hidden pb-2 -mb-2"><span className="block reveal-ln">Kurikulum terstruktur untuk pemula </span></span>
+            <span className="block overflow-hidden pb-2 -mb-2"><span className="block reveal-ln">hingga pola desain siap produksi untuk</span></span>
+            <span className="block overflow-hidden pb-2"><span className="block reveal-ln">kebutuhan backend modern.</span></span>
           </p>
         </div>
 
