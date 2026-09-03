@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { api, type ExecuteResult } from "@/lib/api";
 
 import { useAuth } from "@/context/AuthContext";
-import WhyGoSticky from "@/components/marketing/WhyGoSticky";
+import WhyGoGsap from "@/components/marketing/WhyGoGsap";
 import WhyGoSandbox from "@/components/marketing/WhyGoSandbox";
 import CommunityClosingSection from "@/components/marketing/CommunityClosingSection";
 import EcosystemOrbitSection from "@/components/marketing/EcosystemOrbitSection";
@@ -243,17 +243,27 @@ export default function LandingPage() {
           }
         );
 
+        /* Grand Finale Stacked Journey */
+        gsap.utils.toArray<HTMLElement>(".stacked-journey-panel").forEach((panel, i) => {
+          ScrollTrigger.create({
+            trigger: panel,
+            start: "top top", 
+            pin: true, 
+            pinSpacing: false 
+          });
+        });
+
       }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
     return (
-    <div ref={containerRef} className="bg-background overflow-x-clip pt-20">
+    <div ref={containerRef} className="bg-background">
       <NavbarPill />
 
       {/* ── Hero Section ── */}
-      <section className="relative h-[calc(100vh-80px)] min-h-[620px] overflow-hidden px-6 sm:px-10">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-6 sm:px-10 pt-20 pb-10">
         {/* layered background */}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute inset-0"
@@ -270,8 +280,8 @@ export default function LandingPage() {
         </div>
 
         {/* Content — vertically centered in fullscreen section */}
-        <div className="relative z-10 h-full mx-auto w-full max-w-screen-xl flex items-center">
-          <div className="w-full grid lg:grid-cols-[1fr_1.5fr] gap-8 lg:gap-10 items-center">
+        <div className="relative z-10 w-full max-w-[1340px] mx-auto flex items-center justify-center h-full">
+          <div className="w-full grid lg:grid-cols-[1fr_1.15fr] gap-10 lg:gap-12 items-center">
 
             {/* ── Left column ── */}
             <div className="flex items-center py-12 lg:py-0 text-center lg:text-left">
@@ -317,8 +327,8 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* ── Right column: GIF natural aspect ratio, centered ── */}
-            <div className="hidden lg:flex items-center justify-end py-10 pr-2">
+            {/* ── Right column: GIF natural aspect ratio, larger and shifted right ── */}
+            <div className="hidden lg:flex items-center justify-end py-10 ml-auto w-full max-w-[640px] xl:max-w-[700px] lg:translate-x-4">
               <HeroCodePreview />
             </div>
 
@@ -327,7 +337,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Why Go Sticky Scroll ── */}
-      <WhyGoSticky />
+      <WhyGoGsap />
 
       {/* ── Topics Carousel ── */}
       <section id="topics-section" className="py-20 sm:py-32 overflow-hidden">
@@ -421,9 +431,26 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <CommunityClosingSection />
-      <EcosystemOrbitSection />
-      <EditorialFooter />
+      {/* ── Grand Finale Stacked Journey ── */}
+      <div className="relative w-full bg-black text-white">
+        
+        {/* Layer 1: Community Closing */}
+        <div className="stacked-journey-panel w-full relative z-10 bg-[#050505] shadow-2xl">
+          <CommunityClosingSection />
+        </div>
+
+        {/* Layer 2: Ecosystem Orbit */}
+        <div className="stacked-journey-panel w-full relative z-20 bg-[#050505] shadow-[0_-20px_50px_rgba(0,0,0,0.8)] border-t border-white/5">
+          <EcosystemOrbitSection />
+        </div>
+
+        {/* Layer 3: Editorial Footer */}
+        <div className="stacked-journey-panel w-full relative z-30 bg-[#0A0A0A] shadow-[0_-20px_50px_rgba(0,0,0,0.8)] border-t border-white/10">
+          <EditorialFooter />
+        </div>
+
+      </div>
+
     </div>
   );
 }
