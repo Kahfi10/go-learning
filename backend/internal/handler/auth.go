@@ -107,7 +107,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := generateJWT(id, os.Getenv("JWT_SECRET"), 24*time.Hour)
+	token, err := generateJWT(id, os.Getenv("JWT_SECRET"), 30*24*time.Hour)
 	if err != nil {
 		jsonError(w, "internal error", http.StatusInternalServerError)
 		return
@@ -153,7 +153,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := generateJWT(id, os.Getenv("JWT_SECRET"), 24*time.Hour)
+	token, err := generateJWT(id, os.Getenv("JWT_SECRET"), 30*24*time.Hour)
 	if err != nil {
 		jsonError(w, "internal error", http.StatusInternalServerError)
 		return
@@ -549,7 +549,8 @@ func generateJWT(userID, secret string, expiry time.Duration) (string, error) {
 }
 
 func setTokenCookie(w http.ResponseWriter, token string) {
-	setTokenCookieWithConfig(w, token, time.Now().Add(24*time.Hour), 0)
+	duration := 30 * 24 * time.Hour
+	setTokenCookieWithConfig(w, token, time.Now().Add(duration), int(duration.Seconds()))
 }
 
 func setTokenCookieWithConfig(w http.ResponseWriter, token string, expires time.Time, maxAge int) {
