@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" width="100%" height="100%" fill="none">
+  <!-- ================= SPEED MARKS (Kiri) ================= -->
+  <!-- Persis seperti referensi: 3 baris garis miring dengan ujung tumpul -->
+  <g transform="skewX(-20) translate(95, 20)">
+    <rect x="50" y="88" width="105" height="15" rx="7.5" fill="#29C5F6"/>
+    <rect x="10" y="118" width="155" height="17" rx="8.5" fill="#29C5F6"/>
+    <rect x="75" y="148" width="95" height="15" rx="7.5" fill="#29C5F6"/>
+  </g>
+
+  <!-- ================= HURUF "G" BESAR & TEGAS ================= -->
+  <!-- Diposisikan terpisah jelas di sebelah kiri Gopher agar terbaca sangat jelas dan bersih -->
+  <g transform="translate(195, 20)">
+    <!-- Outer oval shape of G -->
+    <!-- Italic sheared bold solid letter G -->
+    <path d="M 125 35
+             C 55 35, 10 85, 10 150
+             C 10 215, 55 265, 125 265
+             C 185 265, 225 228, 235 175
+             L 135 175
+             L 135 132
+             L 282 132
+             C 285 142, 287 155, 287 168
+             C 287 235, 225 298, 125 298
+             C 25 298, -38 230, -38 150
+             C -38 70, 25 2, 125 2
+             C 195 2, 252 42, 275 100
+             L 225 118
+             C 208 70, 170 35, 125 35 Z"
+          fill="#29C5F6"
+          transform="skewX(-16)"/>
+  </g>
+
+  <!-- ================= HURUF "O" / BACKDROP BULAT BIRU ================= -->
+  <!-- Lingkaran besar tempat gopher berdiri di depannya -->
+  <g transform="translate(370, 20)">
+    <!-- Solid Vibrant Blue Oval (Letter O backdrop) -->
+    <ellipse cx="140" cy="150" rx="125" ry="128" fill="#29C5F6"/>
+  </g>
+
+  <!-- ================= MASKOT GOPHER RESMI DENGAN APRON ================= -->
+  <!-- Gopher berdiri gagah di sisi kanan, overlap dengan huruf O -->
+  <g transform="translate(420, 26)">
+    <!-- Ekor mungil di sebelah kiri -->
+    <ellipse cx="32" cy="195" rx="12" ry="8.5" transform="rotate(-20 32 195)" fill="#76DDF8" stroke="#1C1C1E" stroke-width="4"/>
+
+    <!-- Kaki Kiri -->
+    <path d="M 68 212 C 65 235, 56 258, 63 262 C 70 266, 80 248, 83 222 Z" 
+          fill="#D6A784" stroke="#1C1C1E" stroke-width="4" stroke-linejoin="round"/>
+    
+    <!-- Kaki Kanan -->
+    <path d="M 148 212 C 151 235, 160 258, 153 262 C 146 266, 136 248, 133 222 Z" 
+          fill="#D6A784" stroke="#1C1C1E" stroke-width="4" stroke-linejoin="round"/>
+
+    <!-- Tubuh Gopher (Solid Cyan #76DDF8) -->
+    <path d="M 75 35 
+             C 38 39, 32 85, 36 145 
+             C 38 185, 48 228, 108 230 
+             C 168 228, 178 185, 180 145 
+             C 184 85, 178 39, 141 35 
+             C 130 33, 86 33, 75 35 Z" 
+          fill="#76DDF8" stroke="#1C1C1E" stroke-width="4.5" stroke-linejoin="round"/>
+
+    <!-- Telinga Kiri -->
+    <ellipse cx="62" cy="38" rx="10" ry="14" transform="rotate(-22 62 38)" fill="#76DDF8" stroke="#1C1C1E" stroke-width="3.8"/>
+    <ellipse cx="62" cy="38" rx="5" ry="8" transform="rotate(-22 62 38)" fill="#29C5F6"/>
+
+    <!-- Telinga Kanan -->
+    <ellipse cx="152" cy="38" rx="10" ry="14" transform="rotate(22 152 38)" fill="#76DDF8" stroke="#1C1C1E" stroke-width="3.8"/>
+    <ellipse cx="152" cy="38" rx="5" ry="8" transform="rotate(22 152 38)" fill="#29C5F6"/>
+
+    <!-- MATA BESAR BULAT (Ciri Khas Gopher yang Menggemaskan) -->
+    <!-- Mata Kiri -->
+    <ellipse cx="90" cy="92" rx="28" ry="29" fill="#FFFFFF" stroke="#1C1C1E" stroke-width="4.2"/>
+    <circle cx="97" cy="88" r="9" fill="#1C1C1E"/>
+    <circle cx="100" cy="85" r="3.2" fill="#FFFFFF"/>
+
+    <!-- Mata Kanan -->
+    <ellipse cx="140" cy="88" rx="28" ry="29" fill="#FFFFFF" stroke="#1C1C1E" stroke-width="4.2"/>
+    <circle cx="134" cy="85" r="9" fill="#1C1C1E"/>
+    <circle cx="137" cy="82" r="3.2" fill="#FFFFFF"/>
+
+    <!-- Moncong & Hidung -->
+    <ellipse cx="115" cy="112" rx="14" ry="9.5" fill="#756A63" stroke="#1C1C1E" stroke-width="3.8"/>
+    <ellipse cx="115" cy="108.5" rx="6" ry="3.5" fill="#1C1C1E"/>
+
+    <!-- Dua Gigi Kelinci Putih -->
+    <rect x="108.5" y="120.5" width="6" height="10" rx="1.8" fill="#FFFFFF" stroke="#1C1C1E" stroke-width="2.6"/>
+    <rect x="115.5" y="120.5" width="6" height="10" rx="1.8" fill="#FFFFFF" stroke="#1C1C1E" stroke-width="2.6"/>
+
+    <!-- CELEMEK / APRON MULTI-WARNA GEOMETRIS (Ungu, Hijau, Biru) -->
+    <g>
+      <clipPath id="cleanApronClip">
+        <path d="M 42 128 Q 108 142 174 128 L 174 208 Q 108 220 42 208 Z"/>
+      </clipPath>
+
+      <path d="M 42 128 Q 108 142 174 128 L 174 208 Q 108 220 42 208 Z" 
+            fill="#10B981" stroke="#1C1C1E" stroke-width="4.5" stroke-linejoin="round"/>
+
+      <g clip-path="url(#cleanApronClip)">
+        <!-- Blok Ungu Kiri -->
+        <polygon points="42,128 105,128 85,212 42,212" fill="#8B5CF6"/>
+        <!-- Blok Hijau Terang Bawah -->
+        <polygon points="42,170 100,212 42,212" fill="#22C55E"/>
+        <!-- Blok Biru Kanan -->
+        <polygon points="105,128 174,128 174,212 85,212" fill="#0071E3"/>
+      </g>
+
+      <path d="M 42 128 Q 108 142 174 128 L 174 208 Q 108 220 42 208 Z" 
+            fill="none" stroke="#1C1C1E" stroke-width="4.5" stroke-linejoin="round"/>
+    </g>
+
+    <!-- Tangan / Punggung Tangan Gopher -->
+    <path d="M 54 120 C 54 105, 65 105, 65 120 Z" fill="#76DDF8" stroke="#1C1C1E" stroke-width="3.8"/>
+
+    <!-- Saku Kecil Biru + Stylus -->
+    <rect x="52" y="142" width="21" height="23" rx="5" fill="#00ADD8" stroke="#1C1C1E" stroke-width="3"/>
+    <path d="M 59 135 L 59 144" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round"/>
+
+    <!-- Terminal Badge Kotak Hitam "GO _" -->
+    <rect x="114" y="150" width="44" height="38" rx="6" fill="#0D1117" stroke="#1C1C1E" stroke-width="3"/>
+    <text x="136" y="172" 
+          font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" 
+          font-weight="900" 
+          font-size="16" 
+          letter-spacing="-0.5" 
+          text-anchor="middle"
+          fill="#FFFFFF">
+      GO
+    </text>
+    <rect x="123" y="178" width="11" height="2.5" rx="0.8" fill="#29C5F6"/>
+  </g>
+
+  <!-- ================= TEKS BRAND "LEARN" RAPI & TEGAS ================= -->
+  <g transform="translate(635, 115)">
+    <!-- Teks "Learn" Modern Sans Tegas -->
+    <text x="0" y="65" 
+          font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" 
+          font-weight="950" 
+          font-size="58" 
+          letter-spacing="-2" 
+          fill="#0D1117"
+          class="dark-theme-text">
+      Learn
+    </text>
+
+    <!-- Pill Subtitle / Tagline -->
+    <rect x="2" y="84" width="118" height="24" rx="6" fill="#29C5F6"/>
+    <text x="61" y="100.5" 
+          font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" 
+          font-weight="900" 
+          font-size="11" 
+          letter-spacing="2" 
+          text-anchor="middle"
+          fill="#0D1117">
+      PLATFORM
+    </text>
+  </g>
+
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .dark-theme-text { fill: #F0F6FC !important; }
+    }
+  </style>
+</svg>

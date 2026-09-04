@@ -54,11 +54,11 @@ export default function WhyGoGsap() {
         });
 
         // Initialize inline styles for robustness against FOUC
-        gsap.set(item, { opacity: 0.15, scale: 0.95 });
+        gsap.set(item, { opacity: 0.2, scale: 1 });
 
         tl.to(item, { opacity: 1, scale: 1, duration: 0.2, ease: "power2.out" })
           .to(item, { opacity: 1, duration: 0.6 })
-          .to(item, { opacity: 0.15, scale: 0.95, duration: 0.2, ease: "power2.in" });
+          .to(item, { opacity: 0.2, scale: 1, duration: 0.2, ease: "power2.in" });
       });
 
       // Refresh ScrollTrigger to ensure correct measurements in case images push layout down

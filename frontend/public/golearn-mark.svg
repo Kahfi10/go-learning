@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 240" width="100%" height="100%" fill="none">
+  <!-- Dynamic Speed Slits Kiri -->
+  <g transform="skewX(-18) translate(40, 15)">
+    <rect x="15" y="72" width="45" height="9" rx="4.5" fill="#29C5F6"/>
+    <rect x="-5" y="88" width="65" height="10" rx="5" fill="#29C5F6"/>
+    <rect x="25" y="104" width="40" height="9" rx="4.5" fill="#29C5F6"/>
+  </g>
+
+  <!-- Huruf 'G' Italic Bold yang Terbaca Sangat Jelas & Bersih -->
+  <g transform="translate(100, 15)">
+    <path d="M 68 22
+             C 30 22, 5 50, 5 95
+             C 5 140, 30 168, 68 168
+             C 105 168, 126 142, 134 110
+             L 76 110
+             L 76 82
+             L 165 82
+             C 167 89, 168 98, 168 106
+             C 168 152, 128 192, 68 192
+             C 12 192, -26 148, -26 95
+             C -26 42, 12 -2, 68 -2
+             C 112 -2, 148 24, 162 62
+             L 130 74
+             C 120 42, 98 22, 68 22 Z"
+          fill="#29C5F6"
+          transform="skewX(-15)"/>
+  </g>
+
+  <!-- Huruf 'O' / Lingkaran Biru di Belakang Gopher -->
+  <g transform="translate(170, 15)">
+    <ellipse cx="78" cy="98" rx="72" ry="75" fill="#29C5F6"/>
+  </g>
+
+  <!-- Maskot Gopher Lucu Bercelemek -->
+  <g transform="translate(200, 18)">
+    <!-- Ekor -->
+    <ellipse cx="18" cy="128" rx="8" ry="5.5" transform="rotate(-20 18 128)" fill="#76DDF8" stroke="#1C1C1E" stroke-width="3"/>
+
+    <!-- Kaki -->
+    <path d="M 40 140 C 37 155, 31 170, 36 173 C 41 176, 48 162, 50 146 Z" 
+          fill="#D6A784" stroke="#1C1C1E" stroke-width="3"/>
+    <path d="M 94 140 C 97 155, 103 170, 98 173 C 93 176, 86 162, 84 146 Z" 
+          fill="#D6A784" stroke="#1C1C1E" stroke-width="3"/>
+
+    <!-- Tubuh Gopher -->
+    <path d="M 45 22 
+             C 22 25, 18 58, 20 98 
+             C 22 125, 28 152, 68 154 
+             C 108 152, 114 125, 116 98 
+             C 118 58, 114 25, 91 22 
+             C 83 21, 53 21, 45 22 Z" 
+          fill="#76DDF8" stroke="#1C1C1E" stroke-width="3.5"/>
+
+    <!-- Telinga -->
+    <ellipse cx="37" cy="24" rx="7" ry="9.5" transform="rotate(-22 37 24)" fill="#76DDF8" stroke="#1C1C1E" stroke-width="2.8"/>
+    <ellipse cx="37" cy="24" rx="3.5" ry="5.5" transform="rotate(-22 37 24)" fill="#29C5F6"/>
+
+    <ellipse cx="98" cy="24" rx="7" ry="9.5" transform="rotate(22 98 24)" fill="#76DDF8" stroke="#1C1C1E" stroke-width="2.8"/>
+    <ellipse cx="98" cy="24" rx="3.5" ry="5.5" transform="rotate(22 98 24)" fill="#29C5F6"/>
+
+    <!-- Mata Besar Bulat Putih -->
+    <ellipse cx="55" cy="62" rx="19" ry="20" fill="#FFFFFF" stroke="#1C1C1E" stroke-width="3"/>
+    <circle cx="60" cy="59" r="6" fill="#1C1C1E"/>
+    <circle cx="62" cy="57" r="2.2" fill="#FFFFFF"/>
+
+    <ellipse cx="90" cy="59" rx="19" ry="20" fill="#FFFFFF" stroke="#1C1C1E" stroke-width="3"/>
+    <circle cx="86" cy="56" r="6" fill="#1C1C1E"/>
+    <circle cx="88" cy="54" r="2.2" fill="#FFFFFF"/>
+
+    <!-- Moncong & Gigi -->
+    <ellipse cx="73" cy="74" rx="9" ry="6" fill="#756A63" stroke="#1C1C1E" stroke-width="2.8"/>
+    <ellipse cx="73" cy="72" rx="4" ry="2.2" fill="#1C1C1E"/>
+    <rect x="69" y="80" width="3.8" height="6.5" rx="1" fill="#FFFFFF" stroke="#1C1C1E" stroke-width="1.8"/>
+    <rect x="73.5" y="80" width="3.8" height="6.5" rx="1" fill="#FFFFFF" stroke="#1C1C1E" stroke-width="1.8"/>
+
+    <!-- Celemek Multi-Warna Geometris -->
+    <g>
+      <clipPath id="markClip">
+        <path d="M 24 85 Q 68 95 112 85 L 112 140 Q 68 148 24 140 Z"/>
+      </clipPath>
+
+      <path d="M 24 85 Q 68 95 112 85 L 112 140 Q 68 148 24 140 Z" 
+            fill="#10B981" stroke="#1C1C1E" stroke-width="3"/>
+
+      <g clip-path="url(#markClip)">
+        <polygon points="24,85 66,85 52,142 24,142" fill="#8B5CF6"/>
+        <polygon points="24,115 64,142 24,142" fill="#22C55E"/>
+        <polygon points="66,85 112,85 112,142 52,142" fill="#0071E3"/>
+      </g>
+
+      <path d="M 24 85 Q 68 95 112 85 L 112 140 Q 68 148 24 140 Z" 
+            fill="none" stroke="#1C1C1E" stroke-width="3"/>
+    </g>
+
+    <!-- Tangan & Kantong -->
+    <path d="M 32 80 C 32 70, 40 70, 40 80 Z" fill="#76DDF8" stroke="#1C1C1E" stroke-width="2.6"/>
+    <rect x="31" y="96" width="14" height="15" rx="3.5" fill="#00ADD8" stroke="#1C1C1E" stroke-width="2"/>
+    <path d="M 36 91 L 36 97" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Badge Kotak Terminal GO _ -->
+    <rect x="73" y="100" width="28" height="24" rx="4" fill="#0D1117" stroke="#1C1C1E" stroke-width="2"/>
+    <text x="87" y="114" 
+          font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" 
+          font-weight="900" 
+          font-size="10.5" 
+          letter-spacing="-0.3" 
+          text-anchor="middle"
+          fill="#FFFFFF">
+      GO
+    </text>
+    <rect x="80" y="118" width="7" height="1.8" rx="0.5" fill="#29C5F6"/>
+  </g>
+</svg>

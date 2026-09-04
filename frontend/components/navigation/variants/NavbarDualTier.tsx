@@ -59,9 +59,11 @@ export default function NavbarDualTier() {
         <nav className="mx-auto w-full max-w-screen-2xl px-6 h-[64px] flex items-center justify-between">
           <div className="flex items-center gap-10">
             <Link href="/" className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#0071E3] flex items-center justify-center">
-                <BookOpen className="w-4 h-4 text-white" />
-              </div>
+              <img 
+                src="/golearn-mark.svg" 
+                alt="GoLearn Logo" 
+                className="h-8 w-auto object-contain" 
+              />
               <span className="font-display font-semibold text-[17px] tracking-tight">GoLearn Enterprise</span>
             </Link>
 

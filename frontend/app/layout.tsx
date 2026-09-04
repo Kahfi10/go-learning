@@ -1,10 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import NextTopLoader from 'nextjs-toploader';
 import { AuthProvider } from "@/context/AuthContext";
 import CommandSearch from "@/components/search/CommandSearch";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   title: { default: "GoLearn — Learn Go. The Elegant Way.", template: "%s | GoLearn" },
@@ -32,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           speed={200} 
           shadow="0 0 10px #0071E3,0 0 5px #0071E3" 
         />
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange={false}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange={false}>
           <AuthProvider>
             {children}
             <CommandSearch />

@@ -216,9 +216,9 @@ export default function LandingPage() {
 
         /* Topics cards stagger reveal */
         gsap.fromTo(".topic-card",
-          { y: 30, scale: 0.94, opacity: 0 },
+          { y: 24, opacity: 0 },
           {
-            y: 0, scale: 1, opacity: 1, stagger: 0.05, duration: 0.6, ease: "expo.out",
+            y: 0, opacity: 1, stagger: 0.05, duration: 0.6, ease: "expo.out",
             scrollTrigger: { trigger: "#topics-section", start: "top 85%", once: true },
           }
         );
@@ -226,9 +226,9 @@ export default function LandingPage() {
         /* Feature panels */
         document.querySelectorAll<HTMLElement>(".feature-panel").forEach((el) => {
           gsap.fromTo(el,
-            { y: 32, scale: 0.98, opacity: 0 },
+            { y: 24, opacity: 0 },
             {
-              y: 0, scale: 1, opacity: 1, duration: 0.8, ease: "expo.out",
+              y: 0, opacity: 1, duration: 0.8, ease: "expo.out",
               scrollTrigger: { trigger: el, start: "top 85%", once: true },
             }
           );
@@ -346,7 +346,7 @@ export default function LandingPage() {
           </div>
         </div>
         <DragScroll>
-          <div id="topics-track" className="flex gap-4 px-6 sm:px-10 pb-4" style={{ width: "max-content" }}>
+          <div id="topics-track" className="flex gap-5 px-6 sm:px-10 py-8" style={{ width: "max-content" }}>
             {TOPICS.map((t, i) => <TopicCard key={t.n} topic={t} index={i} />)}
           </div>
         </DragScroll>
@@ -554,7 +554,7 @@ function TopicCard({
       gsap.to(card, {
         y: -6,
         scale: 1.015,
-        boxShadow: "0 20px 40px rgba(15,23,42,0.10)",
+        boxShadow: "0 24px 48px -12px rgba(15,23,42,0.12), 0 8px 16px -4px rgba(15,23,42,0.06)",
         duration: 0.28,
         ease: "power2.out",
       });
@@ -568,7 +568,7 @@ function TopicCard({
       gsap.to(card, {
         y: 0,
         scale: 1,
-        boxShadow: "0 12px 30px rgba(15,23,42,0.04)",
+        boxShadow: "0 10px 30px -8px rgba(15,23,42,0.06), 0 2px 8px -2px rgba(15,23,42,0.04)",
         duration: 0.4,
         ease: "expo.out",
       });
@@ -591,7 +591,7 @@ function TopicCard({
       href={`/modules/${slugFromTitle(t.title)}`}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
-      className="topic-card w-[220px] sm:w-[248px] h-[204px] rounded-[22px] p-6 shrink-0 block relative overflow-hidden cursor-pointer bg-white dark:bg-[#111214] shadow-[0_12px_30px_rgba(15,23,42,0.04)]"
+      className="topic-card w-[220px] sm:w-[248px] h-[204px] rounded-[22px] p-6 shrink-0 block relative cursor-pointer bg-white dark:bg-[#111214] shadow-[0_10px_30px_-8px_rgba(15,23,42,0.06),0_2px_8px_-2px_rgba(15,23,42,0.04)] dark:shadow-[0_10px_30px_-8px_rgba(0,0,0,0.35)] transition-colors"
       style={{
         border: "1px solid rgba(210,210,215,0.55)",
       }}>

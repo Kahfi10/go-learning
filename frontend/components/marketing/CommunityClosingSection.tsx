@@ -114,14 +114,14 @@ export default function CommunityClosingSection() {
       gsap.to(orbitOuterRef.current, { rotation: 360, duration: 58, repeat: -1, ease: "none" });
       gsap.to(".orbit-outer-avatar", { rotation: -360, duration: 58, repeat: -1, ease: "none" });
 
-      // Central pulse ripples
+      // Central pulse ripples (contained scale)
       gsap.fromTo(
         ".orbit-pulse-ring",
-        { scale: 0.6, opacity: 0.35 },
-        { scale: 2.5, opacity: 0, duration: 3.5, repeat: -1, stagger: 1.1, ease: "power1.out" }
+        { scale: 0.8, opacity: 0.25 },
+        { scale: 1.8, opacity: 0, duration: 3, repeat: -1, stagger: 1, ease: "power1.out" }
       );
 
-      // 2. Subtle Card Depth Motion on Scroll (Pure scale & dim without fragile pin)
+      // 2. Subtle Card Stacking Depth without shrinking scale
       const mm = gsap.matchMedia();
       mm.add("(min-width: 768px)", () => {
         if (card2Ref.current && card1Ref.current && card1DimRef.current) {
@@ -131,7 +131,6 @@ export default function CommunityClosingSection() {
             end: "top 25%",
             scrub: true,
             animation: gsap.timeline()
-              .to(card1Ref.current, { scale: 0.94, ease: "none" }, 0)
               .to(card1DimRef.current, { opacity: 0.45, ease: "none" }, 0),
           });
         }
@@ -143,9 +142,7 @@ export default function CommunityClosingSection() {
             end: "top 25%",
             scrub: true,
             animation: gsap.timeline()
-              .to(card2Ref.current, { scale: 0.95, ease: "none" }, 0)
               .to(card2DimRef.current, { opacity: 0.45, ease: "none" }, 0)
-              .to(card1Ref.current, { scale: 0.88, ease: "none" }, 0)
               .to(card1DimRef.current, { opacity: 0.7, ease: "none" }, 0),
           });
         }
@@ -171,14 +168,14 @@ export default function CommunityClosingSection() {
       </div>
 
       {/* Stacked Cards Deck */}
-      <div className="relative w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16">
+      <div className="relative w-full max-w-[1340px] mx-auto px-6 sm:px-10 space-y-12 sm:space-y-16">
         
         {/* ══════════════════════════════════════════════════════════════════
             CARD 1: KOMUNITAS — Celestial Orbit & Gopher Network
         ══════════════════════════════════════════════════════════════════ */}
         <div 
           ref={card1Ref}
-          className="sticky top-20 sm:top-24 z-10 w-full min-h-[480px] sm:min-h-[520px] rounded-3xl bg-gradient-to-br from-[#0e1219] via-[#080b11] to-[#040609] border border-white/[0.12] p-6 sm:p-9 shadow-[0_25px_80px_rgba(0,0,0,0.9)] flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8 overflow-hidden will-change-transform"
+          className="sticky top-20 sm:top-24 z-10 w-full min-h-[500px] sm:min-h-[560px] rounded-3xl bg-gradient-to-br from-[#0e1219] via-[#080b11] to-[#040609] border border-white/[0.12] p-8 sm:p-12 lg:p-14 shadow-[0_25px_80px_rgba(0,0,0,0.9)] flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-12 overflow-hidden will-change-transform"
         >
             {/* Dark dimming overlay for stacked depth */}
             <div ref={card1DimRef} className="absolute inset-0 bg-black pointer-events-none rounded-3xl opacity-0 z-40" />
@@ -187,7 +184,7 @@ export default function CommunityClosingSection() {
             <div className="absolute top-0 right-0 w-96 h-96 bg-[#00ADD8]/10 rounded-full blur-3xl pointer-events-none" />
 
             {/* Left Column: Narrative */}
-            <div className="flex-1 flex flex-col justify-between h-full z-10 max-w-md text-left">
+            <div className="flex-1 flex flex-col justify-between h-full z-10 max-w-xl text-left">
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00ADD8]/10 border border-[#00ADD8]/30 text-xs font-mono font-medium text-[#00ADD8] mb-3">
                   <span>01 / 03</span>
@@ -228,10 +225,10 @@ export default function CommunityClosingSection() {
             </div>
 
             {/* Right Column: Multi-Ring Gravity Orbit */}
-            <div className="flex-1 relative w-full h-[320px] sm:h-[380px] flex items-center justify-center">
+            <div className="flex-1 relative w-full min-h-[340px] sm:min-h-[400px] lg:min-h-[460px] flex items-center justify-center overflow-hidden rounded-2xl">
 
               {/* Deep ambient background glow */}
-              <div className="absolute w-[280px] h-[280px] bg-[#00ADD8]/[0.04] rounded-full blur-[120px] pointer-events-none" />
+              <div className="absolute w-[360px] h-[360px] bg-[#00ADD8]/[0.06] rounded-full blur-[140px] pointer-events-none" />
 
               {/* Floating ambient particles (Gravity Field effect) */}
               {ORBIT_PARTICLES.map((p, i) => (
@@ -251,19 +248,19 @@ export default function CommunityClosingSection() {
               ))}
 
               {/* Central Pulse Ripple Rings */}
-              <div className="orbit-pulse-ring absolute w-16 h-16 rounded-full border border-[#00ADD8]/25 pointer-events-none" />
-              <div className="orbit-pulse-ring absolute w-16 h-16 rounded-full border border-[#00ADD8]/20 pointer-events-none" />
-              <div className="orbit-pulse-ring absolute w-16 h-16 rounded-full border border-[#00ADD8]/15 pointer-events-none" />
+              <div className="orbit-pulse-ring absolute w-20 h-20 rounded-full border border-[#00ADD8]/25 pointer-events-none" />
+              <div className="orbit-pulse-ring absolute w-20 h-20 rounded-full border border-[#00ADD8]/20 pointer-events-none" />
+              <div className="orbit-pulse-ring absolute w-20 h-20 rounded-full border border-[#00ADD8]/15 pointer-events-none" />
 
               {/* ─── OUTER RING (3 avatars, slowest, clockwise 58s) ─── */}
               <div
                 ref={orbitOuterRef}
-                className="absolute w-[280px] sm:w-[340px] h-[280px] sm:h-[340px] rounded-full"
+                className="absolute w-[280px] sm:w-[340px] lg:w-[400px] h-[280px] sm:h-[340px] lg:h-[400px] rounded-full"
               >
                 {/* Subtle ring path */}
-                <div className="absolute inset-0 rounded-full border border-white/[0.04]" />
+                <div className="absolute inset-0 rounded-full border border-white/[0.06]" />
                 {/* Gradient arc highlight */}
-                <div className="absolute inset-0 rounded-full pointer-events-none" style={{ background: 'conic-gradient(from 0deg, transparent 0%, rgba(0,173,216,0.06) 12%, transparent 25%, transparent 100%)' }} />
+                <div className="absolute inset-0 rounded-full pointer-events-none" style={{ background: 'conic-gradient(from 0deg, transparent 0%, rgba(0,173,216,0.08) 12%, transparent 25%, transparent 100%)' }} />
 
                 {[COMMUNITY_MEMBERS[2], COMMUNITY_MEMBERS[6], COMMUNITY_MEMBERS[7]].map((member, i) => {
                   const angle = i * 120 + 30;
@@ -276,16 +273,16 @@ export default function CommunityClosingSection() {
                       style={{ top: `${y}%`, left: `${x}%`, transform: 'translate(-50%, -50%)' }}
                     >
                       {/* Ambient glow halo */}
-                      <div className={`absolute -inset-3 rounded-full bg-gradient-to-tr ${member.gradient} opacity-[0.18] blur-lg pointer-events-none`} />
+                      <div className={`absolute -inset-3 rounded-full bg-gradient-to-tr ${member.gradient} opacity-[0.22] blur-lg pointer-events-none`} />
                       <div
                         onMouseEnter={() => setActiveAvatar(member)}
                         onMouseLeave={() => setActiveAvatar(null)}
-                        className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-white/[0.08] shadow-lg transition-all duration-300 hover:scale-[1.3] hover:border-[#00ADD8]/60 cursor-pointer"
+                        className="relative w-11 h-11 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full overflow-hidden border-2 border-white/[0.12] shadow-xl transition-all duration-300 hover:scale-[1.25] hover:border-[#00ADD8]/80 cursor-pointer"
                       >
-                        <div className={`w-full h-full bg-gradient-to-tr ${member.gradient} flex items-center justify-center font-mono font-bold text-[10px] text-white`}>
+                        <div className={`w-full h-full bg-gradient-to-tr ${member.gradient} flex items-center justify-center font-mono font-bold text-xs sm:text-sm text-white`}>
                           {member.initials}
                         </div>
-                        <span className="absolute bottom-0 right-0 text-[7px] bg-black/90 rounded-full px-0.5">{member.flag}</span>
+                        <span className="absolute bottom-0 right-0 text-[8px] sm:text-[9px] bg-black/90 rounded-full px-1">{member.flag}</span>
                       </div>
                     </div>
                   );
@@ -295,10 +292,10 @@ export default function CommunityClosingSection() {
               {/* ─── MID RING (3 avatars, medium, counter-clockwise 42s) ─── */}
               <div
                 ref={orbitMidRef}
-                className="absolute w-[185px] sm:w-[225px] h-[185px] sm:h-[225px] rounded-full"
+                className="absolute w-[190px] sm:w-[230px] lg:w-[270px] h-[190px] sm:h-[230px] lg:h-[270px] rounded-full"
               >
-                <div className="absolute inset-0 rounded-full border border-[#00ADD8]/[0.07]" />
-                <div className="absolute inset-0 rounded-full pointer-events-none" style={{ background: 'conic-gradient(from 200deg, transparent 0%, rgba(0,173,216,0.08) 15%, transparent 30%, transparent 100%)' }} />
+                <div className="absolute inset-0 rounded-full border border-[#00ADD8]/[0.1]" />
+                <div className="absolute inset-0 rounded-full pointer-events-none" style={{ background: 'conic-gradient(from 200deg, transparent 0%, rgba(0,173,216,0.1) 15%, transparent 30%, transparent 100%)' }} />
 
                 {[COMMUNITY_MEMBERS[1], COMMUNITY_MEMBERS[3], COMMUNITY_MEMBERS[5]].map((member, i) => {
                   const angle = i * 120;
@@ -310,16 +307,16 @@ export default function CommunityClosingSection() {
                       className="absolute orbit-mid-avatar"
                       style={{ top: `${y}%`, left: `${x}%`, transform: 'translate(-50%, -50%)' }}
                     >
-                      <div className={`absolute -inset-3 rounded-full bg-gradient-to-tr ${member.gradient} opacity-[0.22] blur-md pointer-events-none`} />
+                      <div className={`absolute -inset-3 rounded-full bg-gradient-to-tr ${member.gradient} opacity-[0.25] blur-md pointer-events-none`} />
                       <div
                         onMouseEnter={() => setActiveAvatar(member)}
                         onMouseLeave={() => setActiveAvatar(null)}
-                        className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-full overflow-hidden border-2 border-white/[0.1] shadow-lg transition-all duration-300 hover:scale-[1.3] hover:border-[#00ADD8]/60 cursor-pointer"
+                        className="relative w-11 h-11 sm:w-12 sm:h-12 lg:w-13 lg:h-13 rounded-full overflow-hidden border-2 border-white/[0.12] shadow-xl transition-all duration-300 hover:scale-[1.25] hover:border-[#00ADD8]/80 cursor-pointer"
                       >
-                        <div className={`w-full h-full bg-gradient-to-tr ${member.gradient} flex items-center justify-center font-mono font-bold text-xs text-white`}>
+                        <div className={`w-full h-full bg-gradient-to-tr ${member.gradient} flex items-center justify-center font-mono font-bold text-xs sm:text-sm text-white`}>
                           {member.initials}
                         </div>
-                        <span className="absolute bottom-0 right-0 text-[7px] bg-black/90 rounded-full px-0.5">{member.flag}</span>
+                        <span className="absolute bottom-0 right-0 text-[8px] sm:text-[9px] bg-black/90 rounded-full px-1">{member.flag}</span>
                       </div>
                     </div>
                   );
@@ -329,9 +326,9 @@ export default function CommunityClosingSection() {
               {/* ─── INNER RING (2 avatars, fastest, clockwise 28s) ─── */}
               <div
                 ref={orbitInnerRef}
-                className="absolute w-[100px] sm:w-[125px] h-[100px] sm:h-[125px] rounded-full"
+                className="absolute w-[110px] sm:w-[130px] lg:w-[150px] h-[110px] sm:h-[130px] lg:h-[150px] rounded-full"
               >
-                <div className="absolute inset-0 rounded-full border border-[#00ADD8]/[0.1]" />
+                <div className="absolute inset-0 rounded-full border border-[#00ADD8]/[0.15]" />
 
                 {[COMMUNITY_MEMBERS[0], COMMUNITY_MEMBERS[4]].map((member, i) => {
                   const angle = i * 180;
@@ -343,16 +340,16 @@ export default function CommunityClosingSection() {
                       className="absolute orbit-inner-avatar"
                       style={{ top: `${y}%`, left: `${x}%`, transform: 'translate(-50%, -50%)' }}
                     >
-                      <div className={`absolute -inset-2.5 rounded-full bg-gradient-to-tr ${member.gradient} opacity-[0.28] blur-md pointer-events-none`} />
+                      <div className={`absolute -inset-2.5 rounded-full bg-gradient-to-tr ${member.gradient} opacity-[0.3] blur-md pointer-events-none`} />
                       <div
                         onMouseEnter={() => setActiveAvatar(member)}
                         onMouseLeave={() => setActiveAvatar(null)}
-                        className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-white/[0.12] shadow-lg transition-all duration-300 hover:scale-[1.3] hover:border-[#00ADD8]/60 cursor-pointer"
+                        className="relative w-12 h-12 sm:w-13 sm:h-13 lg:w-14 lg:h-14 rounded-full overflow-hidden border-2 border-white/[0.15] shadow-xl transition-all duration-300 hover:scale-[1.25] hover:border-[#00ADD8]/80 cursor-pointer"
                       >
-                        <div className={`w-full h-full bg-gradient-to-tr ${member.gradient} flex items-center justify-center font-mono font-bold text-xs text-white`}>
+                        <div className={`w-full h-full bg-gradient-to-tr ${member.gradient} flex items-center justify-center font-mono font-bold text-xs sm:text-sm text-white`}>
                           {member.initials}
                         </div>
-                        <span className="absolute bottom-0 right-0 text-[8px] bg-black/90 rounded-full px-0.5">{member.flag}</span>
+                        <span className="absolute bottom-0 right-0 text-[9px] bg-black/90 rounded-full px-1">{member.flag}</span>
                       </div>
                     </div>
                   );
@@ -360,11 +357,11 @@ export default function CommunityClosingSection() {
               </div>
 
               {/* Central Glowing Core */}
-              <div className="relative z-10 flex flex-col items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-[#0a1a20] to-[#050d10] border border-[#00ADD8]/25 shadow-[0_0_50px_rgba(0,173,216,0.25)]">
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#00ADD8] text-black flex items-center justify-center font-bold text-xs sm:text-sm shadow-[0_0_20px_#00ADD8]">
+              <div className="relative z-10 flex flex-col items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-[#0a1a20] to-[#050d10] border border-[#00ADD8]/30 shadow-[0_0_60px_rgba(0,173,216,0.3)]">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#00ADD8] text-black flex items-center justify-center font-bold text-sm sm:text-base shadow-[0_0_25px_#00ADD8]">
                   Go
                 </div>
-                <span className="text-[7px] sm:text-[8px] font-mono text-white/70 mt-0.5 tracking-wider uppercase">Hub</span>
+                <span className="text-[8px] sm:text-[9px] font-mono text-white/80 mt-1 tracking-wider uppercase">Hub</span>
               </div>
 
               {/* Hover Tooltip Card */}
@@ -403,7 +400,7 @@ export default function CommunityClosingSection() {
           ══════════════════════════════════════════════════════════════════ */}
           <div 
             ref={card2Ref}
-            className="sticky top-24 sm:top-28 z-20 w-full min-h-[480px] sm:min-h-[520px] rounded-3xl bg-gradient-to-br from-[#091512] via-[#060e0c] to-[#030605] border border-white/[0.12] p-6 sm:p-9 shadow-[0_25px_80px_rgba(0,0,0,0.9)] flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8 overflow-hidden will-change-transform"
+            className="sticky top-24 sm:top-28 z-20 w-full min-h-[500px] sm:min-h-[560px] rounded-3xl bg-gradient-to-br from-[#091512] via-[#060e0c] to-[#030605] border border-white/[0.12] p-8 sm:p-12 lg:p-14 shadow-[0_25px_80px_rgba(0,0,0,0.9)] flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-12 overflow-hidden will-change-transform"
           >
             {/* Dark dimming overlay for stacked depth */}
             <div ref={card2DimRef} className="absolute inset-0 bg-black pointer-events-none rounded-3xl opacity-0 z-40" />
@@ -412,7 +409,7 @@ export default function CommunityClosingSection() {
             <div className="absolute top-0 right-0 w-96 h-96 bg-[#34C759]/10 rounded-full blur-3xl pointer-events-none" />
 
             {/* Left Column: Narrative */}
-            <div className="flex-1 flex flex-col justify-between h-full z-10 max-w-md text-left">
+            <div className="flex-1 flex flex-col justify-between h-full z-10 max-w-xl text-left">
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#34C759]/10 border border-[#34C759]/30 text-xs font-mono font-medium text-[#34C759] mb-3">
                   <span>02 / 03</span>
@@ -447,19 +444,19 @@ export default function CommunityClosingSection() {
             </div>
 
             {/* Right Column: GitHub Style Practice Heatmap */}
-            <div className="flex-1 w-full flex flex-col justify-center items-center z-10 bg-[#080d0b] border border-white/[0.08] rounded-2xl p-5 sm:p-6">
+            <div className="flex-1 w-full min-h-[340px] sm:min-h-[400px] lg:min-h-[460px] flex flex-col justify-center items-center z-10 bg-[#080d0b] border border-white/[0.08] rounded-2xl p-6 sm:p-8 lg:p-10 shadow-2xl">
               
-              <div className="w-full flex items-center justify-between mb-3.5 text-xs">
-                <span className="font-mono text-white/80 font-medium flex items-center gap-2">
+              <div className="w-full flex items-center justify-between mb-4 text-xs sm:text-sm">
+                <span className="font-mono text-white/90 font-semibold flex items-center gap-2">
                   <Activity className="w-4 h-4 text-[#34C759]" />
                   Activity Practice Grid
                 </span>
-                <span className="text-[#86868B] font-mono">126 Sesi Selesai</span>
+                <span className="text-[#86868B] font-mono text-xs">126 Sesi Selesai</span>
               </div>
 
               {/* Heatmap Grid */}
-              <div className="w-full overflow-x-auto pb-2">
-                <div className="grid grid-flow-col grid-rows-7 gap-1.5 w-max mx-auto">
+              <div className="w-full overflow-x-auto pb-3 flex justify-center">
+                <div className="grid grid-flow-col grid-rows-7 gap-1.5 sm:gap-2 w-max mx-auto">
                   {SAMPLE_ACTIVITY.map((level, idx) => {
                     let bg = "bg-white/[0.05]";
                     if (level === 1) bg = "bg-[#00ADD8]/30 border border-[#00ADD8]/40";
@@ -470,7 +467,7 @@ export default function CommunityClosingSection() {
                       <div
                         key={idx}
                         title={`Day ${idx + 1}: ${level > 0 ? `${level * 2} kuis diselesaikan` : 'Istirahat'}`}
-                        className={`w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-sm ${bg} transition-transform hover:scale-125 hover:z-20 cursor-pointer`}
+                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-sm ${bg} transition-transform hover:scale-125 hover:z-20 cursor-pointer`}
                       />
                     );
                   })}
@@ -478,7 +475,7 @@ export default function CommunityClosingSection() {
               </div>
 
               {/* Legend & Stats */}
-              <div className="w-full flex items-center justify-between text-[11px] text-[#86868B] mt-3.5 pt-3 border-t border-white/[0.06]">
+              <div className="w-full flex items-center justify-between text-xs text-[#86868B] mt-4 pt-3.5 border-t border-white/[0.06]">
                 <span>Kurang</span>
                 <div className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-sm bg-white/[0.05]" />
@@ -498,13 +495,13 @@ export default function CommunityClosingSection() {
           ══════════════════════════════════════════════════════════════════ */}
           <div 
             ref={card3Ref}
-            className="sticky top-28 sm:top-32 z-30 w-full min-h-[480px] sm:min-h-[520px] rounded-3xl bg-gradient-to-br from-[#120e17] via-[#0b0811] to-[#050308] border border-white/[0.12] p-6 sm:p-9 shadow-[0_25px_80px_rgba(0,0,0,0.9)] flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8 overflow-hidden will-change-transform"
+            className="sticky top-28 sm:top-32 z-30 w-full min-h-[500px] sm:min-h-[560px] rounded-3xl bg-gradient-to-br from-[#120e17] via-[#0b0811] to-[#050308] border border-white/[0.12] p-8 sm:p-12 lg:p-14 shadow-[0_25px_80px_rgba(0,0,0,0.9)] flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-12 overflow-hidden will-change-transform"
           >
             {/* Ambient Corner Glow */}
             <div className="absolute top-0 right-0 w-96 h-96 bg-[#AF52DE]/10 rounded-full blur-3xl pointer-events-none" />
 
             {/* Left Column: Narrative */}
-            <div className="flex-1 flex flex-col justify-between h-full z-10 max-w-md text-left">
+            <div className="flex-1 flex flex-col justify-between h-full z-10 max-w-xl text-left">
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#AF52DE]/10 border border-[#AF52DE]/30 text-xs font-mono font-medium text-[#AF52DE] mb-3">
                   <span>03 / 03</span>
@@ -542,7 +539,7 @@ export default function CommunityClosingSection() {
             </div>
 
             {/* Right Column: Mini macOS Terminal & IDE */}
-            <div className="flex-1 w-full h-[290px] sm:h-[320px] bg-[#0A0A0C] border border-white/10 rounded-2xl overflow-hidden flex flex-col z-10 shadow-2xl">
+            <div className="flex-1 w-full min-h-[340px] sm:min-h-[400px] lg:min-h-[460px] bg-[#0A0A0C] border border-white/10 rounded-2xl overflow-hidden flex flex-col z-10 shadow-2xl">
               
               {/* Window Titlebar */}
               <div className="px-4 py-2 bg-[#141418] border-b border-white/[0.08] flex items-center justify-between select-none">

@@ -69,12 +69,14 @@ export default function Navbar({ lang = "id" }: { lang?: "id" | "en" }) {
       <nav className="mx-auto w-full max-w-screen-2xl px-5 h-[52px] flex items-center justify-between gap-4">
 
         {/* ── Logo ──────────────────────── */}
-        <Link href="/" className="flex items-center gap-2 shrink-0 group">
-          <div className="w-7 h-7 rounded-[8px] bg-[#0071E3] flex items-center justify-center group-hover:bg-[#0077ED] transition-colors">
-            <BookOpen className="w-3.5 h-3.5 text-white" />
-          </div>
-          <span className="font-display font-semibold text-[15px] text-foreground tracking-tight">
-            GoLearn
+        <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
+          <img 
+            src="/golearn-mark.svg" 
+            alt="GoLearn Logo" 
+            className="h-8 w-auto object-contain transition-transform group-hover:scale-105"
+          />
+          <span className="font-display font-bold text-[17px] text-foreground tracking-tight">
+            Go<span className="text-[#00ADD8]">Learn</span>
           </span>
         </Link>
 

@@ -19,7 +19,7 @@ function openSearch() {
 
 export default function NavbarPill({ lang = "id" }: { lang?: "id" | "en" }) {
   const pathname = usePathname();
-  const { resolvedTheme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const { state, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -59,9 +59,14 @@ export default function NavbarPill({ lang = "id" }: { lang?: "id" | "en" }) {
         <nav className="px-5 h-[56px] flex items-center justify-between gap-4">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0 group">
-            <div className="w-8 h-8 rounded-full bg-foreground text-background flex items-center justify-center transition-transform group-hover:scale-105">
-              <BookOpen className="w-4 h-4" />
-            </div>
+            <img 
+              src="/golearn-mark.svg" 
+              alt="GoLearn Logo" 
+              className="h-8 w-auto object-contain transition-transform group-hover:scale-105" 
+            />
+            <span className="font-display font-bold text-[16px] text-foreground tracking-tight hidden sm:inline-block">
+              Go<span className="text-[#00ADD8]">Learn</span>
+            </span>
           </Link>
 
           {/* Desktop Nav */}
@@ -83,8 +88,16 @@ export default function NavbarPill({ lang = "id" }: { lang?: "id" | "en" }) {
           <div className="hidden md:flex items-center gap-3">
             <div className="flex items-center gap-1">
               <button onClick={openSearch} className="w-8 h-8 flex items-center justify-center rounded-full text-[#86868B] hover:text-foreground transition-colors"><Search className="w-4 h-4" /></button>
-              <button onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")} className="w-8 h-8 flex items-center justify-center rounded-full text-[#86868B] hover:text-foreground transition-colors">
-                {mounted && resolvedTheme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              <button 
+                type="button"
+                aria-label="Toggle tema"
+                onClick={() => {
+                  const currentTheme = resolvedTheme || theme;
+                  setTheme(currentTheme === "dark" ? "light" : "dark");
+                }} 
+                className="w-8 h-8 flex items-center justify-center rounded-full text-[#86868B] hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+              >
+                {mounted && (resolvedTheme === "dark" || theme === "dark") ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-zinc-700 dark:text-zinc-300" />}
               </button>
             </div>
 
@@ -134,6 +147,27 @@ export default function NavbarPill({ lang = "id" }: { lang?: "id" | "en" }) {
                 {lbl(l)}
               </Link>
             ))}
+            <div className="pt-2 mt-2 border-t border-black/5 dark:border-white/5 flex items-center justify-between px-4">
+              <span className="text-[14px] text-[#86868B]">Tema Tampilan</span>
+              <button 
+                type="button"
+                onClick={() => {
+                  const currentTheme = resolvedTheme || theme;
+                  setTheme(currentTheme === "dark" ? "light" : "dark");
+                }}
+                className="flex items-center gap-2 text-[14px] font-medium py-1.5 px-3 rounded-full bg-black/5 dark:bg-white/10"
+              >
+                {mounted && (resolvedTheme === "dark" || theme === "dark") ? (
+                  <>
+                    <Sun className="w-4 h-4 text-amber-400" /> Mode Terang
+                  </>
+                ) : (
+                  <>
+                    <Moon className="w-4 h-4 text-zinc-600 dark:text-zinc-300" /> Mode Gelap
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
