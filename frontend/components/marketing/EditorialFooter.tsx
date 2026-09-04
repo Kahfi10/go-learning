@@ -2,7 +2,7 @@
 
 import { useLayoutEffect, useRef } from "react";
 import Link from "next/link";
-import { Github, Twitter, MessageSquare, ArrowRight, Zap } from "lucide-react";
+import { Github, Twitter, MessageSquare, ArrowRight, Zap, ExternalLink } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -11,163 +11,202 @@ export default function EditorialFooter() {
   
   useLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
-    
-    let ctx = gsap.context(() => {
-      // Create an entrance timeline for the footer content
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: footerRef.current,
-          start: "top 60%", // Triggers when the top of footer hits 60% of screen
-          toggleActions: "play none none reverse",
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        ".footer-col-reveal",
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          stagger: 0.08,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: footerRef.current,
+            start: "top 85%",
+            once: true,
+          },
         }
-      });
-
-      // 1. Reveal Brand Icon and Title
-      tl.fromTo(".brand-reveal", 
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: "power3.out" }
-      )
-      
-      // 2. Reveal Links Columns
-      .fromTo(".footer-col",
-        { y: 40, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.7, stagger: 0.1, ease: "back.out(1.1)" },
-        "-=0.4"
-      )
-
-      // 3. Scale up the giant wordmark
-      .fromTo(".wordmark-reveal",
-        { scale: 0.8, opacity: 0, y: 50 },
-        { scale: 1, opacity: 1, y: 0, duration: 1, ease: "expo.out" },
-        "-=0.5"
-      )
-      
-      // 4. Fade in bottom credits
-      .fromTo(".credits-reveal",
-        { opacity: 0 },
-        { opacity: 1, duration: 0.8 },
-        "-=0.5"
       );
-
     }, footerRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <footer ref={footerRef} className="relative w-full h-full flex flex-col justify-between pt-20 pb-8 overflow-hidden bg-transparent">
-      
-      <div className="relative z-10 mx-auto w-full max-w-screen-2xl px-6 sm:px-12 lg:px-20 flex-1 flex flex-col justify-center">
-        
+    <footer 
+      ref={footerRef} 
+      className="relative w-full bg-[#050505] text-white pt-20 pb-10 sm:pb-12 overflow-hidden border-t border-white/[0.08]"
+    >
+      {/* Ambient background glow */}
+      <div className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-[#0071E3]/[0.04] rounded-full blur-[140px]" />
+
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-12">
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-y-16 md:gap-x-12 lg:gap-x-20 mb-auto mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-y-12 md:gap-x-10 lg:gap-x-16 mb-16 sm:mb-20">
           
           {/* Brand Column */}
-          <div className="md:col-span-12 lg:col-span-5 flex flex-col items-start">
-            <Link href="/" className="inline-flex items-center gap-3 mb-6 group brand-reveal">
+          <div className="footer-col-reveal md:col-span-12 lg:col-span-5 flex flex-col items-start">
+            <Link href="/" className="inline-flex items-center gap-3 mb-5 group">
               <div className="w-10 h-10 rounded-xl bg-white text-black flex items-center justify-center font-bold text-xl group-hover:scale-105 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.2)]">
-                <Zap className="w-5 h-5" />
+                <Zap className="w-5 h-5 fill-black" />
               </div>
-              <span className="font-display font-semibold text-2xl tracking-tight text-white">GoLearn</span>
+              <div className="flex flex-col">
+                <span className="font-display font-bold text-xl tracking-tight text-white leading-none">
+                  GoLearn
+                </span>
+                <span className="text-[11px] font-medium tracking-wider uppercase text-[#86868B] mt-1">
+                  Interactive Platform
+                </span>
+              </div>
             </Link>
-            <p className="brand-reveal text-[#A1A1A6] text-base leading-relaxed max-w-sm mb-8">
-              Platform pembelajaran bahasa pemrograman Go yang dirancang khusus untuk mencetak developer infrastruktur masa depan.
+            <p className="text-[#86868B] text-sm sm:text-base leading-relaxed max-w-sm mb-6">
+              Platform pembelajaran bahasa pemrograman Go interaktif untuk mencetak developer backend dan infrastruktur modern.
             </p>
-            <div className="flex items-center gap-4 brand-reveal">
-              <SocialBtn icon={Github} href="https://github.com" />
-              <SocialBtn icon={Twitter} href="https://twitter.com" />
-              <SocialBtn icon={MessageSquare} href="https://discord.com" />
+            <div className="flex items-center gap-3">
+              <SocialBtn icon={Github} href="https://github.com/Kahfi10/go-learning" label="GitHub" />
+              <SocialBtn icon={Twitter} href="https://twitter.com" label="Twitter" />
+              <SocialBtn icon={MessageSquare} href="/community" label="Discord Community" />
             </div>
           </div>
 
           {/* Links Grid */}
-          <div className="md:col-span-12 lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-y-12 gap-x-8">
+          <div className="md:col-span-12 lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-y-10 gap-x-8">
             
-            {/* Navigasi */}
-            <div className="footer-col">
-              <h3 className="font-semibold text-white mb-6 text-sm tracking-wide">Produk</h3>
-              <ul className="flex flex-col gap-4 text-sm text-[#A1A1A6]">
+            {/* Navigasi / Produk */}
+            <div className="footer-col-reveal flex flex-col">
+              <h3 className="font-semibold text-white mb-5 text-sm tracking-wide">Navigasi</h3>
+              <ul className="flex flex-col gap-3.5 text-sm text-[#86868B]">
                 <FooterLink href="/">Beranda</FooterLink>
                 <FooterLink href="/modules">Katalog Topik</FooterLink>
-                <FooterLink href="/playground">Live Editor</FooterLink>
+                <FooterLink href="/playground">Live Playground</FooterLink>
                 <FooterLink href="/leaderboard">Leaderboard</FooterLink>
               </ul>
             </div>
 
-            {/* Akun */}
-            <div className="footer-col">
-              <h3 className="font-semibold text-white mb-6 text-sm tracking-wide">Platform</h3>
-              <ul className="flex flex-col gap-4 text-sm text-[#A1A1A6]">
+            {/* Platform / Akun */}
+            <div className="footer-col-reveal flex flex-col">
+              <h3 className="font-semibold text-white mb-5 text-sm tracking-wide">Akun & Auth</h3>
+              <ul className="flex flex-col gap-3.5 text-sm text-[#86868B]">
                 <FooterLink href="/login">Masuk</FooterLink>
-                <FooterLink href="/register">Buat Akun</FooterLink>
+                <FooterLink href="/register">Buat Akun Baru</FooterLink>
                 <FooterLink href="/dashboard">Dashboard</FooterLink>
                 <FooterLink href="/settings">Pengaturan</FooterLink>
               </ul>
             </div>
 
-            {/* Resources */}
-            <div className="footer-col col-span-2 sm:col-span-1">
-              <h3 className="font-semibold text-white mb-6 text-sm tracking-wide">Ekosistem</h3>
-              <ul className="flex flex-col gap-4 text-sm text-[#A1A1A6]">
-                <FooterLink href="https://go.dev/">Go Official Docs</FooterLink>
-                <FooterLink href="https://github.com/Kahfi10/go-learning">Open Source</FooterLink>
+            {/* Ekosistem / Resources */}
+            <div className="footer-col-reveal flex flex-col col-span-2 sm:col-span-1">
+              <h3 className="font-semibold text-white mb-5 text-sm tracking-wide">Resources</h3>
+              <ul className="flex flex-col gap-3.5 text-sm text-[#86868B]">
+                <FooterLink href="https://go.dev/" isExternal>Go Official Docs</FooterLink>
+                <FooterLink href="https://github.com/Kahfi10/go-learning" isExternal>GitHub Repo</FooterLink>
                 <FooterLink href="/community">Komunitas Discord</FooterLink>
               </ul>
               
-              <div className="mt-8 flex items-center gap-2.5">
-                <span className="relative flex h-2.5 w-2.5">
+              {/* System status pill */}
+              <div className="mt-7 inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] w-fit">
+                <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                 </span>
-                <span className="text-sm font-medium text-white">Sistem Berjalan</span>
+                <span className="text-xs font-medium text-white/80">Semua sistem normal</span>
               </div>
             </div>
 
           </div>
         </div>
-      </div>
 
-      {/* Edge-to-Edge Wordmark */}
-      <div className="w-full relative z-10 border-b border-white/10 pb-4 mb-6 overflow-hidden flex justify-center items-end wordmark-reveal mt-12">
-        <h2 className="font-display font-bold text-[15vw] md:text-[16vw] leading-[0.75] tracking-[-0.04em] text-white/5 uppercase select-none origin-bottom whitespace-nowrap">
-          GOLEARN
-        </h2>
-      </div>
-
-      {/* Bottom Credits */}
-      <div className="relative z-10 mx-auto w-full max-w-screen-2xl px-6 sm:px-12 lg:px-20 credits-reveal flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-[#A1A1A6]">
-        <p>© 2026 GoLearn Interactive. Seluruh hak cipta dilindungi.</p>
-        <div className="flex items-center gap-6">
-          <Link href="/privacy" className="hover:text-white transition-colors">Privasi</Link>
-          <Link href="/terms" className="hover:text-white transition-colors">Ketentuan</Link>
-          <span className="w-1 h-1 rounded-full bg-[#A1A1A6]/30 hidden sm:block" />
-          <p className="text-white hidden sm:block">Dibuat di Indonesia</p>
+        {/* Edge-to-Edge Marquee Wordmark — scrolls R→L infinitely */}
+        <div 
+          className="footer-marquee-wrap w-full relative z-10 my-8 sm:my-12 overflow-hidden select-none pointer-events-none"
+          style={{
+            maskImage: 'linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%)',
+          }}
+        >
+          <div 
+            className="footer-marquee-track flex whitespace-nowrap"
+            style={{
+              animation: 'footerMarquee 18s linear infinite',
+            }}
+          >
+            {[...Array(4)].map((_, i) => (
+              <span
+                key={i}
+                className="font-display font-black text-[14vw] sm:text-[12vw] leading-none tracking-tight text-white/[0.06] uppercase mx-[3vw] inline-block"
+                style={{
+                  WebkitTextStroke: '1px rgba(255,255,255,0.06)',
+                }}
+              >
+                GOLEARN
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
 
+        <style jsx>{`
+          @keyframes footerMarquee {
+            0% {
+              transform: translateX(0%);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+        `}</style>
+
+        {/* Bottom Credits Bar */}
+        <div className="relative z-10 pt-8 border-t border-white/[0.08] flex flex-col sm:flex-row justify-between items-center gap-4 text-xs sm:text-sm text-[#86868B]">
+          <p>© 2026 GoLearn Interactive. Seluruh hak cipta dilindungi.</p>
+          <div className="flex items-center gap-5 sm:gap-6">
+            <Link href="/privacy" className="hover:text-white transition-colors">Kebijakan Privasi</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">Ketentuan Layanan</Link>
+            <span className="w-1 h-1 rounded-full bg-white/20 hidden sm:block" />
+            <p className="text-white/70 hidden sm:block">Dibuat di Indonesia 🇮🇩</p>
+          </div>
+        </div>
+
+      </div>
     </footer>
   );
 }
 
-// Helper components
-function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+function FooterLink({ href, children, isExternal }: { href: string; children: React.ReactNode; isExternal?: boolean }) {
+  if (isExternal) {
+    return (
+      <li>
+        <a 
+          href={href} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="group inline-flex items-center gap-1.5 hover:text-white transition-colors"
+        >
+          <span>{children}</span>
+          <ExternalLink className="w-3 h-3 opacity-60 group-hover:opacity-100 transition-opacity" />
+        </a>
+      </li>
+    );
+  }
+
   return (
     <li>
-      <Link href={href} className="group inline-flex items-center gap-2 hover:text-white transition-colors">
-        {children}
-        <ArrowRight className="w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-white" />
+      <Link href={href} className="group inline-flex items-center gap-1.5 hover:text-white transition-colors">
+        <span>{children}</span>
+        <ArrowRight className="w-3 h-3 opacity-0 -translate-x-1.5 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-white/80" />
       </Link>
     </li>
   );
 }
 
-function SocialBtn({ icon: Icon, href }: { icon: any; href: string }) {
+function SocialBtn({ icon: Icon, href, label }: { icon: any; href: string; label: string }) {
   return (
     <a 
       href={href} 
       target="_blank" 
       rel="noopener noreferrer"
-      className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all hover:scale-105"
+      aria-label={label}
+      className="w-9 h-9 rounded-xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center text-white/70 hover:text-white hover:bg-white/15 hover:border-white/20 transition-all hover:scale-105"
     >
       <Icon className="w-4 h-4" />
     </a>

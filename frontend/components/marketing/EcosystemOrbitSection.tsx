@@ -103,7 +103,7 @@ export default function EcosystemOrbitSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative w-full bg-[#050505] text-white py-[150px] sm:py-[200px] overflow-hidden flex justify-center items-center min-h-[90vh]">
+    <section ref={sectionRef} className="relative w-full bg-[#050505] text-white pt-[160px] sm:pt-[220px] pb-[220px] sm:pb-[280px] overflow-hidden flex justify-center items-center min-h-screen">
       
       {/* Heavy Ambient Core Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#0071E3]/15 rounded-full blur-[150px] pointer-events-none" />

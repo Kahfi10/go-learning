@@ -243,15 +243,7 @@ export default function LandingPage() {
           }
         );
 
-        /* Grand Finale Stacked Journey */
-        gsap.utils.toArray<HTMLElement>(".stacked-journey-panel").forEach((panel, i) => {
-          ScrollTrigger.create({
-            trigger: panel,
-            start: "top top", 
-            pin: true, 
-            pinSpacing: false 
-          });
-        });
+
 
       }, containerRef);
 
@@ -431,24 +423,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Grand Finale Stacked Journey ── */}
-      <div className="relative w-full bg-black text-white">
-        
-        {/* Layer 1: Community Closing */}
-        <div className="stacked-journey-panel w-full relative z-10 bg-[#050505] shadow-2xl">
-          <CommunityClosingSection />
-        </div>
-
-        {/* Layer 2: Ecosystem Orbit */}
-        <div className="stacked-journey-panel w-full relative z-20 bg-[#050505] shadow-[0_-20px_50px_rgba(0,0,0,0.8)] border-t border-white/5">
-          <EcosystemOrbitSection />
-        </div>
-
-        {/* Layer 3: Editorial Footer */}
-        <div className="stacked-journey-panel w-full relative z-30 bg-[#0A0A0A] shadow-[0_-20px_50px_rgba(0,0,0,0.8)] border-t border-white/10">
-          <EditorialFooter />
-        </div>
-
+      {/* ── Closing & Footer Sections ── */}
+      <div className="relative w-full bg-[#050505] text-white">
+        <CommunityClosingSection />
+        <EcosystemOrbitSection />
+        <EditorialFooter />
       </div>
 
     </div>
