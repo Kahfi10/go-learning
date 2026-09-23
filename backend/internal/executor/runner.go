@@ -57,6 +57,12 @@ func Run(code string) Result {
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	cmd.Dir = dir
+	cmd.Env = append(os.Environ(),
+		"HOME="+dir,
+		"GOCACHE="+filepath.Join(dir, "cache"),
+		"TMPDIR="+dir,
+		"XDG_RUNTIME_DIR="+dir,
+	)
 
 	start := time.Now()
 	err := cmd.Run()
