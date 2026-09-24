@@ -5,10 +5,11 @@ echo "=========================================="
 echo "🚀 Memulai Update Otomatis GoLearn..."
 echo "=========================================="
 
-# 1. Tarik kode terbaru dari GitHub
+# 1. Tarik kode terbaru dari GitHub (reset --hard agar sinkron sempurna)
 echo "📦 1/4 Menarik update dari GitHub..."
 cd ~/go-learning
-git pull origin main
+git fetch origin main
+git reset --hard origin/main
 
 # 2. Build ulang Backend Go
 echo "🔨 2/4 Meng-compile Go Backend..."
