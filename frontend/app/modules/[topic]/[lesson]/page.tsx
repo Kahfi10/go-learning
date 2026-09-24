@@ -110,7 +110,7 @@ export default function LessonPage() {
       setActiveTab(resume.activeTab);
     }
     markLessonViewed(topic, lesson);
-  }, [getResumeState, lesson, markLessonViewed, searchParams, topic, state.user]);
+  }, [getResumeState, lesson, markLessonViewed, topic, state.user]);
 
   useEffect(() => {
     saveResumeState(topic, lesson, { lang, activeTab });
@@ -154,7 +154,7 @@ export default function LessonPage() {
         );
       }
     });
-  }, [data, topic, lesson]);
+  }, [data?.id, topic, lesson]);
 
   useEffect(() => {
     import("gsap").then(({ gsap }) => {
@@ -414,7 +414,7 @@ export default function LessonPage() {
             <div className="h-[calc(100vh-92px)] p-3 gap-3 flex">
               <PanelGroup direction="horizontal">
                 <Panel defaultSize={54} minSize={36} className="overflow-hidden rounded-[24px] border border-[#D2D2D7]/40 dark:border-white/8 bg-background shadow-sm">
-                  <div ref={desktopContentScrollRef} className="h-full overflow-y-auto">
+                  <div ref={desktopContentScrollRef} className="h-full overflow-y-auto no-scrollbar">
                     <div className="w-full max-w-[920px] mx-auto px-5 py-6 sm:px-6 xl:px-8 2xl:px-10">
                       <LessonContent
                         data={data} lang={lang} title={title} content={content}
@@ -439,7 +439,7 @@ export default function LessonPage() {
                 <PanelResizeHandle className="mx-1 flex items-center justify-center">
                   <div className="h-12 w-[4px] rounded-full bg-[#D2D2D7]/40 hover:bg-[#0071E3]/40 transition-colors cursor-col-resize" />
                 </PanelResizeHandle>
-                <Panel defaultSize={46} minSize={34} className="overflow-y-auto rounded-[24px] border border-[#D2D2D7]/40 dark:border-white/8 bg-[#F7F7F8] dark:bg-[#101113] shadow-sm">
+                <Panel defaultSize={46} minSize={34} className="overflow-y-auto no-scrollbar rounded-[24px] border border-[#D2D2D7]/40 dark:border-white/8 bg-[#F7F7F8] dark:bg-[#101113] shadow-sm">
                   <div className="sticky top-0 z-10 border-b border-[#D2D2D7]/35 dark:border-white/6 bg-[#F7F7F8]/95 dark:bg-[#101113]/95 backdrop-blur-sm px-5 py-4">
                     <div className="flex items-center justify-between gap-4">
                       <div>
@@ -1091,3 +1091,5 @@ function escapeHtml(text: string): string {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
+
+
