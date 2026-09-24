@@ -285,3 +285,12 @@ code, pre, kbd {
 .e-lh .ln-mask .ln { margin-bottom: calc(var(--off) * -1); margin-top: calc(var(--off) * -1); padding-bottom: calc(var(--off) / 2); padding-top: calc(var(--off) / 2); }
 .e-lh .ln-mask:first-child .ln { margin-top: calc(var(--off) * -0.5); }
 .e-lh .ln-mask:last-child .ln { margin-bottom: calc(var(--off) * -0.5); }
+
+/* Hide scrollbar utility */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
